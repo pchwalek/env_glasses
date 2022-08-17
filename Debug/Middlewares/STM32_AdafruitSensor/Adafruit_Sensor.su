@@ -1,1 +1,1 @@
-Adafruit_Sensor.cpp:8:6:void Adafruit_Sensor::printSensorDetails()	56	static
+Adafruit_Sensor.cpp:8:6:void Adafruit_Sensor::printSensorDetails()	48	static

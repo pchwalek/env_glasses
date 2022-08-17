@@ -77,7 +77,21 @@ extern I2C_HandleTypeDef hi2c3;
 #define PD9_Pin GPIO_PIN_9
 #define PD9_GPIO_Port GPIOD
 /* USER CODE BEGIN Private defines */
+#define CUSTOM_BT_PARAMETERS 1
+#define DYNAMIC_MODE	1
 
+// FREERTOS THREAD SPECIFIC
+#define GRAB_SAMPLE_BIT								0x0100
+#define TERMINATE_THREAD_BIT					0x0200
+
+typedef enum
+{
+    CFG_LPM_APP,
+    CFG_LPM_APP_BLE,
+    /* USER CODE BEGIN CFG_LPM_Id_t */
+
+    /* USER CODE END CFG_LPM_Id_t */
+} CFG_LPM_Id_t;
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

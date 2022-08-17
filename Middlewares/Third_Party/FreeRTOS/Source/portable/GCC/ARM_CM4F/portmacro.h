@@ -33,6 +33,7 @@
 extern "C" {
 #endif
 
+#include "projdefs.h"
 /*-----------------------------------------------------------
  * Port specific definitions.
  *

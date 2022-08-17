@@ -1,0 +1,2 @@
+dis.c:81:6:DIS_Init	48	static
+dis.c:398:12:DIS_UpdateChar	16	static

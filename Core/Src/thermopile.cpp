@@ -57,11 +57,15 @@ CALIPILE tp_temple_back;
 #define THERMOPLE_TEMPLE_MID_ADDR_ID		4
 #define THERMOPLE_TEMPLE_BACK_ADDR_ID		5
 
-void queueThermopilePkt();
-void initThermopiles(CALIPILE tp, uint8_t address, I2C_HandleTypeDef* i2c_handle);
+void queueThermopilePkt(thermopile_packet *sample);
+void initThermopiles(CALIPILE tp, uint8_t address, I2C_HandleTypeDef* i2c_handle, uint8_t descriptor);
+
+uint16_t thermIdx;
+uint32_t thermID;
 
 void Thermopile_Task(void *argument) {
 	SensorPacket *packet = NULL;
+	uint32_t flags;
 
 	initThermopiles(tp_nose_tip,	THERMOPLE_NOSE_TIP,			&hi2c1,	THERMOPLE_NOSE_TIP_ID);
 	initThermopiles(tp_nose_bridge,	THERMOPLE_NOSE_BRIDGE,		&hi2c1, THERMOPLE_NOSE_BRIDGE_ID);
@@ -74,8 +78,8 @@ void Thermopile_Task(void *argument) {
 	header.reserved[0] = THERMOPILE_SAMPLE_PERIOD_MS;
 	header.reserved[1] = THERMOPILE_CNT;
 
-	uint16_t thermIdx = 0;
-	uint32_t thermID = 0;
+	thermIdx = 0;
+	thermID = 0;
 
 	periodicThermopileTimer_id = osTimerNew(triggerThermopileSample,
 			osTimerPeriodic, NULL, NULL);
@@ -114,14 +118,14 @@ void Thermopile_Task(void *argument) {
 
 }
 
-void initThermopiles(CALIPILE tp, uint8_t address, I2C_HandleTypeDef* i2c_handle){
+void initThermopiles(CALIPILE tp, uint8_t address, I2C_HandleTypeDef* i2c_handle, uint8_t descriptor){
 
 	uint16_t Tcounts = 0x83; // set threshold for over temperature interrupt, 0x83 == 67072 counts
 	uint32_t flags = 0;
 	//	uint8_t intStatus;
 
 
-	tp.setup((uint8_t) address, i2c_handle);
+	tp.setup((uint8_t) address, i2c_handle, descriptor);
 	tp.wake();
 	tp.readEEPROM(); // Verify protocol number and checksum and get calibration constants
 	//  tp_outer.initMotion(tcLP1, tcLP2, LPsource, cycTime); // configure presence and motion interrupts
@@ -132,6 +136,7 @@ void initThermopiles(CALIPILE tp, uint8_t address, I2C_HandleTypeDef* i2c_handle
 }
 
 void queueThermopilePkt(thermopile_packet *sample){
+	SensorPacket *packet = NULL;
 	thermIdx++;
 
 	if (thermIdx >= MAX_THERMOPILE_SAMPLES_PACKET) {

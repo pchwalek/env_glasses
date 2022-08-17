@@ -22,6 +22,7 @@
 #include "app_common.h"
 #include "main.h"
 #include "app_entry.h"
+#include "app_ble.h"
 #include "ble.h"
 #include "tl.h"
 #include "cmsis_os.h"
@@ -96,7 +97,6 @@ static void APPE_SysUserEvtRx( void * pPayload );
 static void APPE_SysEvtReadyProcessing( void * pPayload );
 static void APPE_SysEvtError( void * pPayload);
 static void Init_Rtc( void );
-__WEAK void APP_BLE_Init( void );
 
 /* USER CODE BEGIN PFP */
 
@@ -349,10 +349,6 @@ static void appe_Tl_Init( void )
   TL_Enable();
 
   return;
-}
-
-__WEAK void APP_BLE_Init( void )
-{
 }
 
 static void APPE_SysStatusNot( SHCI_TL_CmdStatus_t status )

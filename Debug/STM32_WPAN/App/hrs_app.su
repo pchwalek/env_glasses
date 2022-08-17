@@ -1,0 +1,3 @@
+hrs_app.c:153:13:HrsProcess	8	static
+hrs_app.c:94:6:HRS_Notification	0	static
+hrs_app.c:144:6:HRSAPP_Init	8	static

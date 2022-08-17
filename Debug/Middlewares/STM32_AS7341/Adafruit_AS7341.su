@@ -1,64 +1,64 @@
-Adafruit_AS7341.cpp:26:1:Adafruit_AS7341::Adafruit_AS7341()	16	static
-Adafruit_AS7341.cpp:33:1:Adafruit_AS7341::~Adafruit_AS7341()	16	static
-Adafruit_AS7341.cpp:50:6:bool Adafruit_AS7341::begin(uint8_t, I2C_HandleTypeDef*, int32_t)	24	static
-Adafruit_AS7341.cpp:63:6:virtual bool Adafruit_AS7341::_init(int32_t)	16	static
-Adafruit_AS7341.cpp:81:8:int8_t Adafruit_AS7341::getFlickerDetectStatus()	16	static
-Adafruit_AS7341.cpp:91:10:uint16_t Adafruit_AS7341::readChannel(as7341_adc_channel_t)	24	static
-Adafruit_AS7341.cpp:107:10:uint16_t Adafruit_AS7341::getChannel(as7341_color_channel_t)	16	static
-Adafruit_AS7341.cpp:119:6:bool Adafruit_AS7341::readAllChannels(uint16_t*)	24	static
-Adafruit_AS7341.cpp:142:6:bool Adafruit_AS7341::startReading()	16	static
-Adafruit_AS7341.cpp:156:6:bool Adafruit_AS7341::checkReadingProgress()	16	static
-Adafruit_AS7341.cpp:196:6:bool Adafruit_AS7341::getAllChannels(uint16_t*)	24	static
-Adafruit_AS7341.cpp:208:6:void Adafruit_AS7341::delayForData(uint32_t)	24	static
-Adafruit_AS7341.cpp:236:6:bool Adafruit_AS7341::readAllChannels()	16	static
-Adafruit_AS7341.cpp:240:6:void Adafruit_AS7341::setSMUXLowChannels(bool)	16	static
-Adafruit_AS7341.cpp:256:6:void Adafruit_AS7341::powerEnable(bool)	24	static
-Adafruit_AS7341.cpp:266:6:void Adafruit_AS7341::disableAll()	16	static
-Adafruit_AS7341.cpp:276:6:bool Adafruit_AS7341::enableSpectralMeasurement(bool)	24	static
-Adafruit_AS7341.cpp:284:6:bool Adafruit_AS7341::enableSMUX()	32	static
-Adafruit_AS7341.cpp:300:6:bool Adafruit_AS7341::enableFlickerDetection(bool)	16	static
-Adafruit_AS7341.cpp:309:19:as7341_gpio_dir_t Adafruit_AS7341::getGPIODirection()	16	static
-Adafruit_AS7341.cpp:319:6:bool Adafruit_AS7341::setGPIODirection(as7341_gpio_dir_t)	16	static
-Adafruit_AS7341.cpp:328:6:bool Adafruit_AS7341::getGPIOInverted()	16	static
-Adafruit_AS7341.cpp:340:6:bool Adafruit_AS7341::setGPIOInverted(bool)	16	static
-Adafruit_AS7341.cpp:349:6:bool Adafruit_AS7341::getGPIOValue()	16	static
-Adafruit_AS7341.cpp:361:6:bool Adafruit_AS7341::setGPIOValue(bool)	16	static
-Adafruit_AS7341.cpp:365:6:bool Adafruit_AS7341::setSMUXCommand(as7341_smux_cmd_t)	24	static
-Adafruit_AS7341.cpp:376:6:bool Adafruit_AS7341::enableLED(bool)	24	static
-Adafruit_AS7341.cpp:393:6:bool Adafruit_AS7341::setLEDCurrent(uint16_t)	32	static
-Adafruit_AS7341.cpp:421:6:bool Adafruit_AS7341::setBank(bool)	16	static
+Adafruit_AS7341.cpp:26:1:Adafruit_AS7341::Adafruit_AS7341()	0	static
+Adafruit_AS7341.cpp:33:1:Adafruit_AS7341::~Adafruit_AS7341()	0	static
+Adafruit_AS7341.cpp:50:6:bool Adafruit_AS7341::begin(uint8_t, I2C_HandleTypeDef*, int32_t)	8	static
+Adafruit_AS7341.cpp:107:10:uint16_t Adafruit_AS7341::getChannel(as7341_color_channel_t)	0	static
+Adafruit_AS7341.cpp:196:6:bool Adafruit_AS7341::getAllChannels(uint16_t*)	0	static
+Adafruit_AS7341.cpp:570:6:bool Adafruit_AS7341::spectralLowTriggered()	0	static
+Adafruit_AS7341.cpp:579:6:bool Adafruit_AS7341::spectralHighTriggered()	0	static
+Adafruit_AS7341.cpp:861:6:bool Adafruit_AS7341::writeRegister(uint8_t, uint8_t*, uint16_t)	24	static
 Adafruit_AS7341.cpp:432:6:bool Adafruit_AS7341::setLowThreshold(uint16_t)	16	static
-Adafruit_AS7341.cpp:441:10:uint16_t Adafruit_AS7341::getLowThreshold()	24	static
 Adafruit_AS7341.cpp:454:6:bool Adafruit_AS7341::setHighThreshold(uint16_t)	16	static
-Adafruit_AS7341.cpp:463:10:uint16_t Adafruit_AS7341::getHighThreshold()	24	static
-Adafruit_AS7341.cpp:475:6:bool Adafruit_AS7341::enableSpectralInterrupt(bool)	16	static
-Adafruit_AS7341.cpp:485:6:bool Adafruit_AS7341::enableSystemInterrupt(bool)	16	static
-Adafruit_AS7341.cpp:505:6:bool Adafruit_AS7341::setAPERS(as7341_int_cycle_count_t)	24	static
-Adafruit_AS7341.cpp:517:6:bool Adafruit_AS7341::setSpectralThresholdChannel(as7341_adc_channel_t)	24	static
-Adafruit_AS7341.cpp:531:9:uint8_t Adafruit_AS7341::getInterruptStatus()	16	static
-Adafruit_AS7341.cpp:540:6:bool Adafruit_AS7341::spectralInterruptTriggered()	16	static
-Adafruit_AS7341.cpp:549:6:bool Adafruit_AS7341::clearInterruptStatus()	16	static
-Adafruit_AS7341.cpp:559:9:uint8_t Adafruit_AS7341::spectralInterruptSource()	24	static
-Adafruit_AS7341.cpp:570:6:bool Adafruit_AS7341::spectralLowTriggered()	16	static
-Adafruit_AS7341.cpp:579:6:bool Adafruit_AS7341::spectralHighTriggered()	16	static
-Adafruit_AS7341.cpp:588:6:bool Adafruit_AS7341::getIsDataReady()	16	static
-Adafruit_AS7341.cpp:596:6:void Adafruit_AS7341::setup_F1F4_Clear_NIR()	16	static
-Adafruit_AS7341.cpp:624:6:void Adafruit_AS7341::setup_F5F8_Clear_NIR()	16	static
-Adafruit_AS7341.cpp:652:6:void Adafruit_AS7341::FDConfig()	16	static
-Adafruit_AS7341.cpp:686:6:bool Adafruit_AS7341::setATIME(uint8_t)	16	static
-Adafruit_AS7341.cpp:697:9:uint8_t Adafruit_AS7341::getATIME()	16	static
 Adafruit_AS7341.cpp:708:6:bool Adafruit_AS7341::setASTEP(uint16_t)	16	static
-Adafruit_AS7341.cpp:719:10:uint16_t Adafruit_AS7341::getASTEP()	24	static
-Adafruit_AS7341.cpp:731:6:bool Adafruit_AS7341::setGain(as7341_gain_t)	16	static
-Adafruit_AS7341.cpp:742:15:as7341_gain_t Adafruit_AS7341::getGain()	16	static
-Adafruit_AS7341.cpp:753:6:long int Adafruit_AS7341::getTINT()	24	static
-Adafruit_AS7341.cpp:769:7:float Adafruit_AS7341::toBasicCounts(uint16_t)	40	static
-Adafruit_AS7341.cpp:815:10:uint16_t Adafruit_AS7341::detectFlickerHz()	24	static
-Adafruit_AS7341.cpp:861:6:bool Adafruit_AS7341::writeRegister(uint8_t, uint8_t*, uint16_t)	40	static
 Adafruit_AS7341.cpp:871:6:bool Adafruit_AS7341::writeRegisterByte(uint8_t, uint8_t)	32	static
-Adafruit_AS7341.cpp:880:9:uint8_t Adafruit_AS7341::modifyBitInByte(uint8_t, uint8_t, uint8_t)	24	static
-Adafruit_AS7341.cpp:886:6:bool Adafruit_AS7341::readRegister(uint16_t, uint8_t*, uint16_t)	40	static
-Adafruit_AS7341.cpp:896:9:uint8_t Adafruit_AS7341::checkRegisterBit(uint16_t, uint8_t)	16	static
+Adafruit_AS7341.cpp:266:6:void Adafruit_AS7341::disableAll()	8	static
+Adafruit_AS7341.cpp:549:6:bool Adafruit_AS7341::clearInterruptStatus()	8	static
+Adafruit_AS7341.cpp:596:6:void Adafruit_AS7341::setup_F1F4_Clear_NIR()	8	static
+Adafruit_AS7341.cpp:624:6:void Adafruit_AS7341::setup_F5F8_Clear_NIR()	8	static
+Adafruit_AS7341.cpp:652:6:void Adafruit_AS7341::FDConfig()	8	static
+Adafruit_AS7341.cpp:686:6:bool Adafruit_AS7341::setATIME(uint8_t)	8	static
+Adafruit_AS7341.cpp:731:6:bool Adafruit_AS7341::setGain(as7341_gain_t)	8	static
+Adafruit_AS7341.cpp:880:9:uint8_t Adafruit_AS7341::modifyBitInByte(uint8_t, uint8_t, uint8_t)	0	static
+Adafruit_AS7341.cpp:886:6:bool Adafruit_AS7341::readRegister(uint16_t, uint8_t*, uint16_t)	24	static
+Adafruit_AS7341.cpp:91:10:uint16_t Adafruit_AS7341::readChannel(as7341_adc_channel_t)	16	static
+Adafruit_AS7341.cpp:441:10:uint16_t Adafruit_AS7341::getLowThreshold()	16	static
+Adafruit_AS7341.cpp:463:10:uint16_t Adafruit_AS7341::getHighThreshold()	16	static
+Adafruit_AS7341.cpp:719:10:uint16_t Adafruit_AS7341::getASTEP()	16	static
+Adafruit_AS7341.cpp:921:9:uint8_t Adafruit_AS7341::readRegisterByte(uint16_t)	32	static
+Adafruit_AS7341.cpp:81:8:int8_t Adafruit_AS7341::getFlickerDetectStatus()	8	static
+Adafruit_AS7341.cpp:256:6:void Adafruit_AS7341::powerEnable(bool)	16	static
+Adafruit_AS7341.cpp:63:6:virtual bool Adafruit_AS7341::_init(int32_t)	8	static
+Adafruit_AS7341.cpp:276:6:bool Adafruit_AS7341::enableSpectralMeasurement(bool)	16	static
+Adafruit_AS7341.cpp:531:9:uint8_t Adafruit_AS7341::getInterruptStatus()	8	static
+Adafruit_AS7341.cpp:559:9:uint8_t Adafruit_AS7341::spectralInterruptSource()	8	static
+Adafruit_AS7341.cpp:697:9:uint8_t Adafruit_AS7341::getATIME()	8	static
+Adafruit_AS7341.cpp:753:6:long int Adafruit_AS7341::getTINT()	16	static
+Adafruit_AS7341.cpp:742:15:as7341_gain_t Adafruit_AS7341::getGain()	8	static
+Adafruit_AS7341.cpp:769:7:float Adafruit_AS7341::toBasicCounts(uint16_t)	32	static
+Adafruit_AS7341.cpp:896:9:uint8_t Adafruit_AS7341::checkRegisterBit(uint16_t, uint8_t)	8	static
+Adafruit_AS7341.cpp:309:19:as7341_gpio_dir_t Adafruit_AS7341::getGPIODirection()	8	static
+Adafruit_AS7341.cpp:328:6:bool Adafruit_AS7341::getGPIOInverted()	8	static
+Adafruit_AS7341.cpp:349:6:bool Adafruit_AS7341::getGPIOValue()	8	static
+Adafruit_AS7341.cpp:540:6:bool Adafruit_AS7341::spectralInterruptTriggered()	8	static
+Adafruit_AS7341.cpp:588:6:bool Adafruit_AS7341::getIsDataReady()	8	static
+Adafruit_AS7341.cpp:208:6:void Adafruit_AS7341::delayForData(uint32_t)	16	static
 Adafruit_AS7341.cpp:900:6:bool Adafruit_AS7341::modifyRegisterBit(uint16_t, bool, uint8_t)	24	static
-Adafruit_AS7341.cpp:907:6:bool Adafruit_AS7341::modifyRegisterMultipleBit(uint16_t, uint8_t, uint8_t, uint8_t)	24	static
-Adafruit_AS7341.cpp:921:9:uint8_t Adafruit_AS7341::readRegisterByte(uint16_t)	40	static
+Adafruit_AS7341.cpp:284:6:bool Adafruit_AS7341::enableSMUX()	16	static
+Adafruit_AS7341.cpp:300:6:bool Adafruit_AS7341::enableFlickerDetection(bool)	8	static
+Adafruit_AS7341.cpp:319:6:bool Adafruit_AS7341::setGPIODirection(as7341_gpio_dir_t)	8	static
+Adafruit_AS7341.cpp:340:6:bool Adafruit_AS7341::setGPIOInverted(bool)	8	static
+Adafruit_AS7341.cpp:361:6:bool Adafruit_AS7341::setGPIOValue(bool)	8	static
+Adafruit_AS7341.cpp:421:6:bool Adafruit_AS7341::setBank(bool)	8	static
+Adafruit_AS7341.cpp:376:6:bool Adafruit_AS7341::enableLED(bool)	16	static
+Adafruit_AS7341.cpp:475:6:bool Adafruit_AS7341::enableSpectralInterrupt(bool)	8	static
+Adafruit_AS7341.cpp:485:6:bool Adafruit_AS7341::enableSystemInterrupt(bool)	8	static
+Adafruit_AS7341.cpp:907:6:bool Adafruit_AS7341::modifyRegisterMultipleBit(uint16_t, uint8_t, uint8_t, uint8_t)	32	static
+Adafruit_AS7341.cpp:365:6:bool Adafruit_AS7341::setSMUXCommand(as7341_smux_cmd_t)	16	static
+Adafruit_AS7341.cpp:240:6:void Adafruit_AS7341::setSMUXLowChannels(bool)	16	static
+Adafruit_AS7341.cpp:119:6:bool Adafruit_AS7341::readAllChannels(uint16_t*)	16	static
+Adafruit_AS7341.cpp:236:6:bool Adafruit_AS7341::readAllChannels()	8	static
+Adafruit_AS7341.cpp:156:6:bool Adafruit_AS7341::checkReadingProgress()	16	static
+Adafruit_AS7341.cpp:142:6:bool Adafruit_AS7341::startReading()	8	static
+Adafruit_AS7341.cpp:815:10:uint16_t Adafruit_AS7341::detectFlickerHz()	16	static
+Adafruit_AS7341.cpp:393:6:bool Adafruit_AS7341::setLEDCurrent(uint16_t)	24	static
+Adafruit_AS7341.cpp:505:6:bool Adafruit_AS7341::setAPERS(as7341_int_cycle_count_t)	16	static
+Adafruit_AS7341.cpp:517:6:bool Adafruit_AS7341::setSpectralThresholdChannel(as7341_adc_channel_t)	16	static

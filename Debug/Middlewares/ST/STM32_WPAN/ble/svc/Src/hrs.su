@@ -1,0 +1,5 @@
+hrs.c:89:30:HeartRate_Event_Handler	32	static
+hrs.c:206:19:Update_Char_BodySensorLocation	16	static
+hrs.c:225:19:Update_Char_Measurement	32	static
+hrs.c:395:6:HRS_Init	56	static
+hrs.c:567:12:HRS_UpdateChar	8	static

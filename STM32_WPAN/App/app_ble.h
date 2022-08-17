@@ -31,10 +31,21 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "cmsis_os2.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
+
+    typedef enum
+    {
+      APP_BLE_IDLE,
+      APP_BLE_FAST_ADV,
+      APP_BLE_LP_ADV,
+      APP_BLE_SCAN,
+      APP_BLE_LP_CONNECTING,
+      APP_BLE_CONNECTED_SERVER,
+      APP_BLE_CONNECTED_CLIENT
+    } APP_BLE_ConnStatus_t;
 
 /* USER CODE BEGIN ET */
 
@@ -47,7 +58,7 @@ extern "C" {
 
 /* External variables --------------------------------------------------------*/
 /* USER CODE BEGIN EV */
-
+extern osThreadId_t LinkConfigProcessId;
 /* USER CODE END EV */
 
 /* Exported macro ------------------------------------------------------------*/
@@ -58,8 +69,12 @@ extern "C" {
 /* Exported functions ---------------------------------------------*/
   void APP_BLE_Init( void );
 
-/* USER CODE BEGIN EF */
+  APP_BLE_ConnStatus_t APP_BLE_Get_Server_Connection_Status(void);
 
+/* USER CODE BEGIN EF */
+  void LinkConfiguration(void *argument);
+  uint8_t APP_BLE_ComputeCRC8(uint8_t *DataPtr, uint8_t Datalen);
+  void BLE_SVC_L2CAP_Conn_Update_7_5(void);
 /* USER CODE END EF */
 
 #ifdef __cplusplus

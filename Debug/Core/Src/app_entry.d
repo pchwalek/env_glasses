@@ -65,6 +65,12 @@ Core/Src/app_entry.o: ../Core/Src/app_entry.c ../Core/Inc/app_common.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_rtc.h \
  ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h ../Core/Inc/main.h \
  ../Core/Inc/app_entry.h ../Core/Inc/app_common.h ../Core/Inc/app_entry.h \
+ ../STM32_WPAN/App/app_ble.h \
+ ../Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/hci_tl.h \
+ ../Middlewares/ST/STM32_WPAN/stm32_wpan_common.h \
+ ../Drivers/CMSIS/Include/cmsis_compiler.h \
+ ../Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/tl.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
  ../Middlewares/ST/STM32_WPAN/ble/ble.h ../STM32_WPAN/App/ble_conf.h \
  ../Core/Inc/app_conf.h ../STM32_WPAN/App/ble_dbg_conf.h \
  ../Middlewares/ST/STM32_WPAN/ble/core/ble_core.h \
@@ -103,8 +109,6 @@ Core/Src/app_entry.o: ../Core/Src/app_entry.c ../Core/Inc/app_common.h \
  ../Middlewares/ST/STM32_WPAN/ble/svc/Inc/p2p_stm.h \
  ../Middlewares/ST/STM32_WPAN/ble/svc/Inc/zdd_stm.h \
  ../Middlewares/ST/STM32_WPAN/ble/svc/Inc/otas_stm.h \
- ../Middlewares/ST/STM32_WPAN/stm32_wpan_common.h \
- ../Drivers/CMSIS/Include/cmsis_compiler.h \
  ../Middlewares/ST/STM32_WPAN/ble/svc/Inc/mesh.h \
  ../Middlewares/ST/STM32_WPAN/ble/svc/Inc/template_stm.h \
  ../Middlewares/ST/STM32_WPAN/ble/svc/Inc/svc_ctl.h \
@@ -117,12 +121,12 @@ Core/Src/app_entry.o: ../Core/Src/app_entry.c ../Core/Inc/app_common.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
  ../Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/shci_tl.h \
- ../Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/tl.h \
  ../Utilities/lpm/tiny_lpm/stm32_lpm.h ../Core/Inc/app_debug.h \
  ../Middlewares/ST/STM32_WPAN/utilities/dbg_trace.h \
  ../Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/shci/shci.h \
@@ -274,6 +278,18 @@ Core/Src/app_entry.o: ../Core/Src/app_entry.c ../Core/Inc/app_common.h \
 
 ../Core/Inc/app_entry.h:
 
+../STM32_WPAN/App/app_ble.h:
+
+../Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/hci_tl.h:
+
+../Middlewares/ST/STM32_WPAN/stm32_wpan_common.h:
+
+../Drivers/CMSIS/Include/cmsis_compiler.h:
+
+../Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/tl.h:
+
+../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:
+
 ../Middlewares/ST/STM32_WPAN/ble/ble.h:
 
 ../STM32_WPAN/App/ble_conf.h:
@@ -354,10 +370,6 @@ Core/Src/app_entry.o: ../Core/Src/app_entry.c ../Core/Inc/app_common.h \
 
 ../Middlewares/ST/STM32_WPAN/ble/svc/Inc/otas_stm.h:
 
-../Middlewares/ST/STM32_WPAN/stm32_wpan_common.h:
-
-../Drivers/CMSIS/Include/cmsis_compiler.h:
-
 ../Middlewares/ST/STM32_WPAN/ble/svc/Inc/mesh.h:
 
 ../Middlewares/ST/STM32_WPAN/ble/svc/Inc/template_stm.h:
@@ -382,6 +394,8 @@ Core/Src/app_entry.o: ../Core/Src/app_entry.c ../Core/Inc/app_common.h \
 
 ../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h:
 
+../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h:
+
 ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h:
 
 ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h:
@@ -391,8 +405,6 @@ Core/Src/app_entry.o: ../Core/Src/app_entry.c ../Core/Inc/app_common.h \
 ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:
 
 ../Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/shci_tl.h:
-
-../Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/tl.h:
 
 ../Utilities/lpm/tiny_lpm/stm32_lpm.h:
 
