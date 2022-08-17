@@ -1,0 +1,3 @@
+[submodule "Middlewares/STM32_Calipile"]
+	path = Middlewares/STM32_Calipile
+	url = git@github.com:pchwalek/STM32_Calipile.git
