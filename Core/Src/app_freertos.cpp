@@ -145,7 +145,7 @@ void MX_FREERTOS_Init(void) {
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* creation of frontLightsThre */
-//  frontLightsThreHandle = osThreadNew(ThreadFrontLightsComplexTask, NULL, &frontLightsThre_attributes);
+//  frontLightsThreHandle = osThreadNew(ThreadFstrontLightsComplexTask, NULL, &frontLightsThre_attributes);
 
   /* creation of thermopileTask */
   thermopileTaskHandle = osThreadNew(Thermopile_Task, NULL, &thermopileTask_attributes);
