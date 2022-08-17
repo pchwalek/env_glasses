@@ -41,6 +41,9 @@ Middlewares/ST/STM32_WPAN/ble/svc/Src \
 Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/shci \
 Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl \
 Middlewares/ST/STM32_WPAN/utilities \
+Middlewares/STM32_AS7341 \
+Middlewares/STM32_AdafruitSensor \
+Middlewares/STM32_Calipile \
 Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 \
 Middlewares/Third_Party/FreeRTOS/Source \
 Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F \

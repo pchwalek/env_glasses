@@ -1,62 +1,41 @@
-#ifndef __thermopile_H
-#define __thermopile_H
+/*
+ * ppg.h
+ *
+ *  Created on: Nov 30, 2021
+ *      Author: patrick
+ */
 
-#include "stdint.h"
-#include "stdint.h"
+#ifndef INC_THERMOPILE_H_
+#define INC_THERMOPILE_H_
+
 #include "cmsis_os2.h"
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
-#define NUM_THERM_SAMPLES	5
+#define TP_ADDR 0x0C
+//#define TP_OUTER_ADDR 0x0D
 
-struct thermopileData{
-	uint16_t thermopile;
-	uint16_t thermistor;
-	uint32_t tick_ms;
-};
+extern osThreadId_t thermopileTaskHandle;
+extern osTimerId_t periodicThermopileTimer_id;
+const osThreadAttr_t thermopileTask_attributes = {
+	.name = "thermTask",
+	.attr_bits = osThreadDetached,
+	.cb_mem = NULL,
+	.cb_size = 0,
+	.stack_mem = NULL,
+	.stack_size = 128 * 4,
+	.priority = (osPriority_t) osPriorityNormal,
+	.tz_module = 0,
+	.reserved = 0
+  };
 
-struct thermopilePackagedData{
-	struct thermopileData temple[5];
-	struct thermopileData nose[5];
-};
-
-//struct thermopileData{
-//	uint16_t thermopile;
-//	uint16_t thermistor;
-//};
-//
-struct adcThermopileData{
-	uint16_t thermopile[10];
-	uint16_t temple_thermistor;
-	uint16_t nose_thermistor;
-};
-
-//struct thermopilePackagedData{
-//
-//	struct thermopileData temple[5];
-//	struct thermopileData nose[5];
-//
-//	uint32_t			tick_ms;
-//};
-
-typedef enum{
-	temple = 0,
-	nose = 1
-} sensorChoice;
-
-
-//osThreadId_t thermopileTaskHandle;
-osThreadId_t thermopileTaskHandle;
-osMessageQueueId_t thermMsgQueueHandle;
-
-void ThermopileTask(void *argument);
-void Setup_LMP91051(void);
-void SwitchTemperatureSensor(sensorChoice sense);
-void TurnOff_LMP91051(void);
+void Thermopile_Task(void *argument);
+static void triggerThermopileSample (void *argument);
 
 #ifdef __cplusplus
- }
+}
 #endif
-#endif
+
+#endif /* INC_PPG_H_ */

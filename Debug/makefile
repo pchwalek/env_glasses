@@ -17,6 +17,9 @@ RM := rm -rf
 -include Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/subdir.mk
 -include Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/subdir.mk
 -include Middlewares/Third_Party/FreeRTOS/Source/subdir.mk
+-include Middlewares/STM32_Calipile/subdir.mk
+-include Middlewares/STM32_AdafruitSensor/subdir.mk
+-include Middlewares/STM32_AS7341/subdir.mk
 -include Middlewares/ST/STM32_WPAN/utilities/subdir.mk
 -include Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/subdir.mk
 -include Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/shci/subdir.mk
