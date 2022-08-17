@@ -1,3 +1,9 @@
 [submodule "Middlewares/STM32_Calipile"]
 	path = Middlewares/STM32_Calipile
 	url = git@github.com:pchwalek/STM32_Calipile.git
+[submodule "Middlewares/STM32_AS7341"]
+	path = Middlewares/STM32_AS7341
+	url = git@github.com:pchwalek/STM32_AS7341.git
+[submodule "Middlewares/STM32_AdafruitSensor"]
+	path = Middlewares/STM32_AdafruitSensor
+	url = git@github.com:pchwalek/STM32_AdafruitSensor.git
