@@ -27,6 +27,7 @@
 /* USER CODE BEGIN Includes */
 #include "captivate_config.h"
 #include "lp5523.h"
+#include "thermopile.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -53,17 +54,42 @@ const osMessageQueueAttr_t lightsComplexQueue_attributes = { .name =
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
-  .name = "defaultTask",
-  .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 128 * 4
-};
+	.name = "defaultTask",
+	.attr_bits = osThreadDetached,
+	.cb_mem = NULL,
+	.cb_size = 0,
+	.stack_mem = NULL,
+	.stack_size = 128 * 4,
+	.priority = (osPriority_t) osPriorityNormal,
+	.tz_module = 0,
+	.reserved = 0
+  };
 /* Definitions for frontLightsThre */
 osThreadId_t frontLightsThreHandle;
 const osThreadAttr_t frontLightsThre_attributes = {
-  .name = "frontLightsThre",
-  .priority = (osPriority_t) osPriorityBelowNormal,
-  .stack_size = 512 * 4
-};
+	.name = "frontLightsTask",
+	.attr_bits = osThreadDetached,
+	.cb_mem = NULL,
+	.cb_size = 0,
+	.stack_mem = NULL,
+	.stack_size = 512 * 4,
+	.priority = (osPriority_t) osPriorityBelowNormal,
+	.tz_module = 0,
+	.reserved = 0
+  };
+/* Definitions for thermopileTask */
+osThreadId_t thermopileTaskHandle;
+const osThreadAttr_t thermopileTask_attributes = {
+	.name = "thermopileTask",
+	.attr_bits = osThreadDetached,
+	.cb_mem = NULL,
+	.cb_size = 0,
+	.stack_mem = NULL,
+	.stack_size = 512 * 4,
+	.priority = (osPriority_t) osPriorityNormal,
+	.tz_module = 0,
+	.reserved = 0
+  };
 /* Definitions for messageI2C_Lock */
 osMutexId_t messageI2C_LockHandle;
 const osMutexAttr_t messageI2C_Lock_attributes = {
@@ -77,6 +103,7 @@ const osMutexAttr_t messageI2C_Lock_attributes = {
 
 void StartDefaultTask(void *argument);
 void ThreadFrontLightsComplexTask(void *argument);
+void Thermopile_Task(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -118,7 +145,10 @@ void MX_FREERTOS_Init(void) {
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* creation of frontLightsThre */
-  frontLightsThreHandle = osThreadNew(ThreadFrontLightsComplexTask, NULL, &frontLightsThre_attributes);
+//  frontLightsThreHandle = osThreadNew(ThreadFrontLightsComplexTask, NULL, &frontLightsThre_attributes);
+
+  /* creation of thermopileTask */
+  thermopileTaskHandle = osThreadNew(Thermopile_Task, NULL, &thermopileTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -169,6 +199,24 @@ __weak void ThreadFrontLightsComplexTask(void *argument)
     osDelay(1);
   }
   /* USER CODE END ThreadFrontLightsComplexTask */
+}
+
+/* USER CODE BEGIN Header_Thermopile_Task */
+/**
+* @brief Function implementing the thermopileTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_Thermopile_Task */
+__weak void Thermopile_Task(void *argument)
+{
+  /* USER CODE BEGIN Thermopile_Task */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END Thermopile_Task */
 }
 
 /* Private application code --------------------------------------------------*/

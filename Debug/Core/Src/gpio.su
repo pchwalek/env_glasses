@@ -1,1 +1,2 @@
-gpio.c:38:6:MX_GPIO_Init	56	static
+stm32wbxx_ll_bus.h:539:22:LL_AHB2_GRP1_EnableClock	24	static
+gpio.c:38:6:MX_GPIO_Init	32	static

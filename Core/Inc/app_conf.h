@@ -16,9 +16,7 @@
   *
   ******************************************************************************
   */
-#ifdef __cplusplus
-extern "C" {
-#endif
+
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
@@ -211,7 +209,7 @@ extern "C" {
  * Maximum supported ATT_MTU size
  * This parameter is ignored by the CPU2 when CFG_BLE_OPTIONS is set to 1"
  */
-#define CFG_BLE_MAX_ATT_MTU             (300)
+#define CFG_BLE_MAX_ATT_MTU             (156)
 
 /**
  * Size of the storage area for Attribute values
@@ -999,7 +997,7 @@ typedef enum
 //    CFG_LPM_APP,
 //    CFG_LPM_APP_BLE,
 //    /* USER CODE BEGIN CFG_LPM_Id_t */
-//
+////
 //    /* USER CODE END CFG_LPM_Id_t */
 //} CFG_LPM_Id_t;
 
@@ -1012,6 +1010,3 @@ typedef enum
 
 #endif /*APP_CONF_H */
 
-#ifdef __cplusplus
-}
-#endif

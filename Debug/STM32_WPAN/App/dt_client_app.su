@@ -1,4 +1,4 @@
-dt_client_app.c:168:30:DTC_Event_Handler	24	static
-dt_client_app.c:389:16:GattProcReq	8	static
 dt_client_app.c:108:6:DTC_App_Init	8	static
 dt_client_app.c:123:6:DTC_App_LinkReadyNotification	24	static
+dt_client_app.c:168:30:DTC_Event_Handler	64	static
+dt_client_app.c:389:16:GattProcReq	24	static

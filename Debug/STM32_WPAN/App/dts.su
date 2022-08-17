@@ -1,4 +1,5 @@
-dts.c:132:30:Generic_Event_Handler	16	static
-dts.c:269:19:TX_Update_Char	32	static
-dts.c:361:6:Generic_STM_Init	32	static
-dts.c:448:12:Generic_STM_UpdateChar	8	static
+dts.c:132:30:Generic_Event_Handler	72	static
+dts.c:269:19:TX_Update_Char	48	static
+dts.c:312:19:PPG_Update_Char	48	static
+dts.c:361:6:Generic_STM_Init	40	static
+dts.c:448:12:Generic_STM_UpdateChar	24	static

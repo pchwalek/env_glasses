@@ -19,17 +19,17 @@ extern "C" {
 
 extern osThreadId_t thermopileTaskHandle;
 extern osTimerId_t periodicThermopileTimer_id;
-const osThreadAttr_t thermopileTask_attributes = {
-	.name = "thermTask",
-	.attr_bits = osThreadDetached,
-	.cb_mem = NULL,
-	.cb_size = 0,
-	.stack_mem = NULL,
-	.stack_size = 128 * 4,
-	.priority = (osPriority_t) osPriorityNormal,
-	.tz_module = 0,
-	.reserved = 0
-  };
+//const osThreadAttr_t thermopileTask_attributes = {
+//	.name = "thermTask",
+//	.attr_bits = osThreadDetached,
+//	.cb_mem = NULL,
+//	.cb_size = 0,
+//	.stack_mem = NULL,
+//	.stack_size = 128 * 4,
+//	.priority = (osPriority_t) osPriorityNormal,
+//	.tz_module = 0,
+//	.reserved = 0
+//  };
 
 void Thermopile_Task(void *argument);
 static void triggerThermopileSample (void *argument);

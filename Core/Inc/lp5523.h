@@ -7,12 +7,12 @@
  *
  ******************************************************************************
  */
-#ifndef LP5523_H
-#define LP5523_H
+#ifndef _LP5523_H
+#define _LP5523_H
 
-//#ifdef __cplusplus
-//extern "C" {
-//#endif
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* includes -----------------------------------------------------------*/
 #include "stdint.h"
@@ -184,7 +184,7 @@ void             BSP_LED_Toggle(Led_TypeDef Led);
 /* variables -----------------------------------------------*/
 
 /* variables that hold received messages */
-uint32_t lightsSimpleMessage;
+//uint32_t lightsSimpleMessage;
 
 /* Functions Definition ------------------------------------------------------*/
 
@@ -261,8 +261,8 @@ void resetColor(union ColorComplex * colorComplex);
 ////  int32_t _sensorID;
 //};
 
-//#ifdef __cplusplus
-//} /* extern "C" */
-//#endif
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
 
 #endif

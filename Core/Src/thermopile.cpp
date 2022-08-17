@@ -36,7 +36,7 @@ static thermopile_packet thermopileData[MAX_THERMOPILE_SAMPLES_PACKET];
 
 static PacketHeader header;
 
-osThreadId_t thermopileTaskHandle;
+//osThreadId_t thermopileTaskHandle;
 osTimerId_t periodicThermopileTimer_id;
 
 CALIPILE tp_nose_tip;
@@ -59,6 +59,7 @@ CALIPILE tp_temple_back;
 
 void queueThermopilePkt(thermopile_packet *sample);
 void initThermopiles(CALIPILE tp, uint8_t address, I2C_HandleTypeDef* i2c_handle, uint8_t descriptor);
+void grabThermopileSamples(thermopile_packet *data, CALIPILE *tp);
 
 uint16_t thermIdx;
 uint32_t thermID;
@@ -67,11 +68,11 @@ void Thermopile_Task(void *argument) {
 	SensorPacket *packet = NULL;
 	uint32_t flags;
 
-	initThermopiles(tp_nose_tip,	THERMOPLE_NOSE_TIP,			&hi2c1,	THERMOPLE_NOSE_TIP_ID);
+//	initThermopiles(tp_nose_tip,	THERMOPLE_NOSE_TIP,			&hi2c1,	THERMOPLE_NOSE_TIP_ID);
 	initThermopiles(tp_nose_bridge,	THERMOPLE_NOSE_BRIDGE,		&hi2c1, THERMOPLE_NOSE_BRIDGE_ID);
-	initThermopiles(tp_temple_front,THERMOPLE_TEMPLE_FRONT_ADDR,&hi2c3, THERMOPLE_TEMPLE_FRONT_ADDR_ID);
-	initThermopiles(tp_temple_mid,	THERMOPLE_TEMPLE_MID_ADDR,	&hi2c3, THERMOPLE_TEMPLE_MID_ADDR_ID);
-	initThermopiles(tp_temple_back,	THERMOPLE_TEMPLE_BACK_ADDR,	&hi2c3, THERMOPLE_TEMPLE_BACK_ADDR_ID);
+//	initThermopiles(tp_temple_front,THERMOPLE_TEMPLE_FRONT_ADDR,&hi2c3, THERMOPLE_TEMPLE_FRONT_ADDR_ID);
+//	initThermopiles(tp_temple_mid,	THERMOPLE_TEMPLE_MID_ADDR,	&hi2c3, THERMOPLE_TEMPLE_MID_ADDR_ID);
+//	initThermopiles(tp_temple_back,	THERMOPLE_TEMPLE_BACK_ADDR,	&hi2c3, THERMOPLE_TEMPLE_BACK_ADDR_ID);
 
 	header.payloadLength = MAX_THERMOPILE_SAMPLES_PACKET
 			* sizeof(thermopile_packet);
@@ -93,21 +94,21 @@ void Thermopile_Task(void *argument) {
 		if ((flags & GRAB_SAMPLE_BIT) == GRAB_SAMPLE_BIT) {
 
 			// sample nose
-			grabThermopileSamples(&thermopileData[thermIdx], &tp_nose_tip);
-			queueThermopilePkt(&thermopileData[thermIdx]);
+//			grabThermopileSamples(&thermopileData[thermIdx], &tp_nose_tip);
+//			queueThermopilePkt(&thermopileData[thermIdx]);
 
 			grabThermopileSamples(&thermopileData[thermIdx], &tp_nose_bridge);
 			queueThermopilePkt(&thermopileData[thermIdx]);
 
 			// sample temple
-			grabThermopileSamples(&thermopileData[thermIdx], &tp_temple_front);
-			queueThermopilePkt(&thermopileData[thermIdx]);
-
-			grabThermopileSamples(&thermopileData[thermIdx], &tp_temple_mid);
-			queueThermopilePkt(&thermopileData[thermIdx]);
-
-			grabThermopileSamples(&thermopileData[thermIdx], &tp_temple_back);
-			queueThermopilePkt(&thermopileData[thermIdx]);
+//			grabThermopileSamples(&thermopileData[thermIdx], &tp_temple_front);
+//			queueThermopilePkt(&thermopileData[thermIdx]);
+//
+//			grabThermopileSamples(&thermopileData[thermIdx], &tp_temple_mid);
+//			queueThermopilePkt(&thermopileData[thermIdx]);
+//
+//			grabThermopileSamples(&thermopileData[thermIdx], &tp_temple_back);
+//			queueThermopilePkt(&thermopileData[thermIdx]);
 		}
 
 		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
@@ -154,7 +155,7 @@ void queueThermopilePkt(thermopile_packet *sample){
 	}
 }
 
-void grabThermopileSamples(thermopile_packet *data, CALIPILE *tp, uint8_t identifier) {
+void grabThermopileSamples(thermopile_packet *data, CALIPILE *tp) {
 	data->descriptor = tp->descriptor;
 	data->timestamp = HAL_GetTick();
 	data->ambientRaw = tp->getTPAMB();

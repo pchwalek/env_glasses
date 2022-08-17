@@ -81,7 +81,7 @@ extern I2C_HandleTypeDef hi2c3;
 #define DYNAMIC_MODE	1
 
 // FREERTOS THREAD SPECIFIC
-#define GRAB_SAMPLE_BIT								0x0100
+#define GRAB_SAMPLE_BIT							0x0100
 #define TERMINATE_THREAD_BIT					0x0200
 
 typedef enum

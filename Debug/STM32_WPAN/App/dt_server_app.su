@@ -1,2 +1,2 @@
-dt_server_app.c:130:6:DTS_App_Init	0	static
-dt_server_app.c:193:6:Generic_Notification	8	static
+dt_server_app.c:130:6:DTS_App_Init	16	static
+dt_server_app.c:193:6:Generic_Notification	16	static
