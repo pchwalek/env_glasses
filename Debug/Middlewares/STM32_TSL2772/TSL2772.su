@@ -1,0 +1,21 @@
+TSL2772.cpp:101:1:TSL2772::TSL2772()	16	static
+TSL2772.cpp:108:1:TSL2772::~TSL2772()	16	static
+TSL2772.cpp:121:6:bool TSL2772::begin(uint8_t, I2C_HandleTypeDef*)	24	static
+TSL2772.cpp:132:6:bool TSL2772::_init()	32	static
+TSL2772.cpp:143:6:bool TSL2772::enableALS(bool)	24	static
+TSL2772.cpp:152:6:bool TSL2772::enableALS_GainScaling(bool)	24	static
+TSL2772.cpp:167:6:bool TSL2772::powerOn(bool)	24	static
+TSL2772.cpp:176:6:bool TSL2772::setATIME(tsl2591IntegrationTime_t)	24	static
+TSL2772.cpp:203:6:bool TSL2772::setAGAIN(tsl2591Gain_t)	24	static
+TSL2772.cpp:232:26:tsl2591IntegrationTime_t TSL2772::getATIME()	16	static
+TSL2772.cpp:236:15:tsl2591Gain_t TSL2772::getAGAIN()	16	static
+TSL2772.cpp:240:10:uint32_t TSL2772::getLux()	40	static
+TSL2772.cpp:259:6:void TSL2772::readALS_data()	24	static
+TSL2772.cpp:278:6:bool TSL2772::writeRegister(uint8_t, uint8_t*, uint16_t)	40	static
+TSL2772.cpp:288:6:bool TSL2772::writeRegisterByte(uint8_t, uint8_t)	32	static
+TSL2772.cpp:297:9:uint8_t TSL2772::modifyBitInByte(uint8_t, uint8_t, uint8_t)	24	static
+TSL2772.cpp:303:6:bool TSL2772::readRegister(uint16_t, uint8_t*, uint16_t)	40	static
+TSL2772.cpp:313:9:uint8_t TSL2772::checkRegisterBit(uint16_t, uint8_t)	16	static
+TSL2772.cpp:317:6:bool TSL2772::modifyRegisterBit(uint16_t, bool, uint8_t)	24	static
+TSL2772.cpp:324:6:bool TSL2772::modifyRegisterMultipleBit(uint16_t, uint8_t, uint8_t, uint8_t)	24	static
+TSL2772.cpp:338:9:uint8_t TSL2772::readRegisterByte(uint16_t)	40	static

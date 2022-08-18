@@ -29,6 +29,7 @@
 #include "lp5523.h"
 #include "thermopile.h"
 #include "spectrometer.h"
+#include "lux.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -55,6 +56,19 @@ const osMessageQueueAttr_t lightsComplexQueue_attributes = { .name =
 osThreadId_t specTaskHandle;
 const osThreadAttr_t specTask_attributes = {
 	.name = "spectrometerTask",
+	.attr_bits = osThreadDetached,
+	.cb_mem = NULL,
+	.cb_size = 0,
+	.stack_mem = NULL,
+	.stack_size = 512 * 1,
+	.priority = (osPriority_t) osPriorityNormal,
+	.tz_module = 0,
+	.reserved = 0
+  };
+
+osThreadId_t luxTaskHandle;
+const osThreadAttr_t luxTask_attributes = {
+	.name = "luxTask",
 	.attr_bits = osThreadDetached,
 	.cb_mem = NULL,
 	.cb_size = 0,
@@ -168,6 +182,7 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
 //  specTaskHandle = osThreadNew(Spec_Task, NULL, &specTask_attributes);
+  luxTaskHandle = osThreadNew(LuxTask, NULL, &luxTask_attributes);
 
   /* USER CODE END RTOS_THREADS */
 
@@ -238,6 +253,5 @@ __weak void Thermopile_Task(void *argument)
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
-
 /* USER CODE END Application */
 

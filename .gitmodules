@@ -7,3 +7,6 @@
 [submodule "Middlewares/STM32_AdafruitSensor"]
 	path = Middlewares/STM32_AdafruitSensor
 	url = git@github.com:pchwalek/STM32_AdafruitSensor.git
+[submodule "Middlewares/STM32_TSL2772"]
+	path = Middlewares/STM32_TSL2772
+	url = git@github.com:pchwalek/STM32_TSL2772.git

@@ -170,6 +170,8 @@ extern osThreadId_t masterTaskHandle;
 
 extern osThreadId_t specTaskHandle;
 
+extern osThreadId_t luxTaskHandle;
+
 extern osSemaphoreId_t messageI2C1_LockHandle;
 
 extern osThreadId_t inertialTaskHandle;
