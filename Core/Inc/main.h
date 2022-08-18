@@ -66,8 +66,6 @@ extern I2C_HandleTypeDef hi2c3;
 #define BLINK_SIG_GPIO_Port GPIOA
 #define BLINK_PWM_Pin GPIO_PIN_8
 #define BLINK_PWM_GPIO_Port GPIOB
-#define EN_1_8V_Pin GPIO_PIN_10
-#define EN_1_8V_GPIO_Port GPIOC
 #define MEM_WP_Pin GPIO_PIN_11
 #define MEM_WP_GPIO_Port GPIOC
 #define PA9_Pin GPIO_PIN_9

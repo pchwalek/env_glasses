@@ -53,7 +53,7 @@ union ColorComplex receivedColor;
  *
  *************************************************************/
 
-#define MAX_BRIGHTNESS 200 //up to 255
+#define MAX_BRIGHTNESS 100 //up to 255
 
 uint8_t led_left_PWM[9] = { 0 };
 uint8_t led_right_PWM[9] = { 0 };

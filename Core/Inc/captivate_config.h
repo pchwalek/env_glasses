@@ -168,6 +168,8 @@ extern osMessageQueueId_t lightsComplexQueueHandle;
 extern osMessageQueueId_t togLoggingQueueHandle;
 extern osThreadId_t masterTaskHandle;
 
+extern osThreadId_t specTaskHandle;
+
 extern osSemaphoreId_t messageI2C_LockHandle;
 
 extern osThreadId_t inertialTaskHandle;
@@ -217,14 +219,14 @@ struct USB_msgPass {
 	uint8_t buf[10];
 };
 
-typedef struct PacketHeaders{
-  uint16_t packetType;
-  uint16_t packetID;
-  uint32_t msFromStart;
-  uint32_t epoch;
-  uint32_t payloadLength;
-  uint32_t reserved[5];
-}PacketHeader;
+//typedef struct PacketHeaders{
+//  uint16_t packetType;
+//  uint16_t packetID;
+//  uint32_t msFromStart;
+//  uint32_t epoch;
+//  uint32_t payloadLength;
+//  uint32_t reserved[5];
+//}PacketHeader;
 
 #define MAX_PAYLOAD_SIZE 	MAX_PACKET_LEN - sizeof(PacketHeader)
 //typedef struct CaptivatePackets{

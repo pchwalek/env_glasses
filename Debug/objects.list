@@ -15,6 +15,7 @@
 "./Core/Src/rf.o"
 "./Core/Src/rtc.o"
 "./Core/Src/sai.o"
+"./Core/Src/spectrometer.o"
 "./Core/Src/spi.o"
 "./Core/Src/stm32_lpm_if.o"
 "./Core/Src/stm32wbxx_hal_msp.o"

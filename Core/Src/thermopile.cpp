@@ -45,8 +45,10 @@ CALIPILE tp_temple_front;
 CALIPILE tp_temple_mid;
 CALIPILE tp_temple_back;
 
-#define THERMOPLE_NOSE_TIP				0x0C
-#define THERMOPLE_NOSE_BRIDGE			0x0D
+uint8_t wakeupFlag = 0;
+
+#define THERMOPLE_NOSE_TIP_ADDR			0x0C
+#define THERMOPLE_NOSE_BRIDGE_ADDR		0x0D
 #define THERMOPLE_TEMPLE_FRONT_ADDR		0x0F
 #define THERMOPLE_TEMPLE_MID_ADDR		0x0E
 #define THERMOPLE_TEMPLE_BACK_ADDR		0x0C
@@ -68,8 +70,13 @@ void Thermopile_Task(void *argument) {
 	SensorPacket *packet = NULL;
 	uint32_t flags;
 
-	initThermopiles(&tp_nose_tip,		THERMOPLE_NOSE_TIP,			&hi2c1,	THERMOPLE_NOSE_TIP_ID);
-	initThermopiles(&tp_nose_bridge,	THERMOPLE_NOSE_BRIDGE,		&hi2c1, THERMOPLE_NOSE_BRIDGE_ID);
+//	tp_nose_bridge.setup((uint8_t) THERMOPLE_NOSE_BRIDGE_ADDR, &hi2c1, THERMOPLE_NOSE_BRIDGE_ID);
+//	tp_nose_bridge.wake(); 		// wakeup thermopile sensors on i2c1 bus
+//	tp_temple_front.setup((uint8_t) THERMOPLE_TEMPLE_FRONT_ADDR, &hi2c3, THERMOPLE_TEMPLE_FRONT_ADDR_ID);
+//	tp_temple_front.wake(); 	// wakeup thermopile sensors on i2c3 bus
+
+	initThermopiles(&tp_nose_tip,		THERMOPLE_NOSE_TIP_ADDR,	&hi2c1,	THERMOPLE_NOSE_TIP_ID);
+	initThermopiles(&tp_nose_bridge,	THERMOPLE_NOSE_BRIDGE_ADDR,	&hi2c1, THERMOPLE_NOSE_BRIDGE_ID);
 	initThermopiles(&tp_temple_front,	THERMOPLE_TEMPLE_FRONT_ADDR,&hi2c3, THERMOPLE_TEMPLE_FRONT_ADDR_ID);
 	initThermopiles(&tp_temple_mid,		THERMOPLE_TEMPLE_MID_ADDR,	&hi2c3, THERMOPLE_TEMPLE_MID_ADDR_ID);
 	initThermopiles(&tp_temple_back,	THERMOPLE_TEMPLE_BACK_ADDR,	&hi2c3, THERMOPLE_TEMPLE_BACK_ADDR_ID);
@@ -98,15 +105,15 @@ void Thermopile_Task(void *argument) {
 //			queueThermopilePkt(&thermopileData[thermIdx]);
 
 			grabThermopileSamples(&thermopileData[thermIdx], &tp_nose_bridge);
-//			queueThermopilePkt(&thermopileData[thermIdx]);
-
-			// sample temple
+////			queueThermopilePkt(&thermopileData[thermIdx]);
+//
+//			// sample temple
 			grabThermopileSamples(&thermopileData[thermIdx], &tp_temple_front);
-//			queueThermopilePkt(&thermopileData[thermIdx]);
-//
+////			queueThermopilePkt(&thermopileData[thermIdx]);
+////
 			grabThermopileSamples(&thermopileData[thermIdx], &tp_temple_mid);
-//			queueThermopilePkt(&thermopileData[thermIdx]);
-//
+////			queueThermopilePkt(&thermopileData[thermIdx]);
+////
 			grabThermopileSamples(&thermopileData[thermIdx], &tp_temple_back);
 //			queueThermopilePkt(&thermopileData[thermIdx]);
 		}
@@ -127,6 +134,11 @@ void initThermopiles(CALIPILE *tp, uint8_t address, I2C_HandleTypeDef* i2c_handl
 
 
 	tp->setup((uint8_t) address, i2c_handle, descriptor);
+
+//	if(wakeupFlag==0){
+//		tp->wake();
+//		wakeupFlag=1;
+//	}
 	tp->wake();
 	tp->readEEPROM(); // Verify protocol number and checksum and get calibration constants
 	//  tp_outer.initMotion(tcLP1, tcLP2, LPsource, cycTime); // configure presence and motion interrupts

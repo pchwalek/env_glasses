@@ -28,6 +28,7 @@
 #include "captivate_config.h"
 #include "lp5523.h"
 #include "thermopile.h"
+#include "spectrometer.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -50,6 +51,19 @@
 osMessageQueueId_t lightsComplexQueueHandle;
 const osMessageQueueAttr_t lightsComplexQueue_attributes = { .name =
 		"lightsComplexQueue" };
+
+osThreadId_t specTaskHandle;
+const osThreadAttr_t specTask_attributes = {
+	.name = "spectrometerTask",
+	.attr_bits = osThreadDetached,
+	.cb_mem = NULL,
+	.cb_size = 0,
+	.stack_mem = NULL,
+	.stack_size = 512 * 1,
+	.priority = (osPriority_t) osPriorityNormal,
+	.tz_module = 0,
+	.reserved = 0
+  };
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
@@ -72,7 +86,7 @@ const osThreadAttr_t frontLightsThre_attributes = {
 	.cb_mem = NULL,
 	.cb_size = 0,
 	.stack_mem = NULL,
-	.stack_size = 512 * 4,
+	.stack_size = 512 * 2,
 	.priority = (osPriority_t) osPriorityBelowNormal,
 	.tz_module = 0,
 	.reserved = 0
@@ -85,11 +99,12 @@ const osThreadAttr_t thermopileTask_attributes = {
 	.cb_mem = NULL,
 	.cb_size = 0,
 	.stack_mem = NULL,
-	.stack_size = 512 * 4,
+	.stack_size = 512 * 2,
 	.priority = (osPriority_t) osPriorityNormal,
 	.tz_module = 0,
 	.reserved = 0
   };
+
 /* Definitions for messageI2C_Lock */
 osMutexId_t messageI2C_LockHandle;
 const osMutexAttr_t messageI2C_Lock_attributes = {
@@ -142,16 +157,18 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* creation of defaultTask */
-  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+//  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* creation of frontLightsThre */
-//  frontLightsThreHandle = osThreadNew(ThreadFstrontLightsComplexTask, NULL, &frontLightsThre_attributes);
+//  frontLightsThreHandle = osThreadNew(ThreadFrontLightsComplexTask, NULL, &frontLightsThre_attributes);
 
   /* creation of thermopileTask */
   thermopileTaskHandle = osThreadNew(Thermopile_Task, NULL, &thermopileTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
+//  specTaskHandle = osThreadNew(Spec_Task, NULL, &specTask_attributes);
+
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
