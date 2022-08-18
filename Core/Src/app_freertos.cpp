@@ -106,9 +106,9 @@ const osThreadAttr_t thermopileTask_attributes = {
   };
 
 /* Definitions for messageI2C_Lock */
-osMutexId_t messageI2C_LockHandle;
-const osMutexAttr_t messageI2C_Lock_attributes = {
-  .name = "messageI2C_Lock"
+osMutexId_t messageI2C1_LockHandle;
+const osMutexAttr_t messageI2C1_Lock_attributes = {
+  .name = "messageI2C1_Lock"
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -133,7 +133,7 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END Init */
   /* Create the mutex(es) */
   /* creation of messageI2C_Lock */
-  messageI2C_LockHandle = osMutexNew(&messageI2C_Lock_attributes);
+  messageI2C1_LockHandle = osMutexNew(&messageI2C1_Lock_attributes);
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
@@ -157,10 +157,10 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* creation of defaultTask */
-//  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* creation of frontLightsThre */
-//  frontLightsThreHandle = osThreadNew(ThreadFrontLightsComplexTask, NULL, &frontLightsThre_attributes);
+  frontLightsThreHandle = osThreadNew(ThreadFrontLightsComplexTask, NULL, &frontLightsThre_attributes);
 
   /* creation of thermopileTask */
   thermopileTaskHandle = osThreadNew(Thermopile_Task, NULL, &thermopileTask_attributes);

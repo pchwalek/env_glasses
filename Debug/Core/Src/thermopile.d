@@ -69,7 +69,8 @@ Core/Src/thermopile.o: ../Core/Src/thermopile.cpp \
  ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h ../Core/Inc/main.h \
  ../Core/Inc/app_entry.h ../Core/Inc/app_common.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h \
- ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
+ ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h \
+ ../Core/Inc/captivate_config.h
 
 ../Core/Inc/thermopile.h:
 
@@ -222,3 +223,5 @@ Core/Src/thermopile.o: ../Core/Src/thermopile.cpp \
 ../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h:
 
 ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h:
+
+../Core/Inc/captivate_config.h:

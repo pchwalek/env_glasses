@@ -1,5 +1,5 @@
 spectrometer.cpp:55:6:void Spec_Task(void*)	48	static
-spectrometer.cpp:128:13:void triggerSpectrometerSample(void*)	16	static
-spectrometer.cpp:130:1:void __static_initialization_and_destruction_0(int, int)	16	static
-spectrometer.cpp:130:1:cpp)	8	static
-spectrometer.cpp:130:1:cpp)	8	static
+spectrometer.cpp:137:13:void triggerSpectrometerSample(void*)	16	static
+spectrometer.cpp:139:1:void __static_initialization_and_destruction_0(int, int)	16	static
+spectrometer.cpp:139:1:cpp)	8	static
+spectrometer.cpp:139:1:cpp)	8	static

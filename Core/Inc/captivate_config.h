@@ -170,7 +170,7 @@ extern osThreadId_t masterTaskHandle;
 
 extern osThreadId_t specTaskHandle;
 
-extern osSemaphoreId_t messageI2C_LockHandle;
+extern osSemaphoreId_t messageI2C1_LockHandle;
 
 extern osThreadId_t inertialTaskHandle;
 extern osMessageQueueId_t inertialSensingQueueHandle;

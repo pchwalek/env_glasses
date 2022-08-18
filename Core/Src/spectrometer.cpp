@@ -57,6 +57,7 @@ void Spec_Task(void *argument) {
 	uint32_t flags;
 	uint32_t timeLeftForSample = 0;
 
+	osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 	if (!specSensor.begin(SPEC_ADDR, &hi2c1, 0)) {
 		osDelay(100);
 	}
@@ -72,7 +73,7 @@ void Spec_Task(void *argument) {
 	uint32_t specID = 0;
 
 	specSensor.startReading();
-//	specSensor.enableSpectralMeasurement(true);
+	osSemaphoreRelease(messageI2C1_LockHandle);
 	periodicSpecTimer_id = osTimerNew(triggerSpectrometerSample, osTimerPeriodic,
 			NULL, NULL);
 	osTimerStart(periodicSpecTimer_id, SPEC_SAMPLE_SYS_PERIOD_MS);
@@ -88,15 +89,21 @@ void Spec_Task(void *argument) {
 				osDelay(timeLeftForSample);
 			}
 
+			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			while (!specSensor.checkReadingProgress()) {
+				osSemaphoreRelease(messageI2C1_LockHandle);
 				osDelay(10);
 			}
 
+			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			while (!specSensor.getAllChannels(specData[specIdx].s_array)) {
+				osSemaphoreRelease(messageI2C1_LockHandle);
 				osDelay(10);
 			}
 
+			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			specData[specIdx].s.flicker = specSensor.detectFlickerHz();
+			osSemaphoreRelease(messageI2C1_LockHandle);
 
 //			specIdx++;
 
@@ -113,8 +120,10 @@ void Spec_Task(void *argument) {
 //				specID++;
 //				specIdx = 0;
 //			}
-
+			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			specSensor.startReading();
+			osSemaphoreRelease(messageI2C1_LockHandle);
+
 			timeLeftForSample = HAL_GetTick();
 		}
 

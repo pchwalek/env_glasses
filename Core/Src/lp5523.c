@@ -21,6 +21,7 @@ extern "C" {
 #include "cmsis_os.h"
 #include "main.h"
 #include "string.h"
+#include "captivate_config.h"
 //#include "config.h"
 //#include "master_thread.h"
 
@@ -32,7 +33,7 @@ extern "C" {
 
 /* defines -----------------------------------------------------------*/
 #define I2C_HANDLE_TYPEDEF 	&hi2c1
-#define I2C_TIMEOUT			100
+#define I2C_TIMEOUT			10
 
 /* macros ------------------------------------------------------------*/
 
@@ -82,7 +83,7 @@ void setup_LP5523(uint8_t ADDR) {
 	deviceAddress = ADDR << 1;
 
 	// enable chip
-	osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
+	osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 	packet = LP5525_CHIP_EN;
 //	while(HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, deviceAddress, LIS3DH_EN_CNTRL1_REG, 1, &packet, 1, I2C_TIMEOUT) != HAL_OK);
 	HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, deviceAddress, LIS3DH_EN_CNTRL1_REG,
@@ -110,7 +111,7 @@ void setup_LP5523(uint8_t ADDR) {
 	HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, deviceAddress, LIS3DH_D1_CNTRL_REG, 1,
 			packet_array, 9, I2C_TIMEOUT);
 
-	osSemaphoreRelease(messageI2C_LockHandle);
+	osSemaphoreRelease(messageI2C1_LockHandle);
 #else
 	BSP_LED_Init(LED_BLUE);
 	BSP_LED_Init(LED_GREEN);
@@ -157,12 +158,12 @@ void FrontLightsSet(union ColorComplex *setColors) {
 	memcpy(led_left_PWM, setColors, 9);
 	memcpy(led_right_PWM, &(setColors->color[9]), 9);
 #ifndef DONGLE_CODE
-	osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
+	osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 	HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1,
 			LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9, I2C_TIMEOUT);
 	HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1,
 			LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9, I2C_TIMEOUT);
-	osSemaphoreRelease(messageI2C_LockHandle);
+	osSemaphoreRelease(messageI2C1_LockHandle);
 #endif
 
 #ifdef DONGLE_CODE
@@ -214,7 +215,7 @@ void ThreadFrontLightsComplexTask(void *argument){
 		memcpy(led_left_PWM, &receivedColors, 9);
 		memcpy(led_right_PWM, &(receivedColors.color[9]), 9);
 	#ifndef DONGLE_CODE
-		osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
+		osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 
 //		HAL_I2C_Mem_Write_DMA(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1,
 //				LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9);
@@ -251,7 +252,7 @@ void ThreadFrontLightsComplexTask(void *argument){
 //			}
 //		}
 
-		osSemaphoreRelease(messageI2C_LockHandle);
+		osSemaphoreRelease(messageI2C1_LockHandle);
 	#endif
 	}
 }
@@ -425,12 +426,12 @@ void ThreadFrontLightsTask(void *argument) {
 			lightsSimpleMessageReceived = lightsSimpleMessageReceived >> 1;
 		}
 
-		osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
+		osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 		HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1,
 				LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9, I2C_TIMEOUT);
 		HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1,
 				LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9, I2C_TIMEOUT);
-		osSemaphoreRelease(messageI2C_LockHandle);
+		osSemaphoreRelease(messageI2C1_LockHandle);
 
 	}
 }

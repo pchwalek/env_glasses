@@ -10,6 +10,7 @@
 #include "main.h"
 #include "cmsis_os2.h"
 #include "portmacro.h"
+#include "captivate_config.h"
 
 #define THERMOPILE_SAMPLE_PERIOD_MS		1000
 #define THERMOPILE_CNT								2
@@ -75,11 +76,13 @@ void Thermopile_Task(void *argument) {
 //	tp_temple_front.setup((uint8_t) THERMOPLE_TEMPLE_FRONT_ADDR, &hi2c3, THERMOPLE_TEMPLE_FRONT_ADDR_ID);
 //	tp_temple_front.wake(); 	// wakeup thermopile sensors on i2c3 bus
 
+	osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 	initThermopiles(&tp_nose_tip,		THERMOPLE_NOSE_TIP_ADDR,	&hi2c1,	THERMOPLE_NOSE_TIP_ID);
 	initThermopiles(&tp_nose_bridge,	THERMOPLE_NOSE_BRIDGE_ADDR,	&hi2c1, THERMOPLE_NOSE_BRIDGE_ID);
 	initThermopiles(&tp_temple_front,	THERMOPLE_TEMPLE_FRONT_ADDR,&hi2c3, THERMOPLE_TEMPLE_FRONT_ADDR_ID);
 	initThermopiles(&tp_temple_mid,		THERMOPLE_TEMPLE_MID_ADDR,	&hi2c3, THERMOPLE_TEMPLE_MID_ADDR_ID);
 	initThermopiles(&tp_temple_back,	THERMOPLE_TEMPLE_BACK_ADDR,	&hi2c3, THERMOPLE_TEMPLE_BACK_ADDR_ID);
+	osSemaphoreRelease(messageI2C1_LockHandle);
 
 	header.payloadLength = MAX_THERMOPILE_SAMPLES_PACKET
 			* sizeof(thermopile_packet);
@@ -100,6 +103,8 @@ void Thermopile_Task(void *argument) {
 
 		if ((flags & GRAB_SAMPLE_BIT) == GRAB_SAMPLE_BIT) {
 
+			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
+
 			// sample nose
 			grabThermopileSamples(&thermopileData[thermIdx], &tp_nose_tip);
 //			queueThermopilePkt(&thermopileData[thermIdx]);
@@ -116,6 +121,8 @@ void Thermopile_Task(void *argument) {
 ////
 			grabThermopileSamples(&thermopileData[thermIdx], &tp_temple_back);
 //			queueThermopilePkt(&thermopileData[thermIdx]);
+
+			osSemaphoreRelease(messageI2C1_LockHandle);
 		}
 
 		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
