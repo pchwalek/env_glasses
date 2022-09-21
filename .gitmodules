@@ -10,3 +10,18 @@
 [submodule "Middlewares/STM32_TSL2772"]
 	path = Middlewares/STM32_TSL2772
 	url = git@github.com:pchwalek/STM32_TSL2772.git
+[submodule "Middlewares/STM32_BME680"]
+	path = Middlewares/STM32_BME680
+	url = git@github.com:pchwalek/STM32_BME680.git
+[submodule "Middlewares/STM32_SHT4X"]
+	path = Middlewares/STM32_SHT4X
+	url = git@github.com:pchwalek/STM32_SHT4X.git
+[submodule "Middlewares/STM32_SGP41"]
+	path = Middlewares/STM32_SGP41
+	url = git@github.com:pchwalek/STM32_SGP41.git
+[submodule "Middlewares/arduino-core"]
+	path = Middlewares/arduino-core
+	url = git@github.com:Sensirion/arduino-core.git
+[submodule "Middlewares/STM32_ICM20948"]
+	path = Middlewares/STM32_ICM20948
+	url = git@github.com:pchwalek/STM32_ICM20948.git

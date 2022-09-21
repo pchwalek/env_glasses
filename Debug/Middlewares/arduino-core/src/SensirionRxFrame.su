@@ -1,0 +1,10 @@
+SensirionRxFrame.cpp:39:1:SensirionRxFrame::SensirionRxFrame(uint8_t*, size_t)	24	static
+SensirionRxFrame.cpp:43:10:uint16_t SensirionRxFrame::getUInt32(uint32_t&)	16	static
+SensirionRxFrame.cpp:55:10:uint16_t SensirionRxFrame::getInt32(int32_t&)	24	static
+SensirionRxFrame.cpp:62:10:uint16_t SensirionRxFrame::getUInt16(uint16_t&)	16	static
+SensirionRxFrame.cpp:72:10:uint16_t SensirionRxFrame::getInt16(int16_t&)	24	static
+SensirionRxFrame.cpp:79:10:uint16_t SensirionRxFrame::getUInt8(uint8_t&)	16	static
+SensirionRxFrame.cpp:88:10:uint16_t SensirionRxFrame::getInt8(int8_t&)	16	static
+SensirionRxFrame.cpp:97:10:uint16_t SensirionRxFrame::getBool(bool&)	16	static
+SensirionRxFrame.cpp:106:10:uint16_t SensirionRxFrame::getFloat(float&)	24	static
+SensirionRxFrame.cpp:116:10:uint16_t SensirionRxFrame::getBytes(uint8_t*, size_t)	32	static

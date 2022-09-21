@@ -508,6 +508,7 @@ static void APPE_SysEvtReadyProcessing( void * pPayload )
 
     APP_BLE_Init( );
     UTIL_LPM_SetOffMode(1U << CFG_LPM_APP, UTIL_LPM_ENABLE);
+
   }
   else if (p_sys_ready_event->sysevt_ready_rsp == FUS_FW_RUNNING)
   {

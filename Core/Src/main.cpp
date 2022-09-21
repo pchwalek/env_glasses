@@ -20,6 +20,7 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "adc.h"
+#include "dma.h"
 #include "i2c.h"
 #include "ipcc.h"
 #include "rf.h"
@@ -100,7 +101,7 @@ int main(void)
    MX_IPCC_Init();
 
   /* USER CODE BEGIN SysInit */
-
+#ifdef KEEP_CUBE_INIT_ORDER
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -114,8 +115,25 @@ int main(void)
   MX_SPI1_Init();
   MX_SPI2_Init();
   MX_TIM16_Init();
+  MX_DMA_Init();
+  MX_TIM2_Init();
   MX_USB_Device_Init();
   /* USER CODE BEGIN 2 */
+#endif
+  MX_GPIO_Init();
+  MX_DMA_Init();
+  MX_ADC1_Init();
+  MX_I2C1_Init();
+  MX_I2C3_Init();
+  MX_RF_Init();
+  MX_RTC_Init();
+  MX_SAI1_Init();
+  MX_SPI1_Init();
+  MX_SPI2_Init();
+  MX_TIM16_Init();
+  MX_TIM2_Init();
+  MX_USB_Device_Init();
+  MX_APPE_Init();
 
   /* USER CODE END 2 */
 
@@ -218,7 +236,7 @@ void PeriphCommonClock_Config(void)
   PeriphClkInitStruct.Sai1ClockSelection = RCC_SAI1CLKSOURCE_PLLSAI1;
   PeriphClkInitStruct.UsbClockSelection = RCC_USBCLKSOURCE_PLLSAI1;
   PeriphClkInitStruct.AdcClockSelection = RCC_ADCCLKSOURCE_PLLSAI1;
-  PeriphClkInitStruct.RFWakeUpClockSelection = RCC_RFWKPCLKSOURCE_HSE_DIV1024;
+  PeriphClkInitStruct.RFWakeUpClockSelection = RCC_RFWKPCLKSOURCE_LSE;
   PeriphClkInitStruct.SmpsClockSelection = RCC_SMPSCLKSOURCE_HSI;
   PeriphClkInitStruct.SmpsDivSelection = RCC_SMPSCLKDIV_RANGE1;
 

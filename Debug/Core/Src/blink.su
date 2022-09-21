@@ -1,0 +1,7 @@
+blink.c:69:6:BlinkTask	48	static
+blink.c:251:6:turnOffDiode	8	static
+blink.c:258:6:turnOnDiode	8	static
+blink.c:268:9:externalInfraredDetect	32	static
+blink.c:314:6:HAL_ADC_ConvCpltCallback	16	static
+blink.c:329:6:HAL_ADC_ConvHalfCpltCallback	16	static
+blink.c:335:6:HAL_TIM_PWM_PulseFinishedCallback	16	static

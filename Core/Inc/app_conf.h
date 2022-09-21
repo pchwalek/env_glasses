@@ -37,7 +37,7 @@
 /**
  * Define Tx Power
  */
-#define CFG_TX_POWER                      (0x18) /* -0.15dBm */
+#define CFG_TX_POWER                      (0x1B) /* 2dBm */
 
 /**
  * Define Advertising parameters
@@ -178,7 +178,8 @@
 /* LSB - Second Byte */
 #define CFG_FEATURE_OTA_REBOOT                  (0x20)
 /* USER CODE BEGIN Specific_Parameters */
-
+#include "main.h"
+#if (CUSTOM_BT_PARAMETERS != 1)
 /* USER CODE END Specific_Parameters */
 
 /******************************************************************************
@@ -209,7 +210,7 @@
  * Maximum supported ATT_MTU size
  * This parameter is ignored by the CPU2 when CFG_BLE_OPTIONS is set to 1"
  */
-#define CFG_BLE_MAX_ATT_MTU             (156)
+#define CFG_BLE_MAX_ATT_MTU             (300)
 
 /**
  * Size of the storage area for Attribute values
@@ -316,9 +317,9 @@
 
 #define CFG_BLE_MAX_COC_INITIATOR_NBR   (32)
 
-#define CFG_BLE_MIN_TX_POWER            (0)
+#define CFG_BLE_MIN_TX_POWER            (5)
 
-#define CFG_BLE_MAX_TX_POWER            (0)
+#define CFG_BLE_MAX_TX_POWER            (5)
 
 /**
  * BLE Rx model configuration flags to be configured with:
@@ -944,6 +945,7 @@ typedef enum
 
 #endif
 #ifndef CUSTOM_BT_PARAMETERS
+
 /* USER CODE END Defines */
 
 /******************************************************************************
@@ -982,7 +984,40 @@ typedef enum
 #define CFG_HRS_PROCESS_STACK_SIZE            (128 * 20)
 
 /* USER CODE BEGIN FreeRTOS_Defines */
+#else
+#define CFG_SHCI_USER_EVT_PROCESS_NAME        "SHCI_USER_EVT_PROCESS"
+#define CFG_SHCI_USER_EVT_PROCESS_ATTR_BITS   (0)
+#define CFG_SHCI_USER_EVT_PROCESS_CB_MEM      (0)
+#define CFG_SHCI_USER_EVT_PROCESS_CB_SIZE     (0)
+#define CFG_SHCI_USER_EVT_PROCESS_STACK_MEM   (0)
+#define CFG_SHCI_USER_EVT_PROCESS_PRIORITY    osPriorityNone
+#define CFG_SHCI_USER_EVT_PROCESS_STACK_SIZE  (128 * 8)
 
+#define CFG_HCI_USER_EVT_PROCESS_NAME         "HCI_USER_EVT_PROCESS"
+#define CFG_HCI_USER_EVT_PROCESS_ATTR_BITS    (0)
+#define CFG_HCI_USER_EVT_PROCESS_CB_MEM       (0)
+#define CFG_HCI_USER_EVT_PROCESS_CB_SIZE      (0)
+#define CFG_HCI_USER_EVT_PROCESS_STACK_MEM    (0)
+#define CFG_HCI_USER_EVT_PROCESS_PRIORITY     osPriorityNone
+#define CFG_HCI_USER_EVT_PROCESS_STACK_SIZE   (128 * 8)
+
+#define CFG_ADV_UPDATE_PROCESS_NAME           "ADV_UPDATE_PROCESS"
+#define CFG_ADV_UPDATE_PROCESS_ATTR_BITS      (0)
+#define CFG_ADV_UPDATE_PROCESS_CB_MEM         (0)
+#define CFG_ADV_UPDATE_PROCESS_CB_SIZE        (0)
+#define CFG_ADV_UPDATE_PROCESS_STACK_MEM      (0)
+#define CFG_ADV_UPDATE_PROCESS_PRIORITY       osPriorityNone
+#define CFG_ADV_UPDATE_PROCESS_STACK_SIZE     (128 * 6)
+
+#define CFG_HRS_PROCESS_NAME                  "HRS_PROCESS"
+#define CFG_HRS_PROCESS_ATTR_BITS             (0)
+#define CFG_HRS_PROCESS_CB_MEM                (0)
+#define CFG_HRS_PROCESS_CB_SIZE               (0)
+#define CFG_HRS_PROCESS_STACK_MEM             (0)
+#define CFG_HRS_PROCESS_PRIORITY              osPriorityNone
+#define CFG_HRS_PROCESS_STACK_SIZE            (128 * 5)
+
+#endif
 /* USER CODE END FreeRTOS_Defines */
 
 /******************************************************************************
@@ -997,7 +1032,7 @@ typedef enum
 //    CFG_LPM_APP,
 //    CFG_LPM_APP_BLE,
 //    /* USER CODE BEGIN CFG_LPM_Id_t */
-////////////////
+////////
 //    /* USER CODE END CFG_LPM_Id_t */
 //} CFG_LPM_Id_t;
 

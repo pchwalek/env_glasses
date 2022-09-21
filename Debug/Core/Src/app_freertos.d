@@ -80,7 +80,8 @@ Core/Src/app_freertos.o: ../Core/Src/app_freertos.cpp \
  ../Core/Inc/captivate_config.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
  ../Core/Inc/lp5523.h ../Core/Inc/thermopile.h ../Core/Inc/spectrometer.h \
- ../Core/Inc/lux.h
+ ../Core/Inc/lux.h ../Core/Inc/bme.h ../Core/Inc/imu.h \
+ ../Core/Inc/blink.h
 
 ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h:
 
@@ -257,3 +258,9 @@ Core/Src/app_freertos.o: ../Core/Src/app_freertos.cpp \
 ../Core/Inc/spectrometer.h:
 
 ../Core/Inc/lux.h:
+
+../Core/Inc/bme.h:
+
+../Core/Inc/imu.h:
+
+../Core/Inc/blink.h:

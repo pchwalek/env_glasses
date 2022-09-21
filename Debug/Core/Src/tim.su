@@ -1,7 +1,10 @@
 stm32wbxx_ll_bus.h:539:22:LL_AHB2_GRP1_EnableClock	24	static
+stm32wbxx_ll_bus.h:939:22:LL_APB1_GRP1_EnableClock	24	static
+stm32wbxx_ll_bus.h:1038:22:LL_APB1_GRP1_DisableClock	16	static
 stm32wbxx_ll_bus.h:1274:22:LL_APB2_GRP1_EnableClock	24	static
 stm32wbxx_ll_bus.h:1328:22:LL_APB2_GRP1_DisableClock	16	static
-tim.c:30:6:MX_TIM16_Init	88	static
-tim.c:88:6:HAL_TIM_Base_MspInit	16	static
-tim.c:107:6:HAL_TIM_MspPostInit	40	static
-tim.c:135:6:HAL_TIM_Base_MspDeInit	16	static
+tim.c:31:6:MX_TIM2_Init	64	static
+tim.c:84:6:MX_TIM16_Init	88	static
+tim.c:142:6:HAL_TIM_Base_MspInit	16	static
+tim.c:176:6:HAL_TIM_MspPostInit	40	static
+tim.c:204:6:HAL_TIM_Base_MspDeInit	16	static

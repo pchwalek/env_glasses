@@ -143,7 +143,8 @@ extern "C" {
 #define ACC_DATA		7
 #define MAG_DATA		8
 #define GYRO_DATA		9
-#define MAX_PACKET_QUEUE_SIZE 	10
+
+//#define MAX_PACKET_QUEUE_SIZE 	10
 
 #define PACKET_SEND_SUCCESS	0
 #define PACKET_LENGTH_EXCEEDED	1
@@ -171,6 +172,12 @@ extern osThreadId_t masterTaskHandle;
 extern osThreadId_t specTaskHandle;
 
 extern osThreadId_t luxTaskHandle;
+
+extern osThreadId_t bmeTaskHandle;
+
+extern osThreadId_t imuTaskHandle;
+
+extern osThreadId_t blinkTaskHandle;
 
 extern osSemaphoreId_t messageI2C1_LockHandle;
 
@@ -200,8 +207,10 @@ extern osSemaphoreId_t locCompleteHandle;
 
 extern osSemaphoreId_t lightingLabDemoEndHandle;
 
-extern osMessageQueueId_t capPacket_QueueHandle;
-extern osMessageQueueId_t capPacketAvail_QueueHandle;
+extern osMessageQueueId_t packet_QueueHandle;
+extern osMessageQueueId_t packetAvail_QueueHandle;
+
+extern osThreadId_t senderTaskHandle;
 
 extern void startSensorThreads(void);
 
@@ -214,6 +223,16 @@ struct SystemStatus {
 	int inertialThread :1;
 	int interProcThread :1;
 	int frontLightsThread :1;
+};
+
+struct LogMessage {
+	uint8_t status;
+	uint8_t logStatus;
+	uint8_t blinkEnabled;
+	uint8_t tempEnabled;
+	uint8_t intertialEnabled;
+	uint8_t positionEnabled;
+
 };
 
 struct USB_msgPass {
@@ -229,8 +248,9 @@ struct USB_msgPass {
 //  uint32_t payloadLength;
 //  uint32_t reserved[5];
 //}PacketHeader;
-
-#define MAX_PAYLOAD_SIZE 	MAX_PACKET_LEN - sizeof(PacketHeader)
+//
+//
+//#define MAX_PAYLOAD_SIZE 	MAX_PACKET_LEN - sizeof(PacketHeader)
 //typedef struct CaptivatePackets{
 //  PacketHeader header;
 //  uint8_t payload[MAX_PAYLOAD_SIZE]; // should be MAX_PACKET_LEN - sizeof(PacketHeader)

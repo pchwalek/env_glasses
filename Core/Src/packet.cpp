@@ -9,10 +9,9 @@
 #include "dts.h"
 #include "dt_server_app.h"
 #include "uuid.h"
+#include "dt_server_app.h"
 
-osMessageQueueId_t packetAvail_QueueHandle;
-osMessageQueueId_t packet_QueueHandle;
-osThreadId_t senderTaskHandle;
+
 static SensorPacket packets[MAX_PACKET_QUEUE_SIZE];
 
 static SensorPacket *packetPtr[MAX_PACKET_QUEUE_SIZE];
@@ -87,7 +86,8 @@ uint8_t sendPacket_BLE(SensorPacket *packet) {
 //	(uint8_t*) &DataTransferServerContext.TxData);
 //	}
 
-	status = Generic_STM_UpdateChar(DATA_TRANSFER_TX_CHAR_UUID,
+	//COMMENTED BELOW ON 9/20/2022 BUT NEED TO FIX
+	status = DTS_STM_UpdateChar(DATA_TRANSFER_TX_CHAR_UUID,
 			(uint8_t*) &DataTransferServerContext.TxData);
 
 	if (status == BLE_STATUS_SUCCESS) {

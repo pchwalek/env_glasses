@@ -1,0 +1,8 @@
+SensirionI2CRxFrame.h:60:5:SensirionI2CRxFrame::SensirionI2CRxFrame(uint8_t*, size_t)	24	static
+SensirionI2CSgp41.cpp:45:1:SensirionI2CSgp41::SensirionI2CSgp41()	16	static
+SensirionI2CSgp41.cpp:48:6:void SensirionI2CSgp41::begin(I2C_HandleTypeDef*)	16	static
+SensirionI2CSgp41.cpp:53:10:uint16_t SensirionI2CSgp41::executeConditioning(uint16_t, uint16_t, uint16_t&)	80	static
+SensirionI2CSgp41.cpp:86:10:uint16_t SensirionI2CSgp41::measureRawSignals(uint16_t, uint16_t, uint16_t&, uint16_t&)	80	static
+SensirionI2CSgp41.cpp:121:10:uint16_t SensirionI2CSgp41::executeSelfTest(uint16_t&)	72	static
+SensirionI2CSgp41.cpp:146:10:uint16_t SensirionI2CSgp41::turnHeaterOff()	48	static
+SensirionI2CSgp41.cpp:158:10:uint16_t SensirionI2CSgp41::getSerialNumber(uint16_t*, uint8_t)	80	static

@@ -1,0 +1,2 @@
+mic.cpp:22:6:void Mic_Task(void*)	32	static
+mic.cpp:65:13:void triggerMicSample(void*)	16	static

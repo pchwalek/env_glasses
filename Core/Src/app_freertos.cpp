@@ -30,6 +30,10 @@
 #include "thermopile.h"
 #include "spectrometer.h"
 #include "lux.h"
+#include "bme.h"
+#include "imu.h"
+#include "blink.h"
+#include "packet.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -78,7 +82,46 @@ const osThreadAttr_t luxTask_attributes = {
 	.tz_module = 0,
 	.reserved = 0
   };
-/* USER CODE END Variables */
+
+osThreadId_t bmeTaskHandle;
+const osThreadAttr_t bmeTask_attributes = {
+	.name = "bmeTask",
+	.attr_bits = osThreadDetached,
+	.cb_mem = NULL,
+	.cb_size = 0,
+	.stack_mem = NULL,
+	.stack_size = 128 * 6,
+	.priority = (osPriority_t) osPriorityNormal,
+	.tz_module = 0,
+	.reserved = 0
+  };
+
+osThreadId_t imuTaskHandle;
+const osThreadAttr_t imuTask_attributes = {
+	.name = "imuTask",
+	.attr_bits = osThreadDetached,
+	.cb_mem = NULL,
+	.cb_size = 0,
+	.stack_mem = NULL,
+	.stack_size = 128 * 6,
+	.priority = (osPriority_t) osPriorityNormal,
+	.tz_module = 0,
+	.reserved = 0
+  };
+
+osThreadId_t blinkTaskHandle;
+const osThreadAttr_t blinkTask_attributes = {
+	.name = "blinkTask",
+	.attr_bits = osThreadDetached,
+	.cb_mem = NULL,
+	.cb_size = 0,
+	.stack_mem = NULL,
+	.stack_size = 512 * 2,
+	.priority = (osPriority_t) osPriorityNormal,
+	.tz_module = 0,
+	.reserved = 0
+  };
+
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
@@ -119,7 +162,57 @@ const osThreadAttr_t thermopileTask_attributes = {
 	.reserved = 0
   };
 
+osThreadId_t senderTaskHandle;
+const osThreadAttr_t senderTask_attributes = {
+	.name = "senderTask",
+	.attr_bits = osThreadDetached,
+	.cb_mem = NULL,
+	.cb_size = 0,
+	.stack_mem = NULL,
+	.stack_size = 128 * 4,
+	.priority = (osPriority_t) osPriorityNormal,
+	.tz_module = 0,
+	.reserved = 0
+  };
+
 /* Definitions for messageI2C_Lock */
+osMutexId_t messageI2C1_LockHandle;
+const osMutexAttr_t messageI2C1_Lock_attributes = {
+  .name = "messageI2C1_Lock"
+};
+
+osMessageQueueId_t packet_QueueHandle;
+const osMessageQueueAttr_t packetQueue_attributes =
+		{ .name = "packetQueue" };
+
+osMessageQueueId_t packetAvail_QueueHandle;
+const osMessageQueueAttr_t packetAvailQueue_attributes =
+		{ .name = "packetAvail" };
+
+#ifdef KEEP_GENERATED_FREERTOS
+/* USER CODE END Variables */
+/* Definitions for defaultTask */
+osThreadId_t defaultTaskHandle;
+const osThreadAttr_t defaultTask_attributes = {
+  .name = "defaultTask",
+  .priority = (osPriority_t) osPriorityNormal,
+  .stack_size = 128 * 4
+};
+/* Definitions for frontLightsThre */
+osThreadId_t frontLightsThreHandle;
+const osThreadAttr_t frontLightsThre_attributes = {
+  .name = "frontLightsThre",
+  .priority = (osPriority_t) osPriorityBelowNormal,
+  .stack_size = 512 * 4
+};
+/* Definitions for thermopileTask */
+osThreadId_t thermopileTaskHandle;
+const osThreadAttr_t thermopileTask_attributes = {
+  .name = "thermopileTask",
+  .priority = (osPriority_t) osPriorityNormal,
+  .stack_size = 512 * 4
+};
+/* Definitions for messageI2C1_Lock */
 osMutexId_t messageI2C1_LockHandle;
 const osMutexAttr_t messageI2C1_Lock_attributes = {
   .name = "messageI2C1_Lock"
@@ -127,7 +220,7 @@ const osMutexAttr_t messageI2C1_Lock_attributes = {
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-
+#endif
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void *argument);
@@ -146,7 +239,7 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE END Init */
   /* Create the mutex(es) */
-  /* creation of messageI2C_Lock */
+  /* creation of messageI2C1_Lock */
   messageI2C1_LockHandle = osMutexNew(&messageI2C1_Lock_attributes);
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -176,14 +269,22 @@ void MX_FREERTOS_Init(void) {
   /* creation of frontLightsThre */
   frontLightsThreHandle = osThreadNew(ThreadFrontLightsComplexTask, NULL, &frontLightsThre_attributes);
 
-  /* creation of thermopileTask */
-  thermopileTaskHandle = osThreadNew(Thermopile_Task, NULL, &thermopileTask_attributes);
+//  /* creation of thermopileTask */
+//  thermopileTaskHandle = osThreadNew(Thermopile_Task, NULL, &thermopileTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-//  specTaskHandle = osThreadNew(Spec_Task, NULL, &specTask_attributes);
-  luxTaskHandle = osThreadNew(LuxTask, NULL, &luxTask_attributes);
+	packet_QueueHandle = osMessageQueueNew(MAX_PACKET_QUEUE_SIZE, sizeof(SensorPacket *),
+			&packetQueue_attributes);
 
+	packetAvail_QueueHandle = osMessageQueueNew(MAX_PACKET_QUEUE_SIZE, sizeof(SensorPacket *),
+				&packetAvailQueue_attributes);
+
+//  specTaskHandle = osThreadNew(Spec_Task, NULL, &specTask_attributes);
+//  luxTaskHandle = osThreadNew(LuxTask, NULL, &luxTask_attributes);
+//  bmeTaskHandle = osThreadNew(BME_Task, NULL, &bmeTask_attributes);
+//  imuTaskHandle = osThreadNew(IMU_Task, NULL, &imuTask_attributes);
+//  blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
@@ -205,11 +306,11 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1000);
-
+//	osDelay(1000);
 	while(1){
-		ledStartupSequence();
-		osDelay(1500);
+//		ledStartupSequence();
+//		osDelay(5000);
+		osDelay(1);
 	}
   }
   /* USER CODE END StartDefaultTask */
@@ -253,5 +354,35 @@ __weak void Thermopile_Task(void *argument)
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
+#ifdef __cplusplus
+extern "C" {
+#endif
+void startThreads(){
+
+
+	senderTaskHandle = osThreadNew(senderThread, NULL, &senderTask_attributes);
+//
+	/* start sensor subsystem threads */
+//	blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
+//
+//	//  /* creation of thermopileTask */
+//	thermopileTaskHandle = osThreadNew(Thermopile_Task, NULL, &thermopileTask_attributes);
+
+
+  bmeTaskHandle = osThreadNew(BME_Task, NULL, &bmeTask_attributes);
+
+
+//	  imuTaskHandle = osThreadNew(IMU_Task, NULL, &imuTask_attributes);
+
+
+//	  /* creation of frontLightsThre */
+//	  frontLightsThreHandle = osThreadNew(ThreadFrontLightsComplexTask, NULL, &frontLightsThre_attributes);
+	//
+
+
+}
+#ifdef __cplusplus
+}
+#endif
 /* USER CODE END Application */
 

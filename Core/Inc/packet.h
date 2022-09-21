@@ -14,6 +14,7 @@ extern "C" {
 
 #include "app_conf.h"
 #include "cmsis_os2.h"
+#include "captivate_config.h"
 
 #define MAX_PACKET_LEN DATA_NOTIFICATION_MAX_PACKET_SIZE
 #define MAX_PAYLOAD_SIZE 	MAX_PACKET_LEN - sizeof(PacketHeader)
@@ -21,32 +22,11 @@ extern "C" {
 
 #define PACKET_SEND_SUCCESS			0
 #define PACKET_UNDEFINED_ERR		10
-#define PACKET_LENGTH_EXCEEDED	2
+//#define PACKET_LENGTH_EXCEEDED	2
 
 #define MAX_PACKET_LEN		DATA_NOTIFICATION_MAX_PACKET_SIZE
-#define MAX_PACKET_QUEUE_SIZE	30
+//#define MAX_PACKET_QUEUE_SIZE	30
 
-extern osThreadId_t senderTaskHandle;
-const osThreadAttr_t senderTask_attributes = {
-	.name = "senderTask",
-	.attr_bits = osThreadDetached,
-	.cb_mem = NULL,
-	.cb_size = 0,
-	.stack_mem = NULL,
-	.stack_size = 128 * 4,
-	.priority = (osPriority_t) osPriorityNormal,
-	.tz_module = 0,
-	.reserved = 0
-  };
-
-
-extern osMessageQueueId_t packet_QueueHandle;
-const osMessageQueueAttr_t packetQueue_attributes =
-		{ .name = "packetQueue" };
-
-extern osMessageQueueId_t packetAvail_QueueHandle;
-const osMessageQueueAttr_t packetAvailQueue_attributes =
-		{ .name = "packetAvail" };
 
 typedef enum {
 		PPG_RED            						 = 1,

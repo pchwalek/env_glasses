@@ -1,0 +1,4 @@
+SensirionCrc.cpp:34:9:uint8_t generateCRCGeneric(const uint8_t*, size_t, uint8_t, uint8_t)	40	static
+SensirionCrc.cpp:51:9:uint8_t generateCRC31_ff(const uint8_t*, size_t)	16	static
+SensirionCrc.cpp:55:9:uint8_t generateCRC31_00(const uint8_t*, size_t)	16	static
+SensirionCrc.cpp:59:9:uint8_t generateCRC(const uint8_t*, size_t, CrcPolynomial)	24	static

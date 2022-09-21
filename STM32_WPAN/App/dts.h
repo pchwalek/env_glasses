@@ -17,14 +17,12 @@
  ******************************************************************************
  */
 
-
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __DTS_STM_H
 #define __DTS_STM_H
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 #include "ble_types.h"
@@ -33,25 +31,6 @@ extern "C"
 /* Includes ------------------------------------------------------------------*/
 /* Exported types ------------------------------------------------------------*/
 /* Exported types LBR Client Implementation-----------------------------------*/
-
-
-typedef struct
-{
-uint16_t GenericSvcHdle; /**< Service handle */
-uint16_t GenericTxCharHdle; /**< Characteristic handle */
-uint16_t GenericRxCharHdle; /**< Characteristic handle */
-uint16_t PPG_CharHdle;
-//uint16_t DataTransferRxCharHdle; /**< Characteristic handle */
-//uint16_t DataTransferTxChar3Hdle; /**< Characteristic handle */
-//uint16_t DataTransferUWBConfigHdle; /**< Characteristic handle */
-//uint16_t DataTransferInfoHdle; /**< Characteristic handle */
-//uint16_t DataTransferTimeHdle;
-//uint16_t DataTransferRxHdle;
-
-uint16_t DataTransferTxHdle;
-
-} GenericSvcContext_t;
-
 typedef struct {
 	uint8_t *pPayload;
 //  uint32_t *pPayload;
@@ -70,11 +49,10 @@ typedef enum {
 	DTS_MTU_EXCHANGED,
 } DTS_STM_NotCode_t;
 
-typedef struct
-{
-  uint8_t ATT_MTU_exchanged;
-  DTS_STM_NotCode_t Evt_Opcode;
-  DTS_STM_Payload_t DataTransfered;
+typedef struct {
+	uint8_t ATT_MTU_exchanged;
+	DTS_STM_NotCode_t Evt_Opcode;
+	DTS_STM_Payload_t DataTransfered;
 } DTS_STM_App_Notification_evt_t;
 
 /* Exported types ------------------------------------------------------------*/
@@ -82,14 +60,14 @@ typedef struct
 /* External variables --------------------------------------------------------*/
 /* Exported macros -----------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
-void Generic_STM_Init( void );
-tBleStatus Generic_STM_UpdateChar( uint16_t UUID , uint8_t *pPayload );
-void Generic_Notification( DTS_STM_App_Notification_evt_t *pNotification );
+void DTS_STM_Init(void);
+tBleStatus DTS_STM_UpdateChar(uint16_t UUID, uint8_t *pPayload);
+void DTS_Notification(DTS_STM_App_Notification_evt_t *pNotification);
 void BLE_SVC_GAP_Change_PHY(void);
 void BLE_SVC_GAP_Security_Req(void);
 void BLE_SVC_GAP_Clear_DataBase(void);
 void Resume_Notification(void);
-tBleStatus DTS_STM_UpdateCharThroughput(DTS_STM_Payload_t *pDataValue );
+tBleStatus DTS_STM_UpdateCharThroughput(DTS_STM_Payload_t *pDataValue);
 
 #ifdef __cplusplus
 }

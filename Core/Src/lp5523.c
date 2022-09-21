@@ -202,6 +202,8 @@ void FrontLightsSet(union ColorComplex *setColors) {
 union ColorComplex receivedColors;
 void ThreadFrontLightsComplexTask(void *argument){
 
+	osDelay(500);
+
 	setup_LP5523(LIS3DH_LEFT_ADDRESS);
 	setup_LP5523(LIS3DH_RIGHT_ADDRESS);
 

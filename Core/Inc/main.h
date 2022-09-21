@@ -59,24 +59,33 @@ void Error_Handler(void);
 /* USER CODE BEGIN EFP */
 extern I2C_HandleTypeDef hi2c1;
 extern I2C_HandleTypeDef hi2c3;
+extern SPI_HandleTypeDef hspi1;
+extern SPI_HandleTypeDef hspi2;
+
+void startThreads(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
 #define BLINK_SIG_Pin GPIO_PIN_1
 #define BLINK_SIG_GPIO_Port GPIOA
-#define BLINK_PWM_Pin GPIO_PIN_8
-#define BLINK_PWM_GPIO_Port GPIOB
 #define MEM_WP_Pin GPIO_PIN_11
 #define MEM_WP_GPIO_Port GPIOC
+#define IMU_CS_Pin GPIO_PIN_0
+#define IMU_CS_GPIO_Port GPIOD
+#define IMU_INT_Pin GPIO_PIN_2
+#define IMU_INT_GPIO_Port GPIOB
+#define IMU_INT_EXTI_IRQn EXTI2_IRQn
 #define PA9_Pin GPIO_PIN_9
 #define PA9_GPIO_Port GPIOA
+#define BLINK_PWM_Pin GPIO_PIN_6
+#define BLINK_PWM_GPIO_Port GPIOA
 #define PD4_Pin GPIO_PIN_4
 #define PD4_GPIO_Port GPIOD
 #define PD9_Pin GPIO_PIN_9
 #define PD9_GPIO_Port GPIOD
 /* USER CODE BEGIN Private defines */
 #define CUSTOM_BT_PARAMETERS 1
-#define DYNAMIC_MODE	1
+//#define DYNAMIC_MODE	1
 
 // FREERTOS THREAD SPECIFIC
 #define GRAB_SAMPLE_BIT							0x0100

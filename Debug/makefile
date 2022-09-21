@@ -18,8 +18,13 @@ RM := rm -rf
 -include Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/subdir.mk
 -include Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/subdir.mk
 -include Middlewares/Third_Party/FreeRTOS/Source/subdir.mk
+-include Middlewares/Sensirion_Core/src/subdir.mk
 -include Middlewares/STM32_TSL2772/subdir.mk
+-include Middlewares/STM32_SHT4X/subdir.mk
+-include Middlewares/STM32_SGP41/subdir.mk
+-include Middlewares/STM32_ICM20948/subdir.mk
 -include Middlewares/STM32_Calipile/subdir.mk
+-include Middlewares/STM32_BME680/subdir.mk
 -include Middlewares/STM32_AdafruitSensor/subdir.mk
 -include Middlewares/STM32_AS7341/subdir.mk
 -include Middlewares/ST/STM32_WPAN/utilities/subdir.mk
@@ -97,7 +102,7 @@ main-build: captivatesEnv.elf secondary-outputs
 
 # Tool invocations
 captivatesEnv.elf: $(OBJS) $(USER_OBJS) /Users/chwalek/dev/captivatesEnv/STM32WB5MMGHX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-g++ -o "captivatesEnv.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/Users/chwalek/dev/captivatesEnv/STM32WB5MMGHX_FLASH.ld" --specs=nosys.specs -Wl,-Map="captivatesEnv.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+	arm-none-eabi-g++ -o "captivatesEnv.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/Users/chwalek/dev/captivatesEnv/STM32WB5MMGHX_FLASH.ld" --specs=nosys.specs -Wl,-Map="captivatesEnv.map" -Wl,--gc-sections -static -L"/Users/chwalek/dev/captivatesEnv/Drivers/CMSIS/DSP/Lib/GCC" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

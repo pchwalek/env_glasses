@@ -20,5 +20,5 @@ CaliPile.cpp:249:9:uint8_t CALIPILE::readByte(uint8_t, uint8_t)	24	static
 CaliPile.cpp:255:6:void CALIPILE::readBytes(uint8_t, uint8_t, uint8_t, uint8_t*)	16	static
 CaliPile.cpp:261:6:bool CALIPILE::write(uint8_t*, uint8_t)	32	static
 CaliPile.cpp:270:6:bool CALIPILE::read(uint8_t*, uint8_t)	32	static
-CaliPile.cpp:280:6:bool CALIPILE::readRegister(uint16_t, uint8_t*, uint16_t)	40	static
-CaliPile.cpp:290:6:bool CALIPILE::writeRegister(uint8_t, uint8_t*, uint16_t)	40	static
+CaliPile.cpp:279:6:bool CALIPILE::readRegister(uint16_t, uint8_t*, uint16_t)	40	static
+CaliPile.cpp:288:6:bool CALIPILE::writeRegister(uint8_t, uint8_t*, uint16_t)	40	static
