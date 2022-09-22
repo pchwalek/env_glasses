@@ -19,10 +19,12 @@
 
 typedef struct luxSamples {
 	uint32_t lux;
+	uint32_t timestamp;
 } luxSample;
 
 
 static void triggerLuxSample(void *argument);
+static luxSample luxData[MAX_LUX_SAMPLES_PACKET];
 
 
 static PacketHeader header;
@@ -46,9 +48,6 @@ void LuxTask(void *argument) {
 	luxSensor.setAGAIN(TSL2722_GAIN_8X);
 
 	luxSensor.enableALS(true);
-
-	luxSensor.enableALS(true);
-
 
 	header.payloadLength = MAX_LUX_SAMPLES_PACKET * sizeof(luxSample);
 	header.reserved[0] = (uint8_t) TSL2722_INTEGRATIONTIME_101MS;
@@ -76,24 +75,25 @@ void LuxTask(void *argument) {
 			}
 
 			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
-			luxSample = luxSensor.getLux();
+			luxData[luxIdx].lux = luxSensor.getLux();
+			luxData[luxIdx].timestamp = HAL_GetTick();
 			osSemaphoreRelease(messageI2C1_LockHandle);
 
-//			specIdx++;
+			luxIdx++;
 
-//			if (specIdx >= MAX_LUX_SAMPLES_PACKET) {
-//				header.packetType = SPECTROMETER;
-//				header.packetID = specID;
-//				header.msFromStart = HAL_GetTick();
-//				packet = grabPacket();
-//				if (packet != NULL) {
-//					memcpy(&(packet->header), &header, sizeof(PacketHeader));
-//					memcpy(packet->payload, specData, header.payloadLength);
-//					queueUpPacket(packet);
-//				}
-//				specID++;
-//				specIdx = 0;
-//			}
+			if (luxIdx >= MAX_LUX_SAMPLES_PACKET) {
+				header.packetType = LUX;
+				header.packetID = luxID;
+				header.msFromStart = HAL_GetTick();
+				packet = grabPacket();
+				if (packet != NULL) {
+					memcpy(&(packet->header), &header, sizeof(PacketHeader));
+					memcpy(packet->payload, luxData, header.payloadLength);
+					queueUpPacket(packet);
+				}
+				luxID++;
+				luxIdx = 0;
+			}
 
 			timeLeftForSample = HAL_GetTick();
 		}

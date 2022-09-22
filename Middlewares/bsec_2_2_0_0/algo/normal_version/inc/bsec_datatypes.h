@@ -97,7 +97,7 @@ extern "C"
 #define BSEC_PROCESS_TEMPERATURE    (1 << (BSEC_INPUT_TEMPERATURE-1))/*!< process_data bitfield constant for temperature @sa bsec_bme_settings_t */
 #define BSEC_PROCESS_HUMIDITY       (1 << (BSEC_INPUT_HUMIDITY-1))  /*!< process_data bitfield constant for humidity @sa bsec_bme_settings_t */
 #define BSEC_PROCESS_GAS            (1 << (BSEC_INPUT_GASRESISTOR-1)) /*!< process_data bitfield constant for gas sensor @sa bsec_bme_settings_t */
-#define BSEC_NUMBER_OUTPUTS         (19)         /*!< Number of outputs, depending on solution */
+#define BSEC_NUMBER_OUTPUTS         (10)         /*!< Number of outputs, depending on solution */
 #define BSEC_OUTPUT_INCLUDED        (66222575)             /*!< bitfield that indicates which outputs are included in the solution */
 
 /*!

@@ -25,3 +25,9 @@
 [submodule "Middlewares/STM32_ICM20948"]
 	path = Middlewares/STM32_ICM20948
 	url = git@github.com:pchwalek/STM32_ICM20948.git
+[submodule "Middlewares/Adafruit_SHT4X"]
+	path = Middlewares/Adafruit_SHT4X
+	url = git@github.com:pchwalek/Adafruit_SHT4X.git
+[submodule "Middlewares/gas-index-algorithm"]
+	path = Middlewares/gas-index-algorithm
+	url = git@github.com:Sensirion/gas-index-algorithm.git

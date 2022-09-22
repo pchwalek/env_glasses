@@ -11,16 +11,25 @@
 #include "cmsis_os2.h"
 #include "portmacro.h"
 #include "captivate_config.h"
+//#include "bsec2.h"
+//#include "../Middlewares/bsec_2_2_0_0/algo/normal_version/inc/bsec_datatypes.h"
+#include "bsec_datatypes.h"
 
-#define BME_SAMPLE_PERIOD_MS		1000
+
+#define BME_SAMPLE_PERIOD_MS		3000
 #define MAX_BME_SAMPLES_PACKET	(int)(512-sizeof(PacketHeader))/sizeof(bme_packet)
+//#define MAX_BME_SAMPLES_PACKET	1
+//typedef struct bme_packets {
+//	float temperature;
+//	uint32_t pressure;
+//	float humidity;
+//	uint32_t gas_resistance;
+//	float altitude;
+//} bme_packet;
 
 typedef struct bme_packets {
-	float temperature;
-	uint32_t pressure;
-	float humidity;
-	uint32_t gas_resistance;
-	float altitude;
+	bsecData output[BSEC_NUMBER_OUTPUTS];
+	uint8_t nOutputs;
 } bme_packet;
 
 static void triggerBMESample(void *argument);
@@ -37,16 +46,18 @@ void BME_Task(void *argument) {
 	SensorPacket *packet = NULL;
 	uint32_t flags;
 
+	osDelay(500);
+
 	if (!bme.begin(BME68X_DEFAULT_ADDRESS, &hi2c1, false)) {
 		osDelay(100);
 			;
 	}
 
-	bme.setTemperatureOversampling(BME680_OS_8X);
-	bme.setHumidityOversampling(BME680_OS_2X);
-	bme.setPressureOversampling(BME680_OS_4X);
-	bme.setIIRFilterSize(BME680_FILTER_SIZE_3);
-	bme.setGasHeater(320, 150); // 320*C for 150 ms
+//	bme.setTemperatureOversampling(BME680_OS_8X);
+//	bme.setHumidityOversampling(BME680_OS_2X);
+//	bme.setPressureOversampling(BME680_OS_4X);
+//	bme.setIIRFilterSize(BME680_FILTER_SIZE_3);
+//	bme.setGasHeater(320, 150); // 320*C for 150 ms
 
 	header.payloadLength = MAX_BME_SAMPLES_PACKET * sizeof(bme_packet);
 	header.reserved[0] = BME_SAMPLE_PERIOD_MS;
@@ -64,16 +75,23 @@ void BME_Task(void *argument) {
 
 		if ((flags & GRAB_SAMPLE_BIT) == GRAB_SAMPLE_BIT) {
 
-			while (!bme.performReading()) {
+//			while (!bme.performReading()) {
+//				osDelay(10);
+//			}
+
+			while(!bme.bsecRun()){
 				osDelay(10);
 			}
 
-			bmeData[bmeIdx].temperature = bme.temperature;
-			bmeData[bmeIdx].pressure = bme.pressure / 100.0;
-			bmeData[bmeIdx].humidity = bme.humidity;
-			bmeData[bmeIdx].gas_resistance = bme.gas_resistance / 1000.0;
-			bmeData[bmeIdx].altitude = bme.readAltitude(SEALEVELPRESSURE_HPA);
+			memcpy(&bmeData[bmeIdx], &bme.outputs, sizeof(bme.outputs));
 
+
+//			bmeData[bmeIdx].temperature = bme.temperature;
+//			bmeData[bmeIdx].pressure = bme.pressure / 100.0;
+//			bmeData[bmeIdx].humidity = bme.humidity;
+//			bmeData[bmeIdx].gas_resistance = bme.gas_resistance / 1000.0;
+//			bmeData[bmeIdx].altitude = bme.readAltitude(SEALEVELPRESSURE_HPA);
+//
 			bmeIdx++;
 			if (bmeIdx >= MAX_BME_SAMPLES_PACKET) {
 				header.packetType = BME;

@@ -12,7 +12,7 @@
 #include "portmacro.h"
 #include "captivate_config.h"
 
-#define IMU_SAMPLE_PERIOD_MS		10
+#define IMU_SAMPLE_PERIOD_MS		5
 #define MAX_IMU_SAMPLES_PACKET	(int)(512-sizeof(PacketHeader))/sizeof(imu_sample)
 
 static void triggerIMUSample(void *argument);
@@ -30,12 +30,12 @@ void IMU_Task(void *argument){
 
 	osDelay(1000);
 
-	if(!imu.begin_SPI(&hspi2,IMU_CS_GPIO_Port,IMU_CS_Pin)){
+	while(!imu.begin_SPI(&hspi2,IMU_CS_GPIO_Port,IMU_CS_Pin)){
 		osDelay(100);
 	}
 
   header.payloadLength = MAX_IMU_SAMPLES_PACKET * sizeof(imu_sample);
-	header.reserved[0] = IMU_SAMPLE_PERIOD_MS;
+  header.reserved[0] = IMU_SAMPLE_PERIOD_MS;
 
   uint16_t imuIdx = 0;
   uint32_t imuID = 0;
@@ -50,21 +50,21 @@ void IMU_Task(void *argument){
 
   	if ((flags & GRAB_SAMPLE_BIT) == GRAB_SAMPLE_BIT) {
 			imu.getSample(&imuData[imuIdx]);
-//			imuIdx++;
-//
-//			if(imuIdx >= MAX_IMU_SAMPLES_PACKET){
-//				header.packetType = IMU;
-//				header.packetID = imuID;
-//				header.msFromStart = HAL_GetTick();
-//				packet = grabPacket();
-//				if(packet != NULL){
-//					memcpy(&(packet->header), &header, sizeof(PacketHeader));
-//					memcpy(packet->payload, imuData, header.payloadLength);
-//					queueUpPacket(packet);
-//				}
-//				imuID++;
-//				imuIdx = 0;
-//			}
+			imuIdx++;
+
+			if(imuIdx >= MAX_IMU_SAMPLES_PACKET){
+				header.packetType = IMU;
+				header.packetID = imuID;
+				header.msFromStart = HAL_GetTick();
+				packet = grabPacket();
+				if(packet != NULL){
+					memcpy(&(packet->header), &header, sizeof(PacketHeader));
+					memcpy(packet->payload, imuData, header.payloadLength);
+					queueUpPacket(packet);
+				}
+				imuID++;
+				imuIdx = 0;
+			}
 
   	}
 

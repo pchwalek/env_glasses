@@ -34,6 +34,8 @@
 #include "imu.h"
 #include "blink.h"
 #include "packet.h"
+#include "sht.h"
+#include "sgp.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -83,9 +85,35 @@ const osThreadAttr_t luxTask_attributes = {
 	.reserved = 0
   };
 
+osThreadId_t shtTaskHandle;
+const osThreadAttr_t shtTask_attributes = {
+	.name = "shtTask",
+	.attr_bits = osThreadDetached,
+	.cb_mem = NULL,
+	.cb_size = 0,
+	.stack_mem = NULL,
+	.stack_size = 512 * 1,
+	.priority = (osPriority_t) osPriorityNormal,
+	.tz_module = 0,
+	.reserved = 0
+  };
+
 osThreadId_t bmeTaskHandle;
 const osThreadAttr_t bmeTask_attributes = {
 	.name = "bmeTask",
+	.attr_bits = osThreadDetached,
+	.cb_mem = NULL,
+	.cb_size = 0,
+	.stack_mem = NULL,
+	.stack_size = 128 * 6,
+	.priority = (osPriority_t) osPriorityNormal,
+	.tz_module = 0,
+	.reserved = 0
+  };
+
+osThreadId_t sgpTaskHandle;
+const osThreadAttr_t sgpTask_attributes = {
+	.name = "sgpTask",
 	.attr_bits = osThreadDetached,
 	.cb_mem = NULL,
 	.cb_size = 0,
@@ -170,7 +198,7 @@ const osThreadAttr_t senderTask_attributes = {
 	.cb_size = 0,
 	.stack_mem = NULL,
 	.stack_size = 128 * 4,
-	.priority = (osPriority_t) osPriorityNormal,
+	.priority = (osPriority_t) osPriorityAboveNormal,
 	.tz_module = 0,
 	.reserved = 0
   };
@@ -368,11 +396,14 @@ void startThreads(){
 //	//  /* creation of thermopileTask */
 //	thermopileTaskHandle = osThreadNew(Thermopile_Task, NULL, &thermopileTask_attributes);
 
+//	shtTaskHandle = osThreadNew(ShtTask, NULL, &shtTask_attributes);
+//	sgpTaskHandle = osThreadNew(SgpTask, NULL, &sgpTask_attributes);
+//  bmeTaskHandle = osThreadNew(BME_Task, NULL, &bmeTask_attributes);
 
-  bmeTaskHandle = osThreadNew(BME_Task, NULL, &bmeTask_attributes);
 
+	  imuTaskHandle = osThreadNew(IMU_Task, NULL, &imuTask_attributes);
 
-//	  imuTaskHandle = osThreadNew(IMU_Task, NULL, &imuTask_attributes);
+	  //	  luxTaskHandle = osThreadNew(LuxTask, NULL, &luxTask_attributes);
 
 
 //	  /* creation of frontLightsThre */

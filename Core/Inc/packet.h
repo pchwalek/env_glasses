@@ -39,6 +39,8 @@ typedef enum {
 		LUX		= 8,
 		LIDAR = 9,
 		MIC = 10,
+		SHT = 11,
+		SGP = 12,
 } PacketTypes;
 
 typedef struct PacketHeaders{
