@@ -35,7 +35,7 @@
 //#include "app_thread.h"
 #include "app_conf.h"
 
-#define UUID_128_SUPPORTED 1
+#define UUID_128_SUPPORTED 0
 #define	NUM_OF_CHARACTERISTICS 6 //https://community.st.com/s/question/0D50X00009XkYAvSAN/sensortile-bluenrgms-custom-service-aci
 
 #if (UUID_128_SUPPORTED == 1)
@@ -45,10 +45,10 @@
 #endif
 
 #if (UUID_128_SUPPORTED == 1)
-const uint8_t DT_REQ_CHAR_UUID[16] = { 0x19, 0xed, 0x82, 0xae, 0xed, 0x21, 0x4c,
+uint8_t DT_REQ_CHAR_UUID[16] = { 0x19, 0xed, 0x82, 0xae, 0xed, 0x21, 0x4c,
 		0x9d, 0x41, 0x45, 0x22, 0x8e, 0x81, 0xFE, 0x00, 0x00 };
 #else
-const uint8_t DT_REQ_CHAR_UUID[2] = { 0x81, 0xFE };
+uint8_t DT_REQ_CHAR_UUID[2] = { 0x81, 0xFE };
 #endif
 
 #if (UUID_128_SUPPORTED == 1)
@@ -69,21 +69,21 @@ const uint8_t DT_REQ_CHAR3_UUID[2] = { 0x83, 0xFE };
 const uint8_t DT_REQ_CHAR_LED_UUID[16] = { 0x19, 0xed, 0x82, 0xae, 0xed, 0x21,
 		0x4c, 0x9d, 0x41, 0x45, 0x22, 0x8e, 0x84, 0xFE, 0x00, 0x00 };
 #else
-const uint8_t DT_REQ_CHAR3_UUID[2] = { 0x83, 0xFE };
+const uint8_t DT_REQ_CHAR_LED_UUID[2] = { 0x83, 0xFE };
 #endif
 
 #if (UUID_128_SUPPORTED == 1)
 const uint8_t DT_REQ_CHAR_CONTROL_UUID[16] = { 0x19, 0xed, 0x82, 0xae, 0xed,
 		0x21, 0x4c, 0x9d, 0x41, 0x45, 0x22, 0x8e, 0x85, 0xFE, 0x00, 0x00 };
 #else
-const uint8_t DT_REQ_CHAR3_UUID[2] = { 0x83, 0xFE };
+const uint8_t DT_REQ_CHAR_CONTROL_UUID[2] = { 0x83, 0xFE };
 #endif
 
 #if (UUID_128_SUPPORTED == 1)
 const uint8_t DT_REQ_CHAR_TIME_UUID[16] = { 0x19, 0xed, 0x82, 0xae, 0xed, 0x21,
 		0x4c, 0x9d, 0x41, 0x45, 0x22, 0x8e, 0x86, 0xFE, 0x00, 0x00 };
 #else
-const uint8_t DT_REQ_CHAR3_UUID[2] = { 0x83, 0xFE };
+const uint8_t DT_REQ_CHAR_TIME_UUID[2] = { 0x83, 0xFE };
 #endif
 
 #if (UUID_128_SUPPORTED == 1)
@@ -329,6 +329,10 @@ void DTS_STM_Init(void) {
 	SVCCTL_RegisterSvcHandler(DTS_Event_Handler);
 
 	/* DT service and characteristics */
+//	hciCmdResult = aci_gatt_add_service(DT_UUID_LENGTH,
+//				(Service_UUID_t*) DATA_TRANSFER_SERVICE_UUID,
+//				PRIMARY_SERVICE, 1 + 3 * NUM_OF_CHARACTERISTICS,
+//				&(aDataTransferContext.DataTransferSvcHdle));
 	hciCmdResult = aci_gatt_add_service(DT_UUID_LENGTH,
 			(Service_UUID_t*) DT_REQ_SERV_UUID,
 			PRIMARY_SERVICE, 1 + 3 * NUM_OF_CHARACTERISTICS,
@@ -352,6 +356,15 @@ void DTS_STM_Init(void) {
 	10, /* encryKeySize */
 	1, /* isVariable */
 	&(aDataTransferContext.DataTransferTxCharHdle));
+//	hciCmdResult = aci_gatt_add_char(aDataTransferContext.DataTransferSvcHdle,
+//		DT_UUID_LENGTH, (Char_UUID_t*) DATA_TRANSFER_TX_CHAR_UUID,
+//		DATA_TRANSFER_NOTIFICATION_LEN_MAX,
+//		CHAR_PROP_NOTIFY,
+//		ATTR_PERMISSION_NONE,
+//		GATT_NOTIFY_ATTRIBUTE_WRITE, /* gattEvtMask */
+//		10, /* encryKeySize */
+//		1, /* isVariable */
+//		&(aDataTransferContext.DataTransferTxCharHdle));
 	if (hciCmdResult != 0) {
 		APP_DBG_MSG("error add char Tx 0x%x\n", hciCmdResult);
 #ifdef NUCLEO_LED_ACTIVE
@@ -370,6 +383,14 @@ void DTS_STM_Init(void) {
 			10, /* encryKeySize */
 			1, /* isVariable */
 			&(aDataTransferContext.DataTransferRxCharHdle));
+//	hciCmdResult = aci_gatt_add_char(aDataTransferContext.DataTransferSvcHdle,
+//		DT_UUID_LENGTH, (Char_UUID_t*) DATA_TRANSFER_RX_CHAR_UUID, DATA_TRANSFER_NOTIFICATION_LEN_MAX, /* DATA_TRANSFER_NOTIFICATION_LEN_MAX, */
+//		CHAR_PROP_WRITE_WITHOUT_RESP,
+//		ATTR_PERMISSION_NONE,
+//		GATT_NOTIFY_ATTRIBUTE_WRITE, //GATT_NOTIFY_WRITE_REQ_AND_WAIT_FOR_APPL_RESP, /* gattEvtMask */
+//				10, /* encryKeySize */
+//				1, /* isVariable */
+//				&(aDataTransferContext.DataTransferRxCharHdle));
 	if (hciCmdResult != 0) {
 		APP_DBG_MSG("error add char Tx\n");
 
@@ -399,59 +420,59 @@ void DTS_STM_Init(void) {
 //#endif
 //  }
 
-	/**
-	 *  Add Data LED Control Characteristic
-	 */
-	hciCmdResult = aci_gatt_add_char(aDataTransferContext.DataTransferSvcHdle,
-	DT_UUID_LENGTH, (Char_UUID_t*) DT_REQ_CHAR_LED_UUID, 100, /* DATA_TRANSFER_NOTIFICATION_LEN_MAX, */
-	CHAR_PROP_WRITE_WITHOUT_RESP,
-	ATTR_PERMISSION_NONE,
-	GATT_NOTIFY_ATTRIBUTE_WRITE, //GATT_NOTIFY_WRITE_REQ_AND_WAIT_FOR_APPL_RESP, /* gattEvtMask */
-			10, /* encryKeySize */
-			1, /* isVariable */
-			&(aDataTransferContext.DataTransferRxCharLedHdle));
-	if (hciCmdResult != 0) {
-		APP_DBG_MSG("error add char Tx\n");
-#ifdef NUCLEO_LED_ACTIVE
-    BSP_LED_On(LED_RED);
-#endif
-	}
-
-	/**
-	 *  Add System Control Characteristic
-	 */
-	hciCmdResult = aci_gatt_add_char(aDataTransferContext.DataTransferSvcHdle,
-	DT_UUID_LENGTH, (Char_UUID_t*) DT_REQ_CHAR_CONTROL_UUID, 100, /* DATA_TRANSFER_NOTIFICATION_LEN_MAX, */
-	CHAR_PROP_WRITE_WITHOUT_RESP,
-	ATTR_PERMISSION_NONE,
-	GATT_NOTIFY_ATTRIBUTE_WRITE, //GATT_NOTIFY_WRITE_REQ_AND_WAIT_FOR_APPL_RESP, /* gattEvtMask */
-			10, /* encryKeySize */
-			1, /* isVariable */
-			&(aDataTransferContext.DataTransferRxCharControlHdle));
-	if (hciCmdResult != 0) {
-		APP_DBG_MSG("error add char Tx\n");
-#ifdef NUCLEO_LED_ACTIVE
-      BSP_LED_On(LED_RED);
-  #endif
-	}
-
-	/**
-	 *  Add System Time Characteristic
-	 */
-	hciCmdResult = aci_gatt_add_char(aDataTransferContext.DataTransferSvcHdle,
-	DT_UUID_LENGTH, (Char_UUID_t*) DT_REQ_CHAR_TIME_UUID, 10, /* DATA_TRANSFER_NOTIFICATION_LEN_MAX, */
-	CHAR_PROP_WRITE_WITHOUT_RESP,
-	ATTR_PERMISSION_NONE,
-	GATT_NOTIFY_ATTRIBUTE_WRITE, //GATT_NOTIFY_WRITE_REQ_AND_WAIT_FOR_APPL_RESP, /* gattEvtMask */
-			10, /* encryKeySize */
-			1, /* isVariable */
-			&(aDataTransferContext.DataTransferRxCharTimeHdle));
-	if (hciCmdResult != 0) {
-		APP_DBG_MSG("error add char Tx\n");
-#ifdef NUCLEO_LED_ACTIVE
-      BSP_LED_On(LED_RED);
-  #endif
-	}
+//	/**
+//	 *  Add Data LED Control Characteristic
+//	 */
+//	hciCmdResult = aci_gatt_add_char(aDataTransferContext.DataTransferSvcHdle,
+//	DT_UUID_LENGTH, (Char_UUID_t*) DT_REQ_CHAR_LED_UUID, 100, /* DATA_TRANSFER_NOTIFICATION_LEN_MAX, */
+//	CHAR_PROP_WRITE_WITHOUT_RESP,
+//	ATTR_PERMISSION_NONE,
+//	GATT_NOTIFY_ATTRIBUTE_WRITE, //GATT_NOTIFY_WRITE_REQ_AND_WAIT_FOR_APPL_RESP, /* gattEvtMask */
+//			10, /* encryKeySize */
+//			1, /* isVariable */
+//			&(aDataTransferContext.DataTransferRxCharLedHdle));
+//	if (hciCmdResult != 0) {
+//		APP_DBG_MSG("error add char Tx\n");
+//#ifdef NUCLEO_LED_ACTIVE
+//    BSP_LED_On(LED_RED);
+//#endif
+//	}
+//
+//	/**
+//	 *  Add System Control Characteristic
+//	 */
+//	hciCmdResult = aci_gatt_add_char(aDataTransferContext.DataTransferSvcHdle,
+//	DT_UUID_LENGTH, (Char_UUID_t*) DT_REQ_CHAR_CONTROL_UUID, 100, /* DATA_TRANSFER_NOTIFICATION_LEN_MAX, */
+//	CHAR_PROP_WRITE_WITHOUT_RESP,
+//	ATTR_PERMISSION_NONE,
+//	GATT_NOTIFY_ATTRIBUTE_WRITE, //GATT_NOTIFY_WRITE_REQ_AND_WAIT_FOR_APPL_RESP, /* gattEvtMask */
+//			10, /* encryKeySize */
+//			1, /* isVariable */
+//			&(aDataTransferContext.DataTransferRxCharControlHdle));
+//	if (hciCmdResult != 0) {
+//		APP_DBG_MSG("error add char Tx\n");
+//#ifdef NUCLEO_LED_ACTIVE
+//      BSP_LED_On(LED_RED);
+//  #endif
+//	}
+//
+//	/**
+//	 *  Add System Time Characteristic
+//	 */
+//	hciCmdResult = aci_gatt_add_char(aDataTransferContext.DataTransferSvcHdle,
+//	DT_UUID_LENGTH, (Char_UUID_t*) DT_REQ_CHAR_TIME_UUID, 10, /* DATA_TRANSFER_NOTIFICATION_LEN_MAX, */
+//	CHAR_PROP_WRITE_WITHOUT_RESP,
+//	ATTR_PERMISSION_NONE,
+//	GATT_NOTIFY_ATTRIBUTE_WRITE, //GATT_NOTIFY_WRITE_REQ_AND_WAIT_FOR_APPL_RESP, /* gattEvtMask */
+//			10, /* encryKeySize */
+//			1, /* isVariable */
+//			&(aDataTransferContext.DataTransferRxCharTimeHdle));
+//	if (hciCmdResult != 0) {
+//		APP_DBG_MSG("error add char Tx\n");
+//#ifdef NUCLEO_LED_ACTIVE
+//      BSP_LED_On(LED_RED);
+//  #endif
+//	}
 
 	return;
 }

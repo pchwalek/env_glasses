@@ -69,6 +69,8 @@ void BLE_SVC_GAP_Clear_DataBase(void);
 void Resume_Notification(void);
 tBleStatus DTS_STM_UpdateCharThroughput(DTS_STM_Payload_t *pDataValue);
 
+extern uint8_t DT_REQ_CHAR_UUID[2];
+
 #ifdef __cplusplus
 }
 #endif
