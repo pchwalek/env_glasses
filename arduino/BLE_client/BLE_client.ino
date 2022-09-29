@@ -40,8 +40,11 @@ static void notifyCallback(
 //    Serial.print(" of data length ");
 //    Serial.println(length);
 //    Serial.print("data: ");
+   char hexBuf[3];
     for(int i = 0; i<length; i++){
-      Serial.print(*(pData+i),HEX);
+      sprintf(hexBuf, "%02x", *(pData+i));
+      Serial.print(hexBuf);
+//      Serial.print(*(pData+i),HEX);
     }
     Serial.println();
 }
