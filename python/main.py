@@ -9,6 +9,9 @@ from sensorClass import *
 from thermopile import *
 from sht4x import *
 from sgp import *
+from bme import *
+from lux import *
+from spec import *
 
 gasSpec_serial = '/dev/cu.usbserial-014A1C56'
 
@@ -84,7 +87,16 @@ class logSensor (threading.Thread):
       thermopile = Thermopile(DATA_DIR, "Thermopile")
       sht45 = SHT4X(DATA_DIR, "SHT45")
       sgp = SGP(DATA_DIR, "SGP")
+      spec = Spec(DATA_DIR, "Spec")
+      lux = Lux(DATA_DIR, "Lux")
+      bme = BME(DATA_DIR, "BME")
 
+      therm_pkt = 0
+      sht_pkt = 0
+      sgp_pkt = 0
+      spec_pkt = 0
+      lux_pkt = 0
+      bme_pkt = 0
 
       try:
           while True:
@@ -102,17 +114,42 @@ class logSensor (threading.Thread):
 
               # (3) check what type of packet it is and proceed accordingly
               if(THERMOPILE_PKT == pktType):
-                print("thermopile packet received: " + str(pktID))
+                # print("thermopile packet received: " + str(pktID))
+                therm_pkt += 1
                 number_of_packed_packets = int(payloadLen / thermopileStructSize)
                 thermopile.unpack_compressed_packet(ser_string, number_of_packed_packets)
-              if (SHT_PKT == pktType):
-                  print("sht packet received: " + str(pktID))
+              elif (SHT_PKT == pktType):
+                  # print("sht packet received: " + str(pktID))
+                  sht_pkt += 1
                   number_of_packed_packets = int(payloadLen / shtStructSize)
                   sht45.unpack_compressed_packet(ser_string, number_of_packed_packets)
-              if (SGP_PKT == pktType):
-                  print("sgp packet received: " + str(pktID))
+              elif (SPEC_PKT == pktType):
+                  # print("sgp packet received: " + str(pktID))
+                  spec_pkt += 1
+                  number_of_packed_packets = int(payloadLen / sgpStructSize)
+                  spec.unpack_compressed_packet(ser_string, number_of_packed_packets)
+              elif (BME_PKT == pktType):
+                  # print("bme packet received: " + str(pktID))
+                  bme_pkt += 1
+                  number_of_packed_packets = int(payloadLen / bmeStructSize)
+                  bme.unpack_compressed_packet(ser_string, number_of_packed_packets)
+              elif (LUX_PKT == pktType):
+                  # print("lux packet received: " + str(pktID))
+                  lux_pkt += 1
+                  number_of_packed_packets = int(payloadLen / luxStructSize)
+                  lux.unpack_compressed_packet(ser_string, number_of_packed_packets)
+              elif (SGP_PKT == pktType):
+                  # print("lux packet received: " + str(pktID))
+                  sgp_pkt += 1
                   number_of_packed_packets = int(payloadLen / sgpStructSize)
                   sgp.unpack_compressed_packet(ser_string, number_of_packed_packets)
+
+              print("THERM: " + str(therm_pkt) + "\t" +
+                    "SHT: " + str(sht_pkt) + "\t" +
+                    "SGP: " + str(sgp_pkt) + "\t" +
+                    "SPEC: " + str(spec_pkt) + "\t" +
+                    "LUX: " + str(lux_pkt) + "\t" +
+                    "BME: " + str(bme_pkt))
 
       except KeyboardInterrupt:
           print("Exiting " + self.name)
