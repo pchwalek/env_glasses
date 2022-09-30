@@ -117,7 +117,7 @@ class logSensor (threading.Thread):
                 # print("thermopile packet received: " + str(pktID))
                 therm_pkt += 1
                 number_of_packed_packets = int(payloadLen / thermopileStructSize)
-                thermopile.unpack_compressed_packet(ser_string, number_of_packed_packets)
+                # thermopile.unpack_compressed_packet(ser_string, number_of_packed_packets)
               elif (SHT_PKT == pktType):
                   # print("sht packet received: " + str(pktID))
                   sht_pkt += 1
@@ -126,12 +126,14 @@ class logSensor (threading.Thread):
               elif (SPEC_PKT == pktType):
                   # print("sgp packet received: " + str(pktID))
                   spec_pkt += 1
-                  number_of_packed_packets = int(payloadLen / sgpStructSize)
+                  number_of_packed_packets = int(payloadLen / specStructSize)
                   spec.unpack_compressed_packet(ser_string, number_of_packed_packets)
               elif (BME_PKT == pktType):
                   # print("bme packet received: " + str(pktID))
                   bme_pkt += 1
                   number_of_packed_packets = int(payloadLen / bmeStructSize)
+                  print("num: " + str(number_of_packed_packets))
+                  print("len: " + str(len(ser_string)))
                   bme.unpack_compressed_packet(ser_string, number_of_packed_packets)
               elif (LUX_PKT == pktType):
                   # print("lux packet received: " + str(pktID))

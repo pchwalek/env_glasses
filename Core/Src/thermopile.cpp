@@ -116,7 +116,7 @@ void Thermopile_Task(void *argument) {
 			grabThermopileSamples(&thermopileData[thermIdx++], &tp_temple_mid);
 			grabThermopileSamples(&thermopileData[thermIdx++], &tp_temple_back);
 
-			queueThermopilePkt(&thermopileData[thermIdx], 5);
+			queueThermopilePkt(&thermopileData[0], 5);
 			thermIdx = 0;
 
 			osSemaphoreRelease(messageI2C1_LockHandle);

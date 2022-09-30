@@ -17,7 +17,9 @@
 
 
 #define BME_SAMPLE_PERIOD_MS		3000
-#define MAX_BME_SAMPLES_PACKET	(int)(512-sizeof(PacketHeader))/sizeof(bme_packet)
+//#define MAX_BME_SAMPLES_PACKET	(int)(512-sizeof(PacketHeader))/sizeof(bme_packet)
+#define MAX_BME_SAMPLES_PACKET	(int)(512-sizeof(PacketHeader))/sizeof(bsecData)
+
 //#define MAX_BME_SAMPLES_PACKET	1
 //typedef struct bme_packets {
 //	float temperature;
@@ -27,14 +29,16 @@
 //	float altitude;
 //} bme_packet;
 
-typedef struct bme_packets {
-	bsecData output[BSEC_NUMBER_OUTPUTS];
-	uint8_t nOutputs;
-} bme_packet;
+//typedef struct bme_packets {
+//	bsecData output[BSEC_NUMBER_OUTPUTS];
+////	uint8_t nOutputs;
+//} bme_packet;
 
 static void triggerBMESample(void *argument);
 
-static bme_packet bmeData[MAX_BME_SAMPLES_PACKET];
+//static bme_packet bmeData[MAX_BME_SAMPLES_PACKET];
+static bsecData bmeData[MAX_BME_SAMPLES_PACKET];
+
 
 static PacketHeader header;
 //osThreadId_t bmeTaskHandle;
@@ -59,7 +63,6 @@ void BME_Task(void *argument) {
 //	bme.setIIRFilterSize(BME680_FILTER_SIZE_3);
 //	bme.setGasHeater(320, 150); // 320*C for 150 ms
 
-	header.payloadLength = MAX_BME_SAMPLES_PACKET * sizeof(bme_packet);
 	header.reserved[0] = BME_SAMPLE_PERIOD_MS;
 
 	uint16_t bmeIdx = 0;
@@ -83,7 +86,11 @@ void BME_Task(void *argument) {
 				osDelay(10);
 			}
 
-			memcpy(&bmeData[bmeIdx], &bme.outputs, sizeof(bme.outputs));
+			for(int i = 0; i<bme.outputs.nOutputs; i++){
+				memcpy(&bmeData[bmeIdx++], &bme.outputs.output[i], sizeof(bsecData));
+			}
+
+//			memcpy(&bmeData[bmeIdx], &bme.outputs, sizeof(bme.outputs));
 
 
 //			bmeData[bmeIdx].temperature = bme.temperature;
@@ -92,11 +99,12 @@ void BME_Task(void *argument) {
 //			bmeData[bmeIdx].gas_resistance = bme.gas_resistance / 1000.0;
 //			bmeData[bmeIdx].altitude = bme.readAltitude(SEALEVELPRESSURE_HPA);
 //
-			bmeIdx++;
-			if (bmeIdx >= MAX_BME_SAMPLES_PACKET) {
+//			bmeIdx++;
+			if (bmeIdx >= (MAX_BME_SAMPLES_PACKET - BSEC_NUMBER_OUTPUTS) ) {
 				header.packetType = BME;
 				header.packetID = bmeID;
 				header.msFromStart = HAL_GetTick();
+				header.payloadLength = bmeIdx * sizeof(bsecData);
 				packet = grabPacket();
 				if (packet != NULL) {
 					memcpy(&(packet->header), &header, sizeof(PacketHeader));

@@ -37,14 +37,18 @@ typedef struct specSamples {
 	uint16_t flicker;
 } specSample;
 
-union SPEC_UNION {
-	specSample s;
-	uint16_t s_array[13];
-};
+typedef struct specSamplePkts{
+	union SPEC_UNION {
+		specSample s;
+		uint16_t s_array[13];
+	} data;
+	uint32_t timestamp;
+} specSamplePkt;
 
 static void triggerSpectrometerSample(void *argument);
 
-static SPEC_UNION specData[MAX_SPEC_SAMPLES_PACKET];
+//static SPEC_UNION specData[MAX_SPEC_SAMPLES_PACKET];
+static specSamplePkt specData[MAX_SPEC_SAMPLES_PACKET];
 
 static PacketHeader header;
 //osThreadId_t specTaskHandle;
@@ -65,7 +69,7 @@ void Spec_Task(void *argument) {
 	specSensor.setASTEP(999);
 	specSensor.setGain(AS7341_GAIN_256X);
 
-	header.payloadLength = MAX_SPEC_SAMPLES_PACKET * sizeof(SPEC_UNION);
+	header.payloadLength = MAX_SPEC_SAMPLES_PACKET * sizeof(specSamplePkt);
 	header.reserved[0] = SPEC_SAMPLE_SYS_PERIOD_MS;
 	header.reserved[1] = SEND_SPEC_EVERY_X_S;
 
@@ -93,33 +97,36 @@ void Spec_Task(void *argument) {
 			while (!specSensor.checkReadingProgress()) {
 				osSemaphoreRelease(messageI2C1_LockHandle);
 				osDelay(10);
+				osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			}
 
-			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
-			while (!specSensor.getAllChannels(specData[specIdx].s_array)) {
+			specData[specIdx].timestamp = HAL_GetTick();
+
+			while (!specSensor.getAllChannels(specData[specIdx].data.s_array)) {
 				osSemaphoreRelease(messageI2C1_LockHandle);
 				osDelay(10);
+				osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			}
 
-			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
-			specData[specIdx].s.flicker = specSensor.detectFlickerHz();
+			specData[specIdx].data.s.flicker = specSensor.detectFlickerHz();
 			osSemaphoreRelease(messageI2C1_LockHandle);
 
-//			specIdx++;
+			specIdx++;
 
-//			if (specIdx >= MAX_SPEC_SAMPLES_PACKET) {
-//				header.packetType = SPECTROMETER;
-//				header.packetID = specID;
-//				header.msFromStart = HAL_GetTick();
-//				packet = grabPacket();
-//				if (packet != NULL) {
-//					memcpy(&(packet->header), &header, sizeof(PacketHeader));
-//					memcpy(packet->payload, specData, header.payloadLength);
-//					queueUpPacket(packet);
-//				}
-//				specID++;
-//				specIdx = 0;
-//			}
+			if (specIdx >= MAX_SPEC_SAMPLES_PACKET) {
+				header.packetType = SPECTROMETER;
+				header.packetID = specID;
+				header.msFromStart = HAL_GetTick();
+				packet = grabPacket();
+				if (packet != NULL) {
+					memcpy(&(packet->header), &header, sizeof(PacketHeader));
+					memcpy(packet->payload, specData, header.payloadLength);
+					queueUpPacket(packet);
+				}
+				specID++;
+				specIdx = 0;
+			}
+
 			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			specSensor.startReading();
 			osSemaphoreRelease(messageI2C1_LockHandle);

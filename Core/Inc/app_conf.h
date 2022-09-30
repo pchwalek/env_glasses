@@ -167,6 +167,9 @@
 
 #define CONN_L(x) ((int)((x)/0.625f))
 #define CONN_P(x) ((int)((x)/1.25f))
+
+#define CFG_BLE_MAX_ATT_MTU             (512)
+
 /* USER CODE END Generic_Parameters */
 
 /**< specific parameters */
@@ -210,7 +213,7 @@
  * Maximum supported ATT_MTU size
  * This parameter is ignored by the CPU2 when CFG_BLE_OPTIONS is set to 1"
  */
-#define CFG_BLE_MAX_ATT_MTU             (300)
+#define CFG_BLE_MAX_ATT_MTU             (512)
 
 /**
  * Size of the storage area for Attribute values

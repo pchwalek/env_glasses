@@ -268,21 +268,29 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
  * @retval None
  */
 //https://www.st.com/resource/en/programming_manual/pm0271-stm32wb-ble-stack-programming-guidelines-stmicroelectronics.pdf
-# define MAX_PACKET_LENGTH	243 // https://www.compel.ru/wordpress/wp-content/uploads/2019/12/en.dm00598033.pdf
-
+//# define MAX_PACKET_LENGTH	243 // https://www.compel.ru/wordpress/wp-content/uploads/2019/12/en.dm00598033.pdf
+#define MAX_PACKET_LENGTH DATA_NOTIFICATION_MAX_PACKET_SIZE
 static tBleStatus TX_Update_Char(DTS_STM_Payload_t *pDataValue) {
 	tBleStatus ret;
 
 	/**
 	 *  Notification Data Transfer Packet
 	 */
-	if(pDataValue->Length <= MAX_PACKET_LENGTH){
-	  ret = aci_gatt_update_char_value(aDataTransferContext.DataTransferSvcHdle,
-			  aDataTransferContext.DataTransferTxCharHdle, 0, /* charValOffset */
-			  pDataValue->Length, /* charValueLen */
-			  (uint8_t*) pDataValue->pPayload);
+	if(pDataValue->Length <= DATA_NOTIFICATION_MAX_PACKET_SIZE){
+//	  ret = aci_gatt_update_char_value(aDataTransferContext.DataTransferSvcHdle,
+//			  aDataTransferContext.DataTransferTxCharHdle, 0, /* charValOffset */
+//			  pDataValue->Length, /* charValueLen */
+//			  (uint8_t*) pDataValue->pPayload);
+	  ret = aci_gatt_update_char_value_ext (0,
+	 				       aDataTransferContext.DataTransferSvcHdle,
+	 				       aDataTransferContext.DataTransferTxCharHdle,
+	 					0x01, //dont notify
+						pDataValue->Length,
+	 					0,
+						pDataValue->Length,
+	 					((uint8_t*) pDataValue->pPayload));
 	}
-	else if(pDataValue->Length <= DATA_NOTIFICATION_MAX_PACKET_SIZE){
+	else if(pDataValue->Length > DATA_NOTIFICATION_MAX_PACKET_SIZE){
 
 	    uint16_t packetLen = pDataValue->Length;
 	    uint16_t offset = 0;

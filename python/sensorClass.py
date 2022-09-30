@@ -50,7 +50,7 @@ class SensorClass:
                                                    (headerStructSize * 2) + (idx + 1) * (self.structSize * 2)].decode("utf-8"))))
             unpacked_pkt.append(time_recv)
             self.append_data(unpacked_pkt)
-
+            self.save_file()
         if( (time.time() - self.last_save) > SAVE_EVERY_X_SECS):
             self.save_file()
 

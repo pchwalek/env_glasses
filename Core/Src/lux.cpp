@@ -38,10 +38,11 @@ void LuxTask(void *argument) {
 	uint32_t flags;
 	uint32_t timeLeftForSample = 0;
 
-	osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
-	if (!luxSensor.begin(TSL2772_I2CADDR, &hi2c1)) {
+	osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
+	if (!luxSensor.begin(TSL2772_I2CADDR, &hi2c3)) {
 		osDelay(100);
 	}
+	luxSensor.powerOn(true);
 	luxSensor.powerOn(true);
 
 	luxSensor.setATIME(TSL2722_INTEGRATIONTIME_101MS);
@@ -58,7 +59,7 @@ void LuxTask(void *argument) {
 
 	uint32_t luxSample;
 
-	osSemaphoreRelease(messageI2C1_LockHandle);
+	osSemaphoreRelease(messageI2C3_LockHandle);
 	periodicLuxTimer_id = osTimerNew(triggerLuxSample, osTimerPeriodic,
 			NULL, NULL);
 	osTimerStart(periodicLuxTimer_id, LUX_SAMPLE_SYS_PERIOD_MS);
@@ -74,10 +75,10 @@ void LuxTask(void *argument) {
 				osDelay(timeLeftForSample);
 			}
 
-			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
+			osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
 			luxData[luxIdx].lux = luxSensor.getLux();
 			luxData[luxIdx].timestamp = HAL_GetTick();
-			osSemaphoreRelease(messageI2C1_LockHandle);
+			osSemaphoreRelease(messageI2C3_LockHandle);
 
 			luxIdx++;
 

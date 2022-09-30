@@ -3,7 +3,7 @@ from sensorClass import *
 
 
 # define thermopile packet
-bmeStructType = 'qfBBB'
+bmeStructType = 'qfBBBx'
 bmeStructSize = calcsize(bmeStructType)
 bmeStructLabel = ['timestamp_ns','signal','signal_dimensions','sensor_id','accuracy']
 

@@ -209,6 +209,11 @@ const osMutexAttr_t messageI2C1_Lock_attributes = {
   .name = "messageI2C1_Lock"
 };
 
+osMutexId_t messageI2C3_LockHandle;
+const osMutexAttr_t messageI2C3_Lock_attributes = {
+  .name = "messageI2C3_Lock"
+};
+
 osMessageQueueId_t packet_QueueHandle;
 const osMessageQueueAttr_t packetQueue_attributes =
 		{ .name = "packetQueue" };
@@ -269,6 +274,7 @@ void MX_FREERTOS_Init(void) {
   /* Create the mutex(es) */
   /* creation of messageI2C1_Lock */
   messageI2C1_LockHandle = osMutexNew(&messageI2C1_Lock_attributes);
+  messageI2C3_LockHandle = osMutexNew(&messageI2C3_Lock_attributes);
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
@@ -389,21 +395,23 @@ void startThreads(){
 
 
 	senderTaskHandle = osThreadNew(senderThread, NULL, &senderTask_attributes);
-//
-	/* start sensor subsystem threads */
-	blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
-//
-//	//  /* creation of thermopileTask */
-	thermopileTaskHandle = osThreadNew(Thermopile_Task, NULL, &thermopileTask_attributes);
 
-	shtTaskHandle = osThreadNew(ShtTask, NULL, &shtTask_attributes);
-	sgpTaskHandle = osThreadNew(SgpTask, NULL, &sgpTask_attributes);
+	/* start sensor subsystem threads */
+//	blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
+
+	/* creation of thermopileTask */
+//	thermopileTaskHandle = osThreadNew(Thermopile_Task, NULL, &thermopileTask_attributes);
+//	shtTaskHandle = osThreadNew(ShtTask, NULL, &shtTask_attributes);
+//	sgpTaskHandle = osThreadNew(SgpTask, NULL, &sgpTask_attributes);
+//	specTaskHandle = osThreadNew(Spec_Task, NULL, &specTask_attributes);
+
+
 	bmeTaskHandle = osThreadNew(BME_Task, NULL, &bmeTask_attributes);
 
+//	  luxTaskHandle = osThreadNew(LuxTask, NULL, &luxTask_attributes);
 
 	  //imuTaskHandle = osThreadNew(IMU_Task, NULL, &imuTask_attributes);
 
-	  //	  luxTaskHandle = osThreadNew(LuxTask, NULL, &luxTask_attributes);
 
 
 //	  /* creation of frontLightsThre */

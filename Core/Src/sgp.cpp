@@ -144,6 +144,8 @@ void SgpTask(void *argument) {
 				GasIndexAlgorithm_process(&paramsVoc, sgpData[sgpIdx].srawVoc, &sgpData[sgpIdx].voc_index_value);
 			}
 
+			sgpData[sgpIdx].timestamp = HAL_GetTick();
+
 			sgpIdx++;
 
 			if (sgpIdx >= MAX_SGP_SAMPLES_PACKET) {

@@ -184,6 +184,7 @@ extern osThreadId_t imuTaskHandle;
 extern osThreadId_t blinkTaskHandle;
 
 extern osSemaphoreId_t messageI2C1_LockHandle;
+extern osSemaphoreId_t messageI2C3_LockHandle;
 
 extern osThreadId_t inertialTaskHandle;
 extern osMessageQueueId_t inertialSensingQueueHandle;
