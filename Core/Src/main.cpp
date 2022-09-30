@@ -91,7 +91,7 @@ int main(void)
 
   /* USER CODE END Init */
 
-  /* Configure the system clock */
+
   SystemClock_Config();
 
 /* Configure the peripherals common clocks */

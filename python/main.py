@@ -132,8 +132,6 @@ class logSensor (threading.Thread):
                   # print("bme packet received: " + str(pktID))
                   bme_pkt += 1
                   number_of_packed_packets = int(payloadLen / bmeStructSize)
-                  print("num: " + str(number_of_packed_packets))
-                  print("len: " + str(len(ser_string)))
                   bme.unpack_compressed_packet(ser_string, number_of_packed_packets)
               elif (LUX_PKT == pktType):
                   # print("lux packet received: " + str(pktID))
