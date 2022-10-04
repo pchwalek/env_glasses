@@ -82,10 +82,13 @@ void Thermopile_Task(void *argument) {
 	osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 	initThermopiles(&tp_nose_tip,		THERMOPLE_NOSE_TIP_ADDR,	&hi2c1,	THERMOPLE_NOSE_TIP_ID);
 	initThermopiles(&tp_nose_bridge,	THERMOPLE_NOSE_BRIDGE_ADDR,	&hi2c1, THERMOPLE_NOSE_BRIDGE_ID);
+	osSemaphoreRelease(messageI2C1_LockHandle);
+
+	osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
 	initThermopiles(&tp_temple_front,	THERMOPLE_TEMPLE_FRONT_ADDR,&hi2c3, THERMOPLE_TEMPLE_FRONT_ADDR_ID);
 	initThermopiles(&tp_temple_mid,		THERMOPLE_TEMPLE_MID_ADDR,	&hi2c3, THERMOPLE_TEMPLE_MID_ADDR_ID);
 	initThermopiles(&tp_temple_back,	THERMOPLE_TEMPLE_BACK_ADDR,	&hi2c3, THERMOPLE_TEMPLE_BACK_ADDR_ID);
-	osSemaphoreRelease(messageI2C1_LockHandle);
+	osSemaphoreRelease(messageI2C3_LockHandle);
 
 	header.payloadLength = THERMOPILE_CHANNELS * sizeof(thermopile_packet);
 	header.reserved[0] = THERMOPILE_SAMPLE_PERIOD_MS;
@@ -105,21 +108,23 @@ void Thermopile_Task(void *argument) {
 
 		if ((flags & GRAB_SAMPLE_BIT) == GRAB_SAMPLE_BIT) {
 
-			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 
 			// sample nose
+			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			grabThermopileSamples(&thermopileData[thermIdx++], &tp_nose_tip);
 			grabThermopileSamples(&thermopileData[thermIdx++], &tp_nose_bridge);
+			osSemaphoreRelease(messageI2C1_LockHandle);
 
 			// sample temple
+			osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
 			grabThermopileSamples(&thermopileData[thermIdx++], &tp_temple_front);
 			grabThermopileSamples(&thermopileData[thermIdx++], &tp_temple_mid);
 			grabThermopileSamples(&thermopileData[thermIdx++], &tp_temple_back);
+			osSemaphoreRelease(messageI2C3_LockHandle);
 
 			queueThermopilePkt(&thermopileData[0], 5);
 			thermIdx = 0;
 
-			osSemaphoreRelease(messageI2C1_LockHandle);
 		}
 
 		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {

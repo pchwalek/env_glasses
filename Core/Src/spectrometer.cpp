@@ -61,6 +61,8 @@ void Spec_Task(void *argument) {
 	uint32_t flags;
 	uint32_t timeLeftForSample = 0;
 
+	osDelay(500);
+
 	osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 	if (!specSensor.begin(SPEC_ADDR, &hi2c1, 0)) {
 		osDelay(100);
@@ -96,19 +98,16 @@ void Spec_Task(void *argument) {
 			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			while (!specSensor.checkReadingProgress()) {
 				osSemaphoreRelease(messageI2C1_LockHandle);
-				osDelay(10);
+				osDelay(5);
 				osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			}
 
 			specData[specIdx].timestamp = HAL_GetTick();
 
-			while (!specSensor.getAllChannels(specData[specIdx].data.s_array)) {
-				osSemaphoreRelease(messageI2C1_LockHandle);
-				osDelay(10);
-				osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
-			}
+			specSensor.getAllChannels(specData[specIdx].data.s_array);
 
 			specData[specIdx].data.s.flicker = specSensor.detectFlickerHz();
+
 			osSemaphoreRelease(messageI2C1_LockHandle);
 
 			specIdx++;

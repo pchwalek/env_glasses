@@ -66,7 +66,7 @@ const osThreadAttr_t specTask_attributes = {
 	.cb_mem = NULL,
 	.cb_size = 0,
 	.stack_mem = NULL,
-	.stack_size = 512 * 1,
+	.stack_size = 512 * 2,
 	.priority = (osPriority_t) osPriorityNormal,
 	.tz_module = 0,
 	.reserved = 0
@@ -406,7 +406,7 @@ void startThreads(){
 //	bmeTaskHandle = osThreadNew(BME_Task, NULL, &bmeTask_attributes);
 
 
-//	specTaskHandle = osThreadNew(Spec_Task, NULL, &specTask_attributes);
+	specTaskHandle = osThreadNew(Spec_Task, NULL, &specTask_attributes);
 
 
 	luxTaskHandle = osThreadNew(LuxTask, NULL, &luxTask_attributes);
