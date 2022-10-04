@@ -15,8 +15,8 @@
 #include "sht.h"
 
 #define SGP_SAMPLE_SYS_PERIOD_MS		1000 //how often do we want the system to sample
-#define SEND_SGP_EVERY_X_S				10
-#define MAX_SGP_SAMPLES_PACKET	(SEND_SGP_EVERY_X_S*1000)/SGP_SAMPLE_SYS_PERIOD_MS
+#define SEND_SGP_EVERY_X_S				1
+#define MAX_SGP_SAMPLES_PACKET	int((SEND_SGP_EVERY_X_S*1000)/SGP_SAMPLE_SYS_PERIOD_MS)
 
 typedef struct sgpSamples {
 	uint16_t srawVoc;
@@ -68,17 +68,26 @@ void SgpTask(void *argument) {
     uint16_t serialNumber[3];
     uint8_t serialNumberSize = 3;
     error = sgp41.getSerialNumber(serialNumber, serialNumberSize);
-    if (error) {
-    	while(1);
+    while (error) {
+    	osSemaphoreRelease(messageI2C1_LockHandle);
+		osDelay(10);
+		osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
+		error = sgp41.getSerialNumber(serialNumber, serialNumberSize);
     }
 
     uint16_t testResult;
     error = sgp41.executeSelfTest(testResult);
-    if (error) {
-      	while(1);
+    while(error) {
+    	osSemaphoreRelease(messageI2C1_LockHandle);
+      	osDelay(10);
+		osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
+        error = sgp41.executeSelfTest(testResult);
       }
     if(testResult != 0xD400){
-    	while(1);
+    	osSemaphoreRelease(messageI2C1_LockHandle);
+    	while(1){
+    		osDelay(10000); // TODO: terminate thread instead
+    	}
     }
 
 	header.payloadLength = MAX_SGP_SAMPLES_PACKET * sizeof(sgpSample);

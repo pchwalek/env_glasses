@@ -13,6 +13,7 @@ LUX_PKT = 8
 MIC_PKT = 10
 SHT_PKT = 11
 SGP_PKT = 12
+BLINK_PKT = 13
 
 # packet information
 headerStructType = 'BHIIIIIIII'

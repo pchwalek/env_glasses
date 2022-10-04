@@ -14,8 +14,8 @@
 
 
 #define SHT_SAMPLE_SYS_PERIOD_MS		5000 //how often do we want the system to sample
-#define SEND_SHT_EVERY_X_S				30
-#define MAX_SHT_SAMPLES_PACKET	(SEND_SHT_EVERY_X_S*1000)/SHT_SAMPLE_SYS_PERIOD_MS
+#define SEND_SHT_EVERY_X_S				5
+#define MAX_SHT_SAMPLES_PACKET	int((SEND_SHT_EVERY_X_S*1000)/SHT_SAMPLE_SYS_PERIOD_MS)
 
 typedef struct shtSamples {
 	float temp;
@@ -74,10 +74,10 @@ void ShtTask(void *argument) {
 
 		if ((flags & GRAB_SAMPLE_BIT) == GRAB_SAMPLE_BIT) {
 
-			timeLeftForSample = HAL_GetTick() - timeLeftForSample;
-			if(timeLeftForSample < SHT_SAMPLE_SYS_PERIOD_MS){
-				osDelay(timeLeftForSample);
-			}
+//			timeLeftForSample = HAL_GetTick() - timeLeftForSample;
+//			if(timeLeftForSample < SHT_SAMPLE_SYS_PERIOD_MS){
+//				osDelay(timeLeftForSample);
+//			}
 
 			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			if(sht4.getEvent()){
@@ -109,7 +109,7 @@ void ShtTask(void *argument) {
 				shtIdx = 0;
 			}
 
-			timeLeftForSample = HAL_GetTick();
+//			timeLeftForSample = HAL_GetTick();
 		}
 
 		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {

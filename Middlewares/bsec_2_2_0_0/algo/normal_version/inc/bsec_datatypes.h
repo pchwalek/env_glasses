@@ -438,7 +438,8 @@ typedef struct
      *   <sup>*</sup> GAS_ESTIMATE_1, GAS_ESTIMATE_2, GAS_ESTIMATE_3, GAS_ESTIMATE_4
      */     
     uint8_t accuracy;           
-} bsec_output_t;
+//} __attribute__((packed)) bsec_output_t; // guarantees 15 byte struct (16 if "packed" not called)
+}bsec_output_t;
 
 /*!
  * @brief Structure describing sample rate of physical/virtual sensors

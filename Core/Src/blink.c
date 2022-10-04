@@ -108,15 +108,26 @@ void BlinkTask(void *argument) {
 //			 start timer
 			HAL_TIM_Base_Start(&htim2);
 
-			HAL_TIM_Base_Start(&htim16); // modulation frequency is at 1kHz
+//			HAL_TIM_Base_Start(&htim16); // modulation frequency is at 1kHz
 //			 start  PWM channel for blink LED
-			if(HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1) == HAL_OK){
-				diodeState = 1;
-			}
+
+//			if(HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1) == HAL_OK){
+//				diodeState = 1;
+//			}
+
+			/* not using PWM */
+			GPIO_InitTypeDef GPIO_InitStruct = {0};
+			GPIO_InitStruct.Pin = BLINK_PWM_Pin;
+			GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+			GPIO_InitStruct.Pull = GPIO_PULLUP;
+			GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+			HAL_GPIO_Init(BLINK_PWM_GPIO_Port, &GPIO_InitStruct);
+
+			turnOnDiode();
 
 //			HAL_GPIO_WritePin(BLINK_PWM_GPIO_Port, BLINK_PWM_Pin,
 //					GPIO_PIN_SET);
-			diodeState = 1;
+
 
 			// reset external infrared detection flag
 			diodeSaturatedFlag = 0;
@@ -164,7 +175,6 @@ void BlinkTask(void *argument) {
 					for (iterator = 0; iterator < packetsPerHalfBuffer;
 							iterator++) {
 
-
 						// add to packet maximum sized payload
 						if(blinkDataTracker > BLINK_PACKET_SIZE){
 						    payloadLength = BLINK_PACKET_SIZE;
@@ -178,24 +188,27 @@ void BlinkTask(void *argument) {
 
 						// grab available memory for packet creation
 						if(osOK != osMessageQueueGet(packetAvail_QueueHandle, &sensorPacket, 0U,
-							    300)){
+							    0)){
 						    //no memory available so increment payload ID and drop packet
 						    payload_ID++;
+						    tickCnt += payloadLength;
 						    continue;
 						}
 
-						// copy payload
-						memcpy(sensorPacket->payload,
-								&(blink_ptr_copy[iterator * BLINK_PACKET_SIZE]),
-								payloadLength);
-
-						tickCnt += payloadLength;
-						sensorPacket->header.packetType = BLINK_DATA;
+						sensorPacket->header.packetType = BLINK;
 						sensorPacket->header.packetID = payload_ID;
 						sensorPacket->header.msFromStart = tickCnt;
 						sensorPacket->header.epoch = 0;
 						sensorPacket->header.payloadLength = payloadLength;
 						sensorPacket->header.reserved[0] = diodeSaturatedFlag;
+						sensorPacket->header.reserved[1] = BLINK_SAMPLE_RATE;
+						sensorPacket->header.reserved[2] = iterator;
+						tickCnt += payloadLength;
+
+						// copy payload
+						memcpy(sensorPacket->payload,
+								&(blink_ptr_copy[iterator * BLINK_PACKET_SIZE]),
+								payloadLength);
 
 						// add tick cnt
 						previousTick_ms = blinkMsgBuffer_1.tick_ms;
@@ -206,7 +219,9 @@ void BlinkTask(void *argument) {
 
 						payload_ID++;
 
-						osDelay(10); // (patrick being extra careful) artificial delay to allow time for other processing to trigger, should be able to remove with no problem
+//						osDelay(200); // (patrick being extra careful) artificial delay to allow time for other processing to trigger, should be able to remove with no problem
+
+//						if(iterator == 1) break; //TODO: remove
 
 					}
 				}

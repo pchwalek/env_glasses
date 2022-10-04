@@ -17,8 +17,8 @@
 #define SPEC_SAMPLE_PERIOD_MS			(uint32_t)(((SPEC_ATIME+1)*(SPEC_ASTEP+1)*2.78)/1000)
 #define SPEC_SAMPLE_PERIOD_S			(uint32_t)(((SPEC_ATIME+1)*(SPEC_ASTEP+1)*2.78)/1000000)
 #define SPEC_SAMPLE_SYS_PERIOD_MS		5000 //how often do we want the system to sample
-#define SEND_SPEC_EVERY_X_S				30
-#define MAX_SPEC_SAMPLES_PACKET	(SEND_SPEC_EVERY_X_S*1000)/SPEC_SAMPLE_SYS_PERIOD_MS
+#define SEND_SPEC_EVERY_X_S				5
+#define MAX_SPEC_SAMPLES_PACKET	int((SEND_SPEC_EVERY_X_S*1000)/SPEC_SAMPLE_SYS_PERIOD_MS)
 #define SPEC_FLICKER_DELAY				510
 
 typedef struct specSamples {
@@ -88,10 +88,10 @@ void Spec_Task(void *argument) {
 
 		if ((flags & GRAB_SAMPLE_BIT) == GRAB_SAMPLE_BIT) {
 
-			timeLeftForSample = HAL_GetTick() - timeLeftForSample;
-			if(timeLeftForSample < SPEC_SAMPLE_PERIOD_MS){
-				osDelay(timeLeftForSample);
-			}
+//			timeLeftForSample = HAL_GetTick() - timeLeftForSample;
+//			if(timeLeftForSample < SPEC_SAMPLE_PERIOD_MS){
+//				osDelay(timeLeftForSample);
+//			}
 
 			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			while (!specSensor.checkReadingProgress()) {
@@ -131,7 +131,7 @@ void Spec_Task(void *argument) {
 			specSensor.startReading();
 			osSemaphoreRelease(messageI2C1_LockHandle);
 
-			timeLeftForSample = HAL_GetTick();
+//			timeLeftForSample = HAL_GetTick();
 		}
 
 		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {

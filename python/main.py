@@ -3,7 +3,7 @@ from os.path import exists
 import time
 import _thread as thread
 import threading
-from struct import *
+import struct as struct
 
 from sensorClass import *
 from thermopile import *
@@ -12,6 +12,8 @@ from sgp import *
 from bme import *
 from lux import *
 from spec import *
+from blink import *
+
 
 gasSpec_serial = '/dev/cu.usbserial-014A1C56'
 
@@ -90,6 +92,7 @@ class logSensor (threading.Thread):
       spec = Spec(DATA_DIR, "Spec")
       lux = Lux(DATA_DIR, "Lux")
       bme = BME(DATA_DIR, "BME")
+      blink = Blink(DATA_DIR, "Blink")
 
       therm_pkt = 0
       sht_pkt = 0
@@ -97,6 +100,9 @@ class logSensor (threading.Thread):
       spec_pkt = 0
       lux_pkt = 0
       bme_pkt = 0
+      blink_pkt = 0
+
+      error_header_unpack = 0
 
       try:
           while True:
@@ -110,14 +116,23 @@ class logSensor (threading.Thread):
               # print(bytes.fromhex(ser_string[0:headerStructSize*2].decode("utf-8")))
 
               # (2) unpack header
-              pktType, pktID, msFromStart, epoch, payloadLen, r0, r1, r2, r3, r4 = unpack(headerStructType, bytes.fromhex(ser_string[0:headerStructSize*2].decode("utf-8")))
+              try:
+                  pktType, pktID, msFromStart, epoch, payloadLen, r0, r1, r2, r3, r4 = unpack(headerStructType, bytes.fromhex(ser_string[0:headerStructSize*2].decode("utf-8")))
+              except (ValueError, struct.error):
+                  print('ERROR: error in unpacking header')
+                  error_header_unpack += 1
+                  print(ser_string[0:headerStructSize*2].decode("utf-8"))
+                  continue
+              except BaseException as err:
+                  print(f"Unexpected {err=}, {type(err)=}")
+                  raise
 
               # (3) check what type of packet it is and proceed accordingly
               if(THERMOPILE_PKT == pktType):
                 # print("thermopile packet received: " + str(pktID))
                 therm_pkt += 1
                 number_of_packed_packets = int(payloadLen / thermopileStructSize)
-                # thermopile.unpack_compressed_packet(ser_string, number_of_packed_packets)
+                thermopile.unpack_compressed_packet(ser_string, number_of_packed_packets)
               elif (SHT_PKT == pktType):
                   # print("sht packet received: " + str(pktID))
                   sht_pkt += 1
@@ -143,13 +158,20 @@ class logSensor (threading.Thread):
                   sgp_pkt += 1
                   number_of_packed_packets = int(payloadLen / sgpStructSize)
                   sgp.unpack_compressed_packet(ser_string, number_of_packed_packets)
+              elif (BLINK_PKT == pktType):
+                  # print("lux packet received: " + str(pktID))
+                  blink_pkt += 1
+                  number_of_packed_packets = int(payloadLen / blinkStructSize)
+                  blink.unpack_compressed_packet(ser_string, number_of_packed_packets, msFromStart, pktID, sampleRate=r1, diodeSaturated=r0)
 
               print("THERM: " + str(therm_pkt) + "\t" +
                     "SHT: " + str(sht_pkt) + "\t" +
                     "SGP: " + str(sgp_pkt) + "\t" +
                     "SPEC: " + str(spec_pkt) + "\t" +
                     "LUX: " + str(lux_pkt) + "\t" +
-                    "BME: " + str(bme_pkt))
+                    "BME: " + str(bme_pkt) + "\t" +
+                    "BLINK: " + str(blink_pkt) + "\t" +
+                    "errors: " + str(error_header_unpack))
 
       except KeyboardInterrupt:
           print("Exiting " + self.name)

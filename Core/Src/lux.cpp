@@ -14,7 +14,7 @@
 
 
 #define LUX_SAMPLE_SYS_PERIOD_MS		5000 //how often do we want the system to sample
-#define SEND_LUX_EVERY_X_S				30
+#define SEND_LUX_EVERY_X_S				5
 #define MAX_LUX_SAMPLES_PACKET	(SEND_LUX_EVERY_X_S*1000)/LUX_SAMPLE_SYS_PERIOD_MS
 
 typedef struct luxSamples {
@@ -43,7 +43,6 @@ void LuxTask(void *argument) {
 		osDelay(100);
 	}
 	luxSensor.powerOn(true);
-	luxSensor.powerOn(true);
 
 	luxSensor.setATIME(TSL2722_INTEGRATIONTIME_101MS);
 	luxSensor.setAGAIN(TSL2722_GAIN_8X);
@@ -69,11 +68,11 @@ void LuxTask(void *argument) {
 		osFlagsWaitAny, osWaitForever);
 
 		if ((flags & GRAB_SAMPLE_BIT) == GRAB_SAMPLE_BIT) {
-
-			timeLeftForSample = HAL_GetTick() - timeLeftForSample;
-			if(timeLeftForSample < LUX_SAMPLE_SYS_PERIOD_MS){
-				osDelay(timeLeftForSample);
-			}
+//
+//			timeLeftForSample = HAL_GetTick() - timeLeftForSample;
+//			if(timeLeftForSample < LUX_SAMPLE_SYS_PERIOD_MS){
+//				osDelay(timeLeftForSample);
+//			}
 
 			osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
 			luxData[luxIdx].lux = luxSensor.getLux();
@@ -96,7 +95,7 @@ void LuxTask(void *argument) {
 				luxIdx = 0;
 			}
 
-			timeLeftForSample = HAL_GetTick();
+//			timeLeftForSample = HAL_GetTick();
 		}
 
 		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {

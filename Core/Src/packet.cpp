@@ -49,15 +49,15 @@ void senderThread(void *argument) {
 				break;
 			}
 			retry++;
-			osDelay(5);
+//			osDelay(5);
 		};
 
 		// return memory back to pool
 		osMessageQueuePut(packetAvail_QueueHandle, &packetToSend, 0U,
 				osWaitForever);
 
-		if (retry == 0)
-			osDelay(5); // artificial delay to allow for the connected device to handle the latest sent packet
+//		osDelay(100);
+		osDelay(50 - retry * 10); // artificial delay to allow for the connected device to handle the latest sent packet
 	}
 }
 

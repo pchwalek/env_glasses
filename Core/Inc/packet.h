@@ -27,41 +27,40 @@ extern "C" {
 #define MAX_PACKET_LEN		DATA_NOTIFICATION_MAX_PACKET_SIZE
 //#define MAX_PACKET_QUEUE_SIZE	30
 
-
 typedef enum {
-		PPG_RED            						 = 1,
-    PPG_IR           							 = 2,
-    SPECTROMETER									 = 3,
-    BME       										 = 4,
-    CO2										         = 5,
-		IMU														 = 6,
-		THERMOPILE										 = 7,
-		LUX		= 8,
-		LIDAR = 9,
-		MIC = 10,
-		SHT = 11,
-		SGP = 12,
+	PPG_RED = 1,
+	PPG_IR = 2,
+	SPECTROMETER = 3,
+	BME = 4,
+	CO2 = 5,
+	IMU = 6,
+	THERMOPILE = 7,
+	LUX = 8,
+	LIDAR = 9,
+	MIC = 10,
+	SHT = 11,
+	SGP = 12,
+	BLINK = 13,
 } PacketTypes;
 
-typedef struct PacketHeaders{
+typedef struct PacketHeaders {
 	PacketTypes packetType;
-  uint16_t packetID;
-  uint32_t msFromStart;
-  uint32_t epoch;
-  uint32_t payloadLength;
-  uint32_t reserved[5];
-}PacketHeader;
+	uint16_t packetID;
+	uint32_t msFromStart;
+	uint32_t epoch;
+	uint32_t payloadLength;
+	uint32_t reserved[5];
+} PacketHeader;
 
-typedef struct SensorPackets{
-  PacketHeader header;
-  uint8_t payload[MAX_PAYLOAD_SIZE]; // should be MAX_PACKET_LEN - sizeof(PacketHeader)
-}SensorPacket;
+typedef struct SensorPackets {
+	PacketHeader header;
+	uint8_t payload[MAX_PAYLOAD_SIZE]; // should be MAX_PACKET_LEN - sizeof(PacketHeader)
+} SensorPacket;
 
-SensorPacket *grabPacket(void);
+SensorPacket* grabPacket(void);
 void queueUpPacket(SensorPacket *packet);
 void senderThread(void *argument);
 uint8_t sendPacket_BLE(SensorPacket *packet);
-
 
 #ifdef __cplusplus
 }
