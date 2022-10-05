@@ -108,25 +108,20 @@ void BlinkTask(void *argument) {
 //			 start timer
 			HAL_TIM_Base_Start(&htim2);
 
-//			HAL_TIM_Base_Start(&htim16); // modulation frequency is at 1kHz
-//			 start  PWM channel for blink LED
-
-//			if(HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1) == HAL_OK){
-//				diodeState = 1;
-//			}
+			/* using PWM */
+			HAL_TIM_Base_Start(&htim16); // modulation frequency is at 1kHz
+			if(HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1) == HAL_OK){
+				diodeState = 1;
+			}
 
 			/* not using PWM */
-			GPIO_InitTypeDef GPIO_InitStruct = {0};
-			GPIO_InitStruct.Pin = BLINK_PWM_Pin;
-			GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-			GPIO_InitStruct.Pull = GPIO_PULLUP;
-			GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-			HAL_GPIO_Init(BLINK_PWM_GPIO_Port, &GPIO_InitStruct);
-
-			turnOnDiode();
-
-//			HAL_GPIO_WritePin(BLINK_PWM_GPIO_Port, BLINK_PWM_Pin,
-//					GPIO_PIN_SET);
+//			GPIO_InitTypeDef GPIO_InitStruct = {0};
+//			GPIO_InitStruct.Pin = BLINK_PWM_Pin;
+//			GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+//			GPIO_InitStruct.Pull = GPIO_PULLUP;
+//			GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+//			HAL_GPIO_Init(BLINK_PWM_GPIO_Port, &GPIO_InitStruct);
+//			turnOnDiode();
 
 
 			// reset external infrared detection flag
@@ -162,12 +157,13 @@ void BlinkTask(void *argument) {
 					// BLINK_SAMPLE_RATE == size of blink_ptr array
 					diodeSaturatedFlag = externalInfraredDetect(blink_ptr_copy, BLINK_SAMPLE_RATE, &rolling_avg);
 
-					if(diodeSaturatedFlag){
-						if(diodeState) turnOffDiode();
-					}
-					else{
-						if(!diodeState) turnOnDiode();
-					}
+					/* not using PWM */
+//					if(diodeSaturatedFlag){
+//						if(diodeState) turnOffDiode();
+//					}
+//					else{
+//						if(!diodeState) turnOnDiode();
+//					}
 
 					blinkDataTracker = BLINK_HALF_BUFFER_SIZE;
 

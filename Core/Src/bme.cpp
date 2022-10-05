@@ -14,11 +14,18 @@
 //#include "bsec2.h"
 //#include "../Middlewares/bsec_2_2_0_0/algo/normal_version/inc/bsec_datatypes.h"
 #include "bsec_datatypes.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "math.h"
+
+//#include "config/Default_H2S_NonH2S/Default_H2S_NonH2S.h"
+#include "config/bsec_sel_iaq_33v_3s_4d/bsec_serialized_configurations_selectivity.h"
 
 
 #define BME_SAMPLE_PERIOD_MS		3000
 //#define MAX_BME_SAMPLES_PACKET	(int)(512-sizeof(PacketHeader))/sizeof(bme_packet)
 #define MAX_BME_SAMPLES_PACKET	(int)(512-sizeof(PacketHeader))/sizeof(bsecData)
+#define BME_WAIT_TOL			10
 
 //#define MAX_BME_SAMPLES_PACKET	1
 //typedef struct bme_packets {
@@ -44,18 +51,22 @@ static PacketHeader header;
 //osThreadId_t bmeTaskHandle;
 osTimerId_t periodicBMETimer_id;
 
-Adafruit_BME680 bme;
+static Adafruit_BME680 bme;
 
 void BME_Task(void *argument) {
 	SensorPacket *packet = NULL;
-	uint32_t flags;
+	uint32_t flags = 0;
 
 	osDelay(500);
 
+	osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 	if (!bme.begin(BME68X_DEFAULT_ADDRESS, &hi2c1, false)) {
 		osDelay(100);
 			;
 	}
+	bme.bsecSetConfig(bsec_config_selectivity);
+	osSemaphoreRelease(messageI2C1_LockHandle);
+
 
 //	bme.setTemperatureOversampling(BME680_OS_8X);
 //	bme.setHumidityOversampling(BME680_OS_2X);
@@ -68,23 +79,46 @@ void BME_Task(void *argument) {
 	uint16_t bmeIdx = 0;
 	uint32_t bmeID = 0;
 
-	periodicBMETimer_id = osTimerNew(triggerBMESample, osTimerPeriodic, NULL,
-			NULL);
-	osTimerStart(periodicBMETimer_id, BME_SAMPLE_PERIOD_MS);
+	int64_t timeRemaining;
+
+//	periodicBMETimer_id = osTimerNew(triggerBMESample, osTimerPeriodic, NULL,
+//			NULL);
+//	osTimerStart(periodicBMETimer_id, BME_SAMPLE_PERIOD_MS);
 
 	while (1) {
-		flags = osThreadFlagsWait(GRAB_SAMPLE_BIT | TERMINATE_THREAD_BIT,
-		osFlagsWaitAny, osWaitForever);
+//		flags = osThreadFlagsWait(GRAB_SAMPLE_BIT | TERMINATE_THREAD_BIT,
+//		osFlagsWaitAny, 0);
 
-		if ((flags & GRAB_SAMPLE_BIT) == GRAB_SAMPLE_BIT) {
-
+//		if ((flags & GRAB_SAMPLE_BIT) == GRAB_SAMPLE_BIT) {
+		if(1){
 //			while (!bme.performReading()) {
 //				osDelay(10);
 //			}
 
+			/* delay time required for BSEC library */
+//			timeRemaining = floor((bme.bmeConf.next_call/1000000.0) - HAL_GetTick());
+//			if(timeRemaining > BME_WAIT_TOL){
+//				osDelay( (timeRemaining - BME_WAIT_TOL) );
+//			}
+
+			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
+//			taskENTER_CRITICAL();
 			while(!bme.bsecRun()){
-				osDelay(10);
+//				taskEXIT_CRITICAL();
+
+				timeRemaining = floor((bme.bmeConf.next_call/1000000.0) - HAL_GetTick());
+				if(timeRemaining > BME_WAIT_TOL){
+					osSemaphoreRelease(messageI2C1_LockHandle);
+					osDelay( (timeRemaining-BME_WAIT_TOL) );
+					osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
+				}else{
+					osDelay(1);
+				}
+
+//				taskENTER_CRITICAL();
 			}
+			osSemaphoreRelease(messageI2C1_LockHandle);
+//			taskEXIT_CRITICAL();
 
 			for(int i = 0; i<bme.outputs.nOutputs; i++){
 				memcpy(&bmeData[bmeIdx++], &bme.outputs.output[i], sizeof(bsecData));
@@ -127,4 +161,3 @@ void BME_Task(void *argument) {
 static void triggerBMESample(void *argument) {
 	osThreadFlagsSet(bmeTaskHandle, GRAB_SAMPLE_BIT);
 }
-
