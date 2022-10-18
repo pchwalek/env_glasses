@@ -18,8 +18,9 @@
 #include "task.h"
 #include "math.h"
 
+//#include "config/FieldAir_HandSanitizer/FieldAir_HandSanitizer.h"
 //#include "config/Default_H2S_NonH2S/Default_H2S_NonH2S.h"
-#include "config/bsec_sel_iaq_33v_3s_4d/bsec_serialized_configurations_selectivity.h"
+#include "config/bsec_sel_iaq_33v_3s_28d/bsec_serialized_configurations_selectivity.h"
 
 
 #define BME_SAMPLE_PERIOD_MS		3000
@@ -51,7 +52,7 @@ static PacketHeader header;
 //osThreadId_t bmeTaskHandle;
 osTimerId_t periodicBMETimer_id;
 
-static Adafruit_BME680 bme;
+Adafruit_BME680 bme;
 
 void BME_Task(void *argument) {
 	SensorPacket *packet = NULL;
@@ -60,13 +61,16 @@ void BME_Task(void *argument) {
 	osDelay(500);
 
 	osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
-	if (!bme.begin(BME68X_DEFAULT_ADDRESS, &hi2c1, false)) {
+	while (!bme.begin(BME68X_DEFAULT_ADDRESS, &hi2c1, false)) {
 		osDelay(100);
 			;
 	}
+//	bme.bsecSetConfig(FieldAir_HandSanitizer_config);
 	bme.bsecSetConfig(bsec_config_selectivity);
+
 	osSemaphoreRelease(messageI2C1_LockHandle);
 
+	bme.bsecSubscribe();
 
 //	bme.setTemperatureOversampling(BME680_OS_8X);
 //	bme.setHumidityOversampling(BME680_OS_2X);
@@ -111,7 +115,7 @@ void BME_Task(void *argument) {
 					osSemaphoreRelease(messageI2C1_LockHandle);
 					osDelay( (timeRemaining-BME_WAIT_TOL) );
 					osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
-				}else{
+				}else if(timeRemaining > 1){
 					osDelay(1);
 				}
 
