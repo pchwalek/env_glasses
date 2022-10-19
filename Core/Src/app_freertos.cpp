@@ -274,7 +274,6 @@ void MX_FREERTOS_Init(void) {
   /* Create the mutex(es) */
   /* creation of messageI2C1_Lock */
   messageI2C1_LockHandle = osMutexNew(&messageI2C1_Lock_attributes);
-  messageI2C3_LockHandle = osMutexNew(&messageI2C3_Lock_attributes);
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
@@ -303,7 +302,7 @@ void MX_FREERTOS_Init(void) {
   /* creation of frontLightsThre */
   frontLightsThreHandle = osThreadNew(ThreadFrontLightsComplexTask, NULL, &frontLightsThre_attributes);
 
-//  /* creation of thermopileTask */
+  /* creation of thermopileTask */
 //  thermopileTaskHandle = osThreadNew(Thermopile_Task, NULL, &thermopileTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
@@ -400,11 +399,11 @@ void startThreads(){
 //	blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
 
 	/* creation of thermopileTask */
-//	thermopileTaskHandle = osThreadNew(Thermopile_Task, NULL, &thermopileTask_attributes);
-//	shtTaskHandle = osThreadNew(ShtTask, NULL, &shtTask_attributes);
-//	sgpTaskHandle = osThreadNew(SgpTask, NULL, &sgpTask_attributes);
-//	specTaskHandle = osThreadNew(Spec_Task, NULL, &specTask_attributes);
-//	luxTaskHandle = osThreadNew(LuxTask, NULL, &luxTask_attributes);
+	thermopileTaskHandle = osThreadNew(Thermopile_Task, NULL, &thermopileTask_attributes);
+	shtTaskHandle = osThreadNew(ShtTask, NULL, &shtTask_attributes);
+	sgpTaskHandle = osThreadNew(SgpTask, NULL, &sgpTask_attributes);
+	specTaskHandle = osThreadNew(Spec_Task, NULL, &specTask_attributes);
+	luxTaskHandle = osThreadNew(LuxTask, NULL, &luxTask_attributes);
 	bmeTaskHandle = osThreadNew(BME_Task, NULL, &bmeTask_attributes);
 
 	  //imuTaskHandle = osThreadNew(IMU_Task, NULL, &imuTask_attributes);

@@ -49,12 +49,14 @@ extern "C" {
 #define BME_CONFIG_SIZE			BSEC_MAX_PROPERTY_BLOB_SIZE
 #define BME_STATE_ADDR			BME_CONFIG_ADDR + BSEC_MAX_PROPERTY_BLOB_SIZE
 #define BME_STATE_SIZE			BSEC_MAX_STATE_BLOB_SIZE
+#define BME_FIRST_RUN_ADDR		BME_STATE_ADDR + BSEC_MAX_STATE_BLOB_SIZE
+#define BME_FIRST_RUN_SIZE		sizeof(uint8_t)
 
 bool extMemInit();
-bool extMemGetData();
-bool extMemSaveData();
+bool extMemGetData(uint32_t addr, uint8_t* data, uint16_t size);
+bool extMemWriteData(uint32_t addr, uint8_t* data, uint16_t size);
 bool extMemChipSelectPin(bool state);
-bool extMemWriteProtect(bool state);
+bool extMemWriteProtectPin(bool state);
 
 #ifdef __cplusplus
 }

@@ -18,6 +18,7 @@ extern "C" {
 //extern osThreadId_t bmeTaskHandle;
 extern osTimerId_t periodicBMETimer_id;
 
+
 //const osThreadAttr_t bmeTask_attributes = {
 //	.name = "bmeTask",
 //	.attr_bits = osThreadDetached,
@@ -31,6 +32,8 @@ extern osTimerId_t periodicBMETimer_id;
 //  };
 
 void BME_Task(void *argument);
+void saveBME_StateConfig();
+void recoverBME_StateConfig();
 
 #ifdef __cplusplus
 }

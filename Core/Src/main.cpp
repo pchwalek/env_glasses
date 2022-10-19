@@ -34,6 +34,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "lp5523.h"
+#include "fram.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -91,7 +92,7 @@ int main(void)
 
   /* USER CODE END Init */
 
-
+  /* Configure the system clock */
   SystemClock_Config();
 
 /* Configure the peripherals common clocks */
@@ -134,6 +135,19 @@ int main(void)
   MX_TIM2_Init();
   MX_USB_Device_Init();
   MX_APPE_Init();
+
+  extMemInit();
+
+//  while(1){
+////	  HAL_Delay(5000);
+////	  extMemChipSelectPin(true);
+////	  extMemWriteProtectPin(true);
+////	  extMemWriteData(BME_CONFIG_ADDR, temp_data, BME_CONFIG_SIZE);
+//	  extMemGetData(BME_CONFIG_ADDR, temp_data2, BME_CONFIG_SIZE);
+//	  HAL_Delay(5000);
+////	  extMemChipSelectPin(false);
+////	  extMemWriteProtectPin(false);
+//  }
 
   /* USER CODE END 2 */
 

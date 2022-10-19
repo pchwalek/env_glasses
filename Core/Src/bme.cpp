@@ -17,6 +17,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "math.h"
+#include "fram.h"
 
 //#include "config/FieldAir_HandSanitizer/FieldAir_HandSanitizer.h"
 //#include "config/Default_H2S_NonH2S/Default_H2S_NonH2S.h"
@@ -27,6 +28,7 @@
 //#define MAX_BME_SAMPLES_PACKET	(int)(512-sizeof(PacketHeader))/sizeof(bme_packet)
 #define MAX_BME_SAMPLES_PACKET	(int)(512-sizeof(PacketHeader))/sizeof(bsecData)
 #define BME_WAIT_TOL			10
+#define BME_SAVE_STATE_PERIOD_MS	7200000 // every 2 hours
 
 //#define MAX_BME_SAMPLES_PACKET	1
 //typedef struct bme_packets {
@@ -54,9 +56,16 @@ osTimerId_t periodicBMETimer_id;
 
 Adafruit_BME680 bme;
 
+uint8_t bmeConfig[BSEC_MAX_PROPERTY_BLOB_SIZE];
+uint8_t bmeState[BSEC_MAX_STATE_BLOB_SIZE];
+
+
 void BME_Task(void *argument) {
 	SensorPacket *packet = NULL;
 	uint32_t flags = 0;
+
+
+	uint32_t timeSinceLastStateSave = 0;
 
 	osDelay(500);
 
@@ -65,12 +74,14 @@ void BME_Task(void *argument) {
 		osDelay(100);
 			;
 	}
-//	bme.bsecSetConfig(FieldAir_HandSanitizer_config);
-	bme.bsecSetConfig(bsec_config_selectivity);
+
+
+	recoverBME_StateConfig();
 
 	osSemaphoreRelease(messageI2C1_LockHandle);
 
 	bme.bsecSubscribe();
+
 
 //	bme.setTemperatureOversampling(BME680_OS_8X);
 //	bme.setHumidityOversampling(BME680_OS_2X);
@@ -153,6 +164,11 @@ void BME_Task(void *argument) {
 				bmeIdx = 0;
 			}
 
+			if( (HAL_GetTick() - timeSinceLastStateSave) >= BME_SAVE_STATE_PERIOD_MS){
+				saveBME_StateConfig();
+				timeSinceLastStateSave = HAL_GetTick();
+			}
+
 		}
 
 		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
@@ -160,6 +176,35 @@ void BME_Task(void *argument) {
 			break;
 		}
 	}
+}
+
+void saveBME_StateConfig(){
+	uint32_t bsecReturnLen;
+
+	bme.bsecGetConfig(bmeConfig, &bsecReturnLen);
+	bme.bsecGetState(bmeState, &bsecReturnLen);
+
+	extMemWriteData(BME_CONFIG_ADDR, bmeConfig, BME_CONFIG_SIZE);
+	extMemWriteData(BME_STATE_ADDR, bmeState, BME_STATE_SIZE);
+}
+
+void recoverBME_StateConfig(){
+	uint8_t conditionedSystem = 0;
+	extMemGetData(BME_FIRST_RUN_ADDR, &conditionedSystem, BME_FIRST_RUN_SIZE);
+
+	if(conditionedSystem == 0){
+		bme.bsecSetConfig(bsec_config_selectivity);
+		saveBME_StateConfig();
+		conditionedSystem = 1;
+		extMemWriteData(BME_FIRST_RUN_ADDR, &conditionedSystem, BME_FIRST_RUN_SIZE);
+	}else{
+		extMemGetData(BME_CONFIG_ADDR, bmeConfig, BME_CONFIG_SIZE);
+		extMemGetData(BME_STATE_ADDR, bmeState, BME_STATE_SIZE);
+
+		bme.bsecSetConfig(bmeConfig);
+		bme.bsecSetState(bmeState);
+	}
+
 }
 
 static void triggerBMESample(void *argument) {

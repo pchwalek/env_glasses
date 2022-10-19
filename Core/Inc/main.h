@@ -70,6 +70,8 @@ void startThreads(void);
 #define BLINK_SIG_GPIO_Port GPIOA
 #define MEM_WP_Pin GPIO_PIN_11
 #define MEM_WP_GPIO_Port GPIOC
+#define MEM_CS_Pin GPIO_PIN_15
+#define MEM_CS_GPIO_Port GPIOA
 #define IMU_CS_Pin GPIO_PIN_0
 #define IMU_CS_GPIO_Port GPIOD
 #define IMU_INT_Pin GPIO_PIN_2

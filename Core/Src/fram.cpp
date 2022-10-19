@@ -9,9 +9,22 @@
 
 #define SPI_HAN &hspi1
 
+bool extMemWriteEnableLatch(bool state){
+	uint8_t dataTX;
+	extMemChipSelectPin(true);
+	if(state){
+		dataTX = WREN;
+		HAL_SPI_Transmit(SPI_HAN, &dataTX, 1, 10);
+	}else{
+		dataTX = WRDI;
+		HAL_SPI_Transmit(SPI_HAN, &dataTX, 1, 10);
+	}
+	extMemChipSelectPin(false);
+}
+
 
 bool extMemInit(){
-	extMemWriteEnable(true);
+	extMemWriteEnableLatch(true);
 }
 
 bool framWriteEnable(bool state){
@@ -32,30 +45,46 @@ bool extMemGetData(uint32_t addr, uint8_t* data, uint16_t size){
 	address[0] = addr >> 16;
 	address[1] = addr >> 8;
 	address[2] = addr;
-	HAL_SPI_Transmit(SPI_HAN, &opCode, 1, 10);
-	HAL_SPI_Transmit(SPI_HAN, address, 3, 10);
-	HAL_SPI_Receive(SPI_HAN, data, size, 10);
+	if(HAL_OK != HAL_SPI_Transmit(SPI_HAN, &opCode, 1, 10)){
+		return false;
+	};
+	if(HAL_OK != HAL_SPI_Transmit(SPI_HAN, address, 3, 10)){
+		return false;
+	};
+	if(HAL_OK != HAL_SPI_Receive(SPI_HAN, data, size, 10)){
+		return false;
+	};
 	extMemChipSelectPin(false);
+	return true;
 }
 
 bool extMemWriteData(uint32_t addr, uint8_t* data, uint16_t size){
+	HAL_StatusTypeDef state;
+
 	extMemChipSelectPin(true);
 	uint8_t opCode = WRITE;
 	uint8_t address[3];
 	address[0] = addr >> 16;
 	address[1] = addr >> 8;
 	address[2] = addr;
-	HAL_SPI_Transmit(SPI_HAN, &opCode, 1, 10);
-	HAL_SPI_Transmit(SPI_HAN, address, 3, 10);
-	HAL_SPI_Transmit(SPI_HAN, data, size, 10);
+	if(HAL_OK != HAL_SPI_Transmit(SPI_HAN, &opCode, 1, 10)){
+		return false;
+	};
+	if(HAL_OK != HAL_SPI_Transmit(SPI_HAN, address, 3, 10)){
+		return false;
+	};
+	if(HAL_OK != HAL_SPI_Transmit(SPI_HAN, data, size, 10)){
+		return false;
+	};
 	extMemChipSelectPin(false);
+	return true;
 }
 
 bool extMemChipSelectPin(bool state){
 	if(state){
-		HAL_GPIO_WritePin(MEM_CS_GPIO_Port, MEM_CS_Pin, GPIO_PIN_SET);
-	}else{
 		HAL_GPIO_WritePin(MEM_CS_GPIO_Port, MEM_CS_Pin, GPIO_PIN_RESET);
+	}else{
+		HAL_GPIO_WritePin(MEM_CS_GPIO_Port, MEM_CS_Pin, GPIO_PIN_SET);
 	}
 }
 
