@@ -10,6 +10,6 @@ specStructLabel = ['_415','_445','_480','_515','_clear_1',
                    '_clear_2','_nir_2','flicker','timestamp']
 
 class Spec(SensorClass):
-    def __init__(self, filepath, name="null"):
-        SensorClass.__init__(self, filepath, name, specStructLabel, specStructType)
+    def __init__(self, filepath, queue, name="null"):
+        SensorClass.__init__(self, filepath, name, queue, specStructLabel, specStructType)
 

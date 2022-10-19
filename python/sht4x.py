@@ -8,6 +8,6 @@ shtStructLabel = ['temp','hum','timestamp']
 
 
 class SHT4X(SensorClass):
-    def __init__(self, filepath, name="null"):
-        SensorClass.__init__(self, filepath, name, shtStructLabel, shtStructType)
+    def __init__(self, filepath, queue, name="null"):
+        SensorClass.__init__(self, filepath, name, queue, shtStructLabel, shtStructType)
 

@@ -15,6 +15,6 @@ THERMOPLE_TEMPLE_MID_ADDR_ID		= 4
 THERMOPLE_TEMPLE_BACK_ADDR_ID		= 5
 
 class Thermopile(SensorClass):
-    def __init__(self, filepath, name="null"):
-        SensorClass.__init__(self, filepath, name, thermopileStructLabel, thermopileStructType)
+    def __init__(self, filepath, queue, name="null"):
+        SensorClass.__init__(self, filepath, name, queue, thermopileStructLabel, thermopileStructType)
 

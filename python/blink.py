@@ -7,8 +7,8 @@ blinkStructLabel = ['sample', 'pktID','timestamp']
 
 
 class Blink(SensorClass):
-    def __init__(self, filepath, name="null"):
-        SensorClass.__init__(self, filepath, name, blinkStructLabel, blinkStructType)
+    def __init__(self, filepath, queue, name="null"):
+        SensorClass.__init__(self, filepath, name, queue, blinkStructLabel, blinkStructType)
 
     def unpack_compressed_packet(self, data, pkt_cnt, msFromStart=-1, pktID=-1, sampleRate=-1,diodeSaturated=-1):
         time_recv = time.time()

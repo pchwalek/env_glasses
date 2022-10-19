@@ -3,9 +3,14 @@ from os.path import exists
 import time
 import _thread as thread
 import threading
+import queue
 import struct as struct
+from socket import gethostbyname
 
-from sensorClass import *
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
+# from sensorClass import *
 from thermopile import *
 from sht4x import *
 from sgp import *
@@ -15,7 +20,8 @@ from spec import *
 from blink import *
 
 
-gasSpec_serial = '/dev/cu.usbserial-014A1C56'
+# gasSpec_serial = '/dev/cu.usbserial-014A1C56'
+gasSpec_serial = 'COM4'
 
 DATA_DIR = "data/"
 filename_noext = 'logfile'
@@ -23,6 +29,10 @@ filename_prefix = ''
 filename_extension = ".csv"
 temp_header = "temp_1, temp_2, temp_3, ambient_temp, ardu_millis, epoch\n"
 hr_header = "heart_rate, epoch\n"
+
+HOST = "127.0.0.1"  # Standard loopback interface address (localhost)
+# HOST = gethostbyname('')
+PORT = 65432  # Port to listen on (non-privileged ports are > 1023)
 
 def start_experiment():
 
@@ -41,18 +51,21 @@ def start_experiment():
     #
     # print("Filename prefix: " + filename_prefix)
 
+    msgQueue = queue.Queue(maxsize=20)
+
     try:
         print("Starting threads")
-        gasSpec_thread = logSensor(1, "ardu_thread", temp_header, gasSpec_serial, filename_prefix+"_temp"+filename_extension)
-        # hr_thread = logSensor(2, "hr_thread", hr_header, hr_serial, filename_prefix+"_hr"+filename_extension)
+        gasSpec_thread = logSensor(1, "ardu_thread", temp_header, gasSpec_serial, filename_prefix+"_temp"+filename_extension, msgQueue)
+        socket_thread = socketMessage(2, "socket_thread", HOST, PORT, msgQueue)
 
+        socket_thread.start()
         gasSpec_thread.start()
     except KeyboardInterrupt:
         print("Keyboard interrupt detected")
         print("Closing threads")
 
         gasSpec_thread.join()
-        # hr_thread.join()
+        socket_thread.join()
 
     # # grab data
     # try:
@@ -65,14 +78,51 @@ def start_experiment():
     #     ardu_ser.close()
     #     # hr_ser.close()
 
+class socketMessage (threading.Thread):
+    def __init__(self, threadID, name, host, port, queue):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+        self.host = host
+        self.port = port
+        self.queue = queue
+
+    def run(self):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.bind((self.host, self.port))
+            s.listen()
+            while True:
+                conn, addr = s.accept()
+                while not self.queue.empty():
+                    try:
+                        self.queue.get(False)
+                    except queue.Empty:
+                        continue
+                with conn:
+                    print(f"Connected by {addr}")
+                    while True:
+                        message = self.queue.get(block=True, timeout=None)
+                        try:
+                            conn.sendall(message.encode())
+                        except (ConnectionAbortedError, ConnectionResetError):
+                            print("conn aborted")
+                            break
+        #
+        # while True:
+        #     # Get a "work item" out of the queue.
+        #     message = self.queue.get(block=True, timeout=None)
+
+
 class logSensor (threading.Thread):
-   def __init__(self, threadID, name, header, serial_port, filename):
+   def __init__(self, threadID, name, header, serial_port, filename, queue):
       threading.Thread.__init__(self)
       self.threadID = threadID
       self.name = name
       self.header = header
       self.serial_port = serial_port
       self.filename = filename
+      self.queue = queue
+
    def run(self):
       print ("Starting " + self.name)
       print(" Opening port for " + self.name + ": " + self.serial_port)
@@ -86,13 +136,13 @@ class logSensor (threading.Thread):
       #     f.write(self.header)
       #     f.close()
 
-      thermopile = Thermopile(DATA_DIR, "Thermopile")
-      sht45 = SHT4X(DATA_DIR, "SHT45")
-      sgp = SGP(DATA_DIR, "SGP")
-      spec = Spec(DATA_DIR, "Spec")
-      lux = Lux(DATA_DIR, "Lux")
-      bme = BME(DATA_DIR, "BME")
-      blink = Blink(DATA_DIR, "Blink")
+      thermopile = Thermopile(DATA_DIR, self.queue, "Thermopile")
+      sht45 = SHT4X(DATA_DIR, self.queue, "SHT45")
+      sgp = SGP(DATA_DIR, self.queue, "SGP")
+      spec = Spec(DATA_DIR, self.queue, "Spec")
+      lux = Lux(DATA_DIR, self.queue, "Lux")
+      bme = BME(DATA_DIR, self.queue, "BME")
+      blink = Blink(DATA_DIR, self.queue, "Blink")
 
       therm_pkt = 0
       sht_pkt = 0
@@ -163,6 +213,11 @@ class logSensor (threading.Thread):
                   blink_pkt += 1
                   number_of_packed_packets = int(payloadLen / blinkStructSize)
                   blink.unpack_compressed_packet(ser_string, number_of_packed_packets, msFromStart, pktID, sampleRate=r1, diodeSaturated=r0)
+
+              # try:
+              #     self.queue.put_nowait("msg")
+              # except queue.Full:
+              #     print("queue full")
 
               print("THERM: " + str(therm_pkt) + "\t" +
                     "SHT: " + str(sht_pkt) + "\t" +

@@ -2,6 +2,8 @@ from struct import *
 import pandas as pd
 import time
 import socket
+import queue
+import json
 
 HOST = "127.0.0.1"  # Standard loopback interface address (localhost)
 PORT = 65432  # Port to listen on (non-privileged ports are > 1023)
@@ -22,7 +24,7 @@ headerStructSize = calcsize(headerStructType)
 SAVE_EVERY_X_SECS = 30
 
 class SensorClass:
-    def __init__(self, filepath, name="null", header=[], structType=""):
+    def __init__(self, filepath, name="null", queue=0, header=[], structType=""):
         self.name = name
         self.filepath = filepath
         self.header = header
@@ -32,6 +34,7 @@ class SensorClass:
         self.structSize = calcsize(structType)
         self.start_timestamp = int(time.time())
         self.last_save = 0
+        self.queue = queue
 
         # socket communication specific
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -39,6 +42,10 @@ class SensorClass:
 
     def append_data(self, dataEntry):
         self.df.loc[len(self.df)] = dataEntry
+        try:
+            self.queue.put_nowait(json.dumps([self.name]+dataEntry))
+        except queue.Full:
+            pass
 
     def save_file(self):
         self.df.to_csv(self.filepath + self.name + "_" + str(self.start_timestamp) + ".csv")

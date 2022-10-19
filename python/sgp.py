@@ -8,6 +8,6 @@ sgpStructLabel = ['srawVOC','srawNOX','voc_index_value','nox_index_value','times
 
 
 class SGP(SensorClass):
-    def __init__(self, filepath, name="null"):
-        SensorClass.__init__(self, filepath, name, sgpStructLabel, sgpStructType)
+    def __init__(self, filepath, queue, name="null"):
+        SensorClass.__init__(self, filepath, name, queue, sgpStructLabel, sgpStructType)
 

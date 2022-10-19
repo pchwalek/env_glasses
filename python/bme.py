@@ -9,6 +9,6 @@ bmeStructLabel = ['timestamp_ns','signal','signal_dimensions','sensor_id','accur
 #       https://github.com/BoschSensortec/BSEC-Arduino-library/blob/master/src/inc/bsec_datatypes.h
 
 class BME(SensorClass):
-    def __init__(self, filepath, name="null"):
-        SensorClass.__init__(self, filepath, name, bmeStructLabel, bmeStructType)
+    def __init__(self, filepath, queue, name="null"):
+        SensorClass.__init__(self, filepath, name, queue, bmeStructLabel, bmeStructType)
 
