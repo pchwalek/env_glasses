@@ -14,14 +14,14 @@ def unityParser(data):
     global TEMPLE_TEMP_TRACK
     out_data = []
     descriptor = data[0][1:-1]
-
+    print(data)
     if (descriptor == 'Thermopile'):
-        if (int(data[1]) == THERMOPLE_NOSE_TIP_ID):
+        if (int(float(data[1])) == THERMOPLE_NOSE_TIP_ID):
             if(TEMPLE_TEMP_TRACK == 0):
                 return out_data
             out_data.append("THERMOPILE_COG")
             out_data.append(str(TEMPLE_TEMP_TRACK - float(data[5])))
-        elif (int(data[1]) == THERMOPLE_TEMPLE_MID_ADDR_ID):
+        elif (int(float(data[1])) == THERMOPLE_TEMPLE_MID_ADDR_ID):
             out_data.append("THERMOPILE_TEMPLE")
             out_data.append(data[5])
             TEMPLE_TEMP_TRACK = float(data[5])
@@ -30,7 +30,7 @@ def unityParser(data):
         out_data.append(data[3])
         out_data.append(data[4])
     elif(descriptor == "BME"):
-        sensor_ID = int(data[4])
+        sensor_ID = int(float(data[4]))
         if(sensor_ID == BSEC_IAQ):
             out_data.append("BME_IAQ")
             out_data.append(data[2])
@@ -94,50 +94,60 @@ class unityMessage (threading.Thread):
                             print("conn aborted")
                             break
 
+while(True):
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s_in:
+            while(True):
+                try:
+                    s_in.connect((HOST, IN_PORT))
+                except ConnectionRefusedError:
+                    print("ERROR: can't connect to python script")
+                    continue
+                break
 
-try:
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s_in:
-        s_in.connect((HOST, IN_PORT))
-        # s.sendall(b"Hello, world")
-        msgQueue = queue.Queue(maxsize=20)
+            # s.sendall(b"Hello, world")
+            msgQueue = queue.Queue(maxsize=20)
 
-        unity_thread = unityMessage(1, "unity_thread", HOST, OUT_PORT, msgQueue)
-        unity_thread.start()
+            unity_thread = unityMessage(1, "unity_thread", HOST, OUT_PORT, msgQueue)
+            unity_thread.start()
 
-        while True:
-            data = s_in.recv(1024).decode().strip('][').split(', ')
-            # parse out data
-            listMsg = unityParser(data)
-            if(listMsg==[]):
-                continue
-            strMsg = ','.join(listMsg)
+            while True:
+                try:
+                    data = s_in.recv(1024).decode().strip('][').split(', ')
+                except ConnectionResetError:
+                    break
+                # parse out data
+                listMsg = unityParser(data)
+                if(listMsg==[]):
+                    continue
+                strMsg = ','.join(listMsg)
 
-            try:
-                msgQueue.put_nowait(json.dumps(strMsg))
-            except queue.Full:
-                pass
-        # with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s_out:
-        #     s_out.bind((HOST, OUT_PORT))
-        #     s_out.listen()
-        #     while True:
-        #         conn, addr = s_out.accept()
-        #
-        #         with conn:
-        #             print(f"Connected by {addr}")
-        #             while True:
-        #                 data = s_in.recv(1024).decode().strip('][').split(', ')
-        #
-        #                 # parse out data
-        #                 listMsg = unityParser(data)
-        #                 strMsg = ','.join(listMsg)
-        #                 print(listMsg)
-        #                 # try:
-        #                 #     conn.sendall(strMsg.encode())
-        #                 # except (ConnectionAbortedError, ConnectionResetError):
-        #                 #     print("conn aborted")
-        #                 #     break
-except KeyboardInterrupt:
-    print("Keyboard interrupt detected")
-    print("Closing threads")
+                try:
+                    msgQueue.put_nowait(json.dumps(strMsg))
+                except queue.Full:
+                    pass
+            # with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s_out:
+            #     s_out.bind((HOST, OUT_PORT))
+            #     s_out.listen()
+            #     while True:
+            #         conn, addr = s_out.accept()
+            #
+            #         with conn:
+            #             print(f"Connected by {addr}")
+            #             while True:
+            #                 data = s_in.recv(1024).decode().strip('][').split(', ')
+            #
+            #                 # parse out data
+            #                 listMsg = unityParser(data)
+            #                 strMsg = ','.join(listMsg)
+            #                 print(listMsg)
+            #                 # try:
+            #                 #     conn.sendall(strMsg.encode())
+            #                 # except (ConnectionAbortedError, ConnectionResetError):
+            #                 #     print("conn aborted")
+            #                 #     break
+    except KeyboardInterrupt:
+        print("Keyboard interrupt detected")
+        print("Closing threads")
 
-    unity_thread.join()
+        unity_thread.join()

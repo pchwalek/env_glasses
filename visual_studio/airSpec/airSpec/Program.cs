@@ -65,8 +65,8 @@ class Program
                 }
                 else if (result[0] == "THERMOPILE_TEMPLE")
                 {
-                    // this value is temperature, in Celsius, of the middle thermopile of the temple thermopile array of 3
-                    float value = (float)Convert.ToDouble(result[1]); // celsius
+                    // this value is temperature, in Kelvin, of the middle thermopile of the temple thermopile array of 3
+                    float value = (float)Convert.ToDouble(result[1]); // kelvin
 
                     Console.WriteLine(result[0]);
                 }
