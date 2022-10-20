@@ -93,11 +93,14 @@ class socketMessage (threading.Thread):
             s.listen()
             while True:
                 conn, addr = s.accept()
+
+                # flush queue
                 while not self.queue.empty():
                     try:
                         self.queue.get(False)
                     except queue.Empty:
                         continue
+
                 with conn:
                     print(f"Connected by {addr}")
                     while True:
