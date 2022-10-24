@@ -1,12 +1,13 @@
 import socket
 from thermopile import *
 from bme import *
+import numpy as np
 
 import threading
 
 HOST = "127.0.0.1"  # Standard loopback interface address (localhost)
 IN_PORT = 65432  # Port to listen on (non-privileged ports are > 1023)
-OUT_PORT = 65433  # Port to send data out on
+OUT_PORT = 65467  # Port to send data out on
 
 TEMPLE_TEMP_TRACK = 0
 
@@ -49,6 +50,15 @@ def unityParser(data):
         out_data.append(data[1])
     elif (descriptor == "Blink"):
         return out_data
+    elif (descriptor == "Spec"):
+        out_data.append("Spec")
+        blue = data[3]
+        red = data[10]
+        green = data[7]
+        max_color = max([blue,red,green])
+        out_data.append(red / max_color)
+        out_data.append(green / max_color)
+        out_data.append(blue / max_color)
 
         # if(int(data[3]))
         # print(int(data[3]))
