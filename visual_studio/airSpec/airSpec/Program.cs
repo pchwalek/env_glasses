@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -123,6 +123,14 @@ class Program
                 {
                     // !!!!! NOT IMPLEMENTED !!!!! 
                     float blink = (float)Convert.ToDouble(result[1]); // blink: 1, no_blink: 0
+
+                    Console.WriteLine(result[0]);
+                }
+                else if (result[0] == "Spec")
+                {
+                    float red = (float)Convert.ToDouble(result[1]); // 0->1.0
+	            float green = (float)Convert.ToDouble(result[2]); // 0->1.0
+		    float blue = (float)Convert.ToDouble(result[3]); // 0->1.0
 
                     Console.WriteLine(result[0]);
                 }
