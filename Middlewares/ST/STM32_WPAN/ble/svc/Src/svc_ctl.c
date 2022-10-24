@@ -184,7 +184,7 @@ __WEAK void SVCCTL_SvcInit(void)
   ZDD_STM_Init();
 
   OTAS_STM_Init();
-
+  
   BVOPUS_STM_Init();
 
   MESH_Init();

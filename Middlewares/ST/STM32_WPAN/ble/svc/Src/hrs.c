@@ -392,172 +392,172 @@ static tBleStatus Update_Char_Measurement (HRS_MeasVal_t *pMeasurement )
  * @param  None
  * @retval None
  */
-//void HRS_Init(void)
-//{
-//  uint16_t uuid;
-//  tBleStatus hciCmdResult = BLE_STATUS_SUCCESS;
-//
-//  /**
-//   *	Register the event handler to the BLE controller
-//   */
-//  SVCCTL_RegisterSvcHandler(HeartRate_Event_Handler);
-//
-//  /**
-//   *  Add Heart Rate Service
-//   *
-//   * Max_Attribute_Records = 2*no_of_char + 1
-//   * service_max_attribute_record = 1 for heart rate service +
-//   *                                2 for hear rate measurement characteristic +
-//   *                                1 for client char configuration descriptor +
-//   *                                2 for body sensor location characteristic +
-//   *                                2 for control point characteristic
-//   */
-//  uuid = HEART_RATE_SERVICE_UUID;
-//  hciCmdResult = aci_gatt_add_service(UUID_TYPE_16,
-//                                   (Service_UUID_t *) &uuid,
-//                                   PRIMARY_SERVICE,
-//#if (BLE_CFG_HRS_BODY_SENSOR_LOCATION_CHAR != 0)
-//                                   2+
-//#endif
-//#if (BLE_CFG_HRS_ENERGY_EXPENDED_INFO_FLAG != 0)
-//                                   2+
-//#endif
-//#if (BLE_CFG_OTA_REBOOT_CHAR != 0)
-//                                   2+
-//#endif
-//                                   4,
-//                                   &(HRS_Context.HeartRateSvcHdle));
-//
-//  if (hciCmdResult == BLE_STATUS_SUCCESS)
-//  {
-//    BLE_DBG_HRS_MSG ("Heart Rate Service (HRS) is added Successfully %04X\n",
-//                        HRS_Context.HeartRateSvcHdle);
-//  }
-//  else
-//  {
-//    BLE_DBG_HRS_MSG ("FAILED to add Heart Rate Service (HRS), Error: %02X !!\n",
-//                        hciCmdResult);
-//  }
-//
-//  /**
-//   *  Add Heart Rate Measurement Characteristic
-//   */
-//  uuid = HEART_RATE_MEASURMENT_UUID;
-//  hciCmdResult = aci_gatt_add_char(HRS_Context.HeartRateSvcHdle,
-//                                   UUID_TYPE_16,
-//                                   (Char_UUID_t *) &uuid ,
-//#if (BLE_CFG_HRS_ENERGY_EXPENDED_INFO_FLAG != 0)
-//                                   2										                  /** Energy Expended Info */
-//#endif
-//#if (BLE_CFG_HRS_ENERGY_RR_INTERVAL_FLAG != 0)
-//                                   +(2*BLE_CFG_HRS_ENERGY_RR_INTERVAL_FLAG)	/**< RR Interval */
-//#endif
-//                                   +1                                    /** Flags */
-//                                   +2,                                   /** Measure */
-//                                   CHAR_PROP_NOTIFY,
-//                                   ATTR_PERMISSION_NONE,
-//                                   GATT_DONT_NOTIFY_EVENTS, /* gattEvtMask */
-//                                   10, /* encryKeySize */
-//                                   1, /* isVariable */
-//                                   &(HRS_Context.HeartRatemeasurementCharHdle));
-//
-//  if (hciCmdResult == BLE_STATUS_SUCCESS)
-//  {
-//    BLE_DBG_HRS_MSG ("Heart Rate Measurement Characteristic Added Successfully  %04X \n",
-//                        HRS_Context.HeartRatemeasurementCharHdle);
-//  }
-//  else
-//  {
-//    BLE_DBG_HRS_MSG ("FAILED to add Heart Rate Measurement Characteristic, Error: %02X !!\n",
-//                        hciCmdResult);
-//  }
-//
-//#if (BLE_CFG_HRS_BODY_SENSOR_LOCATION_CHAR != 0)
-//  /**
-//   *  Add Body Sensor Location Characteristic
-//   */
-//  uuid = SENSOR_LOCATION_UUID;
-//  hciCmdResult = aci_gatt_add_char(HRS_Context.HeartRateSvcHdle,
-//                                   UUID_TYPE_16,
-//                                   (Char_UUID_t *) &uuid ,
-//                                   1, /* bytes */
-//                                   CHAR_PROP_READ,
-//                                   ATTR_PERMISSION_NONE,
-//                                   GATT_DONT_NOTIFY_EVENTS, /* gattEvtMask */
-//                                   10, /* encryKeySize */
-//                                   0, /* isVariable: 0 */
-//                                   &(HRS_Context.BodySensorLocationCharHdle));
-//
-//  if (hciCmdResult == BLE_STATUS_SUCCESS)
-//  {
-//    BLE_DBG_HRS_MSG ("Sensor Location Characteristic Added Successfully  %04X \n",
-//                        HRS_Context.BodySensorLocationCharHdle);
-//  }
-//  else
-//  {
-//    BLE_DBG_HRS_MSG ("FAILED to add Sensor Location Characteristic, Error: %02X !!\n",
-//                        hciCmdResult);
-//  }
-//
-//#endif
-//
-//#if (BLE_CFG_HRS_ENERGY_EXPENDED_INFO_FLAG != 0)
-//  uuid = CONTROL_POINT_UUID;
-//  hciCmdResult = aci_gatt_add_char(HRS_Context.HeartRateSvcHdle,
-//                                   UUID_TYPE_16,
-//                                   (Char_UUID_t *) &uuid ,
-//                                   1, /* bytes */
-//                                   CHAR_PROP_WRITE,
-//                                   ATTR_PERMISSION_NONE,
-//                                   GATT_NOTIFY_WRITE_REQ_AND_WAIT_FOR_APPL_RESP, /* gattEvtMask */
-//                                   10, /* encryKeySize */
-//                                   0, /* isVariable: 0*/
-//                                   &(HRS_Context.ControlPointCharHdle));
-//
-//  if (hciCmdResult == BLE_STATUS_SUCCESS)
-//  {
-//    BLE_DBG_HRS_MSG ("Control Point Characteristic Added Successfully  %04X \n",
-//                        HRS_Context.ControlPointCharHdle);
-//  }
-//  else
-//  {
-//    BLE_DBG_HRS_MSG ("FAILED to add Control Point Characteristic, Error: %02X !!\n",
-//                        hciCmdResult);
-//  }
-//#endif
-//
-//#if (BLE_CFG_OTA_REBOOT_CHAR != 0)
-//   /**
-//     *  Add Boot Request Characteristic
-//     */
-//     hciCmdResult =   aci_gatt_add_char(HRS_Context.HeartRateSvcHdle,
-//                      UUID_TYPE_128,
-//                      (Char_UUID_t *)BM_REQ_CHAR_UUID,
-//                      BM_REQ_CHAR_SIZE,
-//                      CHAR_PROP_WRITE_WITHOUT_RESP,
-//                      ATTR_PERMISSION_NONE,
-//                      GATT_NOTIFY_ATTRIBUTE_WRITE,
-//                      10,
-//                      0,
-//                      &(HRS_Context.RebootReqCharHdle));
-//
-//
-//  if (hciCmdResult == BLE_STATUS_SUCCESS)
-//  {
-//    BLE_DBG_HRS_MSG ("OTA Reboot Characteristic Added Successfully  %04X \n",
-//                        HRS_Context.RebootReqCharHdle);
-//  }
-//  else
-//  {
-//    BLE_DBG_HRS_MSG ("FAILED to add OTA Reboot Characteristic, Error: %02X !!\n",
-//                        hciCmdResult);
-//  }
-//#endif
-//
-//
-//
-//  return;
-//}
+void HRS_Init(void)
+{
+  uint16_t uuid;
+  tBleStatus hciCmdResult = BLE_STATUS_SUCCESS;
+
+  /**
+   *	Register the event handler to the BLE controller
+   */
+  SVCCTL_RegisterSvcHandler(HeartRate_Event_Handler);
+
+  /**
+   *  Add Heart Rate Service
+   *
+   * Max_Attribute_Records = 2*no_of_char + 1
+   * service_max_attribute_record = 1 for heart rate service +
+   *                                2 for hear rate measurement characteristic +
+   *                                1 for client char configuration descriptor +
+   *                                2 for body sensor location characteristic +
+   *                                2 for control point characteristic
+   */
+  uuid = HEART_RATE_SERVICE_UUID;
+  hciCmdResult = aci_gatt_add_service(UUID_TYPE_16,
+                                   (Service_UUID_t *) &uuid,
+                                   PRIMARY_SERVICE,
+#if (BLE_CFG_HRS_BODY_SENSOR_LOCATION_CHAR != 0)
+                                   2+
+#endif
+#if (BLE_CFG_HRS_ENERGY_EXPENDED_INFO_FLAG != 0)
+                                   2+
+#endif
+#if (BLE_CFG_OTA_REBOOT_CHAR != 0)
+                                   2+
+#endif
+                                   4,
+                                   &(HRS_Context.HeartRateSvcHdle));
+
+  if (hciCmdResult == BLE_STATUS_SUCCESS)
+  {
+    BLE_DBG_HRS_MSG ("Heart Rate Service (HRS) is added Successfully %04X\n",
+                        HRS_Context.HeartRateSvcHdle);
+  }
+  else
+  {
+    BLE_DBG_HRS_MSG ("FAILED to add Heart Rate Service (HRS), Error: %02X !!\n",
+                        hciCmdResult);
+  }
+
+  /**
+   *  Add Heart Rate Measurement Characteristic
+   */
+  uuid = HEART_RATE_MEASURMENT_UUID;
+  hciCmdResult = aci_gatt_add_char(HRS_Context.HeartRateSvcHdle,
+                                   UUID_TYPE_16,
+                                   (Char_UUID_t *) &uuid ,
+#if (BLE_CFG_HRS_ENERGY_EXPENDED_INFO_FLAG != 0)
+                                   2										                  /** Energy Expended Info */
+#endif
+#if (BLE_CFG_HRS_ENERGY_RR_INTERVAL_FLAG != 0)
+                                   +(2*BLE_CFG_HRS_ENERGY_RR_INTERVAL_FLAG)	/**< RR Interval */
+#endif
+                                   +1                                    /** Flags */
+                                   +2,                                   /** Measure */
+                                   CHAR_PROP_NOTIFY,
+                                   ATTR_PERMISSION_NONE,
+                                   GATT_DONT_NOTIFY_EVENTS, /* gattEvtMask */
+                                   10, /* encryKeySize */
+                                   1, /* isVariable */
+                                   &(HRS_Context.HeartRatemeasurementCharHdle));
+
+  if (hciCmdResult == BLE_STATUS_SUCCESS)
+  {
+    BLE_DBG_HRS_MSG ("Heart Rate Measurement Characteristic Added Successfully  %04X \n",
+                        HRS_Context.HeartRatemeasurementCharHdle);
+  }
+  else
+  {
+    BLE_DBG_HRS_MSG ("FAILED to add Heart Rate Measurement Characteristic, Error: %02X !!\n",
+                        hciCmdResult);
+  }
+
+#if (BLE_CFG_HRS_BODY_SENSOR_LOCATION_CHAR != 0)
+  /**
+   *  Add Body Sensor Location Characteristic
+   */
+  uuid = SENSOR_LOCATION_UUID;
+  hciCmdResult = aci_gatt_add_char(HRS_Context.HeartRateSvcHdle,
+                                   UUID_TYPE_16,
+                                   (Char_UUID_t *) &uuid ,
+                                   1, /* bytes */
+                                   CHAR_PROP_READ,
+                                   ATTR_PERMISSION_NONE,
+                                   GATT_DONT_NOTIFY_EVENTS, /* gattEvtMask */
+                                   10, /* encryKeySize */
+                                   0, /* isVariable: 0 */
+                                   &(HRS_Context.BodySensorLocationCharHdle));
+
+  if (hciCmdResult == BLE_STATUS_SUCCESS)
+  {
+    BLE_DBG_HRS_MSG ("Sensor Location Characteristic Added Successfully  %04X \n",
+                        HRS_Context.BodySensorLocationCharHdle);
+  }
+  else
+  {
+    BLE_DBG_HRS_MSG ("FAILED to add Sensor Location Characteristic, Error: %02X !!\n",
+                        hciCmdResult);
+  }
+
+#endif
+
+#if (BLE_CFG_HRS_ENERGY_EXPENDED_INFO_FLAG != 0)
+  uuid = CONTROL_POINT_UUID;
+  hciCmdResult = aci_gatt_add_char(HRS_Context.HeartRateSvcHdle,
+                                   UUID_TYPE_16,
+                                   (Char_UUID_t *) &uuid ,
+                                   1, /* bytes */
+                                   CHAR_PROP_WRITE,
+                                   ATTR_PERMISSION_NONE,
+                                   GATT_NOTIFY_WRITE_REQ_AND_WAIT_FOR_APPL_RESP, /* gattEvtMask */
+                                   10, /* encryKeySize */
+                                   0, /* isVariable: 0*/
+                                   &(HRS_Context.ControlPointCharHdle));
+
+  if (hciCmdResult == BLE_STATUS_SUCCESS)
+  {
+    BLE_DBG_HRS_MSG ("Control Point Characteristic Added Successfully  %04X \n",
+                        HRS_Context.ControlPointCharHdle);
+  }
+  else
+  {
+    BLE_DBG_HRS_MSG ("FAILED to add Control Point Characteristic, Error: %02X !!\n",
+                        hciCmdResult);
+  }
+#endif
+
+#if (BLE_CFG_OTA_REBOOT_CHAR != 0)
+   /**
+     *  Add Boot Request Characteristic
+     */
+     hciCmdResult =   aci_gatt_add_char(HRS_Context.HeartRateSvcHdle,
+                      UUID_TYPE_128,
+                      (Char_UUID_t *)BM_REQ_CHAR_UUID,
+                      BM_REQ_CHAR_SIZE,
+                      CHAR_PROP_WRITE_WITHOUT_RESP,
+                      ATTR_PERMISSION_NONE,
+                      GATT_NOTIFY_ATTRIBUTE_WRITE,
+                      10,
+                      0,
+                      &(HRS_Context.RebootReqCharHdle));
+  
+
+  if (hciCmdResult == BLE_STATUS_SUCCESS)
+  {
+    BLE_DBG_HRS_MSG ("OTA Reboot Characteristic Added Successfully  %04X \n",
+                        HRS_Context.RebootReqCharHdle);
+  }
+  else
+  {
+    BLE_DBG_HRS_MSG ("FAILED to add OTA Reboot Characteristic, Error: %02X !!\n",
+                        hciCmdResult);
+  }
+#endif
+  
+  
+  
+  return;
+}
 
 /**
  * @brief  Characteristic update

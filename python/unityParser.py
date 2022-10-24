@@ -20,11 +20,11 @@ def unityParser(data):
             if(TEMPLE_TEMP_TRACK == 0):
                 return out_data
             out_data.append("THERMOPILE_COG")
-            out_data.append(str(TEMPLE_TEMP_TRACK - float(data[5])))
+            out_data.append(str(TEMPLE_TEMP_TRACK - float(data[6])))
         elif (int(float(data[1])) == THERMOPLE_TEMPLE_MID_ADDR_ID):
             out_data.append("THERMOPILE_TEMPLE")
-            out_data.append(data[5])
-            TEMPLE_TEMP_TRACK = float(data[5])
+            out_data.append(data[6])
+            TEMPLE_TEMP_TRACK = float(data[6])
     elif(descriptor == "SGP"):
         out_data.append("SGP_GAS")
         out_data.append(data[3])
@@ -90,7 +90,7 @@ class unityMessage (threading.Thread):
                         try:
                             # print(message)
                             conn.sendall(message.encode())
-                        except (ConnectionAbortedError, ConnectionResetError):
+                        except (BrokenPipeError, ConnectionAbortedError, ConnectionResetError):
                             print("conn aborted")
                             break
 
