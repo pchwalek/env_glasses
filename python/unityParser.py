@@ -52,14 +52,13 @@ def unityParser(data):
         return out_data
     elif (descriptor == "Spec"):
         out_data.append("Spec")
-        blue = data[3]
-        red = data[10]
-        green = data[7]
+        blue = float(data[3])
+        red = float(data[10])
+        green = float(data[7])
         max_color = max([blue,red,green])
-        out_data.append(red / max_color)
-        out_data.append(green / max_color)
-        out_data.append(blue / max_color)
-
+        out_data.append(str(red / max_color))
+        out_data.append(str(green / max_color))
+        out_data.append(str(blue / max_color))
         # if(int(data[3]))
         # print(int(data[3]))
         #

@@ -16,7 +16,8 @@
 
 #define SGP_SAMPLE_SYS_PERIOD_MS		1000 //how often do we want the system to sample
 #define SEND_SGP_EVERY_X_S				1
-#define MAX_SGP_SAMPLES_PACKET	int((SEND_SGP_EVERY_X_S*1000)/SGP_SAMPLE_SYS_PERIOD_MS)
+//#define MAX_SGP_SAMPLES_PACKET	int((SEND_SGP_EVERY_X_S*1000)/SGP_SAMPLE_SYS_PERIOD_MS)
+#define MAX_SGP_SAMPLES_PACKET	int(1)
 
 typedef struct sgpSamples {
 	uint16_t srawVoc;

@@ -25,7 +25,6 @@
 
 
 #define BME_SAMPLE_PERIOD_MS		3000
-//#define MAX_BME_SAMPLES_PACKET	(int)(512-sizeof(PacketHeader))/sizeof(bme_packet)
 #define MAX_BME_SAMPLES_PACKET	(int)(512-sizeof(PacketHeader))/sizeof(bsecData)
 #define BME_WAIT_TOL			10
 #define BME_SAVE_STATE_PERIOD_MS	7200000 // every 2 hours
@@ -149,7 +148,9 @@ void BME_Task(void *argument) {
 //			bmeData[bmeIdx].altitude = bme.readAltitude(SEALEVELPRESSURE_HPA);
 //
 //			bmeIdx++;
-			if (bmeIdx >= (MAX_BME_SAMPLES_PACKET - BSEC_NUMBER_OUTPUTS) ) {
+//			if (bmeIdx >= (MAX_BME_SAMPLES_PACKET - BSEC_NUMBER_OUTPUTS) ) {
+			if (1) {
+
 				header.packetType = BME;
 				header.packetID = bmeID;
 				header.msFromStart = HAL_GetTick();
@@ -162,6 +163,7 @@ void BME_Task(void *argument) {
 				}
 				bmeID++;
 				bmeIdx = 0;
+
 			}
 
 			if( (HAL_GetTick() - timeSinceLastStateSave) >= BME_SAVE_STATE_PERIOD_MS){
@@ -184,8 +186,12 @@ void saveBME_StateConfig(){
 	bme.bsecGetConfig(bmeConfig, &bsecReturnLen);
 	bme.bsecGetState(bmeState, &bsecReturnLen);
 
+	taskENTER_CRITICAL();
 	extMemWriteData(BME_CONFIG_ADDR, bmeConfig, BME_CONFIG_SIZE);
+	taskEXIT_CRITICAL();
+	taskENTER_CRITICAL();
 	extMemWriteData(BME_STATE_ADDR, bmeState, BME_STATE_SIZE);
+	taskEXIT_CRITICAL();
 }
 
 void recoverBME_StateConfig(){

@@ -12,7 +12,8 @@
 #include "portmacro.h"
 #include "captivate_config.h"
 
-#define THERMOPILE_SAMPLE_PERIOD_MS		1000
+//#define THERMOPILE_SAMPLE_PERIOD_MS		1000
+#define THERMOPILE_SAMPLE_PERIOD_MS		500
 #define THERMOPILE_CNT								2
 #define THERMOPILE_CHANNELS				5
 #define MAX_THERMOPILE_SAMPLES_PACKET	(int)(512-sizeof(PacketHeader))/sizeof(thermopile_packet)

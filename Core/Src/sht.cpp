@@ -13,9 +13,12 @@
 #include "captivate_config.h"
 
 
-#define SHT_SAMPLE_SYS_PERIOD_MS		5000 //how often do we want the system to sample
+//#define SHT_SAMPLE_SYS_PERIOD_MS		5000 //how often do we want the system to sample
 #define SEND_SHT_EVERY_X_S				5
-#define MAX_SHT_SAMPLES_PACKET	int((SEND_SHT_EVERY_X_S*1000)/SHT_SAMPLE_SYS_PERIOD_MS)
+//#define MAX_SHT_SAMPLES_PACKET	int((SEND_SHT_EVERY_X_S*1000)/SHT_SAMPLE_SYS_PERIOD_MS)
+
+#define SHT_SAMPLE_SYS_PERIOD_MS		500 //how often do we want the system to sample
+#define MAX_SHT_SAMPLES_PACKET	1
 
 typedef struct shtSamples {
 	float temp;

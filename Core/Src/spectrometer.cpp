@@ -16,9 +16,11 @@
 #define SPEC_ASTEP								999
 #define SPEC_SAMPLE_PERIOD_MS			(uint32_t)(((SPEC_ATIME+1)*(SPEC_ASTEP+1)*2.78)/1000)
 #define SPEC_SAMPLE_PERIOD_S			(uint32_t)(((SPEC_ATIME+1)*(SPEC_ASTEP+1)*2.78)/1000000)
-#define SPEC_SAMPLE_SYS_PERIOD_MS		5000 //how often do we want the system to sample
+//#define SPEC_SAMPLE_SYS_PERIOD_MS		5000 //how often do we want the system to sample
+#define SPEC_SAMPLE_SYS_PERIOD_MS		2000 //how often do we want the system to sample
 #define SEND_SPEC_EVERY_X_S				5
-#define MAX_SPEC_SAMPLES_PACKET	int((SEND_SPEC_EVERY_X_S*1000)/SPEC_SAMPLE_SYS_PERIOD_MS)
+//#define MAX_SPEC_SAMPLES_PACKET	int((SEND_SPEC_EVERY_X_S*1000)/SPEC_SAMPLE_SYS_PERIOD_MS)
+#define MAX_SPEC_SAMPLES_PACKET	int(1)
 #define SPEC_FLICKER_DELAY				510
 
 typedef struct specSamples {
