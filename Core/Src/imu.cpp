@@ -12,8 +12,12 @@
 #include "portmacro.h"
 #include "captivate_config.h"
 
-#define IMU_SAMPLE_PERIOD_MS		5
-#define MAX_IMU_SAMPLES_PACKET	(int)(512-sizeof(PacketHeader))/sizeof(imu_sample)
+//#define IMU_SAMPLE_PERIOD_MS		5
+
+#define IMU_SAMPLE_PERIOD_MS		50
+
+//#define MAX_IMU_SAMPLES_PACKET	(int)(512-sizeof(PacketHeader))/sizeof(imu_sample)
+#define MAX_IMU_SAMPLES_PACKET	1
 
 static void triggerIMUSample(void *argument);
 
@@ -23,6 +27,9 @@ static PacketHeader header;
 osTimerId_t periodicIMUTimer_id;
 
 Adafruit_ICM20948 imu;
+#define MAX_FIFO_CNT 4096
+#define IMU_PKT_SIZE 12
+uint8_t data[MAX_FIFO_CNT];
 
 void IMU_Task(void *argument){
 	SensorPacket *packet = NULL;
@@ -34,11 +41,20 @@ void IMU_Task(void *argument){
 		osDelay(100);
 	}
 
-  header.payloadLength = MAX_IMU_SAMPLES_PACKET * sizeof(imu_sample);
+//  header.payloadLength = MAX_IMU_SAMPLES_PACKET * sizeof(imu_sample);
+  header.payloadLength = 408;
+
   header.reserved[0] = IMU_SAMPLE_PERIOD_MS;
 
   uint16_t imuIdx = 0;
   uint32_t imuID = 0;
+
+  uint8_t intStatus[4] = {0};
+
+  uint16_t fifo_cnt, fifo_cnt_2;
+
+  uint32_t lastTick = HAL_GetTick();
+  float sampleRate = 0;
 
   periodicIMUTimer_id = osTimerNew(triggerIMUSample,
 			osTimerPeriodic, NULL, NULL);
@@ -49,7 +65,15 @@ void IMU_Task(void *argument){
   					osFlagsWaitAny, osWaitForever);
 
   	if ((flags & GRAB_SAMPLE_BIT) == GRAB_SAMPLE_BIT) {
-			imu.getSample(&imuData[imuIdx]);
+  		imu.getFIFOcnt(&fifo_cnt);
+  		imu.readFIFO(data, fifo_cnt - (fifo_cnt % IMU_PKT_SIZE) );
+  		imu.getFIFOcnt(&fifo_cnt_2);
+//  		imu.getINTstatus(intStatus);
+
+  		sampleRate = (fifo_cnt/6.0) / (( HAL_GetTick() - lastTick) / 1000.0);
+  		lastTick = HAL_GetTick();
+
+//			imu.getSample(&imuData[imuIdx]);
 			imuIdx++;
 
 			if(imuIdx >= MAX_IMU_SAMPLES_PACKET){
@@ -59,7 +83,7 @@ void IMU_Task(void *argument){
 				packet = grabPacket();
 				if(packet != NULL){
 					memcpy(&(packet->header), &header, sizeof(PacketHeader));
-					memcpy(packet->payload, imuData, header.payloadLength);
+					memcpy(packet->payload, data, header.payloadLength);
 					queueUpPacket(packet);
 				}
 				imuID++;
@@ -76,5 +100,9 @@ void IMU_Task(void *argument){
 
 static void triggerIMUSample(void *argument) {
 	osThreadFlagsSet(imuTaskHandle, GRAB_SAMPLE_BIT);
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+//	if(GPIO_Pin == IMU_INT_Pin) triggerIMUSample(NULL);
 }
 

@@ -151,6 +151,9 @@ int main(void)
 ////	  extMemWriteProtectPin(false);
 //  }
 
+//  uint8_t data[1000];
+//  HAL_SAI_Receive(&hsai_BlockA1, data, 500, 100);
+//  while(1);
   /* USER CODE END 2 */
 
   /* Init scheduler */
