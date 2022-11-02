@@ -10,6 +10,7 @@ PORT = 65432  # Port to listen on (non-privileged ports are > 1023)
 
 SPEC_PKT = 3
 BME_PKT = 4
+IMU_PKT = 6
 THERMOPILE_PKT = 7
 LUX_PKT = 8
 MIC_PKT = 10
@@ -21,13 +22,13 @@ BLINK_PKT = 13
 headerStructType = 'BHIIIIIIII'
 headerStructSize = calcsize(headerStructType)
 
-SAVE_EVERY_X_SECS = 30
+SAVE_EVERY_X_SECS = 10
 
 class SensorClass:
     def __init__(self, filepath, name="null", queue=0, header=[], structType=""):
         self.name = name
         self.filepath = filepath
-        self.header = header
+        self.header = header.copy()
         self.header.append("epoch")
         self.df = pd.DataFrame(columns=self.header)
         self.structType = structType
@@ -58,9 +59,10 @@ class SensorClass:
                                                    (headerStructSize * 2) + (idx + 1) * (self.structSize * 2)].decode("utf-8"))))
             unpacked_pkt.append(time_recv)
             self.append_data(unpacked_pkt)
-            self.save_file()
+            # self.save_file()
         if( (time.time() - self.last_save) > SAVE_EVERY_X_SECS):
             self.save_file()
+            self.last_save = time.time()
 
     def connect_to_socket(self, host='', port=65432):
         self.s.connect((host,port))

@@ -18,6 +18,7 @@
 
 //#define MAX_IMU_SAMPLES_PACKET	(int)(512-sizeof(PacketHeader))/sizeof(imu_sample)
 #define MAX_IMU_SAMPLES_PACKET	1
+#define MAX_IMU_PKT_SIZE	408
 
 static void triggerIMUSample(void *argument);
 
@@ -29,7 +30,8 @@ osTimerId_t periodicIMUTimer_id;
 Adafruit_ICM20948 imu;
 #define MAX_FIFO_CNT 4096
 #define IMU_PKT_SIZE 12
-uint8_t data[MAX_FIFO_CNT];
+static uint8_t data[MAX_FIFO_CNT];
+
 
 void IMU_Task(void *argument){
 	SensorPacket *packet = NULL;
@@ -42,7 +44,8 @@ void IMU_Task(void *argument){
 	}
 
 //  header.payloadLength = MAX_IMU_SAMPLES_PACKET * sizeof(imu_sample);
-  header.payloadLength = 408;
+//  header.payloadLength = 408;
+  header.packetType = IMU;
 
   header.reserved[0] = IMU_SAMPLE_PERIOD_MS;
 
@@ -52,6 +55,10 @@ void IMU_Task(void *argument){
   uint8_t intStatus[4] = {0};
 
   uint16_t fifo_cnt, fifo_cnt_2;
+
+  uint16_t sampleTracker = 0;
+  uint16_t start_idx = 0;
+  uint16_t end_idx = 0;
 
   uint32_t lastTick = HAL_GetTick();
   float sampleRate = 0;
@@ -66,29 +73,46 @@ void IMU_Task(void *argument){
 
   	if ((flags & GRAB_SAMPLE_BIT) == GRAB_SAMPLE_BIT) {
   		imu.getFIFOcnt(&fifo_cnt);
-  		imu.readFIFO(data, fifo_cnt - (fifo_cnt % IMU_PKT_SIZE) );
-  		imu.getFIFOcnt(&fifo_cnt_2);
-//  		imu.getINTstatus(intStatus);
 
-  		sampleRate = (fifo_cnt/6.0) / (( HAL_GetTick() - lastTick) / 1000.0);
+  		fifo_cnt = fifo_cnt - (fifo_cnt % IMU_PKT_SIZE); // ensure reading only complete packets
+//
+//  		/* circular buffer logic */
+//  		if(end_idx == end_idx){
+//  			if( (end_idx + fifo_cnt) <= MAX_FIFO_CNT){
+//  		  		imu.readFIFO(&data[end_idx], fifo_cnt );
+//  		  		end_idx += fifo_cnt;
+//  			}
+//  			else{
+//  		  		imu.readFIFO(&data[end_idx], MAX_FIFO_CNT - end_idx);
+//
+//  			}
+//  		}
+
+  		imu.readFIFO(data, fifo_cnt );
+  		sampleTracker += fifo_cnt;
+//  		imu.getFIFOcnt(&fifo_cnt_2);
+//  		sampleRate = (fifo_cnt/6.0) / (( HAL_GetTick() - lastTick) / 1000.0);
   		lastTick = HAL_GetTick();
+  		start_idx = 0;
 
-//			imu.getSample(&imuData[imuIdx]);
-			imuIdx++;
-
-			if(imuIdx >= MAX_IMU_SAMPLES_PACKET){
-				header.packetType = IMU;
-				header.packetID = imuID;
-				header.msFromStart = HAL_GetTick();
-				packet = grabPacket();
-				if(packet != NULL){
-					memcpy(&(packet->header), &header, sizeof(PacketHeader));
-					memcpy(packet->payload, data, header.payloadLength);
-					queueUpPacket(packet);
-				}
-				imuID++;
-				imuIdx = 0;
+		while(sampleTracker != 0){
+			header.packetID = imuID;
+			header.msFromStart = HAL_GetTick();
+			if(sampleTracker >= MAX_IMU_PKT_SIZE){
+				header.payloadLength = fifo_cnt;
+			}else{
+				header.payloadLength = sampleTracker;
 			}
+			packet = grabPacket();
+			if(packet != NULL){
+				memcpy(&(packet->header), &header, sizeof(PacketHeader));
+				memcpy(packet->payload, &data[start_idx], header.payloadLength);
+				queueUpPacket(packet);
+			}
+			sampleTracker -= header.payloadLength;
+			start_idx += header.payloadLength;
+			imuID++;
+		}
 
   	}
 

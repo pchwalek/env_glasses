@@ -28,7 +28,7 @@ class Blink(SensorClass):
         newDF['timestamp'] = msFromStart
         newDF['epoch'] = time_recv
         self.append_data(newDF)
-        self.save_file()
+        # self.save_file()
 
         if( (time.time() - self.last_save) > SAVE_EVERY_X_SECS):
             self.save_file()

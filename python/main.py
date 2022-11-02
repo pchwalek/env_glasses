@@ -18,10 +18,10 @@ from bme import *
 from lux import *
 from spec import *
 from blink import *
+from imu import *
 
-
-# gasSpec_serial = '/dev/cu.usbserial-014A1C56'
-gasSpec_serial = 'COM4'
+gasSpec_serial = '/dev/cu.usbserial-014A1C56'
+# gasSpec_serial = 'COM4'
 
 DATA_DIR = "data/"
 filename_noext = 'logfile'
@@ -130,7 +130,7 @@ class logSensor (threading.Thread):
       print ("Starting " + self.name)
       print(" Opening port for " + self.name + ": " + self.serial_port)
       # open serial ports
-      ser = serial.Serial(self.serial_port, 115200)  # open serial port
+      ser = serial.Serial(self.serial_port, 500000)  # open serial port
 
       print(" Port status for " + self.name + ": " + str(ser.is_open))
 
@@ -146,6 +146,9 @@ class logSensor (threading.Thread):
       lux = Lux(DATA_DIR, self.queue, "Lux")
       bme = BME(DATA_DIR, self.queue, "BME")
       blink = Blink(DATA_DIR, self.queue, "Blink")
+      # imu = IMU(DATA_DIR, self.queue, "IMU", parquet=True)
+      imu = IMU(DATA_DIR, self.queue, "IMU")
+
 
       therm_pkt = 0
       sht_pkt = 0
@@ -154,6 +157,7 @@ class logSensor (threading.Thread):
       lux_pkt = 0
       bme_pkt = 0
       blink_pkt = 0
+      imu_pkt = 0
 
       error_header_unpack = 0
 
@@ -216,6 +220,10 @@ class logSensor (threading.Thread):
                   blink_pkt += 1
                   number_of_packed_packets = int(payloadLen / blinkStructSize)
                   blink.unpack_compressed_packet(ser_string, number_of_packed_packets, msFromStart, pktID, sampleRate=r1, diodeSaturated=r0)
+              elif (IMU_PKT == pktType):
+                  imu_pkt += 1
+                  number_of_packed_packets = int(payloadLen / imuStructSize)
+                  imu.unpack_compressed_packet(ser_string, number_of_packed_packets, msFromStart, pktID)
 
               # try:
               #     self.queue.put_nowait("msg")
@@ -229,6 +237,7 @@ class logSensor (threading.Thread):
                     "LUX: " + str(lux_pkt) + "\t" +
                     "BME: " + str(bme_pkt) + "\t" +
                     "BLINK: " + str(blink_pkt) + "\t" +
+                    "IMU: " + str(imu_pkt) + "\t" +
                     "errors: " + str(error_header_unpack))
 
       except KeyboardInterrupt:

@@ -57,7 +57,7 @@ void senderThread(void *argument) {
 				osWaitForever);
 
 //		osDelay(100);
-		osDelay(50 - retry * 10); // artificial delay to allow for the connected device to handle the latest sent packet
+		osDelay(10 - retry*2); // artificial delay to allow for the connected device to handle the latest sent packet
 	}
 }
 
