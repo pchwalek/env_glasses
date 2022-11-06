@@ -31,6 +31,9 @@ temp_header = "temp_1, temp_2, temp_3, ambient_temp, ardu_millis, epoch\n"
 hr_header = "heart_rate, epoch\n"
 
 HOST = "127.0.0.1"  # Standard loopback interface address (localhost)
+SERVER_HOST = "airspecs.media.mit.edu"
+# SERVER_HOST = "localhost"
+SERVER_PORT = 65435  # Port to listen on (non-privileged ports are > 1023)
 # HOST = gethostbyname('')
 PORT = 65432  # Port to listen on (non-privileged ports are > 1023)
 
@@ -56,16 +59,19 @@ def start_experiment():
     try:
         print("Starting threads")
         gasSpec_thread = logSensor(1, "ardu_thread", temp_header, gasSpec_serial, filename_prefix+"_temp"+filename_extension, msgQueue)
-        socket_thread = socketMessage(2, "socket_thread", HOST, PORT, msgQueue)
+        # socket_thread = socketMessage(2, "socket_thread", HOST, PORT, msgQueue)
+        client_thread = serverLogger(2, "socket_thread", SERVER_HOST, SERVER_PORT, msgQueue)
 
-        socket_thread.start()
+        # socket_thread.start()
+        client_thread.start()
         gasSpec_thread.start()
     except KeyboardInterrupt:
         print("Keyboard interrupt detected")
         print("Closing threads")
 
         gasSpec_thread.join()
-        socket_thread.join()
+        client_thread.join()
+        # socket_thread.join()
 
     # # grab data
     # try:
@@ -110,11 +116,56 @@ class socketMessage (threading.Thread):
                         except (ConnectionAbortedError, ConnectionResetError):
                             print("conn aborted")
                             break
-        #
-        # while True:
-        #     # Get a "work item" out of the queue.
-        #     message = self.queue.get(block=True, timeout=None)
 
+class serverLogger (threading.Thread):
+    def __init__(self, threadID, name, host, port, queue):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+        self.host = host
+        self.port = port
+        self.queue = queue
+
+    def run(self):
+        # s.sendall(b"Hello, world")
+        # msgQueue = queue.Queue(maxsize=20)
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s_in:
+                while True:
+                    try:
+                        s_in.connect((self.host, self.port))
+                    except ConnectionRefusedError:
+                        print("ERROR: can't connect to python script")
+                        continue
+                    break
+
+                # flush queue
+                while not self.queue.empty():
+                    try:
+                        self.queue.get(False)
+                    except queue.Empty:
+                        continue
+
+                while True:
+                    try:
+                        message = self.queue.get(block=True, timeout=None)
+                        s_in.sendall(message.encode())
+                        print(message.encode())
+                    except ConnectionResetError:
+                        break
+
+        except KeyboardInterrupt:
+            print("Keyboard interrupt detected")
+# # parse out data
+# listMsg = unityParser(data)
+# if (listMsg == []):
+#     continue
+# strMsg = ','.join(listMsg)
+#
+# try:
+#     msgQueue.put_nowait(json.dumps(strMsg))
+# except queue.Full:
+#     pass
 
 class logSensor (threading.Thread):
    def __init__(self, threadID, name, header, serial_port, filename, queue):

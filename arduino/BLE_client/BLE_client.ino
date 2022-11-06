@@ -150,7 +150,7 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
 
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(500000);
 //  Serial.println("Starting Arduino BLE Client application...");
   BLEDevice::init("");
 
@@ -193,5 +193,5 @@ void loop() {
     BLEDevice::getScan()->start(0);  // this is just example to start scan after disconnect, most likely there is better way to do it in arduino
   }
   
-  delay(1000); // Delay a second between loops.
+  delay(100); // Delay a second between loops.
 } // End of loop
