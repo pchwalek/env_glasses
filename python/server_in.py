@@ -11,7 +11,7 @@ import socket
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-SERVER_HOST = "localhost"
+SERVER_HOST = socket.gethostname()
 SERVER_PORT = 65435  # Port to listen on (non-privileged ports are > 1023)
 
 def start_server():
@@ -55,7 +55,8 @@ class serverClass (threading.Thread):
 
                 while True:
                     try:
-                        data = conn.recv(1024).decode().strip('][').split(', ')
+                        # data = conn.recv(1024).decode().strip('][').split(', ')
+                        data = conn.recv(1024).decode()
                         print(data)
                     except ConnectionResetError:
                         break

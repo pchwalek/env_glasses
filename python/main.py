@@ -31,8 +31,8 @@ temp_header = "temp_1, temp_2, temp_3, ambient_temp, ardu_millis, epoch\n"
 hr_header = "heart_rate, epoch\n"
 
 HOST = "127.0.0.1"  # Standard loopback interface address (localhost)
-SERVER_HOST = "airspecs.media.mit.edu"
-# SERVER_HOST = "localhost"
+# SERVER_HOST = "airspecs.media.mit.edu"
+SERVER_HOST = "localhost"
 SERVER_PORT = 65435  # Port to listen on (non-privileged ports are > 1023)
 # HOST = gethostbyname('')
 PORT = 65432  # Port to listen on (non-privileged ports are > 1023)
@@ -133,6 +133,8 @@ class serverLogger (threading.Thread):
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s_in:
                 while True:
                     try:
+                        print("Connecting to: " + self.host)
+                        print(gethostbyname(self.host))
                         s_in.connect((self.host, self.port))
                     except ConnectionRefusedError:
                         print("ERROR: can't connect to python script")
@@ -181,6 +183,7 @@ class logSensor (threading.Thread):
       print ("Starting " + self.name)
       print(" Opening port for " + self.name + ": " + self.serial_port)
       # open serial ports
+
       ser = serial.Serial(self.serial_port, 500000)  # open serial port
 
       print(" Port status for " + self.name + ": " + str(ser.is_open))
