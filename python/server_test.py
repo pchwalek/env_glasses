@@ -12,9 +12,9 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 HOST = "127.0.0.1"  # Standard loopback interface address (localhost)
-SERVER_HOST = "airspecs.media.mit.edu"
-# SERVER_HOST = "localhost"
-SERVER_PORT = 65435  # Port to listen on (non-privileged ports are > 1023)
+# SERVER_HOST = "airspecs.media.mit.edu"
+SERVER_HOST = "localhost"
+SERVER_PORT = 65434  # Port to listen on (non-privileged ports are > 1023)
 # HOST = gethostbyname('')
 PORT = 65432  # Port to listen on (non-privileged ports are > 1023)
 
@@ -28,6 +28,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s_in:
             print("ERROR: can't connect to python script")
             continue
         break
-
-    s_in.sendall("test")
+    while True:
+        s_in.sendall("test".encode())
+        time.sleep(1)
     s_in.close()

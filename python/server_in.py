@@ -8,11 +8,16 @@ import struct as struct
 from socket import gethostbyname
 import socket
 
+from airspecInfluxInterface import *
+
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 SERVER_HOST = socket.gethostname()
-SERVER_PORT = 65435  # Port to listen on (non-privileged ports are > 1023)
+# SERVER_HOST = 'localhost'
+SERVER_PORT = 65434  # Port to listen on (non-privileged ports are > 1023)
+
+MAX_CONNECTIONS = 5
 
 def start_server():
 
@@ -23,11 +28,14 @@ def start_server():
     try:
         print("Starting threads")
         server_thread = serverClass(2, "socket_thread", SERVER_HOST, SERVER_PORT, msgQueue)
+        influx_thread = serverLogger(3, "influx_logger", airspecDatabaseName, airspecKeys, msgQueue)
 
+        influx_thread.start()
         server_thread.start()
     except KeyboardInterrupt:
         print("Keyboard interrupt detected")
         print("Closing threads")
+        influx_thread.join()
         server_thread.join()
 
 class serverClass (threading.Thread):
@@ -38,13 +46,36 @@ class serverClass (threading.Thread):
         self.host = host
         self.port = port
         self.queue = queue
+        self.threadCount = 0
 
+    def handleConnection(self, connection):
+        while True:
+            try:
+                # data = conn.recv(1024).decode().strip('][').split(', ')
+                data = connection.recv(1024).decode()
+                if not data:
+                    print("Connection issue. Restarting.")
+                    break
+                else:
+                    self.queue.put(data)
+            except ConnectionResetError:
+                break
+            except KeyboardInterrupt:
+                connection.close()
+                break
     def run(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.bind((self.host, self.port))
             s.listen()
             while True:
                 conn, addr = s.accept()
+                print("Connection from: " + str(addr))
+                if(self.threadCount < MAX_CONNECTIONS):
+                    self.threadCount += 1
+                    thread.start_new_thread(self.handleConnection, (conn,))
+                else:
+                    print(" number of connection exceeded! Max: " + str(MAX_CONNECTIONS))
+                    conn.close()
 
                 # flush queue
                 while not self.queue.empty():
@@ -53,13 +84,20 @@ class serverClass (threading.Thread):
                     except queue.Empty:
                         continue
 
-                while True:
-                    try:
-                        # data = conn.recv(1024).decode().strip('][').split(', ')
-                        data = conn.recv(1024).decode()
-                        print(data)
-                    except ConnectionResetError:
-                        break
+                # while True:
+                #     try:
+                #         # data = conn.recv(1024).decode().strip('][').split(', ')
+                #         data = conn.recv(1024).decode()
+                #         if not data:
+                #             print("Connection issue. Restarting.")
+                #             break
+                #         else:
+                #             print(data)
+                #     except ConnectionResetError:
+                #         break
+                #     except KeyboardInterrupt:
+                #         s.close()
+                #         break
 
                 # with conn:
                 #     print(f"Connected by {addr}")
