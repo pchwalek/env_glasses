@@ -16,6 +16,8 @@ imuParsedStructLabel = ['ACCEL_XOUT', 'ACCEL_YOUT', 'ACCEL_ZOUT',
 
 IMU_RESOLUTION = 2048  # lsb/g
 
+IMU_NEWFILE_PERIOD = 10 * 60  # in seconds
+
 class IMU(SensorClass):
     def __init__(self, filepath, queue, name="null", parquet=False):
         SensorClass.__init__(self, filepath, name, queue, imuStructLabel, imuStructType)
@@ -64,8 +66,16 @@ class IMU(SensorClass):
             self.last_save = time.time()
 
     def save_file(self):
-        if(self.parquet):
-            self.df.to_parquet(self.filepath + self.name + "_" + str(self.start_timestamp) + ".parq")
-        else:
-            self.df.to_csv(self.filepath + self.name + "_" + str(self.start_timestamp) + ".csv")
 
+        if( (self.saveIdx == 0) and (self.firstSave == 0) ):
+            self.firstSave = time.time()
+
+        if(self.parquet):
+            self.df.to_parquet(self.filepath + self.name + "_" + str(self.start_timestamp) + "_" + str(self.saveIdx)+".parq")
+        else:
+            self.df.to_csv(self.filepath + self.name + "_" + str(self.start_timestamp) + "_" + str(self.saveIdx) + ".csv")
+
+        if( (time.time() - self.firstSave) > IMU_NEWFILE_PERIOD):
+            self.saveIdx += 1
+            self.firstSave = time.time()
+            self.df = self.df[0:0] # clear dataframe to save memory

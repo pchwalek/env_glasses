@@ -63,7 +63,8 @@ STM32_WPAN/App/dt_client_app.o: ../STM32_WPAN/App/dt_client_app.c \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_hsem.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_gpio.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_rtc.h \
- ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h \
+ ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h ../Core/Inc/main.h \
+ ../Core/Inc/app_entry.h ../Core/Inc/app_common.h \
  ../Middlewares/ST/STM32_WPAN/utilities/dbg_trace.h \
  ../Middlewares/ST/STM32_WPAN/ble/ble.h ../STM32_WPAN/App/ble_conf.h \
  ../Core/Inc/app_conf.h ../STM32_WPAN/App/ble_dbg_conf.h \
@@ -127,8 +128,7 @@ STM32_WPAN/App/dt_client_app.o: ../STM32_WPAN/App/dt_client_app.c \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h \
- ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
- ../Core/Inc/main.h ../Core/Inc/app_entry.h ../Core/Inc/app_common.h
+ ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h
 
 ../Core/Inc/app_common.h:
 
@@ -266,6 +266,12 @@ STM32_WPAN/App/dt_client_app.o: ../STM32_WPAN/App/dt_client_app.c \
 
 ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h:
 
+../Core/Inc/main.h:
+
+../Core/Inc/app_entry.h:
+
+../Core/Inc/app_common.h:
+
 ../Middlewares/ST/STM32_WPAN/utilities/dbg_trace.h:
 
 ../Middlewares/ST/STM32_WPAN/ble/ble.h:
@@ -399,9 +405,3 @@ STM32_WPAN/App/dt_client_app.o: ../STM32_WPAN/App/dt_client_app.c \
 ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h:
 
 ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:
-
-../Core/Inc/main.h:
-
-../Core/Inc/app_entry.h:
-
-../Core/Inc/app_common.h:

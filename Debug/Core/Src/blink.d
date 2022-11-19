@@ -80,7 +80,8 @@ Core/Src/blink.o: ../Core/Src/blink.c ../Core/Inc/blink.h \
  ../Core/Inc/adc.h ../Core/Inc/captivate_config.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
  /Users/chwalek/dev/captivatesEnv/Drivers/CMSIS/DSP/Include/arm_math.h \
- ../Drivers/CMSIS/Include/cmsis_compiler.h
+ ../Drivers/CMSIS/Include/cmsis_compiler.h ../Core/Inc/packet.h \
+ ../Core/Inc/captivate_config.h
 
 ../Core/Inc/blink.h:
 
@@ -261,3 +262,7 @@ Core/Src/blink.o: ../Core/Src/blink.c ../Core/Inc/blink.h \
 /Users/chwalek/dev/captivatesEnv/Drivers/CMSIS/DSP/Include/arm_math.h:
 
 ../Drivers/CMSIS/Include/cmsis_compiler.h:
+
+../Core/Inc/packet.h:
+
+../Core/Inc/captivate_config.h:

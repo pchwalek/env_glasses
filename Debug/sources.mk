@@ -54,6 +54,10 @@ Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 \
 Middlewares/Third_Party/FreeRTOS/Source \
 Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F \
 Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang \
+Middlewares/bsec_2_2_0_0/config/Default_H2S_NonH2S \
+Middlewares/bsec_2_2_0_0/config/FieldAir_HandSanitizer \
+Middlewares/bsec_2_2_0_0/config/bsec_sel_iaq_33v_3s_28d \
+Middlewares/gas-index-algorithm/sensirion_gas_index_algorithm \
 STM32_WPAN/App \
 STM32_WPAN/Target \
 USB_Device/App \

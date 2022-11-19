@@ -62,7 +62,8 @@ Middlewares/STM32_SGP41/SensirionI2CSgp41.o: \
  ../Middlewares/STM32_SGP41/../Sensirion_Core/src/../../Sensirion_Core/src/../../Sensirion_Core/src/../../Sensirion_Core/src/SensirionCrc.h \
  ../Middlewares/STM32_SGP41/../Sensirion_Core/src/../../Sensirion_Core/src/SensirionI2CRxFrame.h \
  ../Middlewares/STM32_SGP41/../Sensirion_Core/src/../../Sensirion_Core/src/SensirionI2CTxFrame.h \
- ../Middlewares/STM32_SGP41/../Sensirion_Core/src/../../Sensirion_Core/src/SensirionRxFrame.h
+ ../Middlewares/STM32_SGP41/../Sensirion_Core/src/../../Sensirion_Core/src/SensirionRxFrame.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h
 
 ../Middlewares/STM32_SGP41/SensirionI2CSgp41.h:
 
@@ -189,3 +190,5 @@ Middlewares/STM32_SGP41/SensirionI2CSgp41.o: \
 ../Middlewares/STM32_SGP41/../Sensirion_Core/src/../../Sensirion_Core/src/SensirionI2CTxFrame.h:
 
 ../Middlewares/STM32_SGP41/../Sensirion_Core/src/../../Sensirion_Core/src/SensirionRxFrame.h:
+
+../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:

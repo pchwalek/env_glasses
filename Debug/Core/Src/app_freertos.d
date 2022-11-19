@@ -73,7 +73,7 @@ Core/Src/app_freertos.o: ../Core/Src/app_freertos.cpp \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_hsem.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_gpio.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_rtc.h \
- ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h \
+ ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h ../Core/Inc/main.h \
  ../Core/Inc/app_entry.h ../Core/Inc/app_common.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
@@ -81,7 +81,8 @@ Core/Src/app_freertos.o: ../Core/Src/app_freertos.cpp \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
  ../Core/Inc/lp5523.h ../Core/Inc/thermopile.h ../Core/Inc/spectrometer.h \
  ../Core/Inc/lux.h ../Core/Inc/bme.h ../Core/Inc/imu.h \
- ../Core/Inc/blink.h
+ ../Core/Inc/blink.h ../Core/Inc/packet.h ../Core/Inc/captivate_config.h \
+ ../Core/Inc/sht.h ../Core/Inc/sgp.h
 
 ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h:
 
@@ -239,6 +240,8 @@ Core/Src/app_freertos.o: ../Core/Src/app_freertos.cpp \
 
 ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h:
 
+../Core/Inc/main.h:
+
 ../Core/Inc/app_entry.h:
 
 ../Core/Inc/app_common.h:
@@ -264,3 +267,11 @@ Core/Src/app_freertos.o: ../Core/Src/app_freertos.cpp \
 ../Core/Inc/imu.h:
 
 ../Core/Inc/blink.h:
+
+../Core/Inc/packet.h:
+
+../Core/Inc/captivate_config.h:
+
+../Core/Inc/sht.h:
+
+../Core/Inc/sgp.h:

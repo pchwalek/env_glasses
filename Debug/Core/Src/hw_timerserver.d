@@ -63,8 +63,8 @@ Core/Src/hw_timerserver.o: ../Core/Src/hw_timerserver.c \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_hsem.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_gpio.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_rtc.h \
- ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h \
- ../Core/Inc/hw_conf.h
+ ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h ../Core/Inc/main.h \
+ ../Core/Inc/app_entry.h ../Core/Inc/app_common.h ../Core/Inc/hw_conf.h
 
 ../Core/Inc/app_common.h:
 
@@ -201,5 +201,11 @@ Core/Src/hw_timerserver.o: ../Core/Src/hw_timerserver.c \
 ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_rtc.h:
 
 ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h:
+
+../Core/Inc/main.h:
+
+../Core/Inc/app_entry.h:
+
+../Core/Inc/app_common.h:
 
 ../Core/Inc/hw_conf.h:

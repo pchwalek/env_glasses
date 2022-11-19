@@ -14,6 +14,10 @@ RM := rm -rf
 -include USB_Device/App/subdir.mk
 -include STM32_WPAN/Target/subdir.mk
 -include STM32_WPAN/App/subdir.mk
+-include Middlewares/gas-index-algorithm/sensirion_gas_index_algorithm/subdir.mk
+-include Middlewares/bsec_2_2_0_0/config/bsec_sel_iaq_33v_3s_28d/subdir.mk
+-include Middlewares/bsec_2_2_0_0/config/FieldAir_HandSanitizer/subdir.mk
+-include Middlewares/bsec_2_2_0_0/config/Default_H2S_NonH2S/subdir.mk
 -include Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/subdir.mk
 -include Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/subdir.mk
 -include Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/subdir.mk
@@ -102,7 +106,7 @@ main-build: captivatesEnv.elf secondary-outputs
 
 # Tool invocations
 captivatesEnv.elf: $(OBJS) $(USER_OBJS) /Users/chwalek/dev/captivatesEnv/STM32WB5MMGHX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-g++ -o "captivatesEnv.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/Users/chwalek/dev/captivatesEnv/STM32WB5MMGHX_FLASH.ld" --specs=nosys.specs -Wl,-Map="captivatesEnv.map" -Wl,--gc-sections -static -L"/Users/chwalek/dev/captivatesEnv/Drivers/CMSIS/DSP/Lib/GCC" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+	arm-none-eabi-g++ -o "captivatesEnv.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/Users/chwalek/dev/captivatesEnv/STM32WB5MMGHX_FLASH.ld" --specs=nosys.specs -Wl,-Map="captivatesEnv.map" -Wl,--gc-sections -static -L"/Users/chwalek/dev/captivatesEnv/Drivers/CMSIS/DSP/Lib/GCC" -L"/Users/chwalek/dev/captivatesEnv/Middlewares/bsec_2_2_0_0/algo/normal_version/bin/gcc/Cortex_M4F" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

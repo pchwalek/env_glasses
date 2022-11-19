@@ -63,7 +63,8 @@ STM32_WPAN/Target/hw_ipcc.o: ../STM32_WPAN/Target/hw_ipcc.c \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_hsem.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_gpio.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_rtc.h \
- ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h \
+ ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h ../Core/Inc/main.h \
+ ../Core/Inc/app_entry.h ../Core/Inc/app_common.h \
  ../Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/mbox_def.h \
  ../Middlewares/ST/STM32_WPAN/stm32_wpan_common.h \
  ../Drivers/CMSIS/Include/cmsis_compiler.h
@@ -203,6 +204,12 @@ STM32_WPAN/Target/hw_ipcc.o: ../STM32_WPAN/Target/hw_ipcc.c \
 ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_rtc.h:
 
 ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h:
+
+../Core/Inc/main.h:
+
+../Core/Inc/app_entry.h:
+
+../Core/Inc/app_common.h:
 
 ../Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/mbox_def.h:
 

@@ -67,7 +67,7 @@ Middlewares/STM32_ICM20948/Adafruit_ICM20948.o: \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_hsem.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_gpio.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_rtc.h \
- ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h \
+ ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h ../Core/Inc/main.h \
  ../Core/Inc/app_entry.h ../Core/Inc/app_common.h
 
 ../Middlewares/STM32_ICM20948/Adafruit_ICM20948.h:
@@ -211,6 +211,8 @@ Middlewares/STM32_ICM20948/Adafruit_ICM20948.o: \
 ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_rtc.h:
 
 ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h:
+
+../Core/Inc/main.h:
 
 ../Core/Inc/app_entry.h:
 

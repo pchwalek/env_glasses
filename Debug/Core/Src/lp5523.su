@@ -1,9 +1,9 @@
 lp5523.c:80:6:setup_LP5523	32	static
 lp5523.c:156:6:FrontLightsSet	32	static
 lp5523.c:203:6:ThreadFrontLightsComplexTask	40	static
-lp5523.c:285:6:ThreadFrontLightsTask	48	static
-lp5523.c:521:6:ledStartupSequence	8	static
-lp5523.c:613:6:ledDisconnectNotification	8	static
-lp5523.c:625:6:ledConnectNotification	8	static
-lp5523.c:641:6:ledAllRed	8	static
-lp5523.c:653:6:resetColor	24	static
+lp5523.c:287:6:ThreadFrontLightsTask	48	static
+lp5523.c:523:6:ledStartupSequence	8	static
+lp5523.c:615:6:ledDisconnectNotification	8	static
+lp5523.c:627:6:ledConnectNotification	8	static
+lp5523.c:643:6:ledAllRed	8	static
+lp5523.c:655:6:resetColor	24	static

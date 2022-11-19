@@ -2,8 +2,8 @@ from influxdb import InfluxDBClient
 
 database_name = 'airspec'
 
-def start_server_logger():
-    client = InfluxDBClient(host='localhost', port=8086)
+def start_server_logger(client):
+    # client = InfluxDBClient(host='localhost', port=8086)
 
     # check if database already exists and if not, create it
     database_exist = False
@@ -17,4 +17,5 @@ def start_server_logger():
     client.switch_database(database_name)
 
 if __name__ == '__main__':
-    start_server_logger()
+    client = InfluxDBClient(host='localhost', port=8086)
+    start_server_logger(client)

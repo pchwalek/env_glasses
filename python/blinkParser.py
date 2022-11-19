@@ -17,7 +17,6 @@ def parseBlinkFile(inFile, outFile):
     df = pd.read_csv(DATA_DIR + inFile)
     df_parsed = pd.DataFrame(columns=blinkParsedHeader)
 
-
     for index, row in df.iterrows():
         pkt_cnt = row['samples']
         sampleRate = row['samplerate']

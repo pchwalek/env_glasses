@@ -396,7 +396,7 @@ void startThreads(){
 	senderTaskHandle = osThreadNew(senderThread, NULL, &senderTask_attributes);
 
 //	/* start sensor subsystem threads */
-	blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
+//	blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
 //
 //	/* creation of thermopileTask */
 	thermopileTaskHandle = osThreadNew(Thermopile_Task, NULL, &thermopileTask_attributes);
@@ -406,7 +406,7 @@ void startThreads(){
 	luxTaskHandle = osThreadNew(LuxTask, NULL, &luxTask_attributes);
 	bmeTaskHandle = osThreadNew(BME_Task, NULL, &bmeTask_attributes);
 
-	  imuTaskHandle = osThreadNew(IMU_Task, NULL, &imuTask_attributes);
+//	  imuTaskHandle = osThreadNew(IMU_Task, NULL, &imuTask_attributes);
 
 
 

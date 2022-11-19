@@ -67,6 +67,7 @@ Core/Src/lux.o: ../Core/Src/lux.cpp ../Core/Inc/lux.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_rtc.h \
  ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h ../Core/Inc/main.h \
  ../Core/Inc/app_entry.h ../Core/Inc/app_common.h \
+ ../Core/Inc/captivate_config.h ../Core/Inc/main.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h \
  ../Core/Inc/captivate_config.h
@@ -218,6 +219,10 @@ Core/Src/lux.o: ../Core/Src/lux.cpp ../Core/Inc/lux.h \
 ../Core/Inc/app_entry.h:
 
 ../Core/Inc/app_common.h:
+
+../Core/Inc/captivate_config.h:
+
+../Core/Inc/main.h:
 
 ../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h:
 

@@ -75,7 +75,7 @@ Core/Src/lp5523.o: ../Core/Src/lp5523.c ../Core/Inc/lp5523.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_hsem.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_gpio.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_rtc.h \
- ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h \
+ ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h ../Core/Inc/main.h \
  ../Core/Inc/app_entry.h ../Core/Inc/app_common.h \
  ../Core/Inc/captivate_config.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h
@@ -241,6 +241,8 @@ Core/Src/lp5523.o: ../Core/Src/lp5523.c ../Core/Inc/lp5523.h \
 ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_rtc.h:
 
 ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h:
+
+../Core/Inc/main.h:
 
 ../Core/Inc/app_entry.h:
 

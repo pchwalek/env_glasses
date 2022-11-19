@@ -54,6 +54,9 @@ Middlewares/STM32_BME680/Adafruit_BME680.o: \
  ../Middlewares/STM32_BME680/bme68x.h \
  ../Middlewares/STM32_BME680/bme68x_defs.h \
  /Users/chwalek/dev/captivatesEnv/Middlewares/STM32_AdafruitSensor/Adafruit_Sensor.h \
+ /Users/chwalek/dev/captivatesEnv/Middlewares/bsec_2_2_0_0/algo/normal_version/inc/bsec_datatypes.h \
+ /Users/chwalek/dev/captivatesEnv/Middlewares/bsec_2_2_0_0/algo/normal_version/inc/bsec_interface.h \
+ /Users/chwalek/dev/captivatesEnv/Middlewares/bsec_2_2_0_0/algo/normal_version/inc/bsec_datatypes.h \
  ../Core/Inc/main.h ../Core/Inc/app_conf.h \
  ../Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/hw.h \
  ../Core/Inc/hw_conf.h ../Core/Inc/FreeRTOSConfig.h ../Core/Inc/hw_if.h \
@@ -68,8 +71,9 @@ Middlewares/STM32_BME680/Adafruit_BME680.o: \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_hsem.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_gpio.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_rtc.h \
- ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h \
- ../Core/Inc/app_entry.h ../Core/Inc/app_common.h
+ ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h ../Core/Inc/main.h \
+ ../Core/Inc/app_entry.h ../Core/Inc/app_common.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h
 
 ../Middlewares/STM32_BME680/Adafruit_BME680.h:
 
@@ -179,6 +183,12 @@ Middlewares/STM32_BME680/Adafruit_BME680.o: \
 
 /Users/chwalek/dev/captivatesEnv/Middlewares/STM32_AdafruitSensor/Adafruit_Sensor.h:
 
+/Users/chwalek/dev/captivatesEnv/Middlewares/bsec_2_2_0_0/algo/normal_version/inc/bsec_datatypes.h:
+
+/Users/chwalek/dev/captivatesEnv/Middlewares/bsec_2_2_0_0/algo/normal_version/inc/bsec_interface.h:
+
+/Users/chwalek/dev/captivatesEnv/Middlewares/bsec_2_2_0_0/algo/normal_version/inc/bsec_datatypes.h:
+
 ../Core/Inc/main.h:
 
 ../Core/Inc/app_conf.h:
@@ -215,6 +225,10 @@ Middlewares/STM32_BME680/Adafruit_BME680.o: \
 
 ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h:
 
+../Core/Inc/main.h:
+
 ../Core/Inc/app_entry.h:
 
 ../Core/Inc/app_common.h:
+
+../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:

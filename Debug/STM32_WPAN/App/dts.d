@@ -64,7 +64,8 @@ STM32_WPAN/App/dts.o: ../STM32_WPAN/App/dts.c \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_hsem.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_gpio.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_rtc.h \
- ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h \
+ ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h ../Core/Inc/main.h \
+ ../Core/Inc/app_conf.h ../Core/Inc/app_entry.h ../Core/Inc/app_common.h \
  ../STM32_WPAN/App/ble_dbg_conf.h ../Middlewares/ST/STM32_WPAN/ble/ble.h \
  ../Middlewares/ST/STM32_WPAN/ble/core/ble_core.h \
  ../Middlewares/ST/STM32_WPAN/ble/core/ble_std.h \
@@ -111,8 +112,22 @@ STM32_WPAN/App/dts.o: ../STM32_WPAN/App/dts.c \
  ../Middlewares/ST/STM32_WPAN/utilities/dbg_trace.h \
  ../STM32_WPAN/App/dts.h \
  ../Middlewares/ST/STM32_WPAN/ble/core/auto/ble_types.h \
- ../STM32_WPAN/App/ble_conf.h ../Core/Inc/main.h ../Core/Inc/app_conf.h \
- ../Core/Inc/app_entry.h ../Core/Inc/app_common.h
+ ../STM32_WPAN/App/ble_conf.h ../Core/Inc/captivate_config.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
+ ../Core/Inc/lp5523.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h \
+ ../Core/Inc/FreeRTOSConfig.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
+ ../Core/Inc/rtc.h
 
 ../Middlewares/ST/STM32_WPAN/ble/ble_common.h:
 
@@ -252,6 +267,14 @@ STM32_WPAN/App/dts.o: ../STM32_WPAN/App/dts.c \
 
 ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h:
 
+../Core/Inc/main.h:
+
+../Core/Inc/app_conf.h:
+
+../Core/Inc/app_entry.h:
+
+../Core/Inc/app_common.h:
+
 ../STM32_WPAN/App/ble_dbg_conf.h:
 
 ../Middlewares/ST/STM32_WPAN/ble/ble.h:
@@ -348,10 +371,34 @@ STM32_WPAN/App/dts.o: ../STM32_WPAN/App/dts.c \
 
 ../STM32_WPAN/App/ble_conf.h:
 
-../Core/Inc/main.h:
+../Core/Inc/captivate_config.h:
 
-../Core/Inc/app_conf.h:
+../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:
 
-../Core/Inc/app_entry.h:
+../Core/Inc/lp5523.h:
 
-../Core/Inc/app_common.h:
+../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h:
+
+../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h:
+
+../Core/Inc/FreeRTOSConfig.h:
+
+../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h:
+
+../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h:
+
+../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h:
+
+../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h:
+
+../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h:
+
+../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h:
+
+../Middlewares/Third_Party/FreeRTOS/Source/include/task.h:
+
+../Middlewares/Third_Party/FreeRTOS/Source/include/list.h:
+
+../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:
+
+../Core/Inc/rtc.h:

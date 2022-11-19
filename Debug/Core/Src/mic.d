@@ -66,6 +66,7 @@ Core/Src/mic.o: ../Core/Src/mic.cpp ../Core/Inc/mic.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_rtc.h \
  ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h ../Core/Inc/main.h \
  ../Core/Inc/app_entry.h ../Core/Inc/app_common.h \
+ ../Core/Inc/captivate_config.h ../Core/Inc/main.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 
@@ -214,6 +215,10 @@ Core/Src/mic.o: ../Core/Src/mic.cpp ../Core/Inc/mic.h \
 ../Core/Inc/app_entry.h:
 
 ../Core/Inc/app_common.h:
+
+../Core/Inc/captivate_config.h:
+
+../Core/Inc/main.h:
 
 ../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h:
 

@@ -63,7 +63,7 @@ Core/Src/main.o: ../Core/Src/main.cpp ../Core/Inc/main.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_hsem.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_gpio.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_rtc.h \
- ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h \
+ ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h ../Core/Inc/main.h \
  ../Core/Inc/app_entry.h ../Core/Inc/app_common.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h \
@@ -77,11 +77,16 @@ Core/Src/main.o: ../Core/Src/main.cpp ../Core/Inc/main.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
- ../Core/Inc/adc.h ../Core/Inc/main.h ../Core/Inc/dma.h ../Core/Inc/i2c.h \
- ../Core/Inc/ipcc.h ../Core/Inc/rf.h ../Core/Inc/rtc.h ../Core/Inc/sai.h \
- ../Core/Inc/spi.h ../Core/Inc/tim.h ../USB_Device/App/usb_device.h \
+ ../Core/Inc/adc.h ../Core/Inc/dma.h ../Core/Inc/i2c.h ../Core/Inc/ipcc.h \
+ ../Core/Inc/rf.h ../Core/Inc/rtc.h ../Core/Inc/sai.h ../Core/Inc/spi.h \
+ ../Core/Inc/tim.h ../USB_Device/App/usb_device.h \
  ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h \
- ../USB_Device/Target/usbd_conf.h ../Core/Inc/gpio.h ../Core/Inc/lp5523.h
+ ../USB_Device/Target/usbd_conf.h ../Core/Inc/gpio.h ../Core/Inc/lp5523.h \
+ ../Core/Inc/fram.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
+ ../Core/Inc/captivate_config.h \
+ /Users/chwalek/dev/captivatesEnv/Middlewares/bsec_2_2_0_0/algo/normal_version/inc/bsec_datatypes.h \
+ ../Core/Inc/spi.h
 
 ../Core/Inc/main.h:
 
@@ -219,6 +224,8 @@ Core/Src/main.o: ../Core/Src/main.cpp ../Core/Inc/main.h \
 
 ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h:
 
+../Core/Inc/main.h:
+
 ../Core/Inc/app_entry.h:
 
 ../Core/Inc/app_common.h:
@@ -249,8 +256,6 @@ Core/Src/main.o: ../Core/Src/main.cpp ../Core/Inc/main.h \
 
 ../Core/Inc/adc.h:
 
-../Core/Inc/main.h:
-
 ../Core/Inc/dma.h:
 
 ../Core/Inc/i2c.h:
@@ -276,3 +281,13 @@ Core/Src/main.o: ../Core/Src/main.cpp ../Core/Inc/main.h \
 ../Core/Inc/gpio.h:
 
 ../Core/Inc/lp5523.h:
+
+../Core/Inc/fram.h:
+
+../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:
+
+../Core/Inc/captivate_config.h:
+
+/Users/chwalek/dev/captivatesEnv/Middlewares/bsec_2_2_0_0/algo/normal_version/inc/bsec_datatypes.h:
+
+../Core/Inc/spi.h:

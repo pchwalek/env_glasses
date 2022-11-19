@@ -63,7 +63,8 @@ STM32_WPAN/App/dt_server_app.o: ../STM32_WPAN/App/dt_server_app.c \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_hsem.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_gpio.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_rtc.h \
- ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h \
+ ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h ../Core/Inc/main.h \
+ ../Core/Inc/app_entry.h ../Core/Inc/app_common.h \
  ../Middlewares/ST/STM32_WPAN/utilities/dbg_trace.h \
  ../Middlewares/ST/STM32_WPAN/ble/ble.h ../STM32_WPAN/App/ble_conf.h \
  ../Core/Inc/app_conf.h ../STM32_WPAN/App/ble_dbg_conf.h \
@@ -113,7 +114,7 @@ STM32_WPAN/App/dt_server_app.o: ../STM32_WPAN/App/dt_server_app.c \
  ../Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/hci_tl.h \
  ../Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/tl.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
- ../STM32_WPAN/App/dt_server_app.h \
+ ../STM32_WPAN/App/dt_server_app.h ../Core/Inc/captivate_config.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h \
  ../Core/Inc/FreeRTOSConfig.h \
@@ -128,7 +129,8 @@ STM32_WPAN/App/dt_server_app.o: ../STM32_WPAN/App/dt_server_app.c \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
  ../STM32_WPAN/App/dts.h \
  ../Middlewares/ST/STM32_WPAN/ble/core/auto/ble_types.h \
- ../STM32_WPAN/App/ble_conf.h ../STM32_WPAN/App/dt_client_app.h \
+ ../STM32_WPAN/App/ble_conf.h ../Core/Inc/packet.h \
+ ../Core/Inc/captivate_config.h ../STM32_WPAN/App/dt_client_app.h \
  ../Utilities/lpm/tiny_lpm/stm32_lpm.h \
  ../Middlewares/ST/STM32_WPAN/ble/ble_common.h
 
@@ -268,6 +270,12 @@ STM32_WPAN/App/dt_server_app.o: ../STM32_WPAN/App/dt_server_app.c \
 
 ../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h:
 
+../Core/Inc/main.h:
+
+../Core/Inc/app_entry.h:
+
+../Core/Inc/app_common.h:
+
 ../Middlewares/ST/STM32_WPAN/utilities/dbg_trace.h:
 
 ../Middlewares/ST/STM32_WPAN/ble/ble.h:
@@ -372,6 +380,8 @@ STM32_WPAN/App/dt_server_app.o: ../STM32_WPAN/App/dt_server_app.c \
 
 ../STM32_WPAN/App/dt_server_app.h:
 
+../Core/Inc/captivate_config.h:
+
 ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h:
 
 ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h:
@@ -401,6 +411,10 @@ STM32_WPAN/App/dt_server_app.o: ../STM32_WPAN/App/dt_server_app.c \
 ../Middlewares/ST/STM32_WPAN/ble/core/auto/ble_types.h:
 
 ../STM32_WPAN/App/ble_conf.h:
+
+../Core/Inc/packet.h:
+
+../Core/Inc/captivate_config.h:
 
 ../STM32_WPAN/App/dt_client_app.h:
 

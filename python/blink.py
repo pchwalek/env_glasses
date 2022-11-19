@@ -5,6 +5,7 @@ blinkStructType = 'B'
 blinkStructSize = calcsize(blinkStructType)
 blinkStructLabel = ['sample', 'pktID','timestamp']
 
+BLINK_NEWFILE_PERIOD = 10 * 60  # in seconds
 
 class Blink(SensorClass):
     def __init__(self, filepath, queue, name="null"):
@@ -35,3 +36,20 @@ class Blink(SensorClass):
 
     def append_data(self, dataEntry):
         self.df = self.df.append(dataEntry, ignore_index=True)
+
+    def save_file(self):
+
+        if ((self.saveIdx == 0) and (self.firstSave == 0)):
+            self.firstSave = time.time()
+
+        if (self.parquet):
+            self.df.to_parquet(
+                self.filepath + self.name + "_" + str(self.start_timestamp) + "_" + str(self.saveIdx) + ".parq")
+        else:
+            self.df.to_csv(
+                self.filepath + self.name + "_" + str(self.start_timestamp) + "_" + str(self.saveIdx) + ".csv")
+
+        if( (time.time() - self.firstSave) > BLINK_NEWFILE_PERIOD):
+            self.saveIdx += 1
+            self.firstSave = time.time()
+            self.df = self.df[0:0] # clear dataframe to save memory

@@ -1,6 +1,7 @@
 Adafruit_ICM20948.h:97:2:Adafruit_ICM20948::~Adafruit_ICM20948()	16	static
-imu.cpp:27:6:void IMU_Task(void*)	40	static
-imu.cpp:77:13:void triggerIMUSample(void*)	16	static
-imu.cpp:79:1:void __static_initialization_and_destruction_0(int, int)	16	static
-imu.cpp:79:1:cpp)	8	static
-imu.cpp:79:1:cpp)	8	static
+imu.cpp:36:6:void IMU_Task(void*)	64	static
+imu.cpp:125:13:void triggerIMUSample(void*)	16	static
+imu.cpp:129:6:void HAL_GPIO_EXTI_Callback(uint16_t)	16	static
+imu.cpp:131:1:void __static_initialization_and_destruction_0(int, int)	16	static
+imu.cpp:131:1:cpp)	8	static
+imu.cpp:131:1:cpp)	8	static

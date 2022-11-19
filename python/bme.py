@@ -29,5 +29,19 @@ LOW_ACCURACY = 1
 NOT_ACCURATE = 0
 
 class BME(SensorClass):
-    def __init__(self, filepath, queue, name="null"):
-        SensorClass.__init__(self, filepath, name, queue, bmeStructLabel, bmeStructType)
+    def __init__(self, filepath, queue, name="null", influx_queue = [], system_id=1):
+        SensorClass.__init__(self, filepath, name, queue, bmeStructLabel, bmeStructType, influx_queue)
+        self.system_id = system_id
+
+    def send_to_influx(self, pkt_dict):
+        data = []
+        data.append(
+            "{measurement},sensor_id={sensor_id},id={id},accuracy={accuracy},timestamp_ns={timestamp_ns} signal={signal}"
+                .format(measurement="bme",
+                        sensor_id=pkt_dict["sensor_id"],
+                        id=1,
+                        signal=pkt_dict["signal"],
+                        accuracy=pkt_dict["accuracy"],
+                        timestamp_ns=pkt_dict["timestamp_ns"]))
+        self.influx_queue.put(data)
+

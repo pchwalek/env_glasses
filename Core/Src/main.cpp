@@ -78,7 +78,6 @@ extern "C" void SystemClock_Config(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-//  HAL_Delay(500);
 
   /* USER CODE END 1 */
 
@@ -90,7 +89,7 @@ int main(void)
   MX_APPE_Config();
 
   /* USER CODE BEGIN Init */
-//  HAL_Delay(500);
+  HAL_Delay(500); // needed or wireless stack wont init properly (delay duration can probably be reduced)
 
   /* USER CODE END Init */
 
