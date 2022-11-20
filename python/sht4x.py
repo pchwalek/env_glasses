@@ -15,14 +15,14 @@ class SHT4X(SensorClass):
         data = []
         id = 1
         data.append(
-            "{measurement},type={type},id={id},timestamp_mcu={timestamp_mcu} signal={signal}"
+            "{measurement},type={type},id={id} timestamp_mcu={timestamp_mcu},signal={signal}"
                 .format(measurement="sht45",
                         type="temperature",
                         id=id,
                         signal=pkt_dict["temp"],
                         timestamp_mcu=pkt_dict["timestamp"]))
         data.append(
-            "{measurement},type={type},id={id},timestamp_mcu={timestamp_mcu} signal={signal}"
+            "{measurement},type={type},id={id} timestamp_mcu={timestamp_mcu},signal={signal}"
                 .format(measurement="sht45",
                         type="humidity",
                         id=id,

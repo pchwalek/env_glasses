@@ -28,28 +28,28 @@ class Thermopile(SensorClass):
         data = []
         id = 1
         data.append(
-            "{measurement},type={type},id={id},timestamp_mcu={timestamp_mcu} signal={signal}"
+            "{measurement},type={type},id={id} timestamp_mcu={timestamp_mcu},signal={signal}"
                 .format(measurement=thermopile_ID[pkt_dict["descriptor"]],
                         type="ambientRaw",
                         id=id,
                         signal=pkt_dict["ambientRaw"],
                         timestamp_mcu=pkt_dict["timestamp"]))
         data.append(
-            "{measurement},type={type},id={id},timestamp_mcu={timestamp_mcu} signal={signal}"
+            "{measurement},type={type},id={id} timestamp_mcu={timestamp_mcu},signal={signal}"
                 .format(measurement=thermopile_ID[pkt_dict["descriptor"]],
                         type="objectRaw",
                         id=id,
                         signal=pkt_dict["objectRaw"],
                         timestamp_mcu=pkt_dict["timestamp"]))
         data.append(
-            "{measurement},type={type},id={id},timestamp_mcu={timestamp_mcu} signal={signal}"
+            "{measurement},type={type},id={id} timestamp_mcu={timestamp_mcu},signal={signal}"
                 .format(measurement=thermopile_ID[pkt_dict["descriptor"]],
                         type="ambientTemp",
                         id=id,
                         signal=pkt_dict["ambientTemp"],
                         timestamp_mcu=pkt_dict["timestamp"]))
         data.append(
-            "{measurement},type={type},id={id},timestamp_mcu={timestamp_mcu} signal={signal}"
+            "{measurement},type={type},id={id} timestamp_mcu={timestamp_mcu},signal={signal}"
                 .format(measurement=thermopile_ID[pkt_dict["descriptor"]],
                         type="objectTemp",
                         id=id,

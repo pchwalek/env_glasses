@@ -31,8 +31,8 @@ temp_header = "temp_1, temp_2, temp_3, ambient_temp, ardu_millis, epoch\n"
 hr_header = "heart_rate, epoch\n"
 
 HOST = "127.0.0.1"  # Standard loopback interface address (localhost)
-# SERVER_HOST = "airspecs.media.mit.edu"
-SERVER_HOST = "localhost"
+SERVER_HOST = "airspecs.media.mit.edu"
+# SERVER_HOST = "localhost"
 SERVER_PORT = 65434  # Port to listen on (non-privileged ports are > 1023)
 # HOST = gethostbyname('')
 PORT = 65432  # Port to listen on (non-privileged ports are > 1023)

@@ -36,7 +36,7 @@ class BME(SensorClass):
     def send_to_influx(self, pkt_dict):
         data = []
         data.append(
-            "{measurement},sensor_id={sensor_id},id={id},accuracy={accuracy},timestamp_ns={timestamp_ns} signal={signal}"
+            "{measurement},sensor_id={sensor_id},id={id} accuracy={accuracy},timestamp_ns={timestamp_ns},signal={signal}"
                 .format(measurement="bme",
                         sensor_id=pkt_dict["sensor_id"],
                         id=1,

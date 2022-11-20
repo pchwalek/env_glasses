@@ -20,13 +20,14 @@ MAX_RETRY_UPON_DISCONNECT = 1
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-# SERVER_HOST = socket.gethostname()
-SERVER_HOST = 'localhost'
+SERVER_HOST = socket.gethostname()
+# SERVER_HOST = 'localhost'
 SERVER_PORT = 65434  # Port to listen on (non-privileged ports are > 1023)
 
-MAX_CONNECTIONS = 5
+MAX_CONNECTIONS = 15
 
-INFLUX_TOKEN = "AFpAiw6t6d6-xugqcptMSy9_D8DB0WwLxW1IeNt7V0yN__hY5hRR8gOSAJfLDvjn21QUcebmQam--sgk2_dJDQ=="
+INFLUX_TOKEN = "mjZNiGBjKNG5dyCHx2b_uoc1ceMVMWMT4VPa62nWl1_x8d-UfhiIiSWIvQpxkiUvZDgpXU5cnSoC_BY0Wkqp0w=="
+# INFLUX_TOKEN = "AFpAiw6t6d6-xugqcptMSy9_D8DB0WwLxW1IeNt7V0yN__hY5hRR8gOSAJfLDvjn21QUcebmQam--sgk2_dJDQ=="
 # INFLUX_TOKEN = '7qVtGuNwum4qbsHhjDm_H2tUf3aeaEwc3uuInvStC6fcsMIefzsSZ4mOODfx2vQU_5_SOIKIy5Sxe_5OHv1HDQ=='
 def checkServerExist(client, database_name):
     # check if database already exists and if not, create it

@@ -15,28 +15,28 @@ class SGP(SensorClass):
         data = []
         id = 1
         data.append(
-            "{measurement},type={type},id={id},timestamp_mcu={timestamp_mcu} signal={signal}"
+            "{measurement},type={type},id={id} timestamp_mcu={timestamp_mcu},signal={signal}"
                 .format(measurement="sgp",
                         type="srawVOC",
                         id=id,
                         signal=pkt_dict["srawVOC"],
                         timestamp_mcu=pkt_dict["timestamp"]))
         data.append(
-            "{measurement},type={type},id={id},timestamp_mcu={timestamp_mcu} signal={signal}"
+            "{measurement},type={type},id={id} timestamp_mcu={timestamp_mcu},signal={signal}"
                 .format(measurement="sgp",
                         type="srawNOX",
                         id=id,
                         signal=pkt_dict["srawNOX"],
                         timestamp_mcu=pkt_dict["timestamp"]))
         data.append(
-            "{measurement},type={type},id={id},timestamp_mcu={timestamp_mcu} signal={signal}"
+            "{measurement},type={type},id={id} timestamp_mcu={timestamp_mcu},signal={signal}"
                 .format(measurement="sgp",
                         type="voc_index_value",
                         id=id,
                         signal=pkt_dict["voc_index_value"],
                         timestamp_mcu=pkt_dict["timestamp"]))
         data.append(
-            "{measurement},type={type},id={id},timestamp_mcu={timestamp_mcu} signal={signal}"
+            "{measurement},type={type},id={id} timestamp_mcu={timestamp_mcu},signal={signal}"
                 .format(measurement="sgp",
                         type="nox_index_value",
                         id=id,

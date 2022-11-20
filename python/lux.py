@@ -14,7 +14,7 @@ class Lux(SensorClass):
     def send_to_influx(self, pkt_dict):
         data = []
         data.append(
-            "{measurement},id={id},timestamp_mcu={timestamp_mcu} signal={signal}"
+            "{measurement},id={id} timestamp_mcu={timestamp_mcu},signal={signal}"
                 .format(measurement="lux",
                         id=1,
                         signal=pkt_dict["lux"],
