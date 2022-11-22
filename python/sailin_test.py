@@ -22,7 +22,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             while True:
                 try:
                     data = conn.recv(1024)
-                    print(data)
+                    if(data):
+                        print(data)
+                    else:
+                        break
                 except (ConnectionAbortedError, ConnectionResetError):
                     print("conn aborted")
                     break
