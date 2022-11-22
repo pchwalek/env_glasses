@@ -182,6 +182,7 @@ class serverClass (threading.Thread):
             except KeyboardInterrupt:
                 connection.close()
                 break
+        self.threadCount -= 1
     def run(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.bind((self.host, self.port))

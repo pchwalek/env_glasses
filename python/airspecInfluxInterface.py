@@ -144,15 +144,15 @@ class serverLogger (threading.Thread):
                     number_of_packed_packets = int(payloadLen / imuStructSize)
                     imu.unpack_compressed_packet(ser_string, number_of_packed_packets, msFromStart, pktID)
 
-                print("THERM: " + str(therm_pkt) + "\t" +
-                      "SHT: " + str(sht_pkt) + "\t" +
-                      "SGP: " + str(sgp_pkt) + "\t" +
-                      "SPEC: " + str(spec_pkt) + "\t" +
-                      "LUX: " + str(lux_pkt) + "\t" +
-                      "BME: " + str(bme_pkt) + "\t" +
-                      "BLINK: " + str(blink_pkt) + "\t" +
-                      "IMU: " + str(imu_pkt) + "\t" +
-                      "errors: " + str(error_header_unpack))
+                # print("THERM: " + str(therm_pkt) + "\t" +
+                #       "SHT: " + str(sht_pkt) + "\t" +
+                #       "SGP: " + str(sgp_pkt) + "\t" +
+                #       "SPEC: " + str(spec_pkt) + "\t" +
+                #       "LUX: " + str(lux_pkt) + "\t" +
+                #       "BME: " + str(bme_pkt) + "\t" +
+                #       "BLINK: " + str(blink_pkt) + "\t" +
+                #       "IMU: " + str(imu_pkt) + "\t" +
+                #       "errors: " + str(error_header_unpack))
 
 
                 # conn.sendall(message.encode())
