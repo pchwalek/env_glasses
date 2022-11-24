@@ -93,6 +93,8 @@ void startThreads(void);
 #define GRAB_SAMPLE_BIT							0x0100
 #define TERMINATE_THREAD_BIT					0x0200
 
+extern volatile unsigned long ulHighFrequencyTimerTicks;
+
 typedef enum
 {
     CFG_LPM_APP,

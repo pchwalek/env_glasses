@@ -74,45 +74,47 @@ void IMU_Task(void *argument){
   	if ((flags & GRAB_SAMPLE_BIT) == GRAB_SAMPLE_BIT) {
   		imu.getFIFOcnt(&fifo_cnt);
 
-  		fifo_cnt = fifo_cnt - (fifo_cnt % IMU_PKT_SIZE); // ensure reading only complete packets
-//
-//  		/* circular buffer logic */
-//  		if(end_idx == end_idx){
-//  			if( (end_idx + fifo_cnt) <= MAX_FIFO_CNT){
-//  		  		imu.readFIFO(&data[end_idx], fifo_cnt );
-//  		  		end_idx += fifo_cnt;
-//  			}
-//  			else{
-//  		  		imu.readFIFO(&data[end_idx], MAX_FIFO_CNT - end_idx);
-//
-//  			}
-//  		}
+  		if(fifo_cnt != 0){
+			fifo_cnt = fifo_cnt - (fifo_cnt % IMU_PKT_SIZE); // ensure reading only complete packets
+	//
+	//  		/* circular buffer logic */
+	//  		if(end_idx == end_idx){
+	//  			if( (end_idx + fifo_cnt) <= MAX_FIFO_CNT){
+	//  		  		imu.readFIFO(&data[end_idx], fifo_cnt );
+	//  		  		end_idx += fifo_cnt;
+	//  			}
+	//  			else{
+	//  		  		imu.readFIFO(&data[end_idx], MAX_FIFO_CNT - end_idx);
+	//
+	//  			}
+	//  		}
 
-  		imu.readFIFO(data, fifo_cnt );
-  		sampleTracker += fifo_cnt;
-//  		imu.getFIFOcnt(&fifo_cnt_2);
-//  		sampleRate = (fifo_cnt/6.0) / (( HAL_GetTick() - lastTick) / 1000.0);
-  		lastTick = HAL_GetTick();
-  		start_idx = 0;
+			imu.readFIFO(data, fifo_cnt );
+			sampleTracker += fifo_cnt;
+	//  		imu.getFIFOcnt(&fifo_cnt_2);
+	//  		sampleRate = (fifo_cnt/6.0) / (( HAL_GetTick() - lastTick) / 1000.0);
+			lastTick = HAL_GetTick();
+			start_idx = 0;
 
-		while(sampleTracker != 0){
-			header.packetID = imuID;
-			header.msFromStart = HAL_GetTick();
-			if(sampleTracker >= MAX_IMU_PKT_SIZE){
-				header.payloadLength = fifo_cnt;
-			}else{
-				header.payloadLength = sampleTracker;
+			while(sampleTracker != 0){
+				header.packetID = imuID;
+				header.msFromStart = HAL_GetTick();
+				if(sampleTracker >= MAX_IMU_PKT_SIZE){
+					header.payloadLength = fifo_cnt;
+				}else{
+					header.payloadLength = sampleTracker;
+				}
+				packet = grabPacket();
+				if(packet != NULL){
+					memcpy(&(packet->header), &header, sizeof(PacketHeader));
+					memcpy(packet->payload, &data[start_idx], header.payloadLength);
+					queueUpPacket(packet);
+				}
+				sampleTracker -= header.payloadLength;
+				start_idx += header.payloadLength;
+				imuID++;
 			}
-			packet = grabPacket();
-			if(packet != NULL){
-				memcpy(&(packet->header), &header, sizeof(PacketHeader));
-				memcpy(packet->payload, &data[start_idx], header.payloadLength);
-				queueUpPacket(packet);
-			}
-			sampleTracker -= header.payloadLength;
-			start_idx += header.payloadLength;
-			imuID++;
-		}
+  		}
 
   	}
 

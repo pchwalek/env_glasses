@@ -12,6 +12,14 @@
 
 uint8_t header[4];
 
+void extMemChipSelectPin(bool state){
+	if(state){
+		HAL_GPIO_WritePin(MEM_CS_GPIO_Port, MEM_CS_Pin, GPIO_PIN_RESET);
+	}else{
+		HAL_GPIO_WritePin(MEM_CS_GPIO_Port, MEM_CS_Pin, GPIO_PIN_SET);
+	}
+}
+
 bool extMemWriteEnableLatch(bool state){
 	uint8_t dataTX;
 	extMemChipSelectPin(true);
@@ -109,13 +117,7 @@ bool extMemWriteData(uint32_t addr, uint8_t* data, uint16_t size){
 	return true;
 }
 
-bool extMemChipSelectPin(bool state){
-	if(state){
-		HAL_GPIO_WritePin(MEM_CS_GPIO_Port, MEM_CS_Pin, GPIO_PIN_RESET);
-	}else{
-		HAL_GPIO_WritePin(MEM_CS_GPIO_Port, MEM_CS_Pin, GPIO_PIN_SET);
-	}
-}
+
 
 bool extMemWriteProtectPin(bool state){
 	if(state){

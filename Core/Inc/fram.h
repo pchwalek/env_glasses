@@ -55,7 +55,7 @@ extern "C" {
 bool extMemInit();
 bool extMemGetData(uint32_t addr, uint8_t* data, uint16_t size);
 bool extMemWriteData(uint32_t addr, uint8_t* data, uint16_t size);
-bool extMemChipSelectPin(bool state);
+void extMemChipSelectPin(bool state);
 bool extMemWriteProtectPin(bool state);
 
 #ifdef __cplusplus

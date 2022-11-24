@@ -37,7 +37,7 @@
 /**
  * Define Tx Power
  */
-#define CFG_TX_POWER                      (0x19) /* 2dBm */
+#define CFG_TX_POWER                      (0x1B) /* 2dBm */
 
 /**
  * Define Advertising parameters
@@ -213,7 +213,7 @@
  * Maximum supported ATT_MTU size
  * This parameter is ignored by the CPU2 when CFG_BLE_OPTIONS is set to 1"
  */
-#define CFG_BLE_MAX_ATT_MTU             (512)
+#define CFG_BLE_MAX_ATT_MTU             (300)
 
 /**
  * Size of the storage area for Attribute values
@@ -1035,7 +1035,7 @@ typedef enum
 //    CFG_LPM_APP,
 //    CFG_LPM_APP_BLE,
 //    /* USER CODE BEGIN CFG_LPM_Id_t */
-////////
+////////////
 //    /* USER CODE END CFG_LPM_Id_t */
 //} CFG_LPM_Id_t;
 
@@ -1047,3 +1047,4 @@ typedef enum
 #define CFG_OTP_END_ADRESS      OTP_AREA_END_ADDR
 
 #endif /*APP_CONF_H */
+

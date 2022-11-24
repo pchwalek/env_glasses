@@ -273,7 +273,7 @@ static const uint8_t BLE_CFG_IR_VALUE[16] =
 				PLACE_IN_SECTION("BLE_APP_CONTEXT") static uint16_t AdvIntervalMin,
 AdvIntervalMax;
 
-static const char local_name[] = { AD_TYPE_COMPLETE_LOCAL_NAME, 'E','n','v','G','l','a','s','s' };
+static const char local_name[] = { AD_TYPE_COMPLETE_LOCAL_NAME, 'A','i','r','S','p','e','c' };
 uint8_t manuf_data[14] = { sizeof(manuf_data) - 1,
 AD_TYPE_MANUFACTURER_SPECIFIC_DATA, 0x01/*SKD version */, 0x00 /* Generic*/,
 		0x00 /* GROUP A Feature  */, 0x00 /* GROUP A Feature */,
@@ -1081,7 +1081,7 @@ static void Ble_Hci_Gap_Gatt_Init(void){
 
   if (role > 0)
   {
-    const char *name = "STM32WB";
+    const char *name = "AirSpec";
     aci_gap_init(role,
 #if ((CFG_BLE_ADDRESS_TYPE == RESOLVABLE_PRIVATE_ADDR) || (CFG_BLE_ADDRESS_TYPE == NON_RESOLVABLE_PRIVATE_ADDR))
                  2,

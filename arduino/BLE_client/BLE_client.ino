@@ -12,7 +12,7 @@
 //static BLEUUID serviceUUID("4fafc201-1fb5-459e-8fcc-c5c9c331914b");
 
 //String sysName = "EnvGlass";
-char sysName[] = "EnvGlass";
+char sysName[] = "AirSpec";
 
 //static BLEUUID serviceUUID("0000FE80-8E22-4541-9D4C-21EDAE82ED19");
 static BLEUUID serviceUUID("FE80");

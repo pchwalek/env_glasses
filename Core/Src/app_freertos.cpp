@@ -197,7 +197,7 @@ const osThreadAttr_t senderTask_attributes = {
 	.cb_mem = NULL,
 	.cb_size = 0,
 	.stack_mem = NULL,
-	.stack_size = 128 * 4,
+	.stack_size = 512 * 2,
 	.priority = (osPriority_t) osPriorityAboveNormal,
 	.tz_module = 0,
 	.reserved = 0
@@ -297,7 +297,7 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* creation of defaultTask */
-  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+//  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* creation of frontLightsThre */
   frontLightsThreHandle = osThreadNew(ThreadFrontLightsComplexTask, NULL, &frontLightsThre_attributes);
@@ -399,12 +399,13 @@ void startThreads(){
 //	blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
 //
 //	/* creation of thermopileTask */
-	thermopileTaskHandle = osThreadNew(Thermopile_Task, NULL, &thermopileTask_attributes);
-	shtTaskHandle = osThreadNew(ShtTask, NULL, &shtTask_attributes);
-	sgpTaskHandle = osThreadNew(SgpTask, NULL, &sgpTask_attributes);
-	specTaskHandle = osThreadNew(Spec_Task, NULL, &specTask_attributes);
-	luxTaskHandle = osThreadNew(LuxTask, NULL, &luxTask_attributes);
-	bmeTaskHandle = osThreadNew(BME_Task, NULL, &bmeTask_attributes);
+
+//	thermopileTaskHandle = osThreadNew(Thermopile_Task, NULL, &thermopileTask_attributes);
+//	shtTaskHandle = osThreadNew(ShtTask, NULL, &shtTask_attributes);
+//	sgpTaskHandle = osThreadNew(SgpTask, NULL, &sgpTask_attributes);
+//	specTaskHandle = osThreadNew(Spec_Task, NULL, &specTask_attributes);
+//	luxTaskHandle = osThreadNew(LuxTask, NULL, &luxTask_attributes);
+//	bmeTaskHandle = osThreadNew(BME_Task, NULL, &bmeTask_attributes);
 
 //	  imuTaskHandle = osThreadNew(IMU_Task, NULL, &imuTask_attributes);
 
