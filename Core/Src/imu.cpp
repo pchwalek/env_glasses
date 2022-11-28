@@ -36,6 +36,7 @@ static uint8_t data[MAX_FIFO_CNT];
 void IMU_Task(void *argument){
 	SensorPacket *packet = NULL;
 	uint32_t flags = 0;
+	uint32_t flag_rdy = 0;
 
 	osDelay(1000);
 
@@ -51,6 +52,8 @@ void IMU_Task(void *argument){
 
   uint16_t imuIdx = 0;
   uint32_t imuID = 0;
+
+  imu.spiDataReady = HAL_SPI_IMU_WAIT;
 
   uint8_t intStatus[4] = {0};
 
@@ -89,31 +92,33 @@ void IMU_Task(void *argument){
 	//  			}
 	//  		}
 
-			imu.readFIFO(data, fifo_cnt );
-			sampleTracker += fifo_cnt;
-	//  		imu.getFIFOcnt(&fifo_cnt_2);
-	//  		sampleRate = (fifo_cnt/6.0) / (( HAL_GetTick() - lastTick) / 1000.0);
-			lastTick = HAL_GetTick();
-			start_idx = 0;
+			if(imu.readFIFO(data, fifo_cnt) != false){
 
-			while(sampleTracker != 0){
-				header.packetID = imuID;
-				header.msFromStart = HAL_GetTick();
-				if(sampleTracker >= MAX_IMU_PKT_SIZE){
-					header.payloadLength = fifo_cnt;
-				}else{
-					header.payloadLength = sampleTracker;
+				sampleTracker += fifo_cnt;
+		//  		imu.getFIFOcnt(&fifo_cnt_2);
+		//  		sampleRate = (fifo_cnt/6.0) / (( HAL_GetTick() - lastTick) / 1000.0);
+				lastTick = HAL_GetTick();
+				start_idx = 0;
+
+				while(sampleTracker != 0){
+					header.packetID = imuID;
+					header.msFromStart = HAL_GetTick();
+					if(sampleTracker >= MAX_IMU_PKT_SIZE){
+						header.payloadLength = fifo_cnt;
+					}else{
+						header.payloadLength = sampleTracker;
+					}
+					packet = grabPacket();
+					if(packet != NULL){
+						memcpy(&(packet->header), &header, sizeof(PacketHeader));
+						memcpy(packet->payload, &data[start_idx], header.payloadLength);
+						queueUpPacket(packet);
+					}
+					sampleTracker -= header.payloadLength;
+					start_idx += header.payloadLength;
+					imuID++;
 				}
-				packet = grabPacket();
-				if(packet != NULL){
-					memcpy(&(packet->header), &header, sizeof(PacketHeader));
-					memcpy(packet->payload, &data[start_idx], header.payloadLength);
-					queueUpPacket(packet);
-				}
-				sampleTracker -= header.payloadLength;
-				start_idx += header.payloadLength;
-				imuID++;
-			}
+		  	}
   		}
 
   	}
@@ -132,3 +137,20 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 //	if(GPIO_Pin == IMU_INT_Pin) triggerIMUSample(NULL);
 }
 
+void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi){
+	// send flag to IMU
+	osThreadFlagsSet(imuTaskHandle, IMU_DATA_RDY_BIT);
+}
+
+void HAL_SPI_IMU_WAIT(uint8_t *state){
+	uint32_t flag = osThreadFlagsWait(IMU_DATA_RDY_BIT,
+	  					osFlagsWaitAny, 100);
+
+	if(flag == osFlagsErrorTimeout){
+		*state = 0;
+	}else if ((flag & IMU_DATA_RDY_BIT) == IMU_DATA_RDY_BIT){
+		*state = 1;
+	}
+
+	return;
+}

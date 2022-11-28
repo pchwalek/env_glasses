@@ -407,7 +407,7 @@ void startThreads(){
 //	luxTaskHandle = osThreadNew(LuxTask, NULL, &luxTask_attributes);
 //	bmeTaskHandle = osThreadNew(BME_Task, NULL, &bmeTask_attributes);
 
-//	  imuTaskHandle = osThreadNew(IMU_Task, NULL, &imuTask_attributes);
+	  imuTaskHandle = osThreadNew(IMU_Task, NULL, &imuTask_attributes);
 
 
 

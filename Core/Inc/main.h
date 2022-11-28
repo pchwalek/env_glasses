@@ -92,6 +92,8 @@ void startThreads(void);
 // FREERTOS THREAD SPECIFIC
 #define GRAB_SAMPLE_BIT							0x0100
 #define TERMINATE_THREAD_BIT					0x0200
+#define IMU_DATA_RDY_BIT						0x0400
+
 
 extern volatile unsigned long ulHighFrequencyTimerTicks;
 
