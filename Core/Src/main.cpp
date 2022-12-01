@@ -73,7 +73,7 @@ extern "C" void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 volatile unsigned long ulHighFrequencyTimerTicks;
-
+volatile uint8_t sensorThreadsRunning = 0;
 /* USER CODE END 0 */
 
 /**
@@ -90,12 +90,11 @@ int main(void)
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
-  HAL_Delay(100);
   /* Config code for STM32_WPAN (HSE Tuning must be done before system clock configuration) */
   MX_APPE_Config();
 
   /* USER CODE BEGIN Init */
-  HAL_Delay(500); // needed or wireless stack wont init properly (delay duration can probably be reduced)
+//  HAL_Delay(500); // needed or wireless stack wont init properly (delay duration can probably be reduced)
 
   /* USER CODE END Init */
 
@@ -144,7 +143,7 @@ int main(void)
 //  MX_USB_Device_Init();
   MX_TIM17_Init();
   extMemInit();
-  HAL_Delay(500); // needed or wireless stack wont init properly (delay duration can probably be reduced)
+//  HAL_Delay(500); // needed or wireless stack wont init properly (delay duration can probably be reduced)
   MX_APPE_Init();
 
 

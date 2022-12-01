@@ -57,13 +57,16 @@ void SgpTask(void *argument) {
 
 	int32_t voc_index_value, nox_index_value;
 
+	osDelay(1000);
 
     GasIndexAlgorithm_init(&paramsVoc, (int32_t) GasIndexAlgorithm_ALGORITHM_TYPE_VOC);
     GasIndexAlgorithm_init(&paramsNox, (int32_t) GasIndexAlgorithm_ALGORITHM_TYPE_NOX);
 
 	osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 	if (!sgp41.begin(&hi2c1)) {
+    	osSemaphoreRelease(messageI2C1_LockHandle);
 		osDelay(100);
+		osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 	}
 
     uint16_t serialNumber[3];
@@ -84,12 +87,15 @@ void SgpTask(void *argument) {
 		osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
         error = sgp41.executeSelfTest(testResult);
       }
+	osSemaphoreRelease(messageI2C1_LockHandle);
+
     if(testResult != 0xD400){
-    	osSemaphoreRelease(messageI2C1_LockHandle);
+//    	osSemaphoreRelease(messageI2C1_LockHandle);
     	while(1){
     		osDelay(10000); // TODO: terminate thread instead
     	}
     }
+
 
 	header.payloadLength = MAX_SGP_SAMPLES_PACKET * sizeof(sgpSample);
 
@@ -101,7 +107,6 @@ void SgpTask(void *argument) {
 	// time in seconds needed for NOx conditioning
 	uint16_t conditioning_s = 10;
 
-	osSemaphoreRelease(messageI2C1_LockHandle);
 	periodicSgpTimer_id = osTimerNew(triggerSgpSample, osTimerPeriodic,
 			NULL, NULL);
 	osTimerStart(periodicSgpTimer_id, SGP_SAMPLE_SYS_PERIOD_MS);
@@ -113,10 +118,10 @@ void SgpTask(void *argument) {
 
 		if ((flags & GRAB_SAMPLE_BIT) == GRAB_SAMPLE_BIT) {
 
-			timeLeftForSample = HAL_GetTick() - timeLeftForSample;
-			if(timeLeftForSample < SGP_SAMPLE_SYS_PERIOD_MS){
-				osDelay(timeLeftForSample);
-			}
+//			timeLeftForSample = HAL_GetTick() - timeLeftForSample;
+//			if(timeLeftForSample < SGP_SAMPLE_SYS_PERIOD_MS){
+//				osDelay(timeLeftForSample);
+//			}
 
 			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 
@@ -172,7 +177,7 @@ void SgpTask(void *argument) {
 				sgpIdx = 0;
 			}
 
-			timeLeftForSample = HAL_GetTick();
+//			timeLeftForSample = HAL_GetTick();
 		}
 
 		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {

@@ -67,7 +67,9 @@ void Spec_Task(void *argument) {
 
 	osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 	if (!specSensor.begin(SPEC_ADDR, &hi2c1, 0)) {
+		osSemaphoreRelease(messageI2C1_LockHandle);
 		osDelay(100);
+		osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 	}
 	specSensor.setATIME(100);
 	specSensor.setASTEP(999);
@@ -80,7 +82,7 @@ void Spec_Task(void *argument) {
 	uint16_t specIdx = 0;
 	uint32_t specID = 0;
 
-	uint32_t tempTick = 0;
+//	uint32_t tempTick = 0;
 
 	specSensor.startReading();
 	osSemaphoreRelease(messageI2C1_LockHandle);
@@ -98,14 +100,13 @@ void Spec_Task(void *argument) {
 //			if(timeLeftForSample < SPEC_SAMPLE_PERIOD_MS){
 //				osDelay(timeLeftForSample);
 //			}
-			tempTick = HAL_GetTick();
+
 			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			while (!specSensor.checkReadingProgress()) {
 				osSemaphoreRelease(messageI2C1_LockHandle);
 				osDelay(5);
 				osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			}
-			tempTick = HAL_GetTick() - tempTick;
 
 			specData[specIdx].timestamp = HAL_GetTick();
 
@@ -130,12 +131,10 @@ void Spec_Task(void *argument) {
 				specID++;
 				specIdx = 0;
 			}
-			tempTick = HAL_GetTick();
 
 			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			specSensor.startReading();
 			osSemaphoreRelease(messageI2C1_LockHandle);
-			tempTick = HAL_GetTick() - tempTick;
 
 //			timeLeftForSample = HAL_GetTick();
 		}

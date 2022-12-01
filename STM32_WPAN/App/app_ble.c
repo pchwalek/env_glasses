@@ -439,7 +439,8 @@ void APP_BLE_Init( void )
 /* USER CODE BEGIN APP_BLE_Init_3 */
 //  DTS_STM_Init();
 //  DTC_App_Init();
-  startThreads();
+//  startThreads();
+  startInitThread();
 
   ledDisconnectNotification();
 
@@ -1081,7 +1082,7 @@ static void Ble_Hci_Gap_Gatt_Init(void){
 
   if (role > 0)
   {
-    const char *name = "AirSpec";
+    const char *name = "STM32WB";
     aci_gap_init(role,
 #if ((CFG_BLE_ADDRESS_TYPE == RESOLVABLE_PRIVATE_ADDR) || (CFG_BLE_ADDRESS_TYPE == NON_RESOLVABLE_PRIVATE_ADDR))
                  2,

@@ -63,6 +63,7 @@ extern SPI_HandleTypeDef hspi1;
 extern SPI_HandleTypeDef hspi2;
 
 void startThreads(void);
+void startInitThread(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
@@ -96,6 +97,7 @@ void startThreads(void);
 
 
 extern volatile unsigned long ulHighFrequencyTimerTicks;
+extern volatile uint8_t sensorThreadsRunning;
 
 typedef enum
 {

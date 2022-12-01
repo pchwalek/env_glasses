@@ -11,10 +11,12 @@
 #include "uuid.h"
 #include "dt_server_app.h"
 
+#include "FreeRTOS.h"
+#include "task.h"
+
 
 static SensorPacket packets[MAX_PACKET_QUEUE_SIZE];
-
-static SensorPacket *packetPtr[MAX_PACKET_QUEUE_SIZE];
+SensorPacket *packetPtr[MAX_PACKET_QUEUE_SIZE];
 
 SensorPacket* grabPacket(void) {
 	SensorPacket *packet;
@@ -44,6 +46,7 @@ void senderThread(void *argument) {
 		osMessageQueueGet(packet_QueueHandle, &packetToSend, 0U, osWaitForever);
 
 		retry = 0;
+//		taskENTER_CRITICAL();
 		while (PACKET_SEND_SUCCESS != sendPacket_BLE(packetToSend)) {
 			if (retry >= MAX_BLE_RETRIES) {
 				break;
@@ -51,13 +54,17 @@ void senderThread(void *argument) {
 			retry++;
 //			osDelay(5);
 		};
+//		taskEXIT_CRITICAL();
+
 
 		// return memory back to pool
 		osMessageQueuePut(packetAvail_QueueHandle, &packetToSend, 0U,
 				osWaitForever);
 
 //		osDelay(100);
-		osDelay(10 - retry*2); // artificial delay to allow for the connected device to handle the latest sent packet
+//		osDelay(1);
+
+//		osDelay(MAX_BLE_RETRIES - retry); // artificial delay to allow for the connected device to handle the latest sent packet
 	}
 }
 

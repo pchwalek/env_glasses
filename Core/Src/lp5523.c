@@ -613,43 +613,49 @@ void ledStartupSequence(void){
 }
 
 void ledDisconnectNotification(void){
-	resetColor(&receivedColor);
+	if(sensorThreadsRunning){
+		resetColor(&receivedColor);
 
-	receivedColor.colors_indiv.left_side_g = 0;
-	receivedColor.colors_indiv.right_side_g = 0;
-	receivedColor.colors_indiv.left_side_b = 50;
-	receivedColor.colors_indiv.right_side_b = 50;
-	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
-	osDelay(10);
+		receivedColor.colors_indiv.left_side_g = 0;
+		receivedColor.colors_indiv.right_side_g = 0;
+		receivedColor.colors_indiv.left_side_b = 50;
+		receivedColor.colors_indiv.right_side_b = 50;
+		osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+		osDelay(10);
+	}
 //	FrontLightsSet(&receivedColor);
 }
 
 void ledConnectNotification(void){
-	resetColor(&receivedColor);
+	if(sensorThreadsRunning){
+		resetColor(&receivedColor);
 
-	receivedColor.colors_indiv.left_side_b = 0;
-	receivedColor.colors_indiv.right_side_b = 0;
-	receivedColor.colors_indiv.left_side_g = 80;
-	receivedColor.colors_indiv.right_side_g = 80;
-	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
-//	FrontLightsSet(&receivedColor);
-	osDelay(1000);
-	receivedColor.colors_indiv.left_side_g = 0;
-	receivedColor.colors_indiv.right_side_g = 0;
-	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
-//	FrontLightsSet(&receivedColor);
+		receivedColor.colors_indiv.left_side_b = 0;
+		receivedColor.colors_indiv.right_side_b = 0;
+		receivedColor.colors_indiv.left_side_g = 80;
+		receivedColor.colors_indiv.right_side_g = 80;
+		osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+	//	FrontLightsSet(&receivedColor);
+		osDelay(1000);
+		receivedColor.colors_indiv.left_side_g = 0;
+		receivedColor.colors_indiv.right_side_g = 0;
+		osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+	//	FrontLightsSet(&receivedColor);
+	}
 }
 
 void ledAllRed(void){
-	resetColor(&receivedColor);
+	if(sensorThreadsRunning){
+		resetColor(&receivedColor);
 
-	receivedColor.colors_indiv.left_side_r = 255;
-	receivedColor.colors_indiv.right_side_r = 255;
-	receivedColor.colors_indiv.left_top_r = 255;
-	receivedColor.colors_indiv.right_top_r = 255;
-	receivedColor.colors_indiv.left_front_r = 255;
-	receivedColor.colors_indiv.right_front_r = 255;
-	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+		receivedColor.colors_indiv.left_side_r = 255;
+		receivedColor.colors_indiv.right_side_r = 255;
+		receivedColor.colors_indiv.left_top_r = 255;
+		receivedColor.colors_indiv.right_top_r = 255;
+		receivedColor.colors_indiv.left_front_r = 255;
+		receivedColor.colors_indiv.right_front_r = 255;
+		osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+	}
 }
 
 void resetColor(union ColorComplex * colorComplex){

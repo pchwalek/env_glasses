@@ -49,7 +49,9 @@ void ShtTask(void *argument) {
 
 	osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 	if (!sht4.begin(&hi2c1)) {
+		osSemaphoreRelease(messageI2C1_LockHandle);
 		osDelay(100);
+		osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 	}
 
 	sht4.setPrecision(SHT4X_HIGH_PRECISION);
