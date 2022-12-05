@@ -340,16 +340,22 @@ void startThreads() {
 	thermopileTaskHandle = osThreadNew(Thermopile_Task, NULL,
 			&thermopileTask_attributes);
 	shtTaskHandle = osThreadNew(ShtTask, NULL, &shtTask_attributes);
-	sgpTaskHandle = osThreadNew(SgpTask, NULL, &sgpTask_attributes);
-	luxTaskHandle = osThreadNew(LuxTask, NULL, &luxTask_attributes);
-	bmeTaskHandle = osThreadNew(BME_Task, NULL, &bmeTask_attributes);
-	specTaskHandle = osThreadNew(Spec_Task, NULL, &specTask_attributes);
+//	sgpTaskHandle = osThreadNew(SgpTask, NULL, &sgpTask_attributes);
+//	luxTaskHandle = osThreadNew(LuxTask, NULL, &luxTask_attributes);
+//	bmeTaskHandle = osThreadNew(BME_Task, NULL, &bmeTask_attributes);
+//	specTaskHandle = osThreadNew(Spec_Task, NULL, &specTask_attributes);
 
-	imuTaskHandle = osThreadNew(IMU_Task, NULL, &imuTask_attributes);
+//	imuTaskHandle = osThreadNew(IMU_Task, NULL, &imuTask_attributes);
 
 //	  /* creation of frontLightsThre */
 //	  frontLightsThreHandle = osThreadNew(ThreadFrontLightsComplexTask, NULL, &frontLightsThre_attributes);
 	//
+
+//	while(1){
+//		ledStartupSequence();
+//		osDelay(1000);
+//	}
+
 
 }
 #ifdef __cplusplus
