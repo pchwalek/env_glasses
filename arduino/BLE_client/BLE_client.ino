@@ -60,7 +60,8 @@ class MyClientCallback : public BLEClientCallbacks {
 
   void onDisconnect(BLEClient* pclient) {
     connected = false;
-    Serial.println("onDisconnect");
+    doConnect = true;
+//    Serial.println("onDisconnect");
   }
 };
 
@@ -150,7 +151,7 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
 
 
 void setup() {
-  Serial.begin(500000);
+  Serial.begin(1000000);
 //  Serial.println("Starting Arduino BLE Client application...");
   BLEDevice::init("");
 
