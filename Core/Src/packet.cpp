@@ -38,6 +38,7 @@ void senderThread(void *argument) {
 
 	for (int i = 0; i < MAX_PACKET_QUEUE_SIZE; i++) {
 		packetToSend = &packets[i];
+		packetToSend->header.systemID = LL_FLASH_GetUDN();
 		osMessageQueuePut(packetAvail_QueueHandle, &packetToSend, 0U,
 				osWaitForever);
 	}
@@ -47,6 +48,7 @@ void senderThread(void *argument) {
 
 		retry = 0;
 //		taskENTER_CRITICAL();
+		packetToSend->header.systemID = LL_FLASH_GetUDN();
 		while (PACKET_SEND_SUCCESS != sendPacket_BLE(packetToSend)) {
 			if (retry >= MAX_BLE_RETRIES) {
 				break;

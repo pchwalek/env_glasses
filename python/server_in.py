@@ -20,13 +20,17 @@ MAX_RETRY_UPON_DISCONNECT = 1
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-SERVER_HOST = socket.gethostname()
-# SERVER_HOST = 'localhost'
+# SERVER_HOST = socket.gethostname()
+SERVER_HOST = 'localhost'
 SERVER_PORT = 65434  # Port to listen on (non-privileged ports are > 1023)
 
 MAX_CONNECTIONS = 15
 
-INFLUX_TOKEN = "mjZNiGBjKNG5dyCHx2b_uoc1ceMVMWMT4VPa62nWl1_x8d-UfhiIiSWIvQpxkiUvZDgpXU5cnSoC_BY0Wkqp0w=="
+''' server token '''
+# INFLUX_TOKEN = "mjZNiGBjKNG5dyCHx2b_uoc1ceMVMWMT4VPa62nWl1_x8d-UfhiIiSWIvQpxkiUvZDgpXU5cnSoC_BY0Wkqp0w=="
+
+''' patricks laptop '''
+INFLUX_TOKEN = "UPcYQW4mfYWXDjyjRLIKJINtLX1Sy81Gv2lonsz3tOkVuQwdcCnsTzh2FlWmzBjkc_uORuqvXkyvLT3tX39X8w=="
 # INFLUX_TOKEN = "AFpAiw6t6d6-xugqcptMSy9_D8DB0WwLxW1IeNt7V0yN__hY5hRR8gOSAJfLDvjn21QUcebmQam--sgk2_dJDQ=="
 # INFLUX_TOKEN = '7qVtGuNwum4qbsHhjDm_H2tUf3aeaEwc3uuInvStC6fcsMIefzsSZ4mOODfx2vQU_5_SOIKIy5Sxe_5OHv1HDQ=='
 def checkServerExist(client, database_name):
@@ -135,11 +139,14 @@ def start_server():
     # start_server_logger(client)
     try:
         print("Starting threads")
-        # thread to grab data from external source via socket
+        # thread to grab data from external source via socket.
+        #   -> the raw data is passed from server_thread to server_parser_thread via msgQueue
         server_thread = serverClass(2, "socket_thread", SERVER_HOST, SERVER_PORT, msgQueue)
         # thread to parse data
+        #   -> the parsed data is passed from server_parser_thread to influx_thread via influxQueue
         server_parser_thread = serverLogger(3, "server_parser", airspecDatabaseName, airspecRawKeys, msgQueue, influxQueue, unityQueue)
         # thread to push to influxDB
+        #   -> this thread just formats the input array into Influx inline format
         influx_thread = influxDBLogger(4, "influx_logger", INFLUX_URL, INFLUX_TOKEN, INFLUX_ORG, bucket, airspecDatabaseName, influxQueue)
 
         server_parser_thread.start()

@@ -269,6 +269,8 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
  */
 //https://www.st.com/resource/en/programming_manual/pm0271-stm32wb-ble-stack-programming-guidelines-stmicroelectronics.pdf
 # define MAX_PACKET_LENGTH	243 // https://www.compel.ru/wordpress/wp-content/uploads/2019/12/en.dm00598033.pdf
+//# define MAX_PACKET_LENGTH	500 // https://www.compel.ru/wordpress/wp-content/uploads/2019/12/en.dm00598033.pdf
+
 
 static tBleStatus TX_Update_Char(DTS_STM_Payload_t *pDataValue) {
 	tBleStatus ret;

@@ -44,6 +44,7 @@ typedef enum {
 } PacketTypes;
 
 typedef struct PacketHeaders {
+	uint32_t systemID;
 	PacketTypes packetType;
 	uint16_t packetID;
 	uint32_t msFromStart;
@@ -51,6 +52,7 @@ typedef struct PacketHeaders {
 	uint32_t payloadLength;
 	uint32_t reserved[5];
 } PacketHeader;
+
 
 typedef struct SensorPackets {
 	PacketHeader header;

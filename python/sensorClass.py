@@ -19,7 +19,7 @@ SGP_PKT = 12
 BLINK_PKT = 13
 
 # packet information
-headerStructType = 'BHIIIIIIII'
+headerStructType = 'IBHIIIIIIII'
 headerStructSize = calcsize(headerStructType)
 
 SAVE_EVERY_X_SECS = 10
@@ -41,11 +41,12 @@ class SensorClass:
         self.name = name
         self.filepath = filepath
         if self.filepath == "":
-            self.save_file_enable = 1
-        else:
             self.save_file_enable = 0
+        else:
+            self.save_file_enable = 1
 
         self.header = header.copy()
+        self.header.append("sysID")
         self.header.append("epoch")
         self.df = pd.DataFrame(columns=self.header)
         self.structType = structType
@@ -66,19 +67,21 @@ class SensorClass:
         if (self.save_file_enable == 1):
             self.df.loc[len(self.df)] = dataEntry
         try:
-            self.queue.put_nowait(json.dumps([self.name]+dataEntry))
+            if self.queue:
+                self.queue.put_nowait(json.dumps([self.name]+dataEntry))
         except queue.Full:
             pass
 
     def save_file(self):
         self.df.to_csv(self.filepath + self.name + "_" + str(self.start_timestamp) + ".csv")
 
-    def unpack_compressed_packet(self, data, pkt_cnt):
+    def unpack_compressed_packet(self, data, pkt_cnt, sysID=-1):
         time_recv = time.time()
         for idx in range(pkt_cnt):
             unpacked_pkt = list(unpack(self.structType,
                           bytes.fromhex(data[(headerStructSize * 2) + idx * (self.structSize * 2):
                                                    (headerStructSize * 2) + (idx + 1) * (self.structSize * 2)].decode("utf-8"))))
+            unpacked_pkt.append(sysID)
             unpacked_pkt.append(time_recv)
             self.append_data(unpacked_pkt)
             # self.save_file()

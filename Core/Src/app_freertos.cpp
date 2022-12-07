@@ -337,9 +337,9 @@ void startThreads() {
 
 //	/* creation of thermopileTask */
 
-	thermopileTaskHandle = osThreadNew(Thermopile_Task, NULL,
-			&thermopileTask_attributes);
-	shtTaskHandle = osThreadNew(ShtTask, NULL, &shtTask_attributes);
+//	thermopileTaskHandle = osThreadNew(Thermopile_Task, NULL,
+//			&thermopileTask_attributes);
+//	shtTaskHandle = osThreadNew(ShtTask, NULL, &shtTask_attributes);
 //	sgpTaskHandle = osThreadNew(SgpTask, NULL, &sgpTask_attributes);
 //	luxTaskHandle = osThreadNew(LuxTask, NULL, &luxTask_attributes);
 //	bmeTaskHandle = osThreadNew(BME_Task, NULL, &bmeTask_attributes);

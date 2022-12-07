@@ -39,7 +39,7 @@ class BME(SensorClass):
             "{measurement},sensor_id={sensor_id},id={id} accuracy={accuracy},timestamp_ns={timestamp_ns},signal={signal}"
                 .format(measurement="bme",
                         sensor_id=pkt_dict["sensor_id"],
-                        id=1,
+                        id=pkt_dict["sysID"],
                         signal=pkt_dict["signal"],
                         accuracy=pkt_dict["accuracy"],
                         timestamp_ns=pkt_dict["timestamp_ns"]))

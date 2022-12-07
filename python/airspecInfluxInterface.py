@@ -60,9 +60,9 @@ class serverLogger (threading.Thread):
         spec = Spec(DISABLE_FILE_SAVING, self.unity_queue, "Spec", self.influx_queue)
         lux = Lux(DISABLE_FILE_SAVING, self.unity_queue, "Lux", self.influx_queue)
         bme = BME(DISABLE_FILE_SAVING, self.unity_queue, "BME", self.influx_queue)
-        blink = Blink(DISABLE_FILE_SAVING, self.queue, "Blink")
+        blink = Blink(DISABLE_FILE_SAVING, self.unity_queue, "Blink", self.influx_queue, store_raw=1)
         # imu = IMU(DATA_DIR, self.queue, "IMU", parquet=True)
-        imu = IMU(DISABLE_FILE_SAVING, self.queue, "IMU")
+        imu = IMU(DISABLE_FILE_SAVING, self.unity_queue, "IMU", self.influx_queue, store_raw=1)
 
         therm_pkt = 0
         sht_pkt = 0
@@ -86,11 +86,11 @@ class serverLogger (threading.Thread):
             ser_string = self.queue.get(block=True, timeout=None)
             try:
                 # print("Server Logger")
-                # print(ser_string)
 
+                # print(ser_string)
                 # (1) parse message
                 try:
-                    pktType, pktID, msFromStart, epoch, payloadLen, r0, r1, r2, r3, r4 = unpack(headerStructType, bytes.fromhex(ser_string[0:headerStructSize*2].decode("utf-8")))
+                    systemID, pktType, pktID, msFromStart, epoch, payloadLen, r0, r1, r2, r3, r4 = unpack(headerStructType, bytes.fromhex(ser_string[0:headerStructSize*2].decode("utf-8")))
                 except (ValueError, struct.error):
                     print('ERROR: error in unpacking header')
                     error_header_unpack += 1
@@ -99,38 +99,41 @@ class serverLogger (threading.Thread):
                 except BaseException as err:
                     print(f"Unexpected {err=}, {type(err)=}")
                     raise
-
+                # print("pktheader")
+                # print(pktType)
+                # print(pktID)
+                # print(payloadLen)
                 # (2) if message is not IMU or Blink data, send to InfluxDB
                 if (THERMOPILE_PKT == pktType):
                     # print("thermopile packet received: " + str(pktID))
                     therm_pkt += 1
                     number_of_packed_packets = int(payloadLen / thermopileStructSize)
-                    thermopile.unpack_compressed_packet(ser_string, number_of_packed_packets)
+                    thermopile.unpack_compressed_packet(ser_string, number_of_packed_packets, sysID=systemID)
                 elif (SHT_PKT == pktType):
                     # print("sht packet received: " + str(pktID))
                     sht_pkt += 1
                     number_of_packed_packets = int(payloadLen / shtStructSize)
-                    sht45.unpack_compressed_packet(ser_string, number_of_packed_packets)
+                    sht45.unpack_compressed_packet(ser_string, number_of_packed_packets, sysID=systemID)
                 elif (SPEC_PKT == pktType):
                     # print("sgp packet received: " + str(pktID))
                     spec_pkt += 1
                     number_of_packed_packets = int(payloadLen / specStructSize)
-                    spec.unpack_compressed_packet(ser_string, number_of_packed_packets)
+                    spec.unpack_compressed_packet(ser_string, number_of_packed_packets, sysID=systemID)
                 elif (BME_PKT == pktType):
                     # print("bme packet received: " + str(pktID))
                     bme_pkt += 1
                     number_of_packed_packets = int(payloadLen / bmeStructSize)
-                    bme.unpack_compressed_packet(ser_string, number_of_packed_packets)
+                    bme.unpack_compressed_packet(ser_string, number_of_packed_packets, sysID=systemID)
                 elif (LUX_PKT == pktType):
                     # print("lux packet received: " + str(pktID))
                     lux_pkt += 1
                     number_of_packed_packets = int(payloadLen / luxStructSize)
-                    lux.unpack_compressed_packet(ser_string, number_of_packed_packets)
+                    lux.unpack_compressed_packet(ser_string, number_of_packed_packets, sysID=systemID)
                 elif (SGP_PKT == pktType):
                     # print("lux packet received: " + str(pktID))
                     sgp_pkt += 1
                     number_of_packed_packets = int(payloadLen / sgpStructSize)
-                    sgp.unpack_compressed_packet(ser_string, number_of_packed_packets)
+                    sgp.unpack_compressed_packet(ser_string, number_of_packed_packets, sysID=systemID)
 
                 # (3) if message is IMU or Blink data, save via compressed format
                 elif (BLINK_PKT == pktType):
@@ -138,11 +141,13 @@ class serverLogger (threading.Thread):
                     blink_pkt += 1
                     number_of_packed_packets = int(payloadLen / blinkStructSize)
                     blink.unpack_compressed_packet(ser_string, number_of_packed_packets, msFromStart, pktID,
-                                                   sampleRate=r1, diodeSaturated=r0)
+                                                   sampleRate=r1, diodeSaturated=r0, sysID=systemID)
                 elif (IMU_PKT == pktType):
                     imu_pkt += 1
+                    # print(" imu payload len: " + str(payloadLen))
+                    # print(" imu struct size: " + str(imuStructSize))
                     number_of_packed_packets = int(payloadLen / imuStructSize)
-                    imu.unpack_compressed_packet(ser_string, number_of_packed_packets, msFromStart, pktID)
+                    imu.unpack_compressed_packet(ser_string, number_of_packed_packets, msFromStart, pktID, sysID=systemID)
 
                 # print("THERM: " + str(therm_pkt) + "\t" +
                 #       "SHT: " + str(sht_pkt) + "\t" +
@@ -194,8 +199,14 @@ class influxDBLogger (threading.Thread):
             #                     value=message[2], # measurement value
             #                     timestamp=message[3] ))# measurement_timestamp
             #
+            # ref: https://docs.influxdata.com/influxdb/v1.8/write_protocols/line_protocol_tutorial/#:~:text=The%20minimum%20valid%20timestamp%20is,that%20timestamps%20have%20nanosecond%20precision.
+            # print("influx entry")
             for i in range(len(message)):
+                print(message[i])
+                # print("influx entry")
                 self.write_api.write(self.bucket, self.org, message[i])
+                # self.write_api.write(bucket=self.bucket, record=message[i])
+
             # self.data = []
 
 def start_server_logger(client):

@@ -56,7 +56,7 @@ void setup()
   dataService.begin();
 //  dataChar.setMaxLen(512);
 //  dataChar.setFixedLen(32);//(SIZE_CPS_MEAS_DATA);
-  dataChar.setMaxLen(32);
+//  dataChar.setMaxLen(32);
   dataChar.setNotifyCallback(data_notify_callback);
   dataChar.begin();
 

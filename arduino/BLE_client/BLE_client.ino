@@ -43,6 +43,7 @@ static void notifyCallback(
 //    Serial.println(length);
 //    Serial.print("data: ");
    char hexBuf[3];
+//   Serial.println(length);
     for(int i = 0; i<length; i++){
       sprintf(hexBuf, "%02x", *(pData+i));
       Serial.print(hexBuf);
@@ -194,5 +195,5 @@ void loop() {
     BLEDevice::getScan()->start(0);  // this is just example to start scan after disconnect, most likely there is better way to do it in arduino
   }
   
-  delay(100); // Delay a second between loops.
+  delay(20); // Delay a second between loops.
 } // End of loop

@@ -18,14 +18,14 @@ class SHT4X(SensorClass):
             "{measurement},type={type},id={id} timestamp_mcu={timestamp_mcu},signal={signal}"
                 .format(measurement="sht45",
                         type="temperature",
-                        id=id,
+                        id=pkt_dict["sysID"],
                         signal=pkt_dict["temp"],
                         timestamp_mcu=pkt_dict["timestamp"]))
         data.append(
             "{measurement},type={type},id={id} timestamp_mcu={timestamp_mcu},signal={signal}"
                 .format(measurement="sht45",
                         type="humidity",
-                        id=id,
+                        id=pkt_dict["sysID"],
                         signal=pkt_dict["hum"],
                         timestamp_mcu=pkt_dict["timestamp"]))
         self.influx_queue.put(data)

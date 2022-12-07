@@ -36,6 +36,9 @@ Adafruit_ICM20948 imu;
 static uint8_t data[MAX_FIFO_CNT];
 uint8_t flag_int_enable = 0;
 
+//static uint8_t tempData[MAX_FIFO_CNT];
+
+
 void IMU_Task(void *argument){
 	SensorPacket *packet = NULL;
 	uint32_t flags = 0;
@@ -46,6 +49,10 @@ void IMU_Task(void *argument){
 	while(!imu.begin_SPI(&hspi2,IMU_CS_GPIO_Port,IMU_CS_Pin)){
 		osDelay(100);
 	}
+
+//	for(int i=0;i<MAX_FIFO_CNT;i++){
+//		tempData[i] = i;
+//	}
 
 	osDelay(1);
 
@@ -134,6 +141,21 @@ void IMU_Task(void *argument){
 					imuID++;
 					osDelay(5);
 				}
+
+//				header.packetID = imuID;
+//				header.msFromStart = HAL_GetTick();
+//				header.payloadLength = MAX_IMU_PKT_SIZE;
+//				start_idx = 0;
+//				packet = grabPacket();
+//				if(packet != NULL){
+//					memcpy(&(packet->header), &header, sizeof(PacketHeader));
+//					memcpy(packet->payload, &tempData[start_idx], header.payloadLength);
+//					queueUpPacket(packet);
+//				}
+//				sampleTracker -= header.payloadLength;
+////				start_idx += header.payloadLength;
+//				imuID++;
+//				osDelay(5);
 		  	}
 			flag_int_enable = 0;
   		}else{

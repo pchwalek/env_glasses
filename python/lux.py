@@ -16,7 +16,7 @@ class Lux(SensorClass):
         data.append(
             "{measurement},id={id} timestamp_mcu={timestamp_mcu},signal={signal}"
                 .format(measurement="lux",
-                        id=1,
+                        id=pkt_dict["sysID"],
                         signal=pkt_dict["lux"],
                         timestamp_mcu=pkt_dict["timestamp"]))
         self.influx_queue.put(data)
