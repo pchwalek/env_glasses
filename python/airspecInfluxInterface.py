@@ -84,6 +84,7 @@ class serverLogger (threading.Thread):
 
         while True:
             ser_string = self.queue.get(block=True, timeout=None)
+
             try:
                 # print("Server Logger")
 

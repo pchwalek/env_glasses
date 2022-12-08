@@ -222,91 +222,10 @@ class logSensor (threading.Thread):
 
       try:
           while True:
-              # ser_string = ser.readline().decode("utf-8")
-
               # (1) grab serial string
               ser_string = ser.readline()
-              # print(ser_string)
-
-              # print(len(ser_string))
-              # print("string_len: " + str(len(ser_string)))
-              # print("string_len decoded: " + str(len(ser_string.decode("utf-8"))))
               self.queue.put(ser_string.decode("utf-8"))
-              # print(headerStructSize)
-              # print(ser_string[0:headerStructSize].decode("utf-8"))
-              # print(bytes.fromhex(ser_string[0:headerStructSize*2].decode("utf-8")))
 
-              # # (2) unpack header
-              # try:
-              #     pktType, pktID, msFromStart, epoch, payloadLen, r0, r1, r2, r3, r4 = unpack(headerStructType, bytes.fromhex(ser_string[0:headerStructSize*2].decode("utf-8")))
-              # except (ValueError, struct.error):
-              #     print('ERROR: error in unpacking header')
-              #     error_header_unpack += 1
-              #     print(ser_string[0:headerStructSize*2].decode("utf-8"))
-              #     continue
-              # except UnicodeDecodeError:
-              #     print("unicode decode error")
-              #     continue
-              # except BaseException as err:
-              #     print(f"Unexpected {err=}, {type(err)=}")
-              #     raise
-              #
-              #
-              # # (3) check what type of packet it is and proceed accordingly
-              # if(THERMOPILE_PKT == pktType):
-              #   # print("thermopile packet received: " + str(pktID))
-              #   therm_pkt += 1
-              #   number_of_packed_packets = int(payloadLen / thermopileStructSize)
-              #   thermopile.unpack_compressed_packet(ser_string, number_of_packed_packets)
-              # elif (SHT_PKT == pktType):
-              #     # print("sht packet received: " + str(pktID))
-              #     sht_pkt += 1
-              #     number_of_packed_packets = int(payloadLen / shtStructSize)
-              #     sht45.unpack_compressed_packet(ser_string, number_of_packed_packets)
-              # elif (SPEC_PKT == pktType):
-              #     # print("sgp packet received: " + str(pktID))
-              #     spec_pkt += 1
-              #     number_of_packed_packets = int(payloadLen / specStructSize)
-              #     spec.unpack_compressed_packet(ser_string, number_of_packed_packets)
-              # elif (BME_PKT == pktType):
-              #     # print("bme packet received: " + str(pktID))
-              #     bme_pkt += 1
-              #     number_of_packed_packets = int(payloadLen / bmeStructSize)
-              #     bme.unpack_compressed_packet(ser_string, number_of_packed_packets)
-              # elif (LUX_PKT == pktType):
-              #     # print("lux packet received: " + str(pktID))
-              #     lux_pkt += 1
-              #     number_of_packed_packets = int(payloadLen / luxStructSize)
-              #     lux.unpack_compressed_packet(ser_string, number_of_packed_packets)
-              # elif (SGP_PKT == pktType):
-              #     # print("lux packet received: " + str(pktID))
-              #     sgp_pkt += 1
-              #     number_of_packed_packets = int(payloadLen / sgpStructSize)
-              #     sgp.unpack_compressed_packet(ser_string, number_of_packed_packets)
-              # elif (BLINK_PKT == pktType):
-              #     # print("lux packet received: " + str(pktID))
-              #     blink_pkt += 1
-              #     number_of_packed_packets = int(payloadLen / blinkStructSize)
-              #     blink.unpack_compressed_packet(ser_string, number_of_packed_packets, msFromStart, pktID, sampleRate=r1, diodeSaturated=r0)
-              # elif (IMU_PKT == pktType):
-              #     imu_pkt += 1
-              #     number_of_packed_packets = int(payloadLen / imuStructSize)
-              #     imu.unpack_compressed_packet(ser_string, number_of_packed_packets, msFromStart, pktID)
-
-              # try:
-              #     self.queue.put_nowait("msg")
-              # except queue.Full:
-              #     print("queue full")
-
-              # print("THERM: " + str(therm_pkt) + "\t" +
-              #       "SHT: " + str(sht_pkt) + "\t" +
-              #       "SGP: " + str(sgp_pkt) + "\t" +
-              #       "SPEC: " + str(spec_pkt) + "\t" +
-              #       "LUX: " + str(lux_pkt) + "\t" +
-              #       "BME: " + str(bme_pkt) + "\t" +
-              #       "BLINK: " + str(blink_pkt) + "\t" +
-              #       "IMU: " + str(imu_pkt) + "\t" +
-              #       "errors: " + str(error_header_unpack))
 
       except KeyboardInterrupt:
           print("Exiting " + self.name)

@@ -443,7 +443,7 @@ void APP_BLE_Init( void )
 //  startThreads();
   startInitThread();
 
-  ledDisconnectNotification();
+//  ledDisconnectNotification();
 
 //#else
 //
@@ -620,7 +620,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
       }
 
       /* restart advertising */
-      Adv_Request(APP_BLE_FAST_ADV);
+//      Adv_Request(APP_BLE_FAST_ADV);
 
 
       /* USER CODE BEGIN EVT_DISCONN_COMPLETE */

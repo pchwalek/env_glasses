@@ -96,46 +96,6 @@ def start_server():
     pkt_dict["accuracy"] = 1
     pkt_dict["timestamp_ns"] = 113
 
-    # for i in range(5):
-    #     data.append(
-    #         "{measurement},sensor_id={sensor_id},id={id},accuracy={accuracy},timestamp_ns={timestamp_ns}i signal={signal}"
-    #         .format(measurement="bme_test",
-    #                 sensor_id=pkt_dict["sensor_id"],
-    #                 id=1,
-    #                 signal=pkt_dict["signal"],
-    #                 accuracy=pkt_dict["accuracy"],
-    #                 timestamp_ns=pkt_dict["timestamp_ns"]))
-    #     print(data)
-    #     write_api.write(bucket, INFLUX_ORG, data)
-    #     time.sleep(1)
-    #     data = []
-    #     pkt_dict["signal"] += 1
-    # return
-
-    # for value in range(5):
-    #     # point = (
-    #     #     Point("measurement1")
-    #     #         .tag("tagname2", "tagvalue2")
-    #     #         .field("field1", value)
-    #     # )
-    #
-    #     sensor = Sensor(name="sensor_pt859",
-    #         location = "warehouse_125",
-    #         version = "2021.06.05.5874",
-    #         value = water_level,
-    #         timestamp = datetime.utcnow())
-    #
-    #     write_api.write(bucket="airspec",
-    #                     record=sensor,
-    #                     record_measurement_key="name",
-    #                     record_time_key="timestamp",
-    #                     record_tag_keys=["location", "version"],
-    #                     record_field_keys=["value"])
-    #     water_level += 1
-    #     # point = Point.from_dict(dict_structure, WritePrecision.NS)
-    #     # write_api.write(bucket=bucket, org="media_lab", record=point)
-    #     time.sleep(1)  # separate points by 1 second
-
     # start_server_logger(client)
     try:
         print("Starting threads")
@@ -183,6 +143,7 @@ class serverClass (threading.Thread):
                     # if not data:
                     #     print("Another empty bracket. Closing connection.")
                     break
+                print(data)
                 self.queue.put(data)
             except ConnectionResetError:
                 break

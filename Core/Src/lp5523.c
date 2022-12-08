@@ -294,6 +294,8 @@ void ThreadFrontLightsTask(void *argument) {
 
 	uint32_t lightsSimpleMessageReceived;
 
+	ledDisconnectNotification();
+
 #ifdef LED_TEST
 	uint8_t led_test = 1;
 #endif
