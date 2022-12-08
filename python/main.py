@@ -226,9 +226,9 @@ class logSensor (threading.Thread):
 
               # (1) grab serial string
               ser_string = ser.readline()
-              print(ser_string)
+              # print(ser_string)
 
-              print(len(ser_string))
+              # print(len(ser_string))
               # print("string_len: " + str(len(ser_string)))
               # print("string_len decoded: " + str(len(ser_string.decode("utf-8"))))
               self.queue.put(ser_string.decode("utf-8"))

@@ -202,9 +202,13 @@ class influxDBLogger (threading.Thread):
             # ref: https://docs.influxdata.com/influxdb/v1.8/write_protocols/line_protocol_tutorial/#:~:text=The%20minimum%20valid%20timestamp%20is,that%20timestamps%20have%20nanosecond%20precision.
             # print("influx entry")
             for i in range(len(message)):
-                print(message[i])
+                # print(message[i])
                 # print("influx entry")
-                self.write_api.write(self.bucket, self.org, message[i])
+                try:
+                    self.write_api.write(self.bucket, self.org, message[i])
+                except influxdb_client.rest.ApiException:
+                    print(" ERROR: exception raised when adding the below to InfluxDB")
+                    print("   " + message[i])
                 # self.write_api.write(bucket=self.bucket, record=message[i])
 
             # self.data = []
