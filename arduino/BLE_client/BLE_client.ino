@@ -126,7 +126,8 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
 //    Serial.println(advertisedDevice.toString().c_str());
 
     // check to see if there is an active discoverable glasses system
-    if(strcmp(advertisedDevice.getName().c_str(), sysName) == 0){
+//    if(strcmp(advertisedDevice.getName().c_str(), sysName) == 0){
+    if(advertisedDevice.getName().compare(0,7,sysName) == 0){
 //        Serial.println("Found the glasses! (i.e., EnvGlass)");
       // We have found a device, let us now see if it contains the service we are looking for.
 //      Serial.println(advertisedDevice.haveServiceUUID());
