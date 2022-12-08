@@ -273,7 +273,8 @@ static const uint8_t BLE_CFG_IR_VALUE[16] =
 				PLACE_IN_SECTION("BLE_APP_CONTEXT") static uint16_t AdvIntervalMin,
 AdvIntervalMax;
 
-static const char local_name[] = { AD_TYPE_COMPLETE_LOCAL_NAME, 'A','i','r','S','p','e','c' };
+
+//static const char local_name[] = { AD_TYPE_COMPLETE_LOCAL_NAME, 'A','i','r','S','p','e','c' };
 uint8_t manuf_data[14] = { sizeof(manuf_data) - 1,
 AD_TYPE_MANUFACTURER_SPECIFIC_DATA, 0x01/*SKD version */, 0x00 /* Generic*/,
 		0x00 /* GROUP A Feature  */, 0x00 /* GROUP A Feature */,
@@ -1149,6 +1150,13 @@ static void Ble_Hci_Gap_Gatt_Init(void){
    }
 }
 
+char hexToAscii(uint8_t val){
+	// only look at first 4 bits
+	val = val & (0x0F);
+	if(val<10) return val+48;
+	else return val+87;
+}
+
 static void Adv_Request(APP_BLE_ConnStatus_t New_Status)
 {
   tBleStatus ret = BLE_STATUS_INVALID_PARAMS;
@@ -1164,6 +1172,18 @@ static void Adv_Request(APP_BLE_ConnStatus_t New_Status)
     Min_Inter = CFG_LP_CONN_ADV_INTERVAL_MIN;
     Max_Inter = CFG_LP_CONN_ADV_INTERVAL_MAX;
   }
+
+  uint32_t UID = LL_FLASH_GetUDN();
+
+  const char local_name[] = { AD_TYPE_COMPLETE_LOCAL_NAME, 'A','i','r','S','p','e','c','_',
+		  hexToAscii(UID >> 28),
+		  hexToAscii(UID >> 24),
+		  hexToAscii(UID >> 20),
+		  hexToAscii(UID >> 16),
+		  hexToAscii(UID >> 12),
+		  hexToAscii(UID >> 8),
+		  hexToAscii(UID >> 4),
+		  hexToAscii(UID)};
 
     /**
      * Stop the timer, it will be restarted for a new shot
