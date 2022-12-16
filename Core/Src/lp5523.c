@@ -34,7 +34,7 @@ extern "C" {
 /* defines -----------------------------------------------------------*/
 #define I2C_HANDLE_TYPEDEF 	&hi2c1
 #define I2C_TIMEOUT			10
-
+#define NOMINAL_BLUE_VAL	50
 /* macros ------------------------------------------------------------*/
 
 /* function prototypes -----------------------------------------------*/
@@ -54,7 +54,7 @@ union ColorComplex receivedColor;
  *
  *************************************************************/
 
-#define MAX_BRIGHTNESS 100 //up to 255
+#define MAX_BRIGHTNESS 255 //up to 255
 
 uint8_t led_left_PWM[9] = { 0 };
 uint8_t led_right_PWM[9] = { 0 };
@@ -209,6 +209,7 @@ void ThreadFrontLightsComplexTask(void *argument){
 
 	HAL_StatusTypeDef state = 0;
 
+	uint16_t timeTracker;
 
 
 	while (1) {
@@ -219,6 +220,7 @@ void ThreadFrontLightsComplexTask(void *argument){
 	#ifndef DONGLE_CODE
 		osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 
+		timeTracker = HAL_GetTick();
 //		HAL_I2C_Mem_Write_DMA(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1,
 //				LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9);
 		state = HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1,
@@ -240,6 +242,8 @@ void ThreadFrontLightsComplexTask(void *argument){
 
 		state = HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1,
 				LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9, 5);
+
+		timeTracker = HAL_GetTick() - timeTracker;
 
 //		HAL_I2C_Mem_Write_DMA(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1,
 //				LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9);
@@ -522,97 +526,130 @@ void BSP_LED_Toggle(Led_TypeDef Led)
 }
 #endif
 
+//void ledStartupSequence(void){
+//	resetColor(&receivedColor);
+//
+//	receivedColor.colors_indiv.left_front_b = 255;
+//	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+////	FrontLightsSet(&receivedColor););
+//	osDelay(LED_START_SEQ_INTERVAL);
+//
+//	receivedColor.colors_indiv.left_front_b = 0;
+//	receivedColor.colors_indiv.left_front_g = 255;
+//
+//	receivedColor.colors_indiv.left_top_b = 255;
+//	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+////	FrontLightsSet(&receivedColor);
+//	osDelay(LED_START_SEQ_INTERVAL);
+//
+//	receivedColor.colors_indiv.left_front_g = 0;
+//	receivedColor.colors_indiv.left_front_r = 255;
+//
+//	receivedColor.colors_indiv.left_top_b = 0;
+//	receivedColor.colors_indiv.left_top_g = 255;
+//
+//	receivedColor.colors_indiv.left_side_b = 255;
+//	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+////	FrontLightsSet(&receivedColor);
+//	osDelay(LED_START_SEQ_INTERVAL);
+//
+//	receivedColor.colors_indiv.left_front_r = 0;
+//
+//	receivedColor.colors_indiv.left_top_g = 0;
+//	receivedColor.colors_indiv.left_top_r = 255;
+//
+//	receivedColor.colors_indiv.left_side_b = 0;
+//	receivedColor.colors_indiv.left_side_g = 255;
+//
+//	receivedColor.colors_indiv.right_side_b = 255;
+//	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+////	FrontLightsSet(&receivedColor);
+//	osDelay(LED_START_SEQ_INTERVAL);
+//
+//	receivedColor.colors_indiv.left_top_r = 0;
+//
+//	receivedColor.colors_indiv.left_side_g = 0;
+//	receivedColor.colors_indiv.left_side_r = 255;
+//
+//	receivedColor.colors_indiv.right_side_b = 0;
+//	receivedColor.colors_indiv.right_side_g = 255;
+//
+//	receivedColor.colors_indiv.right_top_b = 255;
+//	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+////	FrontLightsSet(&receivedColor);
+//	osDelay(LED_START_SEQ_INTERVAL);
+//
+//	receivedColor.colors_indiv.left_side_r = 0;
+//
+//	receivedColor.colors_indiv.right_side_g = 0;
+//	receivedColor.colors_indiv.right_side_r = 255;
+//
+//	receivedColor.colors_indiv.right_top_b = 0;
+//	receivedColor.colors_indiv.right_top_g = 255;
+//
+//	receivedColor.colors_indiv.right_front_b = 255;
+//	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+////	FrontLightsSet(&receivedColor);
+//	osDelay(LED_START_SEQ_INTERVAL);
+//
+//	receivedColor.colors_indiv.right_side_r = 0;
+//
+//	receivedColor.colors_indiv.right_top_g = 0;
+//	receivedColor.colors_indiv.right_top_r = 255;
+//
+//	receivedColor.colors_indiv.right_front_b = 0;
+//	receivedColor.colors_indiv.right_front_g = 255;
+//	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+////	FrontLightsSet(&receivedColor);
+//	osDelay(LED_START_SEQ_INTERVAL);
+//
+//	receivedColor.colors_indiv.right_top_r = 0;
+//
+//	receivedColor.colors_indiv.right_front_g = 0;
+//	receivedColor.colors_indiv.right_front_r = 255;
+//	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+////	FrontLightsSet(&receivedColor);
+//	osDelay(LED_START_SEQ_INTERVAL);
+//
+//	receivedColor.colors_indiv.right_front_r = 0;
+//	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+////	FrontLightsSet(&receivedColor);
+//
+//	ledDisconnectNotification();
+//}
+
 void ledStartupSequence(void){
+//	resetColor(&receivedColor);
+//	while(1){
+//
+//
+//
+//	receivedColor.colors_indiv.right_side_r = 255;
+//	receivedColor.colors_indiv.left_side_r = 255;
+//	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+//	osDelay(LED_START_SEQ_INTERVAL);
+//
+//	receivedColor.colors_indiv.right_side_r = 0;
+//	receivedColor.colors_indiv.left_side_r = 0;
+//	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+//	osDelay(LED_START_SEQ_INTERVAL);
+//	}
+
 	resetColor(&receivedColor);
-
-	receivedColor.colors_indiv.left_front_b = 255;
-	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
-//	FrontLightsSet(&receivedColor););
-	osDelay(LED_START_SEQ_INTERVAL);
-
-	receivedColor.colors_indiv.left_front_b = 0;
-	receivedColor.colors_indiv.left_front_g = 255;
-
-	receivedColor.colors_indiv.left_top_b = 255;
-	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
-//	FrontLightsSet(&receivedColor);
-	osDelay(LED_START_SEQ_INTERVAL);
-
-	receivedColor.colors_indiv.left_front_g = 0;
-	receivedColor.colors_indiv.left_front_r = 255;
-
-	receivedColor.colors_indiv.left_top_b = 0;
-	receivedColor.colors_indiv.left_top_g = 255;
-
-	receivedColor.colors_indiv.left_side_b = 255;
-	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
-//	FrontLightsSet(&receivedColor);
-	osDelay(LED_START_SEQ_INTERVAL);
-
-	receivedColor.colors_indiv.left_front_r = 0;
-
-	receivedColor.colors_indiv.left_top_g = 0;
-	receivedColor.colors_indiv.left_top_r = 255;
-
-	receivedColor.colors_indiv.left_side_b = 0;
-	receivedColor.colors_indiv.left_side_g = 255;
+	while(1){
 
 	receivedColor.colors_indiv.right_side_b = 255;
+	receivedColor.colors_indiv.left_side_b = 255;
 	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
-//	FrontLightsSet(&receivedColor);
 	osDelay(LED_START_SEQ_INTERVAL);
 
-	receivedColor.colors_indiv.left_top_r = 0;
-
-	receivedColor.colors_indiv.left_side_g = 0;
-	receivedColor.colors_indiv.left_side_r = 255;
-
-	receivedColor.colors_indiv.right_side_b = 0;
-	receivedColor.colors_indiv.right_side_g = 255;
-
-	receivedColor.colors_indiv.right_top_b = 255;
-	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
-//	FrontLightsSet(&receivedColor);
-	osDelay(LED_START_SEQ_INTERVAL);
-
-	receivedColor.colors_indiv.left_side_r = 0;
-
-	receivedColor.colors_indiv.right_side_g = 0;
-	receivedColor.colors_indiv.right_side_r = 255;
-
-	receivedColor.colors_indiv.right_top_b = 0;
-	receivedColor.colors_indiv.right_top_g = 255;
-
-	receivedColor.colors_indiv.right_front_b = 255;
-	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
-//	FrontLightsSet(&receivedColor);
-	osDelay(LED_START_SEQ_INTERVAL);
-
-	receivedColor.colors_indiv.right_side_r = 0;
-
-	receivedColor.colors_indiv.right_top_g = 0;
-	receivedColor.colors_indiv.right_top_r = 255;
-
-	receivedColor.colors_indiv.right_front_b = 0;
-	receivedColor.colors_indiv.right_front_g = 255;
-	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
-//	FrontLightsSet(&receivedColor);
-	osDelay(LED_START_SEQ_INTERVAL);
-
-	receivedColor.colors_indiv.right_top_r = 0;
-
-	receivedColor.colors_indiv.right_front_g = 0;
-	receivedColor.colors_indiv.right_front_r = 255;
-	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
-//	FrontLightsSet(&receivedColor);
-	osDelay(LED_START_SEQ_INTERVAL);
-
-	receivedColor.colors_indiv.right_front_r = 0;
-	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
-//	FrontLightsSet(&receivedColor);
-
-	ledDisconnectNotification();
+//	receivedColor.colors_indiv.right_side_r = 0;
+//	receivedColor.colors_indiv.left_side_r = 0;
+//	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+//	osDelay(LED_START_SEQ_INTERVAL);
+	}
 }
+
 
 void ledDisconnectNotification(void){
 	if(sensorThreadsRunning){
@@ -620,13 +657,39 @@ void ledDisconnectNotification(void){
 
 		receivedColor.colors_indiv.left_side_g = 0;
 		receivedColor.colors_indiv.right_side_g = 0;
-		receivedColor.colors_indiv.left_side_b = 50;
-		receivedColor.colors_indiv.right_side_b = 50;
+		receivedColor.colors_indiv.left_side_b = NOMINAL_BLUE_VAL;
+		receivedColor.colors_indiv.right_side_b = NOMINAL_BLUE_VAL;
 		osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
 		osDelay(10);
 	}
 //	FrontLightsSet(&receivedColor);
 }
+
+//void ledBlueGreenTransition(uint16_t timeInterval){
+//
+//	uint8_t blueVal = NOMINAL_BLUE_VAL;
+//	uint8_t greenVal = 0;
+//
+//	// slowly increase intensity of blue light
+//	while(uint8_t i=NOMINAL_BLUE_VAL; i++; i<=255){
+//
+//		osDelay(timeInterval);
+//	}
+//
+//
+//	// start transition to green
+//	while(1){
+//		resetColor(&receivedColor);
+//
+//		receivedColor.colors_indiv.left_side_g = 0;
+//		receivedColor.colors_indiv.right_side_g = 0;
+//		receivedColor.colors_indiv.left_side_b = 50;
+//		receivedColor.colors_indiv.right_side_b = 50;
+//		osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+//		osDelay(10);
+//	}
+////	FrontLightsSet(&receivedColor);
+//}
 
 void ledConnectNotification(void){
 	if(sensorThreadsRunning){

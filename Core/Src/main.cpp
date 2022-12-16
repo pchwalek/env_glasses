@@ -74,6 +74,8 @@ extern "C" void SystemClock_Config(void);
 /* USER CODE BEGIN 0 */
 volatile unsigned long ulHighFrequencyTimerTicks;
 volatile uint8_t sensorThreadsRunning = 0;
+void epoch_to_date_time(unsigned int epoch);
+void RTC_FromEpoch(uint32_t epoch, RTC_TimeTypeDef *time, RTC_DateTypeDef *date);
 /* USER CODE END 0 */
 
 /**
@@ -166,13 +168,18 @@ int main(void)
   /* Init scheduler */
   osKernelInitialize();  /* Call init function for freertos objects (in freertos.c) */
   MX_FREERTOS_Init();
-  /* Start scheduler */
+//  /* Start scheduler */
   osKernelStart();
 
   /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+
+
 	while (1) {
+//		HAL_RTC_GetTime(&hrtc, &timeTest, RTC_FORMAT_BIN);
+//		HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -276,6 +283,8 @@ void PeriphCommonClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+
 
 /**
   * @brief This function handles TIM1 trigger and commutation interrupts and TIM11 global interrupt.

@@ -53,6 +53,19 @@ typedef struct PacketHeaders {
 	uint32_t reserved[5];
 } PacketHeader;
 
+#define CONTROL_LED_PKT_TYPE	1
+#define SET_CLK_PKT_TYPE		2
+#define CNTRL_SENSORS_PKT_TYPE	3
+#define CONFIG_SENSORS_PKT_TYPE	4
+#define TRIGGER_FUNC_PKT_TYPE	5
+
+typedef struct RX_PacketHeaders {
+	uint16_t packetType;
+	uint16_t payloadSize;
+	uint32_t epoch;
+} RX_PacketHeader;
+
+
 
 typedef struct SensorPackets {
 	PacketHeader header;
@@ -63,6 +76,8 @@ SensorPacket* grabPacket(void);
 void queueUpPacket(SensorPacket *packet);
 void senderThread(void *argument);
 uint8_t sendPacket_BLE(SensorPacket *packet);
+void updateRTC(uint32_t receivedTime);
+uint32_t getEpoch(void);
 
 #ifdef __cplusplus
 }

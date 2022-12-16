@@ -345,6 +345,7 @@ void startThreads() {
 	bmeTaskHandle = osThreadNew(BME_Task, NULL, &bmeTask_attributes);
 	specTaskHandle = osThreadNew(Spec_Task, NULL, &specTask_attributes);
 
+
 //	imuTaskHandle = osThreadNew(IMU_Task, NULL, &imuTask_attributes);
 
 //	  /* creation of frontLightsThre */

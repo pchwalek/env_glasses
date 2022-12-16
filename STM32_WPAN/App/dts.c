@@ -35,8 +35,12 @@
 //#include "app_thread.h"
 #include "app_conf.h"
 
+#include "packet.h"
+
 #define UUID_128_SUPPORTED 0
 #define	NUM_OF_CHARACTERISTICS 6 //https://community.st.com/s/question/0D50X00009XkYAvSAN/sensortile-bluenrgms-custom-service-aci
+
+RX_PacketHeader rxPacketHeader;
 
 #if (UUID_128_SUPPORTED == 1)
 #define DT_UUID_LENGTH  UUID_TYPE_128
@@ -183,55 +187,83 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 			}
 
 			if (attribute_modified->Attr_Handle
-					== (aDataTransferContext.DataTransferRxCharHdle + 2)) {
+					== (aDataTransferContext.DataTransferRxCharHdle + 1)) {
 				return_value = SVCCTL_EvtAckFlowEnable;
 
 				Notification.Evt_Opcode = DTS_STM_DATA_RECEIVED;
 				Notification.DataTransfered.Length =
 						attribute_modified->Attr_Data_Length;
 				DTS_Notification(&Notification);
+
+				// parse header
+				memcpy(&rxPacketHeader, attribute_modified->Attr_Data, sizeof(RX_PacketHeader));
+
+				/* make sure whatever mechanism is used below, it copies the memory of the payload
+						because there's a chance it can be overwritten before a thread can handle
+						the data */
+				if(rxPacketHeader.packetType == CONTROL_LED_PKT_TYPE){
+					osMessageQueuePut(lightsComplexQueueHandle,
+							(attribute_modified->Attr_Data + sizeof(RX_PacketHeader)), 0, 0);
+				}
+				else if(rxPacketHeader.packetType == SET_CLK_PKT_TYPE){
+
+				}
+				else if(rxPacketHeader.packetType == CNTRL_SENSORS_PKT_TYPE){
+
+				}
+				else if(rxPacketHeader.packetType == CONFIG_SENSORS_PKT_TYPE){
+
+				}
+				else if(rxPacketHeader.packetType == TRIGGER_FUNC_PKT_TYPE){
+
+				}
+
+				// update RTC with header's timestamp
+				if(rxPacketHeader.epoch != 0){
+					updateRTC(rxPacketHeader.epoch);
+				}
 			}
 
-			// if LED characteristic was modified
-			if (attribute_modified->Attr_Handle
-					== (aDataTransferContext.DataTransferRxCharLedHdle + 1)) {
-#ifdef NUCLEO_LED_ACTIVE
-        	  	  	  	  BSP_LED_Toggle(LED_BLUE);
-#endif
-				memcpy(&receivedColor, attribute_modified->Attr_Data,
-						sizeof(receivedColor));
-				//FrontLightsSet(&receivedColor);
-				osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
-
-			}
-
-			// if system config was modified
-			if (attribute_modified->Attr_Handle
-					== (aDataTransferContext.DataTransferRxCharControlHdle + 1)) {
-#ifdef NUCLEO_LED_ACTIVE
-        	  BSP_LED_Toggle(LED_GREEN);
-#endif
-				memcpy(&receivedCntrlPacket, attribute_modified->Attr_Data,
-						sizeof(struct LogMessage));
-
-//				osMessageQueuePut(togLoggingQueueHandle, &receivedCntrlPacket,
-//						0U, 0U);
-
-			}
-
-			// if epoch was set
-			if (attribute_modified->Attr_Handle
-					== (aDataTransferContext.DataTransferRxCharTimeHdle + 1)) {
-#ifdef NUCLEO_LED_ACTIVE
-						  BSP_LED_Toggle(LED_GREEN);
-#endif
-				memcpy(&receivedEpoch, attribute_modified->Attr_Data,
-						sizeof(receivedEpoch));
-
-				receivedEpoch = receivedEpoch / 1000;
-//				updateRTC(receivedEpoch);
-
-			}
+//			// if LED characteristic was modified
+//			if (attribute_modified->Attr_Handle
+//					== (aDataTransferContext.DataTransferRxCharLedHdle + 1)) {
+//#ifdef NUCLEO_LED_ACTIVE
+//        	  	  	  	  BSP_LED_Toggle(LED_BLUE);
+//#endif
+//				memcpy(&receivedColor, attribute_modified->Attr_Data,
+//						sizeof(receivedColor));
+//				//FrontLightsSet(&receivedColor);
+//				osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+//
+//			}
+//
+//			// if system config was modified
+//			if (attribute_modified->Attr_Handle
+//					== (aDataTransferContext.DataTransferRxCharControlHdle + 1)) {
+//#ifdef NUCLEO_LED_ACTIVE
+//        	  BSP_LED_Toggle(LED_GREEN);
+//#endif
+//				memcpy(&receivedCntrlPacket, attribute_modified->Attr_Data,
+//						sizeof(struct LogMessage));
+//
+////				osMessageQueuePut(togLoggingQueueHandle, &receivedCntrlPacket,
+////						0U, 0U);
+//
+//			}
+//
+//			// if epoch was set
+//			if (attribute_modified->Attr_Handle
+//					== (aDataTransferContext.DataTransferRxCharTimeHdle + 1)) {
+//#ifdef NUCLEO_LED_ACTIVE
+//						  BSP_LED_Toggle(LED_GREEN);
+//#endif
+//				memcpy(&receivedEpoch, attribute_modified->Attr_Data,
+//						sizeof(receivedEpoch));
+//
+//				receivedEpoch = receivedEpoch / 1000;
+////				updateRTC(receivedEpoch);
+//
+//			}
 
 		}
 			break;

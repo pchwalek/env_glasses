@@ -116,7 +116,7 @@ class IMU(SensorClass):
     def send_to_influx(self, pkt_dict):
         data = []
         data.append(
-            "{measurement},id={id} pktID={pktID},timestamp_mcu={timestamp_mcu},signal={signal}"
+            "{measurement},id={id} pktID={pktID},timestamp_mcu={timestamp_mcu},signal=\"{signal}\""
                 .format(measurement="imu_raw",
                         id=pkt_dict["sysID"],
                         pktID=pkt_dict["pktID"],

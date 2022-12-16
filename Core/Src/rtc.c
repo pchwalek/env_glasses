@@ -21,6 +21,7 @@
 #include "rtc.h"
 
 /* USER CODE BEGIN 0 */
+#include "stm32wbxx_hal_rtc_ex.h"
 
 /* USER CODE END 0 */
 
@@ -35,7 +36,7 @@ void MX_RTC_Init(void)
   /* USER CODE END RTC_Init 0 */
 
   /* USER CODE BEGIN RTC_Init 1 */
-
+#ifdef KEEP_CUBE_INIT_ORDER
   /* USER CODE END RTC_Init 1 */
   /** Initialize RTC Only
   */
@@ -47,12 +48,41 @@ void MX_RTC_Init(void)
   hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
   hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
   hrtc.Init.OutPutRemap = RTC_OUTPUT_REMAP_NONE;
-  if (HAL_RTC_Init(&hrtc) != HAL_OK)
-  {
-    Error_Handler();
-  }
+//  if (HAL_RTC_Init(&hrtc) != HAL_OK)
+//  {
+//    Error_Handler();
+//  }
   /* USER CODE BEGIN RTC_Init 2 */
+#else
+  hrtc.Instance = RTC;
+  hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
+  hrtc.Init.AsynchPrediv = CFG_RTC_ASYNCH_PRESCALER;
+  hrtc.Init.SynchPrediv = CFG_RTC_SYNCH_PRESCALER;
+  hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
+  hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
+  hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
+  hrtc.Init.OutPutRemap = RTC_OUTPUT_REMAP_NONE;
 
+  hrtc.Lock = HAL_UNLOCKED;
+  HAL_RTC_MspInit(&hrtc);
+#endif
+
+  /* Read the Back Up Register 1 Data */
+//    if (HAL_RTCEx_BKUPRead(&hrtc, RTC_BKP_DR0) != RTC_BKUP_DEFINE_CODE)
+//    {
+//      // Clear Backup registor : recover to current RTC information
+//
+//      // Set to Time/Date from current Time/Date
+//
+//      // Write a data in ad RTC Backup data register
+////      HAL_RTCEx_BKUPWrite(&hrtc, RTC_BKP_DR0, RTC_BKUP_DEFINE_CODE);
+//    } else
+//    {
+//      // Only read time and date
+////      HAL_RTC_GetTime(&hrtc, Time, Format);
+////      HAL_RTC_GetDate(&hrtc, Date, Format);
+//
+//    }
   /* USER CODE END RTC_Init 2 */
 
 }
