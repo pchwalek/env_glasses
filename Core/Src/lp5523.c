@@ -650,6 +650,28 @@ void ledStartupSequence(void){
 	}
 }
 
+void ledEnterDFUNotification(void){
+	if(sensorThreadsRunning){
+		resetColor(&receivedColor);
+
+		receivedColor.colors_indiv.left_side_g = 120;
+		receivedColor.colors_indiv.right_side_g = 120;
+		receivedColor.colors_indiv.left_top_g = 120;
+		receivedColor.colors_indiv.right_top_g = 120;
+		receivedColor.colors_indiv.left_front_g = 120;
+		receivedColor.colors_indiv.right_front_g = 120;
+
+//		osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+
+		HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1,
+						LIS3DH_D1_PWM_REG, 1, &receivedColor.color[0], 9, 5);
+
+		HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1,
+				LIS3DH_D1_PWM_REG, 1,  &receivedColor.color[9], 9, 5);
+
+	}
+}
+
 
 void ledDisconnectNotification(void){
 	if(sensorThreadsRunning){

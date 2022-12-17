@@ -100,24 +100,6 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
-//  __HAL_RCC_GPIOA_CLK_ENABLE();
-//  /**TIM16 GPIO Configuration
-//  PA6     ------> TIM16_CH1
-//  */
-//  GPIO_InitStruct.Pin = BLINK_PWM_Pin;
-//  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-//  GPIO_InitStruct.Pull = GPIO_PULLUP;
-////  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-////  GPIO_InitStruct.Alternate = GPIO_AF14_TIM16;
-//  HAL_GPIO_Init(BLINK_PWM_GPIO_Port, &GPIO_InitStruct);
-//
-//  while(1){
-//	  HAL_GPIO_WritePin(BLINK_PWM_GPIO_Port, BLINK_PWM_Pin, GPIO_PIN_RESET);
-//	  HAL_Delay(1000);
-//	  HAL_GPIO_WritePin(BLINK_PWM_GPIO_Port, BLINK_PWM_Pin, GPIO_PIN_SET);
-//	  HAL_Delay(1000);
-//  }
-
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI2_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(EXTI2_IRQn);

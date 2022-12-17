@@ -1047,4 +1047,3 @@ typedef enum
 #define CFG_OTP_END_ADRESS      OTP_AREA_END_ADDR
 
 #endif /*APP_CONF_H */
-

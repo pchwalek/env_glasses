@@ -75,7 +75,7 @@
     <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
         <listEntry value="4"/>
     </listAttribute>
-    <stringAttribute key="org.eclipse.dsf.launch.MEMORY_BLOCKS" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&lt;memoryBlockExpressionList context=&quot;reserved-for-future-use&quot;/&gt;"/>
+    <stringAttribute key="org.eclipse.dsf.launch.MEMORY_BLOCKS" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&lt;memoryBlockExpressionList context=&quot;reserved-for-future-use&quot;&gt;&lt;gdbmemoryBlockExpression address=&quot;0&quot; label=&quot;0x0000000&quot;/&gt;&lt;gdbmemoryBlockExpression address=&quot;0&quot; label=&quot;0x0000000&quot;/&gt;&lt;/memoryBlockExpressionList&gt;"/>
     <stringAttribute key="process_factory_id" value="com.st.stm32cube.ide.mcu.debug.launch.HardwareDebugProcessFactory"/>
-    <stringAttribute key="saved_expressions&lt;seperator&gt;Unknown" value="20007248,0x20007248,0x200068a8,0x20006d78,0x200053e4,0x20006198,0x200056a4"/>
+    <stringAttribute key="saved_expressions&lt;seperator&gt;Unknown" value="20007248,0x20007248,0x200068a8,0x20006d78,0x200053e4,0x20006198,0x200056a4,0x0"/>
 </launchConfiguration>

@@ -40,6 +40,8 @@
 #define UUID_128_SUPPORTED 0
 #define	NUM_OF_CHARACTERISTICS 6 //https://community.st.com/s/question/0D50X00009XkYAvSAN/sensortile-bluenrgms-custom-service-aci
 
+#define ENTER_DFU_MODE_UPON_RESET 1
+
 RX_PacketHeader rxPacketHeader;
 
 #if (UUID_128_SUPPORTED == 1)
@@ -120,6 +122,7 @@ typedef struct {
 /* Private function prototypes -----------------------------------------------*/
 static tBleStatus TX_Update_Char(DTS_STM_Payload_t *pDataValue);
 static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *pckt);
+void enterDFUMode(void);
 static DataTransferSvcContext_t aDataTransferContext;
 extern uint16_t Att_Mtu_Exchanged;
 struct LogMessage receivedCntrlPacket;
@@ -204,6 +207,7 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 				if(rxPacketHeader.packetType == CONTROL_LED_PKT_TYPE){
 					osMessageQueuePut(lightsComplexQueueHandle,
 							(attribute_modified->Attr_Data + sizeof(RX_PacketHeader)), 0, 0);
+
 				}
 				else if(rxPacketHeader.packetType == SET_CLK_PKT_TYPE){
 
@@ -215,7 +219,15 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 
 				}
 				else if(rxPacketHeader.packetType == TRIGGER_FUNC_PKT_TYPE){
+					uint8_t functionIdentifier;
+					memcpy(&functionIdentifier,
+							attribute_modified->Attr_Data + sizeof(RX_PacketHeader),
+							sizeof(uint8_t));
 
+					if(functionIdentifier == ENTER_DFU_MODE_UPON_RESET){
+						ledEnterDFUNotification();
+						enterDFUMode();
+					}
 				}
 
 				// update RTC with header's timestamp
@@ -303,6 +315,11 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 # define MAX_PACKET_LENGTH	243 // https://www.compel.ru/wordpress/wp-content/uploads/2019/12/en.dm00598033.pdf
 //# define MAX_PACKET_LENGTH	500 // https://www.compel.ru/wordpress/wp-content/uploads/2019/12/en.dm00598033.pdf
 
+void enterDFUMode(void){
+	*((unsigned long *)0x2000020c) = 0xDEADBEEF;
+	__disable_irq();
+	NVIC_SystemReset();
+}
 
 static tBleStatus TX_Update_Char(DTS_STM_Payload_t *pDataValue) {
 	tBleStatus ret;

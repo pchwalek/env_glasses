@@ -198,6 +198,10 @@
   * @{
   */
 
+#define BOOTLOADER_STACK_POINTER       0x20030000
+// Define our function pointer
+void (*SysMemBootJump)(void);
+
 /**
   * @brief  Setup the microcontroller system.
   * @param  None
@@ -205,6 +209,38 @@
   */
 void SystemInit(void)
 {
+	// Check if we should go into bootloader mode.
+	  //
+	  // Set the main stack pointer __set_MSP() to its default value.  The default
+	  // value of the main stack pointer is found by looking at the default value
+	  // in the System Memory start address. Do this in IAR View -> Memory.  I
+	  // tried this and it showed address: 0x200014A8 which I then tried here.
+	  // The IAR compiler complained that it was out of range.  After some
+	  // research, I found the following from "The STM32 Cortex-M0 Programming
+	  // Manual":
+	  //         Main Stack Pointer (MSP)(reset value). On reset, the processor
+	  //         loads the MSP with the value from address 0x00000000.
+	  //
+	  // So I then looked at the default value at address 0x0 and it was 0x20002250
+	  //
+	  // Note that 0x1fffC800 is "System Memory" start address for STM32 F0xx
+	  //
+  if ( *((unsigned long *)0x2000020c) == 0xDEADBEEF ) {
+	   *((unsigned long *)0x2000020c) =  0xCAFEFEED; // Reset our trigger
+
+		__enable_irq();
+		HAL_RCC_DeInit();
+		HAL_DeInit();
+		SysTick->CTRL = SysTick->LOAD = SysTick->VAL = 0;
+		__HAL_SYSCFG_REMAPMEMORY_SYSTEMFLASH();
+
+	   const uint32_t p = (*((uint32_t *) 0x1FFF0000));
+	  __set_MSP(p);
+	  SysMemBootJump = (void (*)(void)) (*((uint32_t *) 0x1FFF0004)); // Point the PC to the System Memory reset vector (+4)
+	  SysMemBootJump();
+	  while (1);
+  }
+
 #if defined(USER_VECT_TAB_ADDRESS)
   /* Configure the Vector Table location add offset address ------------------*/
   SCB->VTOR = VECT_TAB_BASE_ADDRESS | VECT_TAB_OFFSET;

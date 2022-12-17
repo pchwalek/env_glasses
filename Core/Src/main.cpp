@@ -76,6 +76,7 @@ volatile unsigned long ulHighFrequencyTimerTicks;
 volatile uint8_t sensorThreadsRunning = 0;
 void epoch_to_date_time(unsigned int epoch);
 void RTC_FromEpoch(uint32_t epoch, RTC_TimeTypeDef *time, RTC_DateTypeDef *date);
+//__attribute__((section(".noinit"))) volatile int my_non_initialized_integer;
 /* USER CODE END 0 */
 
 /**
@@ -85,7 +86,7 @@ void RTC_FromEpoch(uint32_t epoch, RTC_TimeTypeDef *time, RTC_DateTypeDef *date)
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+	*((int *)0x2000020c) =  0xCAFEFEED; // Reset our trigger
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -142,7 +143,7 @@ int main(void)
   MX_SPI2_Init();
   MX_TIM16_Init();
   MX_TIM2_Init();
-//  MX_USB_Device_Init();
+  MX_USB_Device_Init();
   MX_TIM17_Init();
   extMemInit();
 //  HAL_Delay(500); // needed or wireless stack wont init properly (delay duration can probably be reduced)
@@ -168,7 +169,7 @@ int main(void)
   /* Init scheduler */
   osKernelInitialize();  /* Call init function for freertos objects (in freertos.c) */
   MX_FREERTOS_Init();
-//  /* Start scheduler */
+  /* Start scheduler */
   osKernelStart();
 
   /* We should never get here as control is now taken by the scheduler */

@@ -206,7 +206,7 @@ void ledConnectNotification(void);
 void ledStartupSequence(void);
 void ledAllRed(void);
 void resetColor(union ColorComplex * colorComplex);
-
+void ledEnterDFUNotification(void);
 //class LP5523
 //{
 //public:
