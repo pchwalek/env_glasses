@@ -220,7 +220,7 @@ void ThreadFrontLightsComplexTask(void *argument){
 	#ifndef DONGLE_CODE
 		osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 
-		timeTracker = HAL_GetTick();
+//		timeTracker = HAL_GetTick();
 //		HAL_I2C_Mem_Write_DMA(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1,
 //				LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9);
 		state = HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1,
@@ -243,7 +243,7 @@ void ThreadFrontLightsComplexTask(void *argument){
 		state = HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1,
 				LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9, 5);
 
-		timeTracker = HAL_GetTick() - timeTracker;
+//		timeTracker = HAL_GetTick() - timeTracker;
 
 //		HAL_I2C_Mem_Write_DMA(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1,
 //				LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9);
@@ -648,6 +648,71 @@ void ledStartupSequence(void){
 //	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
 //	osDelay(LED_START_SEQ_INTERVAL);
 	}
+}
+
+union ColorComplex blueGreenTranColor;
+void BlueGreenTransitionTask(void *argument){
+	union BlueGreenTransition blueGreenTran;
+	uint32_t timeTracker = 0;
+
+	memcpy(&blueGreenTran,argument,sizeof(union BlueGreenTransition));
+
+	/* start sequence */
+
+	//	timeTracker = HAL_GetTick();
+
+	resetColor(&blueGreenTranColor);
+
+
+	// error condition: if step size exceeds intensity range
+	if( (blueGreenTran.val.step_size >= blueGreenTran.val.blue_max_intensity) ||
+			(blueGreenTran.val.step_size >= blueGreenTran.val.green_max_intensity)){
+		vTaskDelete( NULL );
+	}
+
+	/* increase blue intensity */
+	if(blueGreenTran.val.blue_max_intensity > blueGreenTran.val.blue_min_intensity){
+		for(int i = blueGreenTran.val.blue_min_intensity;;
+				i += blueGreenTran.val.step_size){
+
+			blueGreenTranColor.colors_indiv.right_side_b = (i > blueGreenTran.val.blue_max_intensity) ? blueGreenTran.val.blue_max_intensity : i;
+			blueGreenTranColor.colors_indiv.left_side_b = blueGreenTranColor.colors_indiv.right_side_b;
+			osMessageQueuePut(lightsComplexQueueHandle, &blueGreenTranColor, 0, 0);
+			osDelay(blueGreenTran.val.step_duration);
+
+			if(i >= blueGreenTran.val.blue_max_intensity){
+				break;
+			}
+		}
+	}
+
+	/* start transition */
+	for(int i = 0;
+			i <= 255;
+			i += blueGreenTran.val.step_size){
+		blueGreenTranColor.colors_indiv.right_side_b = (i > blueGreenTran.val.blue_max_intensity) ? 0 : blueGreenTran.val.blue_max_intensity - i;
+		blueGreenTranColor.colors_indiv.left_side_b = blueGreenTranColor.colors_indiv.right_side_b;
+
+		blueGreenTranColor.colors_indiv.right_side_g = (i > blueGreenTran.val.green_max_intensity) ? blueGreenTran.val.green_max_intensity : i;
+		blueGreenTranColor.colors_indiv.left_side_g = blueGreenTranColor.colors_indiv.right_side_g;
+
+		osMessageQueuePut(lightsComplexQueueHandle, &blueGreenTranColor, 0, 0);
+
+		if( (blueGreenTran.val.green_max_intensity == blueGreenTranColor.colors_indiv.right_side_g) &&
+				(blueGreenTran.val.blue_max_intensity == blueGreenTranColor.colors_indiv.right_side_b)){
+
+		}else{
+			osDelay(blueGreenTran.val.step_duration);
+		}
+	}
+
+//	// compensate for time it takes to set LEDs
+//	timeTracker = HAL_GetTick() - timeTracker;
+//	if(timeTracker < blueGreenTran->val.step_duration){
+//		osDelay(blueGreenTran->val.step_duration - timeTracker);
+//	}
+
+	vTaskDelete( NULL );
 }
 
 void ledEnterDFUNotification(void){

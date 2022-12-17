@@ -59,6 +59,13 @@ osMessageQueueId_t lightsComplexQueueHandle;
 const osMessageQueueAttr_t lightsComplexQueue_attributes = { .name =
 		"lightsComplexQueue" };
 
+osThreadId_t blueGreenTranTaskHandle;
+const osThreadAttr_t blueGreenTask_attributes = { .name = "bgTranTask",
+		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
+		.stack_mem = NULL, .stack_size = 512, .priority =
+				(osPriority_t) osPriorityNormal, .tz_module = 0, .reserved = 0 };
+
+
 osThreadId_t specTaskHandle;
 const osThreadAttr_t specTask_attributes = { .name = "spectrometerTask",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
@@ -337,13 +344,12 @@ void startThreads() {
 
 //	/* creation of thermopileTask */
 
-	thermopileTaskHandle = osThreadNew(Thermopile_Task, NULL,
-			&thermopileTask_attributes);
-	shtTaskHandle = osThreadNew(ShtTask, NULL, &shtTask_attributes);
-	sgpTaskHandle = osThreadNew(SgpTask, NULL, &sgpTask_attributes);
-	luxTaskHandle = osThreadNew(LuxTask, NULL, &luxTask_attributes);
-	bmeTaskHandle = osThreadNew(BME_Task, NULL, &bmeTask_attributes);
-	specTaskHandle = osThreadNew(Spec_Task, NULL, &specTask_attributes);
+//	thermopileTaskHandle = osThreadNew(Thermopile_Task, NULL,
+//			&thermopileTask_attributes);
+//	shtTaskHandle = osThreadNew(SgpTask, NULL, &sgpTask_attributes);
+//	luxTaskHandle = osThreadNew(LuxTask, NULL, &luxTask_attributes);
+//	bmeTaskHandle = osThreadNew(BME_Task, NULL, &bmeTask_attributes);
+//	specTaskHandle = osThreadNew(BlueGreenTransitionTask, NULL, &specTask_attributes);
 
 
 //	imuTaskHandle = osThreadNew(IMU_Task, NULL, &imuTask_attributes);

@@ -47,6 +47,18 @@ typedef union ColorComplex {
 	uint8_t color[18];
 };
 
+typedef union BlueGreenTransition {
+	struct val {
+		uint8_t start_bit;
+		uint8_t blue_min_intensity;
+		uint8_t blue_max_intensity;
+		uint8_t green_max_intensity;
+		uint8_t step_size;
+		uint8_t step_duration;
+	} val;
+	uint8_t array[6];
+};
+
 /* defines -----------------------------------------------------------*/
 
 /** FREERTOS QUEUES **/
@@ -207,6 +219,7 @@ void ledStartupSequence(void);
 void ledAllRed(void);
 void resetColor(union ColorComplex * colorComplex);
 void ledEnterDFUNotification(void);
+void BlueGreenTransitionTask(void *argument);
 //class LP5523
 //{
 //public:

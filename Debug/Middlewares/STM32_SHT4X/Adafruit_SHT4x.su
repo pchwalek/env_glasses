@@ -1,24 +1,22 @@
-Adafruit_Sensor.h:169:16:virtual void Adafruit_Sensor::enableAutoRange(bool)	16	static
-cmath:1418:3:constexpr float std::fmax(float, float)	16	static
-cmath:1438:3:constexpr float std::fmin(float, float)	16	static
-Adafruit_SHT4x.cpp:42:1:Adafruit_SHT4x::Adafruit_SHT4x()	16	static
-Adafruit_SHT4x.cpp:47:1:Adafruit_SHT4x::~Adafruit_SHT4x()	16	static
-Adafruit_SHT4x.cpp:63:6:bool Adafruit_SHT4x::begin(I2C_HandleTypeDef*)	16	static
-Adafruit_SHT4x.cpp:82:10:uint32_t Adafruit_SHT4x::readSerial()	32	static
-Adafruit_SHT4x.cpp:114:6:bool Adafruit_SHT4x::reset()	24	static
-Adafruit_SHT4x.cpp:129:6:void Adafruit_SHT4x::setPrecision(sht4x_precision_t)	16	static
-Adafruit_SHT4x.cpp:137:19:sht4x_precision_t Adafruit_SHT4x::getPrecision()	16	static
-Adafruit_SHT4x.cpp:146:6:void Adafruit_SHT4x::setHeater(sht4x_heater_t)	16	static
-Adafruit_SHT4x.cpp:155:16:sht4x_heater_t Adafruit_SHT4x::getHeater()	16	static
-Adafruit_SHT4x.cpp:166:6:bool Adafruit_SHT4x::getEvent()	56	static
-Adafruit_SHT4x.cpp:242:6:void Adafruit_SHT4x::fillTempEvent(sensors_event_t*, uint32_t)	24	static
-Adafruit_SHT4x.cpp:251:6:void Adafruit_SHT4x::fillHumidityEvent(sensors_event_t*, uint32_t)	24	static
+Adafruit_Sensor.h:169:16:virtual void Adafruit_Sensor::enableAutoRange(bool)	0	static
+Adafruit_SHT4x.cpp:414:16:uint8_t crc8(const uint8_t*, int)	0	static
 Adafruit_SHT4x.cpp:283:6:virtual void Adafruit_SHT4x_Humidity::getSensor(sensor_t*)	16	static
 Adafruit_SHT4x.cpp:313:6:virtual void Adafruit_SHT4x_Temp::getSensor(sensor_t*)	16	static
-Adafruit_SHT4x.cpp:344:6:bool Adafruit_SHT4x::writeCommand(uint16_t)	24	static
-Adafruit_SHT4x.cpp:358:6:bool Adafruit_SHT4x::readCommand(uint16_t, uint8_t*, uint8_t)	32	static
-Adafruit_SHT4x.cpp:370:6:bool Adafruit_SHT4x::write(uint8_t*, uint8_t)	32	static
-Adafruit_SHT4x.cpp:379:6:bool Adafruit_SHT4x::read(uint8_t*, uint8_t)	32	static
-Adafruit_SHT4x.cpp:388:6:bool Adafruit_SHT4x::readRegister(uint16_t, uint8_t*, uint16_t)	40	static
-Adafruit_SHT4x.cpp:397:6:bool Adafruit_SHT4x::writeRegister(uint8_t, uint8_t*, uint16_t)	40	static
-Adafruit_SHT4x.cpp:414:16:uint8_t crc8(const uint8_t*, int)	32	static
+Adafruit_SHT4x.cpp:42:1:Adafruit_SHT4x::Adafruit_SHT4x()	0	static
+Adafruit_SHT4x.cpp:47:1:Adafruit_SHT4x::~Adafruit_SHT4x()	8	static
+Adafruit_SHT4x.cpp:129:6:void Adafruit_SHT4x::setPrecision(sht4x_precision_t)	0	static
+Adafruit_SHT4x.cpp:137:19:sht4x_precision_t Adafruit_SHT4x::getPrecision()	0	static
+Adafruit_SHT4x.cpp:146:6:void Adafruit_SHT4x::setHeater(sht4x_heater_t)	0	static
+Adafruit_SHT4x.cpp:155:16:sht4x_heater_t Adafruit_SHT4x::getHeater()	0	static
+Adafruit_SHT4x.cpp:242:6:void Adafruit_SHT4x::fillTempEvent(sensors_event_t*, uint32_t)	16	static
+Adafruit_SHT4x.cpp:251:6:void Adafruit_SHT4x::fillHumidityEvent(sensors_event_t*, uint32_t)	16	static
+Adafruit_SHT4x.cpp:370:6:bool Adafruit_SHT4x::write(uint8_t*, uint8_t)	16	static
+Adafruit_SHT4x.cpp:114:6:bool Adafruit_SHT4x::reset()	16	static
+Adafruit_SHT4x.cpp:63:6:bool Adafruit_SHT4x::begin(I2C_HandleTypeDef*)	8	static
+Adafruit_SHT4x.cpp:344:6:bool Adafruit_SHT4x::writeCommand(uint16_t)	16	static
+Adafruit_SHT4x.cpp:379:6:bool Adafruit_SHT4x::read(uint8_t*, uint8_t)	16	static
+Adafruit_SHT4x.cpp:82:10:uint32_t Adafruit_SHT4x::readSerial()	16	static
+Adafruit_SHT4x.cpp:166:6:bool Adafruit_SHT4x::getEvent()	32	static
+Adafruit_SHT4x.cpp:358:6:bool Adafruit_SHT4x::readCommand(uint16_t, uint8_t*, uint8_t)	24	static
+Adafruit_SHT4x.cpp:388:6:bool Adafruit_SHT4x::readRegister(uint16_t, uint8_t*, uint16_t)	24	static
+Adafruit_SHT4x.cpp:397:6:bool Adafruit_SHT4x::writeRegister(uint8_t, uint8_t*, uint16_t)	24	static

@@ -169,6 +169,9 @@ extern osMessageQueueId_t lightsComplexQueueHandle;
 extern osMessageQueueId_t togLoggingQueueHandle;
 extern osThreadId_t masterTaskHandle;
 
+extern osThreadId_t blueGreenTranTaskHandle;
+extern const osThreadAttr_t blueGreenTask_attributes;
+
 extern osThreadId_t specTaskHandle;
 
 extern osThreadId_t luxTaskHandle;

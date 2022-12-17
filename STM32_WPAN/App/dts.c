@@ -41,6 +41,7 @@
 #define	NUM_OF_CHARACTERISTICS 6 //https://community.st.com/s/question/0D50X00009XkYAvSAN/sensortile-bluenrgms-custom-service-aci
 
 #define ENTER_DFU_MODE_UPON_RESET 1
+#define ENTER_BLUE_GREEN_TRANSITION 2
 
 RX_PacketHeader rxPacketHeader;
 
@@ -127,6 +128,7 @@ static DataTransferSvcContext_t aDataTransferContext;
 extern uint16_t Att_Mtu_Exchanged;
 struct LogMessage receivedCntrlPacket;
 union ColorComplex receivedColor;
+union BlueGreenTransition blueGreenTranRX;
 time_t receivedEpoch;
 
 /* Functions Definition ------------------------------------------------------*/
@@ -209,7 +211,7 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 							(attribute_modified->Attr_Data + sizeof(RX_PacketHeader)), 0, 0);
 				}
 				else if(rxPacketHeader.packetType == SET_CLK_PKT_TYPE){
-
+					// do nothing since this will get handled at the end
 				}
 				else if(rxPacketHeader.packetType == CNTRL_SENSORS_PKT_TYPE){
 
@@ -227,6 +229,13 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 						ledEnterDFUNotification();
 						enterDFUMode();
 					}
+					else if(functionIdentifier == ENTER_BLUE_GREEN_TRANSITION){
+						memcpy(&blueGreenTranRX, attribute_modified->Attr_Data + sizeof(RX_PacketHeader) + 1, sizeof(union BlueGreenTransition));
+						osThreadTerminate(blueGreenTranTaskHandle); // terminate any existing running thread
+						if(blueGreenTranRX.val.start_bit == 1){
+							blueGreenTranTaskHandle = osThreadNew(BlueGreenTransitionTask, &blueGreenTranRX, &blueGreenTask_attributes);
+						}
+					}
 				}
 
 				// update RTC with header's timestamp
@@ -234,6 +243,8 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 					updateRTC(rxPacketHeader.epoch);
 				}
 			}
+
+
 
 //			// if LED characteristic was modified
 //			if (attribute_modified->Attr_Handle

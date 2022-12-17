@@ -2,4 +2,4 @@ stm32wbxx_ll_bus.h:1274:22:LL_APB2_GRP1_EnableClock	24	static
 stm32wbxx_ll_bus.h:1328:22:LL_APB2_GRP1_DisableClock	16	static
 sai.c:32:6:MX_SAI1_Init	8	static
 sai.c:67:6:HAL_SAI_MspInit	40	static
-sai.c:123:6:HAL_SAI_MspDeInit	16	static
+sai.c:130:6:HAL_SAI_MspDeInit	16	static

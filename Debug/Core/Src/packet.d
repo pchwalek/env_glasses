@@ -87,7 +87,8 @@ Core/Src/packet.o: ../Core/Src/packet.cpp ../Core/Inc/packet.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
- ../STM32_WPAN/App/dts.h ../Middlewares/ST/STM32_WPAN/ble/svc/Inc/uuid.h
+ ../STM32_WPAN/App/dts.h ../Middlewares/ST/STM32_WPAN/ble/svc/Inc/uuid.h \
+ ../Core/Inc/rtc.h
 
 ../Core/Inc/packet.h:
 
@@ -284,3 +285,5 @@ Core/Src/packet.o: ../Core/Src/packet.cpp ../Core/Inc/packet.h \
 ../STM32_WPAN/App/dts.h:
 
 ../Middlewares/ST/STM32_WPAN/ble/svc/Inc/uuid.h:
+
+../Core/Inc/rtc.h:

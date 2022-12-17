@@ -1,4 +1,8 @@
-packet.cpp:19:15:SensorPacket* grabPacket()	16	static
-packet.cpp:28:6:void queueUpPacket(SensorPacket*)	16	static
-packet.cpp:34:6:void senderThread(void*)	24	static
-packet.cpp:65:9:uint8_t sendPacket_BLE(SensorPacket*)	24	static
+packet.cpp:28:15:SensorPacket* grabPacket()	16	static
+packet.cpp:37:6:void queueUpPacket(SensorPacket*)	16	static
+packet.cpp:82:9:uint8_t sendPacket_BLE(SensorPacket*)	8	static
+packet.cpp:142:6:void RTC_FromEpoch(uint32_t, RTC_TimeTypeDef*, RTC_DateTypeDef*)	32	static
+packet.cpp:117:6:void updateRTC(uint32_t)	32	static
+packet.cpp:190:10:uint32_t RTC_ToEpoch(RTC_TimeTypeDef*, RTC_DateTypeDef*)	8	static
+packet.cpp:129:10:uint32_t getEpoch()	32	static
+packet.cpp:43:6:void senderThread(void*)	8	static

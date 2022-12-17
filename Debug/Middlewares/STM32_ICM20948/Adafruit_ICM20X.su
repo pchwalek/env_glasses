@@ -1,78 +1,72 @@
-Adafruit_Sensor.h:161:3:Adafruit_Sensor::Adafruit_Sensor()	16	static
-Adafruit_Sensor.h:162:11:Adafruit_Sensor::~Adafruit_Sensor()	16	static
-Adafruit_Sensor.h:162:11:virtual Adafruit_Sensor::~Adafruit_Sensor()	16	static
-Adafruit_Sensor.h:169:16:virtual void Adafruit_Sensor::enableAutoRange(bool)	16	static
-Adafruit_ICM20X.h:138:2:Adafruit_ICM20X_Accelerometer::Adafruit_ICM20X_Accelerometer(Adafruit_ICM20X*)	16	static
-Adafruit_ICM20X.h:154:2:Adafruit_ICM20X_Gyro::Adafruit_ICM20X_Gyro(Adafruit_ICM20X*)	16	static
-Adafruit_ICM20X.h:171:2:Adafruit_ICM20X_Magnetometer::Adafruit_ICM20X_Magnetometer(Adafruit_ICM20X*)	16	static
-Adafruit_ICM20X.h:187:2:Adafruit_ICM20X_Temp::Adafruit_ICM20X_Temp(Adafruit_ICM20X*)	16	static
-Adafruit_ICM20X.cpp:47:1:Adafruit_ICM20X::Adafruit_ICM20X()	16	static
-Adafruit_ICM20X.cpp:53:1:Adafruit_ICM20X::~Adafruit_ICM20X()	16	static
-Adafruit_ICM20X.cpp:76:6:virtual bool Adafruit_ICM20X::begin_I2C(uint8_t, I2C_HandleTypeDef*, int32_t)	24	static
-Adafruit_ICM20X.cpp:94:6:bool Adafruit_ICM20X::begin_SPI(SPI_HandleTypeDef*, GPIO_TypeDef*, uint16_t, int32_t)	24	static
-Adafruit_ICM20X.cpp:105:6:void Adafruit_ICM20X::cs_active(bool)	16	static
-Adafruit_ICM20X.cpp:148:6:void Adafruit_ICM20X::reset()	16	static
-Adafruit_ICM20X.cpp:165:6:bool Adafruit_ICM20X::_init(int32_t)	32	static
-Adafruit_ICM20X.cpp:262:6:bool Adafruit_ICM20X::getEvent(sensors_event_t*, sensors_event_t*, sensors_event_t*, sensors_event_t*)	32	static
-Adafruit_ICM20X.cpp:278:6:void Adafruit_ICM20X::fillAccelEvent(sensors_event_t*, uint32_t)	24	static
-Adafruit_ICM20X.cpp:291:6:void Adafruit_ICM20X::fillGyroEvent(sensors_event_t*, uint32_t)	24	static
-Adafruit_ICM20X.cpp:302:6:void Adafruit_ICM20X::fillMagEvent(sensors_event_t*, uint32_t)	24	static
-Adafruit_ICM20X.cpp:313:6:void Adafruit_ICM20X::fillTempEvent(sensors_event_t*, uint32_t)	24	static
-Adafruit_ICM20X.cpp:327:6:void Adafruit_ICM20X::_read()	40	static
-Adafruit_ICM20X.cpp:364:6:virtual void Adafruit_ICM20X::scaleValues()	16	static
-Adafruit_ICM20X.cpp:383:18:Adafruit_Sensor* Adafruit_ICM20X::getAccelerometerSensor()	16	static
-Adafruit_ICM20X.cpp:391:18:Adafruit_Sensor* Adafruit_ICM20X::getGyroSensor()	16	static
-Adafruit_ICM20X.cpp:400:18:Adafruit_Sensor* Adafruit_ICM20X::getMagnetometerSensor()	16	static
-Adafruit_ICM20X.cpp:408:18:Adafruit_Sensor* Adafruit_ICM20X::getTemperatureSensor()	16	static
-Adafruit_ICM20X.cpp:417:6:void Adafruit_ICM20X::_setBank(uint8_t)	16	static
-Adafruit_ICM20X.cpp:426:9:uint8_t Adafruit_ICM20X::readAccelRange()	24	static
-Adafruit_ICM20X.cpp:442:6:void Adafruit_ICM20X::writeAccelRange(uint8_t)	24	static
-Adafruit_ICM20X.cpp:456:9:uint8_t Adafruit_ICM20X::readGyroRange()	24	static
-Adafruit_ICM20X.cpp:472:6:void Adafruit_ICM20X::writeGyroRange(uint8_t)	24	static
-Adafruit_ICM20X.cpp:485:10:uint16_t Adafruit_ICM20X::getAccelRateDivisor()	24	static
-Adafruit_ICM20X.cpp:503:6:void Adafruit_ICM20X::setAccelRateDivisor(uint16_t)	24	static
-Adafruit_ICM20X.cpp:521:9:uint8_t Adafruit_ICM20X::getGyroRateDivisor()	24	static
-Adafruit_ICM20X.cpp:537:6:void Adafruit_ICM20X::setGyroRateDivisor(uint8_t)	16	static
-Adafruit_ICM20X.cpp:553:6:bool Adafruit_ICM20X::enableAccelDLPF(bool, icm20x_accel_cutoff_t)	24	static
-Adafruit_ICM20X.cpp:581:6:bool Adafruit_ICM20X::enableGyrolDLPF(bool, icm20x_gyro_cutoff_t)	24	static
-Adafruit_ICM20X.cpp:608:6:void Adafruit_ICM20X::setInt1ActiveLow(bool)	16	static
-Adafruit_ICM20X.cpp:623:6:void Adafruit_ICM20X::setInt1Latch(bool)	16	static
-Adafruit_ICM20X.cpp:631:6:void Adafruit_ICM20X::clearIntOnRead(bool)	16	static
-Adafruit_ICM20X.cpp:644:6:void Adafruit_ICM20X::enableInt1(bool)	16	static
-Adafruit_ICM20X.cpp:651:6:void Adafruit_ICM20X::enableInt2(bool)	16	static
-Adafruit_ICM20X.cpp:680:6:void Adafruit_ICM20X::setI2CBypass(bool)	16	static
-Adafruit_ICM20X.cpp:695:6:bool Adafruit_ICM20X::enableI2CMaster(bool)	24	static
-Adafruit_ICM20X.cpp:710:6:bool Adafruit_ICM20X::enableSPI(bool)	24	static
-Adafruit_ICM20X.cpp:725:6:bool Adafruit_ICM20X::configureI2CMaster()	16	static
-Adafruit_ICM20X.cpp:741:9:uint8_t Adafruit_ICM20X::readExternalRegister(uint8_t, uint8_t)	24	static
-Adafruit_ICM20X.cpp:758:6:bool Adafruit_ICM20X::writeExternalRegister(uint8_t, uint8_t, uint8_t)	24	static
-Adafruit_ICM20X.cpp:775:9:uint8_t Adafruit_ICM20X::auxillaryRegisterTransaction(bool, uint8_t, uint8_t, uint8_t)	24	static
-Adafruit_ICM20X.cpp:822:6:void Adafruit_ICM20X::resetI2CMaster()	16	static
-Adafruit_ICM20X.cpp:865:6:bool Adafruit_ICM20X::getFIFOcnt(uint16_t*)	24	static
-Adafruit_ICM20X.cpp:883:6:bool Adafruit_ICM20X::getINTstatus(uint8_t*)	16	static
-Adafruit_ICM20X.cpp:899:6:bool Adafruit_ICM20X::readFIFO(uint8_t*, uint16_t)	24	static
-Adafruit_ICM20X.cpp:912:6:bool Adafruit_ICM20X::readRegister(uint16_t, uint8_t*, uint16_t)	56	dynamic
-Adafruit_ICM20X.cpp:933:9:uint8_t Adafruit_ICM20X::readRegisterByte(uint16_t)	32	static
-Adafruit_ICM20X.cpp:953:6:bool Adafruit_ICM20X::writeRegister(uint8_t, uint8_t*, uint16_t)	40	dynamic
-Adafruit_ICM20X.cpp:969:6:bool Adafruit_ICM20X::writeRegisterByte(uint8_t, uint8_t)	24	static
-Adafruit_ICM20X.cpp:984:9:uint8_t Adafruit_ICM20X::modifyBitInByte(uint8_t, uint8_t, uint8_t)	24	static
-Adafruit_ICM20X.cpp:1012:9:uint8_t Adafruit_ICM20X::checkRegisterBit(uint16_t, uint8_t)	16	static
-Adafruit_ICM20X.cpp:1016:6:bool Adafruit_ICM20X::modifyRegisterBit(uint16_t, bool, uint8_t)	24	static
-Adafruit_ICM20X.cpp:1023:6:bool Adafruit_ICM20X::modifyRegisterMultipleBit(uint16_t, uint8_t, uint8_t, uint8_t)	24	static
-Adafruit_ICM20X.cpp:1038:9:uint8_t Adafruit_ICM20X::readRegisterBits(uint16_t, uint8_t, uint8_t)	24	static
-Adafruit_ICM20X.cpp:1060:6:virtual void Adafruit_ICM20X_Accelerometer::getSensor(sensor_t*)	16	static
-Adafruit_ICM20X.cpp:1083:6:virtual bool Adafruit_ICM20X_Accelerometer::getEvent(sensors_event_t*)	24	static
-Adafruit_ICM20X.cpp:1095:6:virtual void Adafruit_ICM20X_Gyro::getSensor(sensor_t*)	16	static
-Adafruit_ICM20X.cpp:1118:6:virtual bool Adafruit_ICM20X_Gyro::getEvent(sensors_event_t*)	24	static
-Adafruit_ICM20X.cpp:1130:6:virtual void Adafruit_ICM20X_Magnetometer::getSensor(sensor_t*)	16	static
-Adafruit_ICM20X.cpp:1153:6:virtual bool Adafruit_ICM20X_Magnetometer::getEvent(sensors_event_t*)	24	static
-Adafruit_ICM20X.cpp:1165:6:virtual void Adafruit_ICM20X_Temp::getSensor(sensor_t*)	16	static
-Adafruit_ICM20X.cpp:1188:6:virtual bool Adafruit_ICM20X_Temp::getEvent(sensors_event_t*)	24	static
-Adafruit_ICM20X.h:183:7:Adafruit_ICM20X_Temp::~Adafruit_ICM20X_Temp()	16	static
-Adafruit_ICM20X.h:183:7:virtual Adafruit_ICM20X_Temp::~Adafruit_ICM20X_Temp()	16	static
-Adafruit_ICM20X.h:166:7:Adafruit_ICM20X_Magnetometer::~Adafruit_ICM20X_Magnetometer()	16	static
-Adafruit_ICM20X.h:166:7:virtual Adafruit_ICM20X_Magnetometer::~Adafruit_ICM20X_Magnetometer()	16	static
-Adafruit_ICM20X.h:150:7:Adafruit_ICM20X_Gyro::~Adafruit_ICM20X_Gyro()	16	static
-Adafruit_ICM20X.h:150:7:virtual Adafruit_ICM20X_Gyro::~Adafruit_ICM20X_Gyro()	16	static
-Adafruit_ICM20X.h:133:7:Adafruit_ICM20X_Accelerometer::~Adafruit_ICM20X_Accelerometer()	16	static
-Adafruit_ICM20X.h:133:7:virtual Adafruit_ICM20X_Accelerometer::~Adafruit_ICM20X_Accelerometer()	16	static
+Adafruit_Sensor.h:169:16:virtual void Adafruit_Sensor::enableAutoRange(bool)	0	static
+Adafruit_ICM20X.cpp:83:6:virtual bool Adafruit_ICM20X::begin_I2C(uint8_t, I2C_HandleTypeDef*, int32_t)	0	static
+Adafruit_ICM20X.cpp:384:6:virtual void Adafruit_ICM20X::scaleValues()	0	static
+Adafruit_ICM20X.h:183:7:Adafruit_ICM20X_Temp::~Adafruit_ICM20X_Temp()	0	static
+Adafruit_ICM20X.h:166:7:Adafruit_ICM20X_Magnetometer::~Adafruit_ICM20X_Magnetometer()	0	static
+Adafruit_ICM20X.h:150:7:Adafruit_ICM20X_Gyro::~Adafruit_ICM20X_Gyro()	0	static
+Adafruit_ICM20X.h:133:7:Adafruit_ICM20X_Accelerometer::~Adafruit_ICM20X_Accelerometer()	0	static
+Adafruit_ICM20X.cpp:1128:6:virtual void Adafruit_ICM20X_Accelerometer::getSensor(sensor_t*)	16	static
+Adafruit_ICM20X.cpp:1163:6:virtual void Adafruit_ICM20X_Gyro::getSensor(sensor_t*)	16	static
+Adafruit_ICM20X.cpp:1198:6:virtual void Adafruit_ICM20X_Magnetometer::getSensor(sensor_t*)	16	static
+Adafruit_ICM20X.cpp:1233:6:virtual void Adafruit_ICM20X_Temp::getSensor(sensor_t*)	16	static
+Adafruit_ICM20X.h:183:7:virtual Adafruit_ICM20X_Temp::~Adafruit_ICM20X_Temp()	8	static
+Adafruit_ICM20X.h:166:7:virtual Adafruit_ICM20X_Magnetometer::~Adafruit_ICM20X_Magnetometer()	8	static
+Adafruit_ICM20X.h:150:7:virtual Adafruit_ICM20X_Gyro::~Adafruit_ICM20X_Gyro()	8	static
+Adafruit_ICM20X.h:133:7:virtual Adafruit_ICM20X_Accelerometer::~Adafruit_ICM20X_Accelerometer()	8	static
+Adafruit_ICM20X.cpp:54:1:Adafruit_ICM20X::Adafruit_ICM20X()	16	static
+Adafruit_ICM20X.cpp:60:1:Adafruit_ICM20X::~Adafruit_ICM20X()	8	static
+Adafruit_ICM20X.cpp:112:6:void Adafruit_ICM20X::cs_active(bool)	8	static
+Adafruit_ICM20X.cpp:298:6:void Adafruit_ICM20X::fillAccelEvent(sensors_event_t*, uint32_t)	16	static
+Adafruit_ICM20X.cpp:311:6:void Adafruit_ICM20X::fillGyroEvent(sensors_event_t*, uint32_t)	16	static
+Adafruit_ICM20X.cpp:322:6:void Adafruit_ICM20X::fillMagEvent(sensors_event_t*, uint32_t)	16	static
+Adafruit_ICM20X.cpp:333:6:void Adafruit_ICM20X::fillTempEvent(sensors_event_t*, uint32_t)	16	static
+Adafruit_ICM20X.cpp:403:18:Adafruit_Sensor* Adafruit_ICM20X::getAccelerometerSensor()	0	static
+Adafruit_ICM20X.cpp:411:18:Adafruit_Sensor* Adafruit_ICM20X::getGyroSensor()	0	static
+Adafruit_ICM20X.cpp:420:18:Adafruit_Sensor* Adafruit_ICM20X::getMagnetometerSensor()	0	static
+Adafruit_ICM20X.cpp:428:18:Adafruit_Sensor* Adafruit_ICM20X::getTemperatureSensor()	0	static
+Adafruit_ICM20X.cpp:933:6:bool Adafruit_ICM20X::readRegister_IT(uint16_t, uint8_t*, uint16_t)	32	static
+Adafruit_ICM20X.cpp:956:6:bool Adafruit_ICM20X::readRegister(uint16_t, uint8_t*, uint16_t)	32	static
+Adafruit_ICM20X.cpp:977:9:uint8_t Adafruit_ICM20X::readRegisterByte(uint16_t)	16	static
+Adafruit_ICM20X.cpp:997:6:bool Adafruit_ICM20X::writeRegister(uint8_t, uint8_t*, uint16_t)	24	dynamic
+Adafruit_ICM20X.cpp:1026:6:bool Adafruit_ICM20X::writeRegisterByte(uint8_t, uint8_t)	24	static
+Adafruit_ICM20X.cpp:437:6:void Adafruit_ICM20X::_setBank(uint8_t)	8	static
+Adafruit_ICM20X.cpp:347:6:void Adafruit_ICM20X::_read()	32	static
+Adafruit_ICM20X.cpp:282:6:bool Adafruit_ICM20X::getEvent(sensors_event_t*, sensors_event_t*, sensors_event_t*, sensors_event_t*)	32	static
+Adafruit_ICM20X.cpp:1151:6:virtual bool Adafruit_ICM20X_Accelerometer::getEvent(sensors_event_t*)	16	static
+Adafruit_ICM20X.cpp:1186:6:virtual bool Adafruit_ICM20X_Gyro::getEvent(sensors_event_t*)	16	static
+Adafruit_ICM20X.cpp:1221:6:virtual bool Adafruit_ICM20X_Magnetometer::getEvent(sensors_event_t*)	16	static
+Adafruit_ICM20X.cpp:1256:6:virtual bool Adafruit_ICM20X_Temp::getEvent(sensors_event_t*)	16	static
+Adafruit_ICM20X.cpp:505:10:uint16_t Adafruit_ICM20X::getAccelRateDivisor()	24	static
+Adafruit_ICM20X.cpp:523:6:void Adafruit_ICM20X::setAccelRateDivisor(uint16_t)	24	static
+Adafruit_ICM20X.cpp:541:9:uint8_t Adafruit_ICM20X::getGyroRateDivisor()	16	static
+Adafruit_ICM20X.cpp:886:6:bool Adafruit_ICM20X::getFIFOcnt(uint16_t*)	24	static
+Adafruit_ICM20X.cpp:904:6:bool Adafruit_ICM20X::getINTstatus(uint8_t*)	16	static
+Adafruit_ICM20X.cpp:920:6:bool Adafruit_ICM20X::readFIFO(uint8_t*, uint16_t)	16	static
+Adafruit_ICM20X.cpp:557:6:void Adafruit_ICM20X::setGyroRateDivisor(uint8_t)	16	static
+Adafruit_ICM20X.cpp:746:6:bool Adafruit_ICM20X::configureI2CMaster()	8	static
+Adafruit_ICM20X.cpp:1052:9:uint8_t Adafruit_ICM20X::modifyBitInByte(uint8_t, uint8_t, uint8_t)	0	static
+Adafruit_ICM20X.cpp:1080:9:uint8_t Adafruit_ICM20X::checkRegisterBit(uint16_t, uint8_t)	8	static
+Adafruit_ICM20X.cpp:1084:6:bool Adafruit_ICM20X::modifyRegisterBit(uint16_t, bool, uint8_t)	24	static
+Adafruit_ICM20X.cpp:155:6:void Adafruit_ICM20X::reset()	8	static
+Adafruit_ICM20X.cpp:628:6:void Adafruit_ICM20X::setInt1ActiveLow(bool)	16	static
+Adafruit_ICM20X.cpp:643:6:void Adafruit_ICM20X::setInt1Latch(bool)	16	static
+Adafruit_ICM20X.cpp:651:6:void Adafruit_ICM20X::clearIntOnRead(bool)	16	static
+Adafruit_ICM20X.cpp:664:6:void Adafruit_ICM20X::enableInt1(bool)	16	static
+Adafruit_ICM20X.cpp:671:6:void Adafruit_ICM20X::enableInt2(bool)	16	static
+Adafruit_ICM20X.cpp:700:6:void Adafruit_ICM20X::setI2CBypass(bool)	16	static
+Adafruit_ICM20X.cpp:843:6:void Adafruit_ICM20X::resetI2CMaster()	8	static
+Adafruit_ICM20X.cpp:1091:6:bool Adafruit_ICM20X::modifyRegisterMultipleBit(uint16_t, uint8_t, uint8_t, uint8_t)	32	static
+Adafruit_ICM20X.cpp:462:6:void Adafruit_ICM20X::writeAccelRange(uint8_t)	24	static
+Adafruit_ICM20X.cpp:492:6:void Adafruit_ICM20X::writeGyroRange(uint8_t)	24	static
+Adafruit_ICM20X.cpp:573:6:bool Adafruit_ICM20X::enableAccelDLPF(bool, icm20x_accel_cutoff_t)	24	static
+Adafruit_ICM20X.cpp:601:6:bool Adafruit_ICM20X::enableGyrolDLPF(bool, icm20x_gyro_cutoff_t)	24	static
+Adafruit_ICM20X.cpp:172:6:bool Adafruit_ICM20X::_init(int32_t)	16	static
+Adafruit_ICM20X.cpp:715:6:bool Adafruit_ICM20X::enableI2CMaster(bool)	24	static
+Adafruit_ICM20X.cpp:730:6:bool Adafruit_ICM20X::enableSPI(bool)	24	static
+Adafruit_ICM20X.cpp:101:6:bool Adafruit_ICM20X::begin_SPI(SPI_HandleTypeDef*, GPIO_TypeDef*, uint16_t, int32_t)	16	static
+Adafruit_ICM20X.cpp:1106:9:uint8_t Adafruit_ICM20X::readRegisterBits(uint16_t, uint8_t, uint8_t)	16	static
+Adafruit_ICM20X.cpp:446:9:uint8_t Adafruit_ICM20X::readAccelRange()	16	static
+Adafruit_ICM20X.cpp:476:9:uint8_t Adafruit_ICM20X::readGyroRange()	16	static
+Adafruit_ICM20X.cpp:796:9:uint8_t Adafruit_ICM20X::auxillaryRegisterTransaction(bool, uint8_t, uint8_t, uint8_t)	24	static
+Adafruit_ICM20X.cpp:762:9:uint8_t Adafruit_ICM20X::readExternalRegister(uint8_t, uint8_t)	16	static
+Adafruit_ICM20X.cpp:779:6:bool Adafruit_ICM20X::writeExternalRegister(uint8_t, uint8_t, uint8_t)	16	static

@@ -127,7 +127,7 @@ STM32_WPAN/App/dts.o: ../STM32_WPAN/App/dts.c \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
- ../Core/Inc/rtc.h
+ ../Core/Inc/rtc.h ../Core/Inc/packet.h ../Core/Inc/captivate_config.h
 
 ../Middlewares/ST/STM32_WPAN/ble/ble_common.h:
 
@@ -402,3 +402,7 @@ STM32_WPAN/App/dts.o: ../STM32_WPAN/App/dts.c \
 ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:
 
 ../Core/Inc/rtc.h:
+
+../Core/Inc/packet.h:
+
+../Core/Inc/captivate_config.h:
