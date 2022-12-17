@@ -655,11 +655,13 @@ void ledEnterDFUNotification(void){
 		resetColor(&receivedColor);
 
 		receivedColor.colors_indiv.left_side_g = 120;
-		receivedColor.colors_indiv.right_side_g = 120;
 		receivedColor.colors_indiv.left_top_g = 120;
-		receivedColor.colors_indiv.right_top_g = 120;
-		receivedColor.colors_indiv.left_front_g = 120;
-		receivedColor.colors_indiv.right_front_g = 120;
+		receivedColor.colors_indiv.left_top_r = 120;
+		receivedColor.colors_indiv.left_side_r = 120;
+//		receivedColor.colors_indiv.left_top_g = 120;
+//		receivedColor.colors_indiv.right_top_g = 120;
+//		receivedColor.colors_indiv.left_front_g = 120;
+//		receivedColor.colors_indiv.right_front_g = 120;
 
 //		osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
 

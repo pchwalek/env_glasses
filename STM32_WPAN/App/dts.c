@@ -207,7 +207,6 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 				if(rxPacketHeader.packetType == CONTROL_LED_PKT_TYPE){
 					osMessageQueuePut(lightsComplexQueueHandle,
 							(attribute_modified->Attr_Data + sizeof(RX_PacketHeader)), 0, 0);
-
 				}
 				else if(rxPacketHeader.packetType == SET_CLK_PKT_TYPE){
 
