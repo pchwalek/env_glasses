@@ -527,6 +527,7 @@ void APP_BLE_Init( void )
 //#endif
 
 //#ifndef CUSTOM_BT_PARAMETERS
+
 /* USER CODE END APP_BLE_Init_3 */
 
   /**
@@ -821,6 +822,17 @@ APP_BLE_ConnStatus_t APP_BLE_Get_Server_Connection_Status(void)
 }
 
 /* USER CODE BEGIN FD*/
+
+uint8_t isBluetoothConnected(void){
+	if((BleApplicationContext.Device_Connection_Status == APP_BLE_CONNECTED_CLIENT) ||
+			(BleApplicationContext.Device_Connection_Status == APP_BLE_CONNECTED_SERVER)){
+		return 1;
+	}else{
+		return 0;
+	}
+}
+
+
 uint8_t APP_BLE_ComputeCRC8(uint8_t *DataPtr, uint8_t Datalen) {
 	uint8_t i, j;
 	const uint8_t PolynomeCRC = 0x97;

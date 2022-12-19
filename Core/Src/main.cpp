@@ -35,6 +35,7 @@
 /* USER CODE BEGIN Includes */
 #include "lp5523.h"
 #include "fram.h"
+#include "circular_buffer.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -68,6 +69,7 @@ void PeriphCommonClock_Config(void);
 void MX_FREERTOS_Init(void);
 extern "C" void SystemClock_Config(void);
 #endif
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -176,7 +178,29 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-
+//  uint8_t testData[100];
+//  uint8_t testDataRX[100] = {0};
+//  for(int i=0;i<100;i++) testData[i] = i;
+//
+//
+//  extMemWriteData(0x1, testData, 100);
+//  extMemGetData(0x1, testDataRX, 100);
+//
+//  CircularBuffer* backupBufferTest;
+//  backupBufferTest = allocateBackupBuffer();
+//
+//  SensorPacket packetToSend[50];
+//  for(int i = 0; i<50; i++){
+//	  packetToSend[i].header.packetID = i;
+//	  pushPacketToFRAM(backupBufferTest, &packetToSend[i]);
+//
+//  }
+//  SensorPacket packetToReceive[50];
+//  for(int i = 0; i<50; i++){
+//	  getPacketFromFRAM(backupBufferTest, &packetToReceive[i]);
+//  }
+//  getPacketFromFRAM(backupBuffer, packetToSend);
+//  pushPacketToFRAM(backupBuffer, packetToSend);
 
 	while (1) {
 //		HAL_RTC_GetTime(&hrtc, &timeTest, RTC_FORMAT_BIN);

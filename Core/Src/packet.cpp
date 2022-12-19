@@ -15,6 +15,9 @@
 #include "task.h"
 #include "rtc.h"
 
+#include "app_ble.h"
+#include "fram.h"
+
 #define JULIAN_DATE_BASE     2440588   // Unix epoch time in Julian calendar (UnixTime = 00:00:00 01.01.1970 => JDN = 2440588)
 static const uint16_t week_day[] = { 0x4263, 0xA8BD, 0x42BF, 0x4370, 0xABBF, 0xA8BF, 0x43B2 };
 
@@ -40,8 +43,12 @@ void queueUpPacket(SensorPacket *packet) {
 }
 
 SensorPacket *packetToSend;
+CircularBuffer* backupBuffer;
+
 void senderThread(void *argument) {
 	uint8_t retry;
+
+	backupBuffer = allocateBackupBuffer();
 
 	for (int i = 0; i < MAX_PACKET_QUEUE_SIZE; i++) {
 		packetToSend = &packets[i];
@@ -51,19 +58,39 @@ void senderThread(void *argument) {
 	}
 
 	while (1) {
-		osMessageQueueGet(packet_QueueHandle, &packetToSend, 0U, osWaitForever);
+		/* the logic below prioritizes the latest packets avialable in the queue over
+		 * any packets that were stored in backup FRAM
+		 */
+
+		/* check if a packet exists in the queue without any blocking */
+		if(osErrorTimeout == osMessageQueueGet(packet_QueueHandle, &packetToSend, 0U, osWaitForever)){
+			/* if no packet available in queue, check if any packet exists in FRAM
+			 * from a previous power failure */
+			if(!getPacketFromFRAM(backupBuffer, packetToSend)){
+				/* if no packet exists in FRAM, just wait forever until a thread puts a packet in the queue */
+				osMessageQueueGet(packet_QueueHandle, &packetToSend, 0U, osWaitForever);
+			}
+		}
 
 		retry = 0;
 //		taskENTER_CRITICAL();
 		packetToSend->header.systemID = LL_FLASH_GetUDN();
 		packetToSend->header.epoch = getEpoch();
-		while (PACKET_SEND_SUCCESS != sendPacket_BLE(packetToSend)) {
-			if (retry >= MAX_BLE_RETRIES) {
-				break;
+		if(isBluetoothConnected()){
+			while (PACKET_SEND_SUCCESS != sendPacket_BLE(packetToSend)) {
+				if (retry >= MAX_BLE_RETRIES) {
+					break;
+				}
+				retry++;
+	//			osDelay(5);
+			};
+		}else{
+			/* add packet to FRAM if its not IMU or Blink */
+			if( (packetToSend->header.packetID != IMU) ||
+					(packetToSend->header.packetID != BLINK)){
+				pushPacketToFRAM(backupBuffer, packetToSend);
 			}
-			retry++;
-//			osDelay(5);
-		};
+		}
 //		taskEXIT_CRITICAL();
 
 

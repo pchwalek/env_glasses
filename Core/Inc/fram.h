@@ -19,6 +19,8 @@ extern "C" {
 #include "captivate_config.h"
 #include "bsec_datatypes.h"
 #include "spi.h"
+#include "circular_buffer.h"
+#include "packet.h"
 
 #define MAX_ADDR	0x0FFFFF
 
@@ -43,6 +45,11 @@ extern "C" {
 #define WRSR_WriteEnable	0x01 << 1
 #define WRSR_WruteProtectEn	0x01 << 7
 
+#define BUFF_PACKET_SIZE			512
+#define BACKUP_BUFF_SIZE	((uint32_t) BACKUP_SIZE) / BUFF_PACKET_SIZE
+
+#define MAX_MEMORY_ADDR			0x0FFFFF //1,048,575 (8 Mbit)
+
 #define START_ADDR				0x0
 #define RESERVE_SIZE			1000
 #define BME_CONFIG_ADDR			START_ADDR + RESERVE_SIZE
@@ -52,11 +59,18 @@ extern "C" {
 #define BME_FIRST_RUN_ADDR		BME_STATE_ADDR + BSEC_MAX_STATE_BLOB_SIZE
 #define BME_FIRST_RUN_SIZE		sizeof(uint8_t)
 
+#define BACKUP_START_ADDR		BME_FIRST_RUN_ADDR + BME_FIRST_RUN_SIZE
+#define BACKUP_SIZE				MAX_MEMORY_ADDR - BACKUP_START_ADDR
+
 bool extMemInit();
 bool extMemGetData(uint32_t addr, uint8_t* data, uint16_t size);
 bool extMemWriteData(uint32_t addr, uint8_t* data, uint16_t size);
 void extMemChipSelectPin(bool state);
 bool extMemWriteProtectPin(bool state);
+
+CircularBuffer* allocateBackupBuffer(void);
+uint8_t getPacketFromFRAM(CircularBuffer* backupBuffer, SensorPackets* packet);
+uint8_t pushPacketToFRAM(CircularBuffer* backupBuffer, SensorPackets* packet);
 
 #ifdef __cplusplus
 }
