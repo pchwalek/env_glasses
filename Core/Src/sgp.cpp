@@ -182,6 +182,8 @@ void SgpTask(void *argument) {
 
 		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
 			osTimerDelete(periodicSgpTimer_id);
+			sgp41.turnHeaterOff(); // puts sgp41 in idle mode
+			osThreadExit();
 			break;
 		}
 	}

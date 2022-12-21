@@ -172,19 +172,35 @@ extern osThreadId_t masterTaskHandle;
 extern osThreadId_t blueGreenTranTaskHandle;
 extern const osThreadAttr_t blueGreenTask_attributes;
 
+extern osThreadId_t redFlashTaskHandle;
+extern const osThreadAttr_t redFlashTask_attributes;
+
 extern osThreadId_t specTaskHandle;
+extern const osThreadAttr_t specTask_attributes;
+
+extern osThreadId_t thermopileTaskHandle;
+extern const osThreadAttr_t thermopileTask_attributes;
 
 extern osThreadId_t luxTaskHandle;
+extern const osThreadAttr_t luxTask_attributes;
 
 extern osThreadId_t bmeTaskHandle;
+extern const osThreadAttr_t bmeTask_attributes;
 
 extern osThreadId_t shtTaskHandle;
+extern const osThreadAttr_t shtTask_attributes;
 
 extern osThreadId_t sgpTaskHandle;
+extern const osThreadAttr_t sgpTask_attributes;
 
 extern osThreadId_t imuTaskHandle;
+extern const osThreadAttr_t imuTask_attributes;
 
 extern osThreadId_t blinkTaskHandle;
+extern const osThreadAttr_t blinkTask_attributes;
+
+extern osThreadId_t micTaskHandle;
+extern const osThreadAttr_t micTask_attributes;
 
 extern osSemaphoreId_t messageI2C1_LockHandle;
 extern osSemaphoreId_t messageI2C3_LockHandle;
@@ -247,6 +263,8 @@ struct USB_msgPass {
 	uint8_t len;
 	uint8_t buf[10];
 };
+
+void controlSensors(uint8_t* data, uint16_t numPackets);
 
 //typedef struct PacketHeaders{
 //  uint16_t packetType;

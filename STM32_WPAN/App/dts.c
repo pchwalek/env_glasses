@@ -42,6 +42,7 @@
 
 #define ENTER_DFU_MODE_UPON_RESET 1
 #define ENTER_BLUE_GREEN_TRANSITION 2
+#define ENTER_RED_FLASH_TRANSITION 3
 
 RX_PacketHeader rxPacketHeader;
 
@@ -129,6 +130,8 @@ extern uint16_t Att_Mtu_Exchanged;
 struct LogMessage receivedCntrlPacket;
 union ColorComplex receivedColor;
 union BlueGreenTransition blueGreenTranRX;
+union RedFlash redFlashRX;
+uint8_t sensorCtrl[26];
 time_t receivedEpoch;
 
 /* Functions Definition ------------------------------------------------------*/
@@ -214,7 +217,10 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 					// do nothing since this will get handled at the end
 				}
 				else if(rxPacketHeader.packetType == CNTRL_SENSORS_PKT_TYPE){
-
+					memcpy(&sensorCtrl[0],
+							attribute_modified->Attr_Data + sizeof(RX_PacketHeader),
+							rxPacketHeader.payloadSize);
+					controlSensors(&sensorCtrl[0], rxPacketHeader.payloadSize / 2);
 				}
 				else if(rxPacketHeader.packetType == CONFIG_SENSORS_PKT_TYPE){
 
@@ -232,8 +238,17 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 					else if(functionIdentifier == ENTER_BLUE_GREEN_TRANSITION){
 						memcpy(&blueGreenTranRX, attribute_modified->Attr_Data + sizeof(RX_PacketHeader) + 1, sizeof(union BlueGreenTransition));
 						osThreadTerminate(blueGreenTranTaskHandle); // terminate any existing running thread
+						resetLED();
 						if(blueGreenTranRX.val.start_bit == 1){
 							blueGreenTranTaskHandle = osThreadNew(BlueGreenTransitionTask, &blueGreenTranRX, &blueGreenTask_attributes);
+						}
+					}
+					else if(functionIdentifier == ENTER_RED_FLASH_TRANSITION){
+						memcpy(&redFlashRX, attribute_modified->Attr_Data + sizeof(RX_PacketHeader) + 1, sizeof(union RedFlash));
+						osThreadTerminate(redFlashTaskHandle); // terminate any existing running thread
+						resetLED();
+						if(redFlashRX.val_flash.start_bit == 1){
+							redFlashTaskHandle = osThreadNew(RedFlashTask, &redFlashRX, &redFlashTask_attributes);
 						}
 					}
 				}

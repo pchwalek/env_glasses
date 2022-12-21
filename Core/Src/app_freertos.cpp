@@ -36,6 +36,7 @@
 #include "packet.h"
 #include "sht.h"
 #include "sgp.h"
+#include "app_ble.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -65,6 +66,11 @@ const osThreadAttr_t blueGreenTask_attributes = { .name = "bgTranTask",
 		.stack_mem = NULL, .stack_size = 512, .priority =
 				(osPriority_t) osPriorityNormal, .tz_module = 0, .reserved = 0 };
 
+osThreadId_t redFlashTaskHandle;
+const osThreadAttr_t redFlashTask_attributes = { .name = "redFlashTask",
+		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
+		.stack_mem = NULL, .stack_size = 512, .priority =
+				(osPriority_t) osPriorityAboveNormal, .tz_module = 0, .reserved = 0 };
 
 osThreadId_t specTaskHandle;
 const osThreadAttr_t specTask_attributes = { .name = "spectrometerTask",
@@ -106,6 +112,12 @@ osThreadId_t blinkTaskHandle;
 const osThreadAttr_t blinkTask_attributes = { .name = "blinkTask", .attr_bits =
 		osThreadDetached, .cb_mem = NULL, .cb_size = 0, .stack_mem = NULL,
 		.stack_size = 512 * 2, .priority = (osPriority_t) osPriorityNormal,
+		.tz_module = 0, .reserved = 0 };
+
+osThreadId_t micTaskHandle;
+const osThreadAttr_t micTask_attributes = { .name = "micTask", .attr_bits =
+		osThreadDetached, .cb_mem = NULL, .cb_size = 0, .stack_mem = NULL,
+		.stack_size = 512, .priority = (osPriority_t) osPriorityNormal,
 		.tz_module = 0, .reserved = 0 };
 
 /* Definitions for defaultTask */
@@ -279,8 +291,12 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument) {
 	/* USER CODE BEGIN StartDefaultTask */
 	/* Infinite loop */
-	osDelay(5000);
+	osDelay(500);
+//	MX_FREERTOS_Init();
 	startThreads();
+	ledDisconnectNotification();
+//	osDelay(200);
+	bluetoothStartAdvertising();
 	vTaskDelete( NULL );
 //  for(;;)
 //  {
@@ -346,10 +362,11 @@ void startThreads() {
 
 //	thermopileTaskHandle = osThreadNew(Thermopile_Task, NULL,
 //			&thermopileTask_attributes);
-//	shtTaskHandle = osThreadNew(SgpTask, NULL, &sgpTask_attributes);
+//	shtTaskHandle = osThreadNew(ShtTask, NULL, &shtTask_attributes);
+//	sgpTaskHandle = osThreadNew(SgpTask, NULL, &sgpTask_attributes);
 //	luxTaskHandle = osThreadNew(LuxTask, NULL, &luxTask_attributes);
 //	bmeTaskHandle = osThreadNew(BME_Task, NULL, &bmeTask_attributes);
-//	specTaskHandle = osThreadNew(BlueGreenTransitionTask, NULL, &specTask_attributes);
+//	specTaskHandle = osThreadNew(Spec_Task, NULL, &specTask_attributes);
 
 
 //	imuTaskHandle = osThreadNew(IMU_Task, NULL, &imuTask_attributes);
@@ -362,6 +379,11 @@ void startThreads() {
 //		ledStartupSequence();
 //		osDelay(1000);
 //	}
+
+	// seems like I need to keep this thread active for the system to work...
+	while(1){
+		osDelay(100);
+	}
 
 
 }

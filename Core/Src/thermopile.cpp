@@ -130,6 +130,7 @@ void Thermopile_Task(void *argument) {
 
 		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
 			osTimerDelete(periodicThermopileTimer_id);
+			osThreadExit();
 			break;
 		}
 	}

@@ -66,7 +66,7 @@ void Spec_Task(void *argument) {
 	osDelay(500);
 
 	osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
-	if (!specSensor.begin(SPEC_ADDR, &hi2c1, 0)) {
+	while (!specSensor.begin(SPEC_ADDR, &hi2c1, 0)) {
 		osSemaphoreRelease(messageI2C1_LockHandle);
 		osDelay(100);
 		osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
@@ -141,6 +141,10 @@ void Spec_Task(void *argument) {
 
 		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
 			osTimerDelete(periodicSpecTimer_id);
+
+			specSensor.powerEnable(false);
+
+			osThreadExit();
 			break;
 		}
 	}

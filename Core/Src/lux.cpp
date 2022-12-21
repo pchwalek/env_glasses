@@ -41,7 +41,7 @@ void LuxTask(void *argument) {
 	uint32_t timeLeftForSample = 0;
 
 	osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
-	if (!luxSensor.begin(TSL2772_I2CADDR, &hi2c3)) {
+	while (!luxSensor.begin(TSL2772_I2CADDR, &hi2c3)) {
 		osDelay(100);
 	}
 	luxSensor.powerOn(true);
@@ -102,6 +102,8 @@ void LuxTask(void *argument) {
 
 		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
 			osTimerDelete(periodicLuxTimer_id);
+			luxSensor.powerOn(false);
+			osThreadExit();
 			break;
 		}
 	}

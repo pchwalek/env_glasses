@@ -176,6 +176,10 @@ void BME_Task(void *argument) {
 
 		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
 			osTimerDelete (periodicBMETimer_id);
+
+			bme.soft_reset();
+
+			vTaskDelete( NULL );
 			break;
 		}
 	}

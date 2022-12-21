@@ -77,6 +77,7 @@ extern "C" void SystemClock_Config(void);
 volatile unsigned long ulHighFrequencyTimerTicks;
 volatile uint8_t sensorThreadsRunning = 0;
 void epoch_to_date_time(unsigned int epoch);
+void reset_DFU_trigger(void);
 void RTC_FromEpoch(uint32_t epoch, RTC_TimeTypeDef *time, RTC_DateTypeDef *date);
 //__attribute__((section(".noinit"))) volatile int my_non_initialized_integer;
 /* USER CODE END 0 */
@@ -88,7 +89,7 @@ void RTC_FromEpoch(uint32_t epoch, RTC_TimeTypeDef *time, RTC_DateTypeDef *date)
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	*((int *)0x2000020c) =  0xCAFEFEED; // Reset our trigger
+  reset_DFU_trigger();
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -132,12 +133,10 @@ int main(void)
   MX_USB_Device_Init();
   MX_TIM17_Init();
   /* USER CODE BEGIN 2 */
-#endif
+#else
   MX_GPIO_Init();
   MX_DMA_Init();
-  MX_ADC1_Init();
-  MX_I2C1_Init();
-  MX_I2C3_Init();
+
   MX_RF_Init();
   MX_RTC_Init();
   MX_SAI1_Init();
@@ -147,11 +146,20 @@ int main(void)
   MX_TIM2_Init();
   MX_USB_Device_Init();
   MX_TIM17_Init();
+	MX_ADC1_Init();
+	MX_I2C1_Init();
+	MX_I2C3_Init();
   extMemInit();
 //  HAL_Delay(500); // needed or wireless stack wont init properly (delay duration can probably be reduced)
+
+  /* Init scheduler */
+  osKernelInitialize();  /* Call init function for freertos objects (in freertos.c) */
+  MX_FREERTOS_Init();
+  /* Start scheduler */
   MX_APPE_Init();
-
-
+  osKernelStart();
+#endif
+#ifdef KEEP_CUBE_INIT_ORDER
 //  while(1){
 ////	  HAL_Delay(5000);
 ////	  extMemChipSelectPin(true);
@@ -166,18 +174,20 @@ int main(void)
 //  uint8_t data[1000];
 //  HAL_SAI_Receive(&hsai_BlockA1, data, 500, 100);
 //  while(1);
+
   /* USER CODE END 2 */
 
   /* Init scheduler */
   osKernelInitialize();  /* Call init function for freertos objects (in freertos.c) */
-  MX_FREERTOS_Init();
+//  MX_FREERTOS_Init();
   /* Start scheduler */
+  MX_APPE_Init();
   osKernelStart();
 
   /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-
+#endif
 //  uint8_t testData[100];
 //  uint8_t testDataRX[100] = {0};
 //  for(int i=0;i<100;i++) testData[i] = i;
@@ -308,7 +318,9 @@ void PeriphCommonClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void reset_DFU_trigger(void){
+	*((int *)0x2000020c) =  0xCAFEFEED; // Reset our trigger
+}
 
 
 /**

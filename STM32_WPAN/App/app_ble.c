@@ -621,7 +621,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
       }
 
       /* restart advertising */
-//      Adv_Request(APP_BLE_FAST_ADV);
+      Adv_Request(APP_BLE_FAST_ADV);
 
 
       /* USER CODE BEGIN EVT_DISCONN_COMPLETE */
@@ -822,6 +822,13 @@ APP_BLE_ConnStatus_t APP_BLE_Get_Server_Connection_Status(void)
 }
 
 /* USER CODE BEGIN FD*/
+
+void bluetoothStartAdvertising(void){
+	  /**
+	  * Start to Advertise to be connected by Collector
+	   */
+	   Adv_Request(APP_BLE_FAST_ADV);
+}
 
 uint8_t isBluetoothConnected(void){
 	if((BleApplicationContext.Device_Connection_Status == APP_BLE_CONNECTED_CLIENT) ||

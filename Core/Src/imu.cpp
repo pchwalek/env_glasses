@@ -95,6 +95,14 @@ void IMU_Task(void *argument){
 //  	if ((flags & GRAB_SAMPLE_BIT) == GRAB_SAMPLE_BIT) {
 	  if(1){
 		osDelay(IMU_SAMPLE_PERIOD_MS);
+
+		flags = osThreadFlagsGet();
+
+		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
+			  imu.reset();
+			  vTaskDelete( NULL );
+		}
+
   		imu.getFIFOcnt(&fifo_cnt);
 
 
@@ -181,7 +189,7 @@ void IMU_Task(void *argument){
 //		}
 	}
 
-  vTaskDelete( NULL );
+
 }
 
 static void triggerIMUSample(void *argument) {

@@ -150,20 +150,7 @@ void BlinkTask(void *argument) {
 					tick_ms_diff = (HAL_GetTick() - previousTick_ms)
 							/ ((float) BLINK_ITERATOR_COUNT);
 
-					/* check to see if external infrared is saturating
-					 *   if so, disable active diode
-					 *   otherwise, leave enabled */
 
-					// BLINK_SAMPLE_RATE == size of blink_ptr array
-					diodeSaturatedFlag = externalInfraredDetect(blink_ptr_copy, BLINK_SAMPLE_RATE, &rolling_avg);
-
-					/* not using PWM */
-//					if(diodeSaturatedFlag){
-//						if(diodeState) turnOffDiode();
-//					}
-//					else{
-//						if(!diodeState) turnOnDiode();
-//					}
 
 					blinkDataTracker = BLINK_HALF_BUFFER_SIZE;
 
@@ -220,21 +207,31 @@ void BlinkTask(void *argument) {
 //						if(iterator == 1) break; //TODO: remove
 
 					}
+
+					/* check to see if external infrared is saturating
+					 *   if so, disable active diode
+					 *   otherwise, leave enabled */
+
+					// BLINK_SAMPLE_RATE == size of blink_ptr array
+					diodeSaturatedFlag = externalInfraredDetect(blink_ptr_copy, BLINK_SAMPLE_RATE, &rolling_avg);
+
+					/* not using PWM */
+					if(diodeSaturatedFlag){
+						if(diodeState) turnOffDiode();
+					}
+					else{
+						if(!diodeState) turnOnDiode();
+					}
 				}
 
 				// stop timer and put thread in idle if signal was reset
-				if ((evt & 0x00000002U) == 0x00000002U) {
+				if ((evt & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
 
-//					HAL_ADC_Stop_DMA(&hadc1);
-////					if(HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2) == HAL_OK){
-////						diodeState = 0;
-////					}
-//					HAL_GPIO_WritePin(BLINK_PWM_GPIO_Port, BLINK_PWM_Pin,
-//										GPIO_PIN_RESET);
-//					diodeState = 0;
-//
-//					HAL_TIM_Base_Stop(&htim2);
-//					previousTick_ms = 0;
+					HAL_ADC_Stop_DMA(&hadc1);
+					HAL_TIM_Base_Stop(&htim2);
+					turnOffDiode();
+
+
 //
 //					/* tell threads that blink is disabled */
 ////					osMessageQueueGet(statusQueueHandle, &statusMessage, 0U,
@@ -251,9 +248,8 @@ void BlinkTask(void *argument) {
 ////					osMessageQueueReset(blinkMsgQueueHandle);
 //
 //					// clear any flags
-//					osThreadFlagsClear(0x0000000EU);
-//
-//					payload_ID = 0;
+					osThreadFlagsClear(0x00000006U);
+					vTaskDelete( NULL );
 
 					break;
 				}
@@ -263,16 +259,28 @@ void BlinkTask(void *argument) {
 }
 
 void turnOffDiode(){
-	HAL_GPIO_WritePin(BLINK_PWM_GPIO_Port, BLINK_PWM_Pin,
-			GPIO_PIN_RESET);
-	diodeState = 0;
+//	HAL_GPIO_WritePin(BLINK_PWM_GPIO_Port, BLINK_PWM_Pin,
+//			GPIO_PIN_RESET);
+//	diodeState = 0;
+
+	if(HAL_TIM_PWM_Stop(&htim16, TIM_CHANNEL_1) == HAL_OK){
+		diodeState = 0;
+	}
+
+	HAL_TIM_Base_Stop(&htim16); // modulation frequency is at 1kHz
+
 
 }
 
 void turnOnDiode(){
-	HAL_GPIO_WritePin(BLINK_PWM_GPIO_Port, BLINK_PWM_Pin,
-			GPIO_PIN_SET);
-	diodeState = 1;
+//	HAL_GPIO_WritePin(BLINK_PWM_GPIO_Port, BLINK_PWM_Pin,
+//			GPIO_PIN_SET);
+//	diodeState = 1;
+
+	HAL_TIM_Base_Start(&htim16); // modulation frequency is at 1kHz
+	if(HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1) == HAL_OK){
+		diodeState = 1;
+	}
 }
 
 #define INFRARED_DETECT 	1
@@ -326,9 +334,9 @@ volatile uint32_t end_time = 0;
 //volatile uint8_t random_sample = 0;
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
-	end_time = HAL_GetTick() - start_time;
-//	pwm_tracker_diff = pwm_tracker - pwm_tracker_s;
-	start_time = HAL_GetTick();
+//	end_time = HAL_GetTick() - start_time;
+////	pwm_tracker_diff = pwm_tracker - pwm_tracker_s;
+//	start_time = HAL_GetTick();
 //	pwm_tracker_s = pwm_tracker;
 //	if(low_adc_sample){
 //		HAL_ADC_Stop(&hadc1);

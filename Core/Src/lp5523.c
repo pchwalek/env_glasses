@@ -715,6 +715,76 @@ void BlueGreenTransitionTask(void *argument){
 	vTaskDelete( NULL );
 }
 
+union ColorComplex redFlashColor;
+void RedFlashTask(void *argument){
+	union RedFlash redFlash;
+
+	uint32_t timeTracker = 0;
+
+	memcpy(&redFlash,argument,sizeof(union RedFlash));
+
+	// since we one delay will be a cycle of turning on and off an LED
+	redFlash.val_flash.delay_duration = redFlash.val_flash.delay_duration / 2;
+
+	/* start sequence */
+
+	resetColor(&redFlashColor);
+
+	if(redFlash.val_flash.total_duration > 0){
+		uint32_t start_time = HAL_GetTick();
+		while( (HAL_GetTick() - start_time) < redFlash.val_flash.total_duration){
+				timeTracker = HAL_GetTick();
+				if(redFlashColor.colors_indiv.right_side_r == 0){
+					redFlashColor.colors_indiv.right_side_r = redFlash.val_flash.intensity;
+					redFlashColor.colors_indiv.left_side_r = redFlash.val_flash.intensity;
+				}else{
+					redFlashColor.colors_indiv.right_side_r = 0;
+					redFlashColor.colors_indiv.left_side_r = 0;
+				}
+
+				HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1,
+								LIS3DH_D1_PWM_REG, 1, &redFlashColor.color[0], 9, 5);
+
+				HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1,
+						LIS3DH_D1_PWM_REG, 1,  &redFlashColor.color[9], 9, 5);
+
+//				osMessageQueuePut(lightsComplexQueueHandle, &redFlashColor, 0, 0);
+				timeTracker = HAL_GetTick() - HAL_GetTick();
+
+				if(timeTracker <= redFlash.val_flash.delay_duration){
+					osDelay(redFlash.val_flash.delay_duration - timeTracker);
+				}
+			}
+		resetLED();
+	}else{
+		while(1){
+				timeTracker = HAL_GetTick();
+				if(redFlashColor.colors_indiv.right_side_r == 0){
+					redFlashColor.colors_indiv.right_side_r = redFlash.val_flash.intensity;
+					redFlashColor.colors_indiv.left_side_r = redFlash.val_flash.intensity;
+				}else{
+					redFlashColor.colors_indiv.right_side_r = 0;
+					redFlashColor.colors_indiv.left_side_r = 0;
+				}
+
+				HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1,
+								LIS3DH_D1_PWM_REG, 1, &redFlashColor.color[0], 9, 5);
+
+				HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1,
+						LIS3DH_D1_PWM_REG, 1,  &redFlashColor.color[9], 9, 5);
+//				osMessageQueuePut(lightsComplexQueueHandle, &redFlashColor, 0, 0);
+				timeTracker = HAL_GetTick() - HAL_GetTick();
+
+				if(timeTracker <= redFlash.val_flash.delay_duration){
+					osDelay(redFlash.val_flash.delay_duration - timeTracker);
+				}
+			}
+	}
+
+
+	vTaskDelete( NULL );
+}
+
 void ledEnterDFUNotification(void){
 	if(sensorThreadsRunning){
 		resetColor(&receivedColor);
@@ -752,6 +822,11 @@ void ledDisconnectNotification(void){
 		osDelay(10);
 	}
 //	FrontLightsSet(&receivedColor);
+}
+
+void resetLED(void){
+	resetColor(&receivedColor);
+	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
 }
 
 //void ledBlueGreenTransition(uint16_t timeInterval){

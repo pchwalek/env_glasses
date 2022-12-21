@@ -48,7 +48,7 @@ void ShtTask(void *argument) {
 	shtHum = -1;
 
 	osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
-	if (!sht4.begin(&hi2c1)) {
+	while (!sht4.begin(&hi2c1)) {
 		osSemaphoreRelease(messageI2C1_LockHandle);
 		osDelay(100);
 		osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
@@ -93,6 +93,7 @@ void ShtTask(void *argument) {
 				shtTemp = shtData[shtIdx].temp;
 				shtHum = shtData[shtIdx].hum;
 			}else{
+				osSemaphoreRelease(messageI2C1_LockHandle);
 				continue;
 			}
 
@@ -119,6 +120,8 @@ void ShtTask(void *argument) {
 
 		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
 			osTimerDelete(periodicShtTimer_id);
+			sht4.reset();
+			osThreadExit();
 			break;
 		}
 	}

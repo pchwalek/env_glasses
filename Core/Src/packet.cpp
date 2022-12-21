@@ -86,8 +86,8 @@ void senderThread(void *argument) {
 			};
 		}else{
 			/* add packet to FRAM if its not IMU or Blink */
-			if( (packetToSend->header.packetID != IMU) ||
-					(packetToSend->header.packetID != BLINK)){
+			if( (packetToSend->header.packetType != IMU) &&
+					(packetToSend->header.packetType != BLINK)){
 				pushPacketToFRAM(backupBuffer, packetToSend);
 			}
 		}

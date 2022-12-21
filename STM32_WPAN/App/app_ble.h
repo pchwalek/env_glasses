@@ -76,6 +76,7 @@ extern osThreadId_t LinkConfigProcessId;
   uint8_t APP_BLE_ComputeCRC8(uint8_t *DataPtr, uint8_t Datalen);
   void BLE_SVC_L2CAP_Conn_Update_7_5(void);
   uint8_t isBluetoothConnected(void);
+  void bluetoothStartAdvertising(void);
 /* USER CODE END EF */
 
 #ifdef __cplusplus
