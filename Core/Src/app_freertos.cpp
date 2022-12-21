@@ -37,6 +37,7 @@
 #include "sht.h"
 #include "sgp.h"
 #include "app_ble.h"
+#include "fram.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -293,10 +294,11 @@ void StartDefaultTask(void *argument) {
 	/* Infinite loop */
 	osDelay(500);
 //	MX_FREERTOS_Init();
-	startThreads();
 	ledDisconnectNotification();
 //	osDelay(200);
 	bluetoothStartAdvertising();
+
+	startThreads();
 	vTaskDelete( NULL );
 //  for(;;)
 //  {
@@ -352,28 +354,27 @@ void startInitThread() {
 			&defaultTask_attributes);
 
 }
+
+sensorState sensor_state;
 void startThreads() {
 
+	/* grab sensor configuration from FRAM */
+	extMemGetData(SENSOR_STATE_ADDR, (uint8_t*) &sensor_state, SENSOR_STATE_SIZE);
 
-//	/* start sensor subsystem threads */
-//	blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
+	/* initiate sensor subsystems */
+	uint8_t control[2];
+	control[1] == 1; //enable
+	for(uint8_t i = 0; i<32; i++){
+		if( (sensor_state.sensorSystems & 0x1) == 0x1){
+			control[0] = i;
+			controlSensors(&control[0],1);
+			if(i == 1){ //if activating all sensors, break loop after activation
+				break;
+			}
+		}
+		sensor_state.sensorSystems = sensor_state.sensorSystems >> 1;
+	}
 
-//	/* creation of thermopileTask */
-
-//	thermopileTaskHandle = osThreadNew(Thermopile_Task, NULL,
-//			&thermopileTask_attributes);
-//	shtTaskHandle = osThreadNew(ShtTask, NULL, &shtTask_attributes);
-//	sgpTaskHandle = osThreadNew(SgpTask, NULL, &sgpTask_attributes);
-//	luxTaskHandle = osThreadNew(LuxTask, NULL, &luxTask_attributes);
-//	bmeTaskHandle = osThreadNew(BME_Task, NULL, &bmeTask_attributes);
-//	specTaskHandle = osThreadNew(Spec_Task, NULL, &specTask_attributes);
-
-
-//	imuTaskHandle = osThreadNew(IMU_Task, NULL, &imuTask_attributes);
-
-//	  /* creation of frontLightsThre */
-//	  frontLightsThreHandle = osThreadNew(ThreadFrontLightsComplexTask, NULL, &frontLightsThre_attributes);
-	//
 
 //	while(1){
 //		ledStartupSequence();

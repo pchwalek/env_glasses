@@ -25,6 +25,7 @@
 #include "cmsis_os.h"
 
 #include "stdbool.h"
+#include "fram.h"
 
 #define ALL_SENSORS	1
 
@@ -138,7 +139,22 @@ void controlAllSensors(bool state){
 
 void controlSensors(uint8_t* data, uint16_t numPackets){
 
+
+
 	for(int i = 0; i<numPackets; i++){
+
+		if( ((sensor_state.sensorSystems >> data[i*2]) & 0x1) == 0x1){
+			if(data[i*2+1] == 0){
+				sensor_state.sensorSystems = sensor_state.sensorSystems & !(0x00000001 << data[i*2]);
+				extMemWriteData(SENSOR_STATE_ADDR, (uint8_t*) &sensor_state, SENSOR_STATE_SIZE);
+			}
+		}else{
+			if(data[i*2+1] == 1){
+				sensor_state.sensorSystems = sensor_state.sensorSystems | (0x00000001 << data[i*2]);
+				extMemWriteData(SENSOR_STATE_ADDR, (uint8_t*) &sensor_state, SENSOR_STATE_SIZE);
+			}
+		}
+
 		switch((PacketTypes) data[i*2]){
 			case ALL_SENSORS:
 				controlAllSensors(data[i*2+1]);

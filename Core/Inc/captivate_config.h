@@ -157,6 +157,7 @@ extern "C" {
 
 /* freertos types  -----------------------------------------------*/
 
+
 extern osThreadId_t blinkTaskHandle;
 extern osMessageQueueId_t blinkMsgQueueHandle;
 
@@ -258,6 +259,14 @@ struct LogMessage {
 	uint8_t positionEnabled;
 
 };
+
+
+typedef struct SensorState {
+	uint32_t sensorSystems;
+	/* TODO: add additional configuration options below */
+} sensorState;
+
+extern sensorState sensor_state;
 
 struct USB_msgPass {
 	uint8_t len;

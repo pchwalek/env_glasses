@@ -51,8 +51,11 @@ extern "C" {
 #define MAX_MEMORY_ADDR			0x0FFFFF //1,048,575 (8 Mbit)
 
 #define START_ADDR				0x0
-#define RESERVE_SIZE			1000
-#define BME_CONFIG_ADDR			START_ADDR + RESERVE_SIZE
+#define RESERVE_SIZE			200
+
+#define SENSOR_STATE_ADDR		START_ADDR + RESERVE_SIZE
+#define SENSOR_STATE_SIZE		sizeof(sensorState)
+#define BME_CONFIG_ADDR			SENSOR_STATE_ADDR + SENSOR_STATE_SIZE
 #define BME_CONFIG_SIZE			BSEC_MAX_PROPERTY_BLOB_SIZE
 #define BME_STATE_ADDR			BME_CONFIG_ADDR + BME_CONFIG_SIZE
 #define BME_STATE_SIZE			BSEC_MAX_STATE_BLOB_SIZE
@@ -69,8 +72,8 @@ void extMemChipSelectPin(bool state);
 bool extMemWriteProtectPin(bool state);
 
 CircularBuffer* allocateBackupBuffer(void);
-uint8_t getPacketFromFRAM(CircularBuffer* backupBuffer, SensorPackets* packet);
-uint8_t pushPacketToFRAM(CircularBuffer* backupBuffer, SensorPackets* packet);
+uint8_t getPacketFromFRAM(CircularBuffer* backupBuffer, SensorPacket* packet);
+uint8_t pushPacketToFRAM(CircularBuffer* backupBuffer, SensorPacket* packet);
 
 #ifdef __cplusplus
 }
