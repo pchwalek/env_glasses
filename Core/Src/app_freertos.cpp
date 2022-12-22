@@ -358,22 +358,22 @@ void startInitThread() {
 sensorState sensor_state;
 void startThreads() {
 
-	/* grab sensor configuration from FRAM */
-	extMemGetData(SENSOR_STATE_ADDR, (uint8_t*) &sensor_state, SENSOR_STATE_SIZE);
-
-	/* initiate sensor subsystems */
-	uint8_t control[2];
-	control[1] == 1; //enable
-	for(uint8_t i = 0; i<32; i++){
-		if( (sensor_state.sensorSystems & 0x1) == 0x1){
-			control[0] = i;
-			controlSensors(&control[0],1);
-			if(i == 1){ //if activating all sensors, break loop after activation
-				break;
-			}
-		}
-		sensor_state.sensorSystems = sensor_state.sensorSystems >> 1;
-	}
+//	/* grab sensor configuration from FRAM */
+//	extMemGetData(SENSOR_STATE_ADDR, (uint8_t*) &sensor_state, SENSOR_STATE_SIZE);
+//
+//	/* initiate sensor subsystems */
+//	uint8_t control[2];
+//	control[1] == 1; //enable
+//	for(uint8_t i = 0; i<32; i++){
+//		if( (sensor_state.sensorSystems & 0x1) == 0x1){
+//			control[0] = i;
+//			controlSensors(&control[0],1);
+//			if(i == 1){ //if activating all sensors, break loop after activation
+//				break;
+//			}
+//		}
+//		sensor_state.sensorSystems = sensor_state.sensorSystems >> 1;
+//	}
 
 
 //	while(1){

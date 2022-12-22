@@ -174,7 +174,9 @@ typedef struct
 #define BD_ADDR_SIZE_LOCAL    6
 
 /* USER CODE BEGIN PD */
+char hexToAscii(uint8_t val);
 
+char name[18];
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -286,6 +288,8 @@ AD_TYPE_MANUFACTURER_SPECIFIC_DATA, 0x01/*SKD version */, 0x00 /* Generic*/,
 osThreadId_t LinkConfigProcessId;
 osThreadId_t AdvCancelProcessId;
 osThreadId_t AdvReqProcessId;
+
+
 /* USER CODE END PV */
 
 /* Global variables ----------------------------------------------------------*/
@@ -1100,16 +1104,34 @@ static void Ble_Hci_Gap_Gatt_Init(void){
   role |= GAP_CENTRAL_ROLE;
 #endif
 
+  uint32_t UID = LL_FLASH_GetUDN();
+
   if (role > 0)
   {
-    const char *name = "STM32WB";
-    aci_gap_init(role,
+//    const char *name = "STM32WB";
+//	  const char *name2 = "AIRSPEC_10201213";
+	const char nameTemp[] = {'A','i','r','S','p','e','c','_',
+			  hexToAscii(UID >> 28),
+			  hexToAscii(UID >> 24),
+			  hexToAscii(UID >> 20),
+			  hexToAscii(UID >> 16),
+			  hexToAscii(UID >> 12),
+			  hexToAscii(UID >> 8),
+			  hexToAscii(UID >> 4),
+			  hexToAscii(UID)};
+
+	strcpy(name,nameTemp);
+	name[16] = 0;
+	name[17] = 0;
+	tBleStatus state;
+    state = aci_gap_init(role,
 #if ((CFG_BLE_ADDRESS_TYPE == RESOLVABLE_PRIVATE_ADDR) || (CFG_BLE_ADDRESS_TYPE == NON_RESOLVABLE_PRIVATE_ADDR))
                  2,
 #else
                  0,
 #endif
-                 APPBLE_GAP_DEVICE_NAME_LENGTH,
+//                 APPBLE_GAP_DEVICE_NAME_LENGTH,
+				 16,
                  &gap_service_handle,
                  &gap_dev_name_char_handle,
                  &gap_appearance_char_handle);
