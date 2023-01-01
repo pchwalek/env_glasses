@@ -106,6 +106,8 @@ void senderThread(void *argument) {
 }
 
 static DTS_App_Context_t DataTransferServerContext;
+static DTS_App_Context_t DataTransferSysConfigContext;
+
 uint8_t sendPacket_BLE(SensorPacket *packet) {
 
 	if ((packet->header.payloadLength) > MAX_PAYLOAD_SIZE) {
@@ -139,6 +141,24 @@ uint8_t sendPacket_BLE(SensorPacket *packet) {
 	} else {
 		return PACKET_UNDEFINED_ERR;
 	}
+}
+
+uint8_t updateSystemConfig_BLE(struct SensorConfig *packet) {
+
+		tBleStatus status = BLE_STATUS_INVALID_PARAMS;
+
+		DataTransferSysConfigContext.TxData.pPayload = (uint8_t*) packet;
+		DataTransferSysConfigContext.TxData.Length = sizeof(struct SensorConfig);
+
+
+		status = DTS_STM_UpdateChar(DATA_TRANSFER_SENSOR_CONFIG_CHAR_UUID,
+				(uint8_t*) &DataTransferSysConfigContext.TxData);
+
+		if (status == BLE_STATUS_SUCCESS) {
+			return PACKET_SEND_SUCCESS;
+		} else {
+			return PACKET_UNDEFINED_ERR;
+		}
 }
 
 void updateRTC(uint32_t receivedTime){

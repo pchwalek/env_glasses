@@ -110,7 +110,7 @@ typedef struct {
 	uint16_t DataTransferSvcHdle; /**< Service handle */
 	uint16_t DataTransferTxCharHdle; /**< Characteristic handle */
 	uint16_t DataTransferRxCharHdle; /**< Characteristic handle */
-	uint16_t DataTransferTxChar3Hdle; /**< Characteristic handle */
+	uint16_t DataTransferSensorConfigHdle; /**< Characteristic handle */
 	uint16_t DataTransferRxCharLedHdle; /**< Characteristic handle */
 	uint16_t DataTransferRxCharControlHdle; /**< Characteristic handle */
 	uint16_t DataTransferRxCharTimeHdle;
@@ -123,6 +123,7 @@ typedef struct {
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 static tBleStatus TX_Update_Char(DTS_STM_Payload_t *pDataValue);
+static tBleStatus SensorConfig_Update_Char(DTS_STM_Payload_t *pDataValue);
 static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *pckt);
 void enterDFUMode(void);
 static DataTransferSvcContext_t aDataTransferContext;
@@ -259,6 +260,13 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 				}
 			}
 
+			if (attribute_modified->Attr_Handle
+								== (aDataTransferContext.DataTransferSensorConfigHdle + 2)) {
+				if(attribute_modified->Attr_Data_Length == sizeof(struct SensorConfig)){
+					memcpy(&sensorConfig, attribute_modified->Attr_Data, sizeof(struct SensorConfig));
+				};
+			}
+
 
 
 //			// if LED characteristic was modified
@@ -389,6 +397,49 @@ static tBleStatus TX_Update_Char(DTS_STM_Payload_t *pDataValue) {
 	return ret;
 }/* end TX_Update_Char() */
 
+static tBleStatus SensorConfig_Update_Char(DTS_STM_Payload_t *pDataValue) {
+	tBleStatus ret;
+
+	/**
+	 *  Notification Data Transfer Packet
+	 */
+	if(pDataValue->Length < MAX_PACKET_LENGTH){
+	  ret = aci_gatt_update_char_value(aDataTransferContext.DataTransferSvcHdle,
+			  aDataTransferContext.DataTransferSensorConfigHdle, 0, /* charValOffset */
+			  pDataValue->Length, /* charValueLen */
+			  (uint8_t*) pDataValue->pPayload);
+	}
+//	else if(pDataValue->Length <= DATA_NOTIFICATION_MAX_PACKET_SIZE){
+//
+//	    uint16_t packetLen = pDataValue->Length;
+//	    uint16_t offset = 0;
+//
+//	    while(packetLen > MAX_PACKET_LENGTH){
+//	      aci_gatt_update_char_value_ext (0,
+//				       aDataTransferContext.DataTransferSvcHdle,
+//				       aDataTransferContext.DataTransferSensorConfigHdle,
+//					0x00, //dont notify
+//					pDataValue->Length,
+//					offset,
+//					MAX_PACKET_LENGTH,
+//					((uint8_t*) pDataValue->pPayload) + offset);
+//	      offset += MAX_PACKET_LENGTH;
+//	      packetLen -= MAX_PACKET_LENGTH;
+//	    }
+//
+//	    ret = aci_gatt_update_char_value_ext (0,
+//	    					     aDataTransferContext.DataTransferSvcHdle,
+//	    					     aDataTransferContext.DataTransferTxCharHdle,
+//	    	0x01, //notify
+//		pDataValue->Length,
+//		offset,
+//		packetLen,
+//	    	((uint8_t*) pDataValue->pPayload) + offset);
+//	}
+
+	return ret;
+}/* end TX_Update_Char() */
+
 /* Public functions ----------------------------------------------------------*/
 
 /**
@@ -432,15 +483,7 @@ void DTS_STM_Init(void) {
 	10, /* encryKeySize */
 	1, /* isVariable */
 	&(aDataTransferContext.DataTransferTxCharHdle));
-//	hciCmdResult = aci_gatt_add_char(aDataTransferContext.DataTransferSvcHdle,
-//		DT_UUID_LENGTH, (Char_UUID_t*) DATA_TRANSFER_TX_CHAR_UUID,
-//		DATA_TRANSFER_NOTIFICATION_LEN_MAX,
-//		CHAR_PROP_NOTIFY,
-//		ATTR_PERMISSION_NONE,
-//		GATT_NOTIFY_ATTRIBUTE_WRITE, /* gattEvtMask */
-//		10, /* encryKeySize */
-//		1, /* isVariable */
-//		&(aDataTransferContext.DataTransferTxCharHdle));
+
 	if (hciCmdResult != 0) {
 		APP_DBG_MSG("error add char Tx 0x%x\n", hciCmdResult);
 #ifdef NUCLEO_LED_ACTIVE
@@ -459,14 +502,7 @@ void DTS_STM_Init(void) {
 			10, /* encryKeySize */
 			1, /* isVariable */
 			&(aDataTransferContext.DataTransferRxCharHdle));
-//	hciCmdResult = aci_gatt_add_char(aDataTransferContext.DataTransferSvcHdle,
-//		DT_UUID_LENGTH, (Char_UUID_t*) DATA_TRANSFER_RX_CHAR_UUID, DATA_TRANSFER_NOTIFICATION_LEN_MAX, /* DATA_TRANSFER_NOTIFICATION_LEN_MAX, */
-//		CHAR_PROP_WRITE_WITHOUT_RESP,
-//		ATTR_PERMISSION_NONE,
-//		GATT_NOTIFY_ATTRIBUTE_WRITE, //GATT_NOTIFY_WRITE_REQ_AND_WAIT_FOR_APPL_RESP, /* gattEvtMask */
-//				10, /* encryKeySize */
-//				1, /* isVariable */
-//				&(aDataTransferContext.DataTransferRxCharHdle));
+
 	if (hciCmdResult != 0) {
 		APP_DBG_MSG("error add char Tx\n");
 
@@ -474,81 +510,25 @@ void DTS_STM_Init(void) {
     BSP_LED_On(LED_RED);
 #endif
 	}
-//
-//  /**
-//   *  Add Data Transfer TX Characteristic (not intended to be used in the end)
-//   */
-//  hciCmdResult = aci_gatt_add_char(aDataTransferContext.DataTransferSvcHdle,
-//  DT_UUID_LENGTH,
-//                    (Char_UUID_t *) DT_REQ_CHAR3_UUID,
-//                    255, /* DATA_TRANSFER_NOTIFICATION_LEN_MAX, */
-//                    CHAR_PROP_NOTIFY,
-//                    ATTR_PERMISSION_NONE,
-//                    GATT_DONT_NOTIFY_EVENTS, /* gattEvtMask */
-//                    10, /* encryKeySize */
-//                    1, /* isVariable */
-//                    &(aDataTransferContext.DataTransferTxChar3Hdle));
-//  if (hciCmdResult != 0)
-//  {
-//    APP_DBG_MSG("error add char Tx\n");
-//#ifdef NUCLEO_LED_ACTIVE
-//    BSP_LED_On(LED_RED);
-//#endif
-//  }
 
-//	/**
-//	 *  Add Data LED Control Characteristic
-//	 */
-//	hciCmdResult = aci_gatt_add_char(aDataTransferContext.DataTransferSvcHdle,
-//	DT_UUID_LENGTH, (Char_UUID_t*) DT_REQ_CHAR_LED_UUID, 100, /* DATA_TRANSFER_NOTIFICATION_LEN_MAX, */
-//	CHAR_PROP_WRITE_WITHOUT_RESP,
-//	ATTR_PERMISSION_NONE,
-//	GATT_NOTIFY_ATTRIBUTE_WRITE, //GATT_NOTIFY_WRITE_REQ_AND_WAIT_FOR_APPL_RESP, /* gattEvtMask */
-//			10, /* encryKeySize */
-//			1, /* isVariable */
-//			&(aDataTransferContext.DataTransferRxCharLedHdle));
-//	if (hciCmdResult != 0) {
-//		APP_DBG_MSG("error add char Tx\n");
-//#ifdef NUCLEO_LED_ACTIVE
-//    BSP_LED_On(LED_RED);
-//#endif
-//	}
-//
-//	/**
-//	 *  Add System Control Characteristic
-//	 */
-//	hciCmdResult = aci_gatt_add_char(aDataTransferContext.DataTransferSvcHdle,
-//	DT_UUID_LENGTH, (Char_UUID_t*) DT_REQ_CHAR_CONTROL_UUID, 100, /* DATA_TRANSFER_NOTIFICATION_LEN_MAX, */
-//	CHAR_PROP_WRITE_WITHOUT_RESP,
-//	ATTR_PERMISSION_NONE,
-//	GATT_NOTIFY_ATTRIBUTE_WRITE, //GATT_NOTIFY_WRITE_REQ_AND_WAIT_FOR_APPL_RESP, /* gattEvtMask */
-//			10, /* encryKeySize */
-//			1, /* isVariable */
-//			&(aDataTransferContext.DataTransferRxCharControlHdle));
-//	if (hciCmdResult != 0) {
-//		APP_DBG_MSG("error add char Tx\n");
-//#ifdef NUCLEO_LED_ACTIVE
-//      BSP_LED_On(LED_RED);
-//  #endif
-//	}
-//
-//	/**
-//	 *  Add System Time Characteristic
-//	 */
-//	hciCmdResult = aci_gatt_add_char(aDataTransferContext.DataTransferSvcHdle,
-//	DT_UUID_LENGTH, (Char_UUID_t*) DT_REQ_CHAR_TIME_UUID, 10, /* DATA_TRANSFER_NOTIFICATION_LEN_MAX, */
-//	CHAR_PROP_WRITE_WITHOUT_RESP,
-//	ATTR_PERMISSION_NONE,
-//	GATT_NOTIFY_ATTRIBUTE_WRITE, //GATT_NOTIFY_WRITE_REQ_AND_WAIT_FOR_APPL_RESP, /* gattEvtMask */
-//			10, /* encryKeySize */
-//			1, /* isVariable */
-//			&(aDataTransferContext.DataTransferRxCharTimeHdle));
-//	if (hciCmdResult != 0) {
-//		APP_DBG_MSG("error add char Tx\n");
-//#ifdef NUCLEO_LED_ACTIVE
-//      BSP_LED_On(LED_RED);
-//  #endif
-//	}
+	hciCmdResult = aci_gatt_add_char(aDataTransferContext.DataTransferSvcHdle,
+	DT_UUID_LENGTH, (Char_UUID_t*) DT_REQ_CHAR3_UUID, sizeof(struct SensorConfig), /* DATA_TRANSFER_NOTIFICATION_LEN_MAX, */
+	CHAR_PROP_WRITE_WITHOUT_RESP | CHAR_PROP_NOTIFY | CHAR_PROP_READ,
+	ATTR_PERMISSION_NONE,
+	GATT_NOTIFY_ATTRIBUTE_WRITE, //GATT_NOTIFY_WRITE_REQ_AND_WAIT_FOR_APPL_RESP, /* gattEvtMask */
+			10, /* encryKeySize */
+			1, /* isVariable */
+			&(aDataTransferContext.DataTransferSensorConfigHdle));
+
+	updateSystemConfig_BLE(&sensorConfig);
+
+	if (hciCmdResult != 0) {
+		APP_DBG_MSG("error add char Tx\n");
+
+#ifdef NUCLEO_LED_ACTIVE
+    BSP_LED_On(LED_RED);
+#endif
+	}
 
 	return;
 }
@@ -565,6 +545,9 @@ tBleStatus DTS_STM_UpdateChar(uint16_t UUID, uint8_t *pPayload) {
 	case DATA_TRANSFER_TX_CHAR_UUID:
 		result = TX_Update_Char((DTS_STM_Payload_t*) pPayload);
 		break;
+	case DATA_TRANSFER_SENSOR_CONFIG_CHAR_UUID:
+		result = SensorConfig_Update_Char((DTS_STM_Payload_t*) pPayload);
+		break;
 
 	default:
 		break;
@@ -572,17 +555,18 @@ tBleStatus DTS_STM_UpdateChar(uint16_t UUID, uint8_t *pPayload) {
 	return result;
 }/* end DTS_STM_UpdateChar() */
 
-tBleStatus DTS_STM_UpdateCharThroughput(DTS_STM_Payload_t *pDataValue) {
-	tBleStatus result = BLE_STATUS_INVALID_PARAMS;
-	/**
-	 *  Notification Data Transfer Packet
-	 */
-	result = aci_gatt_update_char_value(
-			aDataTransferContext.DataTransferSvcHdle,
-			aDataTransferContext.DataTransferTxChar3Hdle, 0, /* charValOffset */
-			pDataValue->Length, /* charValueLen */
-			(uint8_t*) pDataValue->pPayload);
-	return result;
-}/* end DTS_STM_UpdateChar() */
+
+//tBleStatus DTS_STM_UpdateCharThroughput(DTS_STM_Payload_t *pDataValue) {
+//	tBleStatus result = BLE_STATUS_INVALID_PARAMS;
+//	/**
+//	 *  Notification Data Transfer Packet
+//	 */
+//	result = aci_gatt_update_char_value(
+//			aDataTransferContext.DataTransferSvcHdle,
+//			aDataTransferContext.DataTransferTxChar3Hdle, 0, /* charValOffset */
+//			pDataValue->Length, /* charValueLen */
+//			(uint8_t*) pDataValue->pPayload);
+//	return result;
+//}/* end DTS_STM_UpdateChar() */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

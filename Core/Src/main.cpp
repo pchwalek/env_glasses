@@ -36,6 +36,7 @@
 #include "lp5523.h"
 #include "fram.h"
 #include "circular_buffer.h"
+#include "captivate_config.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -80,6 +81,9 @@ void epoch_to_date_time(unsigned int epoch);
 void reset_DFU_trigger(void);
 void RTC_FromEpoch(uint32_t epoch, RTC_TimeTypeDef *time, RTC_DateTypeDef *date);
 //__attribute__((section(".noinit"))) volatile int my_non_initialized_integer;
+
+struct SensorConfig sensorConfig;
+
 /* USER CODE END 0 */
 
 /**
@@ -100,6 +104,9 @@ int main(void)
   MX_APPE_Config();
 
   /* USER CODE BEGIN Init */
+  sensorConfig.systemRunState = 1;
+  sensorConfig.thermopileSensor.sample_period = 0xBEAF;
+  sensorConfig.blinkSensor.sample_period = 255;
 
   /* USER CODE END Init */
 

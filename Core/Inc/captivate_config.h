@@ -237,6 +237,38 @@ extern osMessageQueueId_t packetAvail_QueueHandle;
 
 extern osThreadId_t senderTaskHandle;
 
+struct LuxSensor{
+	uint16_t sample_period;
+} ;
+struct GasSensor{
+	uint16_t sample_period;
+} ;
+struct InertialSensor{
+	uint16_t sample_period;
+} ;
+struct ColorSensor{
+	uint16_t sample_period;
+} ;
+struct ThermopileSensor{
+	uint16_t sample_period;
+} ;
+struct BlinkSensor{
+	uint16_t sample_period;
+} ;
+
+// cannot be more than ~490 Bytes
+struct SensorConfig{
+	uint8_t systemRunState;
+	struct ThermopileSensor thermopileSensor;
+	struct BlinkSensor blinkSensor;
+	struct InertialSensor inertialSensor;
+	struct GasSensor gasSensor;
+	struct LuxSensor luxSensor;
+	struct ColorSensor colorSensor;
+};
+
+extern struct SensorConfig sensorConfig;
+
 extern void startSensorThreads(void);
 
 #ifdef NETWORK_TEST

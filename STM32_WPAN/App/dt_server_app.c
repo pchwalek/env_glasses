@@ -447,21 +447,21 @@ void DT_App_Button3_Trigger_Received(void *argument) {
 	}
 }
 
-void BLE_App_Delay_DataThroughput(void *argument) {
-	UNUSED(argument);
-	for (;;) {
-		osThreadFlagsWait(1, osFlagsWaitAny, osWaitForever);
-		uint32_t DataThroughput;
-		DTS_STM_Payload_t ThroughputToSend;
-
-		DataThroughput = (uint32_t) (DataReceived / TIMEUNIT);
-		APP_DBG_MSG("DataThroughput = %ld  bytes/s\n", DataThroughput);
-
-		ThroughputToSend.Length = 4;
-		ThroughputToSend.pPayload = (uint8_t*) &DataThroughput;
-
-		DTS_STM_UpdateCharThroughput((DTS_STM_Payload_t*) &ThroughputToSend);
-		DataReceived = 0;
-	}
-}
+//void BLE_App_Delay_DataThroughput(void *argument) {
+//	UNUSED(argument);
+//	for (;;) {
+//		osThreadFlagsWait(1, osFlagsWaitAny, osWaitForever);
+//		uint32_t DataThroughput;
+//		DTS_STM_Payload_t ThroughputToSend;
+//
+//		DataThroughput = (uint32_t) (DataReceived / TIMEUNIT);
+//		APP_DBG_MSG("DataThroughput = %ld  bytes/s\n", DataThroughput);
+//
+//		ThroughputToSend.Length = 4;
+//		ThroughputToSend.pPayload = (uint8_t*) &DataThroughput;
+//
+//		DTS_STM_UpdateCharThroughput((DTS_STM_Payload_t*) &ThroughputToSend);
+//		DataReceived = 0;
+//	}
+//}
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -76,6 +76,7 @@ SensorPacket* grabPacket(void);
 void queueUpPacket(SensorPacket *packet);
 void senderThread(void *argument);
 uint8_t sendPacket_BLE(SensorPacket *packet);
+uint8_t updateSystemConfig_BLE(struct SensorConfig *packet);
 void updateRTC(uint32_t receivedTime);
 uint32_t getEpoch(void);
 
