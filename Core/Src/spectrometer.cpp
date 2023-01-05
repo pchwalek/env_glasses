@@ -65,18 +65,29 @@ void Spec_Task(void *argument) {
 
 	osDelay(500);
 
+	struct ColorSensor sensorSettings;
+
+	if(argument != NULL){
+		memcpy(&sensorSettings,argument,sizeof(struct ColorSensor));
+	}else{
+		sensorSettings.integrationTime = 100;
+		sensorSettings.integrationStep = 999;
+		sensorSettings.gain = AS7341_GAIN_256X;
+		sensorSettings.sample_period = SPEC_SAMPLE_SYS_PERIOD_MS;
+	}
+
 	osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 	while (!specSensor.begin(SPEC_ADDR, &hi2c1, 0)) {
 		osSemaphoreRelease(messageI2C1_LockHandle);
 		osDelay(100);
 		osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 	}
-	specSensor.setATIME(100);
-	specSensor.setASTEP(999);
-	specSensor.setGain(AS7341_GAIN_256X);
+	specSensor.setATIME(sensorSettings.integrationTime);
+	specSensor.setASTEP(sensorSettings.integrationStep);
+	specSensor.setGain((as7341_gain_t) sensorSettings.gain);
 
 	header.payloadLength = MAX_SPEC_SAMPLES_PACKET * sizeof(specSamplePkt);
-	header.reserved[0] = SPEC_SAMPLE_SYS_PERIOD_MS;
+	header.reserved[0] = sensorSettings.sample_period;
 	header.reserved[1] = SEND_SPEC_EVERY_X_S;
 
 	uint16_t specIdx = 0;
@@ -88,7 +99,7 @@ void Spec_Task(void *argument) {
 	osSemaphoreRelease(messageI2C1_LockHandle);
 	periodicSpecTimer_id = osTimerNew(triggerSpectrometerSample, osTimerPeriodic,
 			NULL, NULL);
-	osTimerStart(periodicSpecTimer_id, SPEC_SAMPLE_SYS_PERIOD_MS);
+	osTimerStart(periodicSpecTimer_id, sensorSettings.sample_period);
 
 	while (1) {
 		flags = osThreadFlagsWait(GRAB_SAMPLE_BIT | TERMINATE_THREAD_BIT,

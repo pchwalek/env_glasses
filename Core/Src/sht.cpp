@@ -47,6 +47,16 @@ void ShtTask(void *argument) {
 	shtTemp = -1;
 	shtHum = -1;
 
+	struct HumiditySensor sensorSettings;
+
+	if(argument != NULL){
+		memcpy(&sensorSettings,argument,sizeof(struct HumiditySensor));
+	}else{
+		sensorSettings.heaterSetting = SHT4X_NO_HEATER;
+		sensorSettings.precisionLevel = SHT4X_HIGH_PRECISION;
+		sensorSettings.sample_period = SHT_SAMPLE_SYS_PERIOD_MS;
+	}
+
 	osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 	while (!sht4.begin(&hi2c1)) {
 		osSemaphoreRelease(messageI2C1_LockHandle);
@@ -54,12 +64,12 @@ void ShtTask(void *argument) {
 		osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 	}
 
-	sht4.setPrecision(SHT4X_HIGH_PRECISION);
-	sht4.setHeater(SHT4X_NO_HEATER);
+	sht4.setPrecision( (sht4x_precision_t) sensorSettings.precisionLevel);
+	sht4.setHeater( (sht4x_heater_t) sensorSettings.heaterSetting);
 
 	header.payloadLength = MAX_SHT_SAMPLES_PACKET * sizeof(shtSample);
-	header.reserved[0] = (uint8_t) SHT4X_HIGH_PRECISION;
-	header.reserved[1] = (uint8_t) SHT4X_NO_HEATER;
+	header.reserved[0] = (uint8_t) sensorSettings.precisionLevel;
+	header.reserved[1] = (uint8_t) sensorSettings.heaterSetting;
 
 	uint16_t shtIdx = 0;
 	uint32_t shtID = 0;
@@ -70,7 +80,7 @@ void ShtTask(void *argument) {
 	osSemaphoreRelease(messageI2C1_LockHandle);
 	periodicShtTimer_id = osTimerNew(triggerShtSample, osTimerPeriodic,
 			NULL, NULL);
-	osTimerStart(periodicShtTimer_id, SHT_SAMPLE_SYS_PERIOD_MS);
+	osTimerStart(periodicShtTimer_id, sensorSettings.sample_period);
 
 
 	while (1) {

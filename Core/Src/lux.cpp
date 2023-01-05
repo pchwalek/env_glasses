@@ -40,14 +40,24 @@ void LuxTask(void *argument) {
 	uint32_t flags;
 	uint32_t timeLeftForSample = 0;
 
+	struct LuxSensor sensorSettings;
+
+	if(argument != NULL){
+		memcpy(&sensorSettings,argument,sizeof(struct LuxSensor));
+	}else{
+		sensorSettings.gain = TSL2722_GAIN_8X;
+		sensorSettings.integration_time = TSL2722_INTEGRATIONTIME_101MS;
+		sensorSettings.sample_period = 500;
+	}
+
 	osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
 	while (!luxSensor.begin(TSL2772_I2CADDR, &hi2c3)) {
 		osDelay(100);
 	}
 	luxSensor.powerOn(true);
 
-	luxSensor.setATIME(TSL2722_INTEGRATIONTIME_101MS);
-	luxSensor.setAGAIN(TSL2722_GAIN_8X);
+	luxSensor.setATIME((tsl2591IntegrationTime_t) sensorSettings.integration_time);
+	luxSensor.setAGAIN((tsl2591Gain_t) sensorSettings.gain);
 
 	luxSensor.enableALS(true);
 
@@ -63,7 +73,7 @@ void LuxTask(void *argument) {
 	osSemaphoreRelease(messageI2C3_LockHandle);
 	periodicLuxTimer_id = osTimerNew(triggerLuxSample, osTimerPeriodic,
 			NULL, NULL);
-	osTimerStart(periodicLuxTimer_id, LUX_SAMPLE_SYS_PERIOD_MS);
+	osTimerStart(periodicLuxTimer_id, sensorSettings.sample_period);
 
 	while (1) {
 		flags = osThreadFlagsWait(GRAB_SAMPLE_BIT | TERMINATE_THREAD_BIT,

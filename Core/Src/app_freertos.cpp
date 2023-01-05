@@ -381,6 +381,8 @@ void startThreads() {
 //		osDelay(1000);
 //	}
 
+
+
 	// seems like I need to keep this thread active for the system to work...
 	while(1){
 		osDelay(100);

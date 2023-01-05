@@ -46,6 +46,27 @@ void IMU_Task(void *argument){
 
 	osDelay(1000);
 
+	struct InertialSensor sensorSettings;
+
+	if(argument != NULL){
+		memcpy(&sensorSettings,argument,sizeof(struct InertialSensor));
+	}else{
+		sensorSettings.gyroLPFEn = 1;
+		sensorSettings.gyroRange = ICM20X_GYRO_FREQ_196_6_HZ;
+		sensorSettings.gyroSampleRate = 3;
+		sensorSettings.accelLPFEn = 1;
+		sensorSettings.accelRange = ICM20X_ACCEL_FREQ_246_0_HZ;
+		sensorSettings.accelSampleRate = 3;
+	}
+
+	imu.updateGyroSettings(sensorSettings.gyroLPFEn,
+			sensorSettings.gyroRange,
+			sensorSettings.gyroSampleRate);
+	imu.updateAccelSettings(sensorSettings.accelLPFEn,
+			sensorSettings.accelRange,
+			sensorSettings.accelSampleRate);
+
+
 	while(!imu.begin_SPI(&hspi2,IMU_CS_GPIO_Port,IMU_CS_Pin)){
 		osDelay(100);
 	}

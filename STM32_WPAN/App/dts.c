@@ -37,6 +37,8 @@
 
 #include "packet.h"
 
+#include "fram.h"
+
 #define UUID_128_SUPPORTED 0
 #define	NUM_OF_CHARACTERISTICS 6 //https://community.st.com/s/question/0D50X00009XkYAvSAN/sensortile-bluenrgms-custom-service-aci
 
@@ -264,6 +266,12 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 								== (aDataTransferContext.DataTransferSensorConfigHdle + 2)) {
 				if(attribute_modified->Attr_Data_Length == sizeof(struct SensorConfig)){
 					memcpy(&sensorConfig, attribute_modified->Attr_Data, sizeof(struct SensorConfig));
+					ingestSensorConfig(&sensorConfig);
+				    extMemWriteData(START_ADDR+1, (uint8_t*) &sensorConfig, sizeof(struct SensorConfig));
+//				    if()
+					if(sensorConfig.epoch != 0){
+						updateRTC(sensorConfig.epoch);
+					}
 				};
 			}
 
@@ -400,6 +408,9 @@ static tBleStatus TX_Update_Char(DTS_STM_Payload_t *pDataValue) {
 static tBleStatus SensorConfig_Update_Char(DTS_STM_Payload_t *pDataValue) {
 	tBleStatus ret;
 
+	if(!aDataTransferContext.DataTransferSvcHdle){
+		return PACKET_UNDEFINED_ERR;
+	}
 	/**
 	 *  Notification Data Transfer Packet
 	 */

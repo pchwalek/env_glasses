@@ -22,6 +22,8 @@ extern "C" {
 #include "circular_buffer.h"
 #include "packet.h"
 
+#include "stdbool.h"
+
 #define MAX_ADDR	0x0FFFFF
 
 /* Opcodes for CY15B108QN */

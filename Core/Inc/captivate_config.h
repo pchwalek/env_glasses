@@ -238,33 +238,67 @@ extern osMessageQueueId_t packetAvail_QueueHandle;
 extern osThreadId_t senderTaskHandle;
 
 struct LuxSensor{
+	uint8_t enable;
+	uint8_t gain;
+	uint8_t integration_time;
 	uint16_t sample_period;
 } ;
 struct GasSensor{
+	uint8_t enable;
 	uint16_t sample_period;
 } ;
 struct InertialSensor{
-	uint16_t sample_period;
+	uint8_t enable;
+	uint8_t gyroLPFEn;
+	uint8_t gyroRange;
+	uint8_t gyroSampleRate;
+	uint8_t accelLPFEn;
+	uint8_t accelRange;
+	uint16_t accelSampleRate;
 } ;
 struct ColorSensor{
+	uint8_t enable;
+	uint8_t integrationTime;
+	uint16_t integrationStep;
+	uint8_t gain;
 	uint16_t sample_period;
 } ;
 struct ThermopileSensor{
+	uint8_t enable;
 	uint16_t sample_period;
 } ;
 struct BlinkSensor{
+	uint8_t enable;
+	uint8_t daylightCompensationEn;
+	uint8_t daylightCompensationUpperThresh;
+	uint8_t daylightCompensationLowerThresh;
+	uint16_t sample_frequency;
+} ;
+struct MicSensor{
+	uint8_t enable;
+	uint16_t sample_frequency;
+} ;
+struct HumiditySensor{
+	uint8_t enable;
+	uint8_t precisionLevel;
+	uint8_t heaterSetting;
 	uint16_t sample_period;
 } ;
 
 // cannot be more than ~490 Bytes
 struct SensorConfig{
 	uint8_t systemRunState;
+	uint32_t uuid;
+	uint32_t firmware_version;
+	uint32_t epoch;
 	struct ThermopileSensor thermopileSensor;
 	struct BlinkSensor blinkSensor;
 	struct InertialSensor inertialSensor;
 	struct GasSensor gasSensor;
+	struct HumiditySensor humiditySensor;
 	struct LuxSensor luxSensor;
 	struct ColorSensor colorSensor;
+	struct MicSensor micSensor;
 };
 
 extern struct SensorConfig sensorConfig;
@@ -306,6 +340,7 @@ struct USB_msgPass {
 };
 
 void controlSensors(uint8_t* data, uint16_t numPackets);
+void ingestSensorConfig(struct SensorConfig *config);
 
 //typedef struct PacketHeaders{
 //  uint16_t packetType;

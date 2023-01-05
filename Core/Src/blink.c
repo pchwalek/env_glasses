@@ -82,6 +82,17 @@ void BlinkTask(void *argument) {
 
 	osDelay(500);
 
+	struct BlinkSensor sensorSettings;
+
+	if(argument != NULL){
+		memcpy(&sensorSettings,argument,sizeof(struct BlinkSensor));
+	}else{
+		sensorSettings.daylightCompensationEn = 1;
+		sensorSettings.daylightCompensationUpperThresh = INFRARED_DETECT_UPPER_THRESH;
+		sensorSettings.daylightCompensationLowerThresh = INFRARED_DETECT_LOWER_THRESH;
+		sensorSettings.sample_frequency = BLINK_SAMPLE_RATE;
+	}
+
 	while (1) {
 //		evt = osThreadFlagsWait(0x00000001U, osFlagsWaitAny, osWaitForever);
 		evt = 0x00000001U;
@@ -213,14 +224,18 @@ void BlinkTask(void *argument) {
 					 *   otherwise, leave enabled */
 
 					// BLINK_SAMPLE_RATE == size of blink_ptr array
-					diodeSaturatedFlag = externalInfraredDetect(blink_ptr_copy, BLINK_SAMPLE_RATE, &rolling_avg);
+					if(sensorSettings.daylightCompensationEn){
+						diodeSaturatedFlag = externalInfraredDetect(blink_ptr_copy, BLINK_SAMPLE_RATE, &rolling_avg,
+								sensorSettings.daylightCompensationUpperThresh,
+								sensorSettings.daylightCompensationLowerThresh );
 
-					/* not using PWM */
-					if(diodeSaturatedFlag){
-						if(diodeState) turnOffDiode();
-					}
-					else{
-						if(!diodeState) turnOnDiode();
+						/* not using PWM */
+						if(diodeSaturatedFlag){
+							if(diodeState) turnOffDiode();
+						}
+						else{
+							if(!diodeState) turnOnDiode();
+						}
 					}
 				}
 
@@ -287,7 +302,8 @@ void turnOnDiode(){
 #define NO_INFRARED_DETECT	0
 float32_t sample_avg;
 uint8_t detect_active = 0;
-uint8_t externalInfraredDetect(uint8_t* blink_sample, uint32_t size_of_blink_ptr, float* rolling_avg){
+uint8_t externalInfraredDetect(uint8_t* blink_sample, uint32_t size_of_blink_ptr, float* rolling_avg,
+		uint8_t upperThresh, uint8_t lowerThresh){
 
 	//todo: convert to q format or float32 and use arm library. uint8_t can't be typecasted to 32-bit float
 //	arm_mean_f32((float *) random_array, 2, &sample_avg);
@@ -301,11 +317,11 @@ uint8_t externalInfraredDetect(uint8_t* blink_sample, uint32_t size_of_blink_ptr
 
 	/* SCHMITT TRIGGER */
 	if(detect_active){
-		if( (*rolling_avg) > INFRARED_DETECT_UPPER_THRESH ){
+		if( (*rolling_avg) > upperThresh ){
 			detect_active = NO_INFRARED_DETECT;
 		}
 	}else{
-		if( (*rolling_avg) < INFRARED_DETECT_LOWER_THRESH ){
+		if( (*rolling_avg) < lowerThresh ){
 			detect_active = INFRARED_DETECT;
 		}
 	}

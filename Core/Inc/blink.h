@@ -65,7 +65,7 @@ void SetupBlinkSensing(void);
 void turnOffDiode();
 void turnOnDiode();
 
-uint8_t externalInfraredDetect(uint8_t* blink_ptr, uint32_t size_of_blink_ptr, float* rolling_avg);
+uint8_t externalInfraredDetect(uint8_t* blink_ptr, uint32_t size_of_blink_ptr, float* rolling_avg, uint8_t upperThresh, uint8_t lowerThresh);
 
 /**
  * @brief DMA Transfer Complete Callback.
