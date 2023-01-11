@@ -1,5 +1,0 @@
-bme.cpp:219:1:void __static_initialization_and_destruction_0(int, int)	8	static
-bme.cpp:184:6:void saveBME_StateConfig()	24	static
-bme.cpp:198:6:void recoverBME_StateConfig()	24	static
-bme.cpp:62:6:void BME_Task(void*)	32	static
-bme.cpp:219:1:cpp)	8	static

@@ -1,3 +1,0 @@
-stm32wbxx_ll_system.h:470:22:LL_SYSCFG_SetRemapMemory	16	static
-system_stm32wbxx.c:210:6:SystemInit	16	static,ignoring_inline_asm
-system_stm32wbxx.c:327:6:SystemCoreClockUpdate	32	static

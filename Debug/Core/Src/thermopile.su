@@ -1,7 +1,0 @@
-thermopile.cpp:191:1:void __static_initialization_and_destruction_0(int, int)	0	static
-thermopile.cpp:189:13:void triggerThermopileSample(void*)	8	static
-thermopile.cpp:139:6:void initThermopiles(CALIPILE*, uint8_t, I2C_HandleTypeDef*, uint8_t)	8	static
-thermopile.cpp:161:6:void queueThermopilePkt(thermopile_packet*, uint16_t)	24	static
-thermopile.cpp:180:6:void grabThermopileSamples(thermopile_packet*, CALIPILE*)	16	static
-thermopile.cpp:74:6:void Thermopile_Task(void*)	24	static
-thermopile.cpp:191:1:cpp)	8	static

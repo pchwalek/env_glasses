@@ -1,3 +1,0 @@
-SensirionI2CCommunication.cpp:42:13:void clearRxBuffer(I2C_HandleTypeDef*)	16	static
-SensirionI2CCommunication.cpp:48:10:static uint16_t SensirionI2CCommunication::sendFrame(uint8_t, SensirionI2CTxFrame&, I2C_HandleTypeDef*)	32	static
-SensirionI2CCommunication.cpp:63:10:static uint16_t SensirionI2CCommunication::receiveFrame(uint8_t, size_t, SensirionI2CRxFrame&, I2C_HandleTypeDef*, CrcPolynomial)	56	dynamic

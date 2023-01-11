@@ -1,6 +1,0 @@
-app_freertos.cpp:304:13:void ThreadFrontLightsComplexTask(void*)	8	static
-app_freertos.cpp:279:6:void StartDefaultTask(void*)	8	static
-app_freertos.cpp:196:6:void MX_FREERTOS_Init()	8	static
-app_freertos.cpp:320:13:void Thermopile_Task(void*)	8	static
-app_freertos.cpp:334:6:void startInitThread()	8	static
-app_freertos.cpp:339:6:void startThreads()	0	static

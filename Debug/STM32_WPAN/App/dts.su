@@ -1,7 +1,0 @@
-core_cm4.h:1933:34:__NVIC_SystemReset	4	static,ignoring_inline_asm
-dts.c:142:30:DTS_Event_Handler	72	static
-dts.c:328:6:enterDFUMode	8	static,ignoring_inline_asm
-dts.c:334:19:TX_Update_Char	48	static
-dts.c:384:6:DTS_STM_Init	40	static
-dts.c:547:12:DTS_STM_UpdateChar	24	static
-dts.c:560:12:DTS_STM_UpdateCharThroughput	32	static

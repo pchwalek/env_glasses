@@ -1,1 +1,3 @@
 /Debug/
+*.pyc
+/python/__pycache__/

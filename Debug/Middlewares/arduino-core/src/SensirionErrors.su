@@ -1,1 +1,0 @@
-SensirionErrors.cpp:37:6:void errorToString(uint16_t, char*, size_t)	80	static
