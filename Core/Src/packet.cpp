@@ -75,21 +75,31 @@ void senderThread(void *argument) {
 //		}
 
 		if(isBluetoothConnected()){
-			if(!getPacketFromFRAM(backupBuffer, &backupPacket)){
+			if(osOK == osMessageQueueGet(packet_QueueHandle, &packetToSend, 0U, 0)){
+
+			}
+			else if(!getPacketFromFRAM(backupBuffer, &backupPacket)){
 				osMessageQueueGet(packet_QueueHandle, &packetToSend, 0U, osWaitForever);
-			}{
+			}
+			else{
 				backupPkt = 1;
 				packetToSend = &backupPacket;
-//				osDelay(1);
+				osDelay(5);
 			}
 		}else{
 			osMessageQueueGet(packet_QueueHandle, &packetToSend, 0U, osWaitForever);
 		}
 
+		if(packetToSend == NULL){
+			continue;
+		}
+
 		retry = 0;
-//		taskENTER_CRITICAL();
-		packetToSend->header.systemID = LL_FLASH_GetUDN();
-		packetToSend->header.epoch = getEpoch();
+
+		if(backupPkt != 1){
+			packetToSend->header.systemID = LL_FLASH_GetUDN();
+			packetToSend->header.epoch = getEpoch();
+		}
 		if(isBluetoothConnected()){
 			while (PACKET_SEND_SUCCESS != sendPacket_BLE(packetToSend)) {
 				if (retry >= MAX_BLE_RETRIES) {
@@ -105,16 +115,15 @@ void senderThread(void *argument) {
 				pushPacketToFRAM(backupBuffer, packetToSend);
 			}
 		}
-//		taskEXIT_CRITICAL();
-
-
 
 		// return memory back to pool
 		if(backupPkt != 1){
-			osMessageQueuePut(packetAvail_QueueHandle, &packetToSend, 0U,
-					osWaitForever);
+			if(packetToSend != NULL){
+				osMessageQueuePut(packetAvail_QueueHandle, &packetToSend, 0U,
+						osWaitForever);
+			}
 		}
-
+		packetToSend = NULL;
 		backupPkt = 0;
 
 //		osDelay(100);
