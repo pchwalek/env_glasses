@@ -1,7 +1,0 @@
-main.cpp:294:6:void configureTimerForRunTimeStats()	8	static
-main.cpp:300:15:long unsigned int getRunTimeCounterValue()	0	static
-main.cpp:315:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	8	static
-main.cpp:332:6:void Error_Handler()	0	static,ignoring_inline_asm
-main.cpp:195:6:void SystemClock_Config()	112	static
-main.cpp:255:6:void PeriphCommonClock_Config()	88	static
-main.cpp:86:5:int main()	8	static

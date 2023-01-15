@@ -1,5 +1,0 @@
-lux.cpp:110:13:void triggerLuxSample(void*)	8	static
-lux.cpp:112:1:void __static_initialization_and_destruction_0(int, int)	16	static
-lux.cpp:38:6:void LuxTask(void*)	32	static
-lux.cpp:112:1:cpp)	8	static
-lux.cpp:112:1:cpp)	8	static
