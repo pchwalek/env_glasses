@@ -84,7 +84,6 @@ void RTC_FromEpoch(uint32_t epoch, RTC_TimeTypeDef *time,
 //__attribute__((section(".noinit"))) volatile int my_non_initialized_integer;
 
 struct SensorConfig sensorConfig;
-
 /* USER CODE END 0 */
 
 /**
@@ -157,10 +156,14 @@ int main(void) {
 
 //grab SensorConfig from FRAM
 	uint32_t isSystemFresh;
+//	while(1){
 	extMemGetData(START_ADDR, (uint8_t*) &isSystemFresh, 4);
+//	HAL_Delay(1000);
+//	}
 	if (isSystemFresh != 0xDEADBEAF) {
+//	if(1){
 		//initialize fresh system
-		sensorConfig.systemRunState = 0;
+		sensorConfig.systemRunState = 1;
 		sensorConfig.uuid = LL_FLASH_GetUDN();
 		sensorConfig.firmware_version = 1;
 
@@ -174,11 +177,13 @@ int main(void) {
 
 		sensorConfig.inertialSensor.enable = 0;
 		sensorConfig.inertialSensor.gyroLPFEn = 1;
-		sensorConfig.inertialSensor.gyroRange = 0;
-		sensorConfig.inertialSensor.gyroSampleRate = 3;
+		sensorConfig.inertialSensor.gyroLPFCutoff = 0;
+		sensorConfig.inertialSensor.gyroRange = 3;
+		sensorConfig.inertialSensor.gyroSampleRate = 1;
 		sensorConfig.inertialSensor.accelLPFEn = 1;
-		sensorConfig.inertialSensor.accelRange = 1;
-		sensorConfig.inertialSensor.accelSampleRate = 3;
+		sensorConfig.inertialSensor.accelLPFCutoff = 0;
+		sensorConfig.inertialSensor.accelRange = 3;
+		sensorConfig.inertialSensor.accelSampleRate = 1;
 
 		sensorConfig.colorSensor.enable = 1;
 		sensorConfig.colorSensor.integrationTime = 100;
@@ -187,7 +192,7 @@ int main(void) {
 		sensorConfig.colorSensor.sample_period = 5000;
 
 		sensorConfig.thermopileSensor.enable = 1;
-		sensorConfig.thermopileSensor.sample_period = 1;
+		sensorConfig.thermopileSensor.sample_period = 1000;
 
 		sensorConfig.blinkSensor.enable = 0;
 		sensorConfig.blinkSensor.daylightCompensationEn = 1;
@@ -201,17 +206,17 @@ int main(void) {
 		sensorConfig.humiditySensor.enable = 1;
 		sensorConfig.humiditySensor.precisionLevel = 0;
 		sensorConfig.humiditySensor.heaterSetting = 0;
-		sensorConfig.humiditySensor.sample_period = 5;
+		sensorConfig.humiditySensor.sample_period = 5000;
 
 
-		extMemWriteData(START_ADDR + 1, (uint8_t*) &sensorConfig,
+		extMemWriteData(START_ADDR + 4, (uint8_t*) &sensorConfig,
 				sizeof(struct SensorConfig));
 		updateSystemConfig_BLE(&sensorConfig);
 
 		isSystemFresh = 0xDEADBEAF;
 		extMemWriteData(START_ADDR, (uint8_t*) &isSystemFresh, 4);
 	} else {
-		extMemGetData(START_ADDR + 1, (uint8_t*) &sensorConfig,
+		extMemGetData(START_ADDR + 4, (uint8_t*) &sensorConfig,
 				sizeof(struct SensorConfig));
 		updateSystemConfig_BLE(&sensorConfig);
 	}

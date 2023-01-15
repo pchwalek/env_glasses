@@ -250,9 +250,11 @@ struct GasSensor{
 struct InertialSensor{
 	uint8_t enable;
 	uint8_t gyroLPFEn;
+	uint8_t gyroLPFCutoff;
 	uint8_t gyroRange;
 	uint8_t gyroSampleRate;
 	uint8_t accelLPFEn;
+	uint8_t accelLPFCutoff;
 	uint8_t accelRange;
 	uint16_t accelSampleRate;
 } ;
@@ -284,6 +286,7 @@ struct HumiditySensor{
 	uint8_t heaterSetting;
 	uint16_t sample_period;
 } ;
+
 
 // cannot be more than ~490 Bytes
 struct SensorConfig{

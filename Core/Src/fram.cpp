@@ -139,6 +139,7 @@ uint8_t getPacketFromFRAM(CircularBuffer* backupBuffer, SensorPackets* packet){
 	if(packetFRAM_Address == 0) return NULL;
 	else{
 		if(!extMemGetData(packetFRAM_Address, (uint8_t*) packet, BUFF_PACKET_SIZE)) return NULL;
+
 		return 1;
 	}
 }

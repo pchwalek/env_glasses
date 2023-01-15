@@ -263,11 +263,11 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 			}
 
 			if (attribute_modified->Attr_Handle
-								== (aDataTransferContext.DataTransferSensorConfigHdle + 2)) {
+								== (aDataTransferContext.DataTransferSensorConfigHdle + 1)) {
 				if(attribute_modified->Attr_Data_Length == sizeof(struct SensorConfig)){
 					memcpy(&sensorConfig, attribute_modified->Attr_Data, sizeof(struct SensorConfig));
 					ingestSensorConfig(&sensorConfig);
-				    extMemWriteData(START_ADDR+1, (uint8_t*) &sensorConfig, sizeof(struct SensorConfig));
+				    extMemWriteData(START_ADDR+4, (uint8_t*) &sensorConfig, sizeof(struct SensorConfig));
 //				    if()
 					if(sensorConfig.epoch != 0){
 						updateRTC(sensorConfig.epoch);

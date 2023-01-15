@@ -75,6 +75,15 @@ void Thermopile_Task(void *argument) {
 	SensorPacket *packet = NULL;
 	uint32_t flags;
 
+	struct ThermopileSensor sensorSettings;
+
+	if(argument != NULL){
+		memcpy(&sensorSettings,argument,sizeof(struct ThermopileSensor));
+	}else{
+		sensorSettings.enable = 1;
+		sensorSettings.sample_period = 1;
+	}
+
 //	tp_nose_bridge.setup((uint8_t) THERMOPLE_NOSE_BRIDGE_ADDR, &hi2c1, THERMOPLE_NOSE_BRIDGE_ID);
 //	tp_nose_bridge.wake(); 		// wakeup thermopile sensors on i2c1 bus
 //	tp_temple_front.setup((uint8_t) THERMOPLE_TEMPLE_FRONT_ADDR, &hi2c3, THERMOPLE_TEMPLE_FRONT_ADDR_ID);
@@ -100,7 +109,7 @@ void Thermopile_Task(void *argument) {
 
 	periodicThermopileTimer_id = osTimerNew(triggerThermopileSample,
 			osTimerPeriodic, NULL, NULL);
-	osTimerStart(periodicThermopileTimer_id, THERMOPILE_SAMPLE_PERIOD_MS);
+	osTimerStart(periodicThermopileTimer_id, sensorSettings.sample_period);
 
 	while (1) {
 

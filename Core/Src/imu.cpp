@@ -52,17 +52,21 @@ void IMU_Task(void *argument){
 		memcpy(&sensorSettings,argument,sizeof(struct InertialSensor));
 	}else{
 		sensorSettings.gyroLPFEn = 1;
-		sensorSettings.gyroRange = ICM20X_GYRO_FREQ_196_6_HZ;
-		sensorSettings.gyroSampleRate = 3;
+		sensorSettings.gyroLPFCutoff= ICM20X_GYRO_FREQ_196_6_HZ,
+		sensorSettings.gyroRange = 3;
+		sensorSettings.gyroSampleRate = 1;
 		sensorSettings.accelLPFEn = 1;
-		sensorSettings.accelRange = ICM20X_ACCEL_FREQ_246_0_HZ;
-		sensorSettings.accelSampleRate = 3;
+		sensorSettings.accelLPFCutoff= ICM20X_ACCEL_FREQ_246_0_HZ,
+		sensorSettings.accelRange = 3;
+		sensorSettings.accelSampleRate = 1;
 	}
 
 	imu.updateGyroSettings(sensorSettings.gyroLPFEn,
+			sensorSettings.accelLPFCutoff,
 			sensorSettings.gyroRange,
 			sensorSettings.gyroSampleRate);
 	imu.updateAccelSettings(sensorSettings.accelLPFEn,
+			sensorSettings.accelLPFCutoff,
 			sensorSettings.accelRange,
 			sensorSettings.accelSampleRate);
 

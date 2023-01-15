@@ -381,6 +381,8 @@ void startThreads() {
 //		osDelay(1000);
 //	}
 
+	osDelay(2000);
+	ingestSensorConfig(&sensorConfig);
 
 
 	// seems like I need to keep this thread active for the system to work...

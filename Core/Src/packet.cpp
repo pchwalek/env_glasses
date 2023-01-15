@@ -43,12 +43,14 @@ void queueUpPacket(SensorPacket *packet) {
 }
 
 SensorPacket *packetToSend;
+SensorPacket backupPacket;
 CircularBuffer* backupBuffer;
 
 void senderThread(void *argument) {
 	uint8_t retry;
 
 	backupBuffer = allocateBackupBuffer();
+	uint8_t backupPkt = 0;
 
 	for (int i = 0; i < MAX_PACKET_QUEUE_SIZE; i++) {
 		packetToSend = &packets[i];
@@ -63,13 +65,25 @@ void senderThread(void *argument) {
 		 */
 
 		/* check if a packet exists in the queue without any blocking */
-		if(osErrorTimeout == osMessageQueueGet(packet_QueueHandle, &packetToSend, 0U, osWaitForever)){
-			/* if no packet available in queue, check if any packet exists in FRAM
-			 * from a previous power failure */
-			if(!getPacketFromFRAM(backupBuffer, packetToSend)){
-				/* if no packet exists in FRAM, just wait forever until a thread puts a packet in the queue */
+//		if(osOK != osMessageQueueGet(packet_QueueHandle, &packetToSend, 0U, 0)){
+//			/* if no packet available in queue, check if any packet exists in FRAM
+//			 * from a previous power failure */
+//			if(!getPacketFromFRAM(backupBuffer, packetToSend)){
+//				/* if no packet exists in FRAM, just wait forever until a thread puts a packet in the queue */
+//				osMessageQueueGet(packet_QueueHandle, &packetToSend, 0U, osWaitForever);
+//			}
+//		}
+
+		if(isBluetoothConnected()){
+			if(!getPacketFromFRAM(backupBuffer, &backupPacket)){
 				osMessageQueueGet(packet_QueueHandle, &packetToSend, 0U, osWaitForever);
+			}{
+				backupPkt = 1;
+				packetToSend = &backupPacket;
+//				osDelay(1);
 			}
+		}else{
+			osMessageQueueGet(packet_QueueHandle, &packetToSend, 0U, osWaitForever);
 		}
 
 		retry = 0;
@@ -94,9 +108,14 @@ void senderThread(void *argument) {
 //		taskEXIT_CRITICAL();
 
 
+
 		// return memory back to pool
-		osMessageQueuePut(packetAvail_QueueHandle, &packetToSend, 0U,
-				osWaitForever);
+		if(backupPkt != 1){
+			osMessageQueuePut(packetAvail_QueueHandle, &packetToSend, 0U,
+					osWaitForever);
+		}
+
+		backupPkt = 0;
 
 //		osDelay(100);
 //		osDelay(1);
