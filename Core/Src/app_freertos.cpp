@@ -64,13 +64,13 @@ const osMessageQueueAttr_t lightsComplexQueue_attributes = { .name =
 osThreadId_t blueGreenTranTaskHandle;
 const osThreadAttr_t blueGreenTask_attributes = { .name = "bgTranTask",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
-		.stack_mem = NULL, .stack_size = 512, .priority =
+		.stack_mem = NULL, .stack_size = 1024, .priority =
 				(osPriority_t) osPriorityNormal, .tz_module = 0, .reserved = 0 };
 
 osThreadId_t redFlashTaskHandle;
 const osThreadAttr_t redFlashTask_attributes = { .name = "redFlashTask",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
-		.stack_mem = NULL, .stack_size = 512, .priority =
+		.stack_mem = NULL, .stack_size = 1024, .priority =
 				(osPriority_t) osPriorityAboveNormal, .tz_module = 0, .reserved = 0 };
 
 osThreadId_t specTaskHandle;
@@ -82,13 +82,13 @@ const osThreadAttr_t specTask_attributes = { .name = "spectrometerTask",
 osThreadId_t luxTaskHandle;
 const osThreadAttr_t luxTask_attributes = { .name = "luxTask", .attr_bits =
 		osThreadDetached, .cb_mem = NULL, .cb_size = 0, .stack_mem = NULL,
-		.stack_size = 512 * 1, .priority = (osPriority_t) osPriorityNormal,
+		.stack_size = 512 * 2, .priority = (osPriority_t) osPriorityNormal,
 		.tz_module = 0, .reserved = 0 };
 
 osThreadId_t shtTaskHandle;
 const osThreadAttr_t shtTask_attributes = { .name = "shtTask", .attr_bits =
 		osThreadDetached, .cb_mem = NULL, .cb_size = 0, .stack_mem = NULL,
-		.stack_size = 512 * 1, .priority = (osPriority_t) osPriorityNormal,
+		.stack_size = 512 * 2, .priority = (osPriority_t) osPriorityNormal,
 		.tz_module = 0, .reserved = 0 };
 
 osThreadId_t bmeTaskHandle;
@@ -100,7 +100,7 @@ const osThreadAttr_t bmeTask_attributes = { .name = "bmeTask", .attr_bits =
 osThreadId_t sgpTaskHandle;
 const osThreadAttr_t sgpTask_attributes = { .name = "sgpTask", .attr_bits =
 		osThreadDetached, .cb_mem = NULL, .cb_size = 0, .stack_mem = NULL,
-		.stack_size = 512 * 1, .priority = (osPriority_t) osPriorityNormal,
+		.stack_size = 512 * 2, .priority = (osPriority_t) osPriorityNormal,
 		.tz_module = 0, .reserved = 0 };
 
 osThreadId_t imuTaskHandle;
@@ -144,7 +144,7 @@ const osThreadAttr_t thermopileTask_attributes = { .name = "thermopileTask",
 osThreadId_t senderTaskHandle;
 const osThreadAttr_t senderTask_attributes = { .name = "senderTask",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
-		.stack_mem = NULL, .stack_size = 512 * 2, .priority =
+		.stack_mem = NULL, .stack_size = 512 * 4, .priority =
 				(osPriority_t) osPriorityAboveNormal, .tz_module = 0, .reserved = 0 };
 
 /* Definitions for messageI2C_Lock */
@@ -318,15 +318,15 @@ void StartDefaultTask(void *argument) {
  * @param argument: Not used
  * @retval None
  */
-/* USER CODE END Header_ThreadFrontLightsComplexTask */
-__weak void ThreadFrontLightsComplexTask(void *argument) {
-	/* USER CODE BEGIN ThreadFrontLightsComplexTask */
-	/* Infinite loop */
-	for (;;) {
-		osDelay(1);
-	}
-	/* USER CODE END ThreadFrontLightsComplexTask */
-}
+///* USER CODE END Header_ThreadFrontLightsComplexTask */
+//__weak void ThreadFrontLightsComplexTask(void *argument) {
+//	/* USER CODE BEGIN ThreadFrontLightsComplexTask */
+//	/* Infinite loop */
+//	for (;;) {
+//		osDelay(1);
+//	}
+//	/* USER CODE END ThreadFrontLightsComplexTask */
+//}
 
 /* USER CODE BEGIN Header_Thermopile_Task */
 /**

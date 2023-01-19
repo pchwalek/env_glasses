@@ -45,7 +45,7 @@ GPIO_TypeDef* GPIO_PORT_DONGLE[3] = {LED1_GPIO_Port, LED2_GPIO_Port, LED3_GPIO_P
 const uint16_t GPIO_PIN_DONGLE[3] = {LED1_Pin, LED2_Pin, LED3_Pin};
 #endif
 union ColorComplex receivedColor;
-
+osTimerId_t resetTimer;
 /* Functions Definition ------------------------------------------------------*/
 
 /*************************************************************
@@ -207,6 +207,9 @@ void ThreadFrontLightsComplexTask(void *argument){
 	setup_LP5523(LIS3DH_LEFT_ADDRESS);
 	setup_LP5523(LIS3DH_RIGHT_ADDRESS);
 
+	resetTimer = osTimerNew(resetLED, osTimerOnce, NULL, NULL);
+
+
 	HAL_StatusTypeDef state = 0;
 
 	uint16_t timeTracker;
@@ -297,6 +300,7 @@ void ThreadFrontLightsTask(void *argument) {
 //#endif
 
 	uint32_t lightsSimpleMessageReceived;
+
 
 	ledDisconnectNotification();
 
@@ -742,11 +746,15 @@ void RedFlashTask(void *argument){
 					redFlashColor.colors_indiv.left_side_r = 0;
 				}
 
+				osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 				HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1,
 								LIS3DH_D1_PWM_REG, 1, &redFlashColor.color[0], 9, 5);
 
 				HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1,
 						LIS3DH_D1_PWM_REG, 1,  &redFlashColor.color[9], 9, 5);
+
+				osSemaphoreRelease(messageI2C1_LockHandle);
+
 
 //				osMessageQueuePut(lightsComplexQueueHandle, &redFlashColor, 0, 0);
 				timeTracker = HAL_GetTick() - HAL_GetTick();
@@ -767,11 +775,15 @@ void RedFlashTask(void *argument){
 					redFlashColor.colors_indiv.left_side_r = 0;
 				}
 
+				osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
+
 				HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1,
 								LIS3DH_D1_PWM_REG, 1, &redFlashColor.color[0], 9, 5);
 
 				HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1,
 						LIS3DH_D1_PWM_REG, 1,  &redFlashColor.color[9], 9, 5);
+				osSemaphoreRelease(messageI2C1_LockHandle);
+
 //				osMessageQueuePut(lightsComplexQueueHandle, &redFlashColor, 0, 0);
 				timeTracker = HAL_GetTick() - HAL_GetTick();
 
@@ -800,11 +812,13 @@ void ledEnterDFUNotification(void){
 
 //		osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
 
+		osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 		HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1,
 						LIS3DH_D1_PWM_REG, 1, &receivedColor.color[0], 9, 5);
 
 		HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1,
 				LIS3DH_D1_PWM_REG, 1,  &receivedColor.color[9], 9, 5);
+		osSemaphoreRelease(messageI2C1_LockHandle);
 
 	}
 }
@@ -819,7 +833,7 @@ void ledDisconnectNotification(void){
 		receivedColor.colors_indiv.left_side_b = NOMINAL_BLUE_VAL;
 		receivedColor.colors_indiv.right_side_b = NOMINAL_BLUE_VAL;
 		osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
-		osDelay(10);
+//		osDelay(10);
 	}
 //	FrontLightsSet(&receivedColor);
 }
@@ -865,13 +879,18 @@ void ledConnectNotification(void){
 		receivedColor.colors_indiv.right_side_g = 80;
 		osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
 	//	FrontLightsSet(&receivedColor);
-		osDelay(1000);
+//		osDelay(1000);
 		receivedColor.colors_indiv.left_side_g = 0;
 		receivedColor.colors_indiv.right_side_g = 0;
-		osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+
+		osTimerStart(resetTimer, 1000);
+//		osTimerDelete(resetTimer);
+//		osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
 	//	FrontLightsSet(&receivedColor);
 	}
 }
+
+
 
 void ledAllRed(void){
 	if(sensorThreadsRunning){
@@ -890,6 +909,7 @@ void ledAllRed(void){
 void resetColor(union ColorComplex * colorComplex){
 	memcpy(colorComplex,&EmptyColorComplex,sizeof(union ColorComplex));;
 }
+
 
 #ifdef __cplusplus
 }

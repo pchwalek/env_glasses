@@ -102,6 +102,8 @@ int main(void) {
 	/* Config code for STM32_WPAN (HSE Tuning must be done before system clock configuration) */
 	MX_APPE_Config();
 
+	HAL_Delay(1000);
+
 	/* USER CODE BEGIN Init */
 
 	/* USER CODE END Init */

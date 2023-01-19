@@ -70,7 +70,7 @@ void BME_Task(void *argument) {
 
 	osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 	while (!bme.begin(BME68X_DEFAULT_ADDRESS, &hi2c1, false)) {
-		osSemaphoreRelease(messageI2C1_LockHandle);
+
 		osDelay(100);
 		osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 	}
