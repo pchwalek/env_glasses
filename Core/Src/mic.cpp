@@ -26,7 +26,7 @@
 /* if the microphone sample period is equal or greater than MIC_SAMPLE_PERIOD_MS_THRESH_TO_TURN_OFF,
  * the microphone will be turned off in between samples
  */
-#define MIC_SAMPLE_PERIOD_MS_THRESH_TO_TURN_OFF	30000
+#define MIC_SAMPLE_PERIOD_MS_THRESH_TO_TURN_OFF	5000
 uint32_t micData[MIC_DATA_SIZE];
 float micDataFloat[4096];
 
@@ -46,14 +46,22 @@ osTimerId_t periodicMicTimer_id;
 volatile uint8_t secondMicSample = 0;
 volatile uint8_t micLowPowerMode = 0;
 
+typedef struct micSamples {
+	uint32_t lux;
+	uint32_t timestamp;
+} luxSample;
 
 void Mic_Task(void *argument){
+	SensorPacket *packet = NULL;
 
 	uint32_t micID = 0;
 	uint32_t flags = 0;
 	float32_t maxvalue;
 	uint32_t maxindex;
 	float32_t dominantFrequency;
+	uint16_t startIdx;
+
+	float startFreq;
 
 	struct MicSensor sensorSettings;
 
@@ -70,6 +78,19 @@ void Mic_Task(void *argument){
 	//todo: temporary code which should be removed once website is updated
 	sensorSettings.mic_sample_frequency = SAI_AUDIO_FREQUENCY_48K;
 	sensorSettings.sys_sample_period_ms = 30000; // every 30 seconds
+
+	header.packetType = MIC;
+	header.reserved[0] = sensorSettings.mic_sample_frequency;
+	header.reserved[1] = sensorSettings.sys_sample_period_ms;
+
+	float fft_spacing = 48000 / 4096.0;
+	memcpy(&header.reserved[4], (uint32_t *) &fft_spacing, sizeof(fft_spacing));
+
+	uint16_t maxMicPayloadSize = floor(MAX_PAYLOAD_SIZE / 4); // number of 4 byte floats
+	uint32_t totalMicPayloadSize = (MIC_DATA_SIZE >> 1) - 1; // number of 4 byte floats
+	uint8_t packetsPerMicSample = ceil( ((float) totalMicPayloadSize) / (maxMicPayloadSize) );
+
+	header.reserved[2] = packetsPerMicSample; // total number of packets required to send full FFT
 
 	hsai_BlockA1.Init.AudioFrequency = sensorSettings.mic_sample_frequency;
 
@@ -118,31 +139,49 @@ void Mic_Task(void *argument){
 		   * FFT to save <10ms in computation
 		   */
 		  arm_q31_to_float ((q31_t *) &micData[0],
-						&micDataFloat[0], MIC_DATA_SIZE); //~4ms
+						&micDataFloat[0], MIC_DATA_SIZE); //~4ms (16MHz, 4096 data size)
 
-		  arm_scale_f32 (&micDataFloat[0], 16777216, &micDataFloat[0], MIC_DATA_SIZE); //~4ms
+		  arm_scale_f32 (&micDataFloat[0], 16777216, &micDataFloat[0], MIC_DATA_SIZE); //~4ms (16MHz, 4096 data size)
 
 		  /* WARNING: this function modifies dataMicF */
-		  arm_rfft_fast_f32(&fft_instance, micDataFloat, micDataFloat, 0); //~22ms
+		  arm_rfft_fast_f32(&fft_instance, micDataFloat, micDataFloat, 0); //~22ms (16MHz, 4096 data size)
 
-		  arm_cmplx_mag_f32(micDataFloat, micDataFloat, MIC_DATA_SIZE >> 1); //~6ms
+		  arm_cmplx_mag_f32(micDataFloat, micDataFloat, MIC_DATA_SIZE >> 1); //~6ms (16MHz, 2048 data size)
 
-		  arm_max_f32(&micDataFloat[1], (MIC_DATA_SIZE >> 1) - 1, &maxvalue, &maxindex); //~2ms
+		  arm_max_f32(&micDataFloat[1], (MIC_DATA_SIZE >> 1) - 1, &maxvalue, &maxindex); //~2ms (16MHz, 2048 data size)
 
-		  dominantFrequency = maxindex * 48000 / 4096.0;
+		  dominantFrequency = maxindex * fft_spacing;
 
-//
-//			/* packetize data */
-//			header.packetType = MIC;
-//			header.packetID = micID;
-//			header.msFromStart = HAL_GetTick();
-//			packet = grabPacket();
-//			if(packet != NULL){
-////					memcpy(&(packet->header), &header, sizeof(PacketHeader));
-////					memcpy(packet->payload, lidarData, header.payloadLength);
-//				queueUpPacket(packet);
-//			}
-//			micID++;
+			/* packetize data */
+
+
+			header.msFromStart = HAL_GetTick();
+			header.packetID = micID;
+
+
+			for(int i = 0; i < packetsPerMicSample; i++){
+				packet = grabPacket();
+				if(packet != NULL){
+
+					startIdx = maxMicPayloadSize * i;
+
+					if( (startIdx + maxMicPayloadSize) > totalMicPayloadSize){
+						header.payloadLength = (totalMicPayloadSize - startIdx) * 4;
+					}else{
+						header.payloadLength = maxMicPayloadSize * 4;
+					}
+
+					startFreq = (startIdx + 1) * fft_spacing;
+
+					memcpy(&header.reserved[3], (uint32_t *) &startFreq, sizeof(startFreq));
+					memcpy(&(packet->header), &header, sizeof(PacketHeader));
+					memcpy(packet->payload, (uint8_t *) &micDataFloat[startIdx + 1], header.payloadLength); //the 1 offset is because the first value is the DC offset which we don't need
+					queueUpPacket(packet);
+				}
+
+			}
+
+			micID++;
 		}
 
 		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
