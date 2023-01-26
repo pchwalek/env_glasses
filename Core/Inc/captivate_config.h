@@ -278,7 +278,8 @@ struct BlinkSensor{
 } ;
 struct MicSensor{
 	uint8_t enable;
-	uint16_t sample_frequency;
+	uint32_t mic_sample_frequency; // how quickly to sample the actual microphone (e.g., 48,000)
+	uint32_t sys_sample_period_ms; // how often the system should take an ambient sample (e.g., 1000 (ms))
 } ;
 struct HumiditySensor{
 	uint8_t enable;
