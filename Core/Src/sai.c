@@ -124,6 +124,9 @@ void HAL_SAI_MspInit(SAI_HandleTypeDef* saiHandle)
      Be aware that there is only one channel to perform all the requested DMAs. */
     __HAL_LINKDMA(saiHandle,hdmarx,hdma_sai1_a);
     __HAL_LINKDMA(saiHandle,hdmatx,hdma_sai1_a);
+
+    HAL_NVIC_SetPriority(SAI1_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(SAI1_IRQn);
     }
 }
 
@@ -154,6 +157,9 @@ void HAL_SAI_MspDeInit(SAI_HandleTypeDef* saiHandle)
     HAL_DMA_DeInit(saiHandle->hdmarx);
     HAL_DMA_DeInit(saiHandle->hdmatx);
     }
+
+    HAL_NVIC_DisableIRQ(SAI1_IRQn);
+
 }
 
 /**

@@ -94,6 +94,7 @@ void startInitThread(void);
 #define GRAB_SAMPLE_BIT							0x0100
 #define TERMINATE_THREAD_BIT					0x0200
 #define IMU_DATA_RDY_BIT						0x0400
+#define MIC_DATA_RDY_BIT						0x0800
 #define DFU_MODE_ENABLE							0xDEADBEEF
 
 extern volatile unsigned long ulHighFrequencyTimerTicks;

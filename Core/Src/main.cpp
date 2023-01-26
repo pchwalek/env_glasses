@@ -87,14 +87,6 @@ void RTC_FromEpoch(uint32_t epoch, RTC_TimeTypeDef *time,
 //__attribute__((section(".noinit"))) volatile int my_non_initialized_integer;
 
 struct SensorConfig sensorConfig;
-
-volatile uint32_t dataMic[4096] = {23}; //double this if possible
-volatile uint8_t dataMic8[4096] = {23}; //double this if possible
-float dataMicF[4096];
-float dataMicFFT[4096];
-
-
-uint32_t dataOut[4096] = {23}; //double this if possible
 /* USER CODE END 0 */
 
 /**
@@ -166,72 +158,6 @@ int main(void) {
 	MX_I2C3_Init();
 	extMemInit();
 //  HAL_Delay(500); // needed or wireless stack wont init properly (delay duration can probably be reduced)
-
-//	arm_rfft_fast_instance_f32 fft_instance;
-//	arm_rfft_fast_init_f32(&fft_instance, 2048); //double this if possible
-
-	//https://stm32f4-discovery.net/2014/10/stm32f4-fft-example/
-	arm_rfft_fast_instance_f32 fft_instance;
-	arm_rfft_fast_init_f32(&fft_instance, 4096);
-
-	  volatile HAL_StatusTypeDef state;
-	  volatile uint32_t startTime = 0;
-	  volatile uint32_t midTime = 0;
-	  volatile uint32_t endTime = 0;
-	 float32_t maxvalue;
-	 uint32_t maxindex;
-	 float32_t frequency;
-	 HAL_Delay(100);
-//	  HAL_TIM_Base_Start_IT(&htim17);
-	  while(1){
-//		  state = HAL_SAI_Receive(&hsai_BlockA1, (uint8_t *) dataMic, 4096, 1000);
-		  state = HAL_SAI_Receive_IT(&hsai_BlockA1, (uint8_t *) dataMic, 4096);
-		  while(1);
-		  startTime = HAL_GetTick();
-		  for(int i = 0; i<4096; i++){
-//			  if( (dataMic[i] & 0x00800000) > 0){
-//				  dataMic[i] |= 0xFF000000;
-//			  }
-			  /* shifting by 8 so that the 24-bit (2's complement) number
-			   * is in the 24 MSBs. When using ARM functions, we will treat
-			   * this uint32_t array as a Q31 format where it'll be treated
-			   * as if the original values were divided by (2^24)
-			   */
-			  dataMic[i] = dataMic[i] << 8;
-		  }
-		  midTime = HAL_GetTick() - startTime;
-
-//		  time = HAL_GetTick();
-//			arm_shift_q31((q31_t *) &dataMic[0], 7,
-//					(q31_t *) &dataMic[0], 2048 );
-
-//			arm_shift_q31((q31_t *) &dataMic[0], -7,
-//					(q31_t *) &dataMic[0], 2048 );
-
-		  arm_q31_to_float ((q31_t *) &dataMic[0],
-		  				&dataMicF[0], 4096); //~4ms
-		  midTime = HAL_GetTick() - startTime;
-
-		  arm_scale_f32 (&dataMicF[0], 16777216, &dataMicF[0], 4096); //~4ms
-		  midTime = HAL_GetTick() - startTime;
-
-//	  state = HAL_SAI_Receive_DMA(&hsai_BlockA1, (uint8_t *) dataMic, 4096);
-
-//		  HAL_SAI_RxCpltCallback();
-
-		  /* WARNING: this function modifies dataMicF */
-		  arm_rfft_fast_f32(&fft_instance, dataMicF, dataMicF, 0); //~22ms
-		  midTime = HAL_GetTick() - startTime;
-
-		  arm_cmplx_mag_f32(dataMicF, dataMicF, 2048); //~6ms
-		  midTime = HAL_GetTick() - startTime;
-
-		 arm_max_f32(&dataMicF[1], 2047, &maxvalue, &maxindex); //~2ms
-		 /**/
-		 frequency = maxindex * 48000 / 4096.0;
-		  endTime = HAL_GetTick() - startTime;
-	  }
-	  while(1);
 
 //grab SensorConfig from FRAM
 	uint32_t isSystemFresh;
@@ -462,14 +388,7 @@ void PeriphCommonClock_Config(void) {
 }
 
 /* USER CODE BEGIN 4 */
-volatile uint32_t iter = 0;
-void HAL_SAI_RxHalfCpltCallback(SAI_HandleTypeDef *hsai){
-	iter++;
-}
 
-void HAL_SAI_RxCpltCallback(SAI_HandleTypeDef *hsai){
-	iter++;
-}
 
 void reset_DFU_trigger(void) {
 	*((int*) 0x2000020c) = 0xCAFEFEED; // Reset our trigger

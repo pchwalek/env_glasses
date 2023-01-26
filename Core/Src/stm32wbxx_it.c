@@ -68,6 +68,7 @@ extern TIM_HandleTypeDef htim17;
 extern TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN EV */
+extern SAI_HandleTypeDef hsai_BlockA1;
 
 /* USER CODE END EV */
 
@@ -353,6 +354,13 @@ void HSEM_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
+
+void SAI1_IRQHandler(void)
+{
+
+  HAL_SAI_IRQHandler(&hsai_BlockA1);
+
+}
 
 /* USER CODE END 1 */
 

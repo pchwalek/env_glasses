@@ -58,6 +58,7 @@ void DMA1_Channel2_IRQHandler(void);
 void USB_LP_IRQHandler(void);
 void TIM1_UP_TIM16_IRQHandler(void);
 void TIM1_TRG_COM_TIM17_IRQHandler(void);
+
 void TIM2_IRQHandler(void);
 void I2C1_EV_IRQHandler(void);
 void I2C3_EV_IRQHandler(void);
@@ -66,7 +67,7 @@ void IPCC_C1_RX_IRQHandler(void);
 void IPCC_C1_TX_IRQHandler(void);
 void HSEM_IRQHandler(void);
 /* USER CODE BEGIN EFP */
-
+void SAI1_IRQHandler(void);
 /* USER CODE END EFP */
 
 #ifdef __cplusplus
