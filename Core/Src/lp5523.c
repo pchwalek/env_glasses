@@ -621,21 +621,7 @@ void BSP_LED_Toggle(Led_TypeDef Led)
 //}
 
 void ledStartupSequence(void){
-//	resetColor(&receivedColor);
-//	while(1){
-//
-//
-//
-//	receivedColor.colors_indiv.right_side_r = 255;
-//	receivedColor.colors_indiv.left_side_r = 255;
-//	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
-//	osDelay(LED_START_SEQ_INTERVAL);
-//
-//	receivedColor.colors_indiv.right_side_r = 0;
-//	receivedColor.colors_indiv.left_side_r = 0;
-//	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
-//	osDelay(LED_START_SEQ_INTERVAL);
-//	}
+
 
 	resetColor(&receivedColor);
 	while(1){
@@ -644,13 +630,9 @@ void ledStartupSequence(void){
 	receivedColor.colors_indiv.left_side_b = 255;
 	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
 	osDelay(LED_START_SEQ_INTERVAL);
-
-//	receivedColor.colors_indiv.right_side_r = 0;
-//	receivedColor.colors_indiv.left_side_r = 0;
-//	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
-//	osDelay(LED_START_SEQ_INTERVAL);
 	}
 }
+
 
 union ColorComplex blueGreenTranColor;
 void BlueGreenTransitionTask(void *argument){
@@ -831,9 +813,87 @@ void ledDisconnectNotification(void){
 		receivedColor.colors_indiv.left_side_b = NOMINAL_BLUE_VAL;
 		receivedColor.colors_indiv.right_side_b = NOMINAL_BLUE_VAL;
 		osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
-//		osDelay(10);
 	}
-//	FrontLightsSet(&receivedColor);
+
+}
+
+void ledCheck(void *argument){
+	while(1){
+		resetColor(&receivedColor);
+		receivedColor.colors_indiv.left_side_r = NOMINAL_BLUE_VAL;
+		receivedColor.colors_indiv.right_side_r = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.left_side_g = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.right_side_g = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.left_side_b = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.right_side_b = NOMINAL_BLUE_VAL;
+
+		receivedColor.colors_indiv.left_top_r = NOMINAL_BLUE_VAL;
+		receivedColor.colors_indiv.right_top_r = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.left_top_g = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.right_top_g = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.left_top_b = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.right_top_b = NOMINAL_BLUE_VAL;
+
+		receivedColor.colors_indiv.left_front_r = NOMINAL_BLUE_VAL;
+		receivedColor.colors_indiv.right_front_r = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.left_front_g = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.right_front_g = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.left_front_b = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.right_front_b = NOMINAL_BLUE_VAL;
+		osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+
+		osDelay(5000);
+
+		resetColor(&receivedColor);
+//		receivedColor.colors_indiv.left_side_r = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.right_side_r = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.left_side_g = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.right_side_g = NOMINAL_BLUE_VAL;
+		receivedColor.colors_indiv.left_side_b = NOMINAL_BLUE_VAL;
+		receivedColor.colors_indiv.right_side_b = NOMINAL_BLUE_VAL;
+
+//		receivedColor.colors_indiv.left_top_r = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.right_top_r = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.left_top_g = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.right_top_g = NOMINAL_BLUE_VAL;
+		receivedColor.colors_indiv.left_top_b = NOMINAL_BLUE_VAL;
+		receivedColor.colors_indiv.right_top_b = NOMINAL_BLUE_VAL;
+
+//		receivedColor.colors_indiv.left_front_r = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.right_front_r = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.left_front_g = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.right_front_g = NOMINAL_BLUE_VAL;
+		receivedColor.colors_indiv.left_front_b = NOMINAL_BLUE_VAL;
+		receivedColor.colors_indiv.right_front_b = NOMINAL_BLUE_VAL;
+		osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+
+		osDelay(5000);
+
+		resetColor(&receivedColor);
+//		receivedColor.colors_indiv.left_side_r = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.right_side_r = NOMINAL_BLUE_VAL;
+		receivedColor.colors_indiv.left_side_g = NOMINAL_BLUE_VAL;
+		receivedColor.colors_indiv.right_side_g = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.left_side_b = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.right_side_b = NOMINAL_BLUE_VAL;
+
+//		receivedColor.colors_indiv.left_top_r = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.right_top_r = NOMINAL_BLUE_VAL;
+		receivedColor.colors_indiv.left_top_g = NOMINAL_BLUE_VAL;
+		receivedColor.colors_indiv.right_top_g = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.left_top_b = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.right_top_b = NOMINAL_BLUE_VAL;
+
+//		receivedColor.colors_indiv.left_front_r = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.right_front_r = NOMINAL_BLUE_VAL;
+		receivedColor.colors_indiv.left_front_g = NOMINAL_BLUE_VAL;
+		receivedColor.colors_indiv.right_front_g = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.left_front_b = NOMINAL_BLUE_VAL;
+//		receivedColor.colors_indiv.right_front_b = NOMINAL_BLUE_VAL;
+		osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+
+		osDelay(5000);
+	}
 }
 
 void resetLED(void){

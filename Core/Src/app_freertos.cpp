@@ -273,6 +273,7 @@ void MX_FREERTOS_Init(void) {
 
 	sensorThreadsRunning = 1;
 
+//	osThreadNew(ledCheck, NULL, &defaultTask_attributes);
 
 	/* USER CODE END RTOS_THREADS */
 

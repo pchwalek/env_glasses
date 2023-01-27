@@ -86,7 +86,7 @@ void Mic_Task(void *argument){
 	float fft_spacing = 48000 / 4096.0;
 	memcpy(&header.reserved[4], (uint32_t *) &fft_spacing, sizeof(fft_spacing));
 
-	uint16_t maxMicPayloadSize = floor(MAX_PAYLOAD_SIZE / 4); // number of 4 byte floats
+	uint16_t maxMicPayloadSize = floor( (MAX_PAYLOAD_SIZE) / 4); // number of 4 byte floats
 	uint32_t totalMicPayloadSize = (MIC_DATA_SIZE >> 1) - 1; // number of 4 byte floats
 	uint8_t packetsPerMicSample = ceil( ((float) totalMicPayloadSize) / (maxMicPayloadSize) );
 

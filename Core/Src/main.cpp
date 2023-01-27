@@ -165,6 +165,8 @@ int main(void) {
 	extMemGetData(START_ADDR, (uint8_t*) &isSystemFresh, 4);
 //	HAL_Delay(1000);
 //	}
+
+
 	if (isSystemFresh != 0xDEADBEAF) {
 //	if(1){
 		//initialize fresh system
@@ -172,12 +174,12 @@ int main(void) {
 		sensorConfig.uuid = LL_FLASH_GetUDN();
 		sensorConfig.firmware_version = 1;
 
-		sensorConfig.luxSensor.enable = 1;
+		sensorConfig.luxSensor.enable = 0;
 		sensorConfig.luxSensor.gain = 1;
 		sensorConfig.luxSensor.integration_time = 219;
 		sensorConfig.luxSensor.sample_period = 1000;
 
-		sensorConfig.gasSensor.enable = 1;
+		sensorConfig.gasSensor.enable = 0;
 		sensorConfig.gasSensor.sample_period = 5000;
 
 		sensorConfig.inertialSensor.enable = 0;
@@ -190,13 +192,13 @@ int main(void) {
 		sensorConfig.inertialSensor.accelRange = 3;
 		sensorConfig.inertialSensor.accelSampleRate = 1;
 
-		sensorConfig.colorSensor.enable = 1;
+		sensorConfig.colorSensor.enable = 0;
 		sensorConfig.colorSensor.integrationTime = 100;
 		sensorConfig.colorSensor.integrationStep = 999;
 		sensorConfig.colorSensor.gain = 9;
 		sensorConfig.colorSensor.sample_period = 5000;
 
-		sensorConfig.thermopileSensor.enable = 1;
+		sensorConfig.thermopileSensor.enable = 0;
 		sensorConfig.thermopileSensor.sample_period = 1000;
 
 		sensorConfig.blinkSensor.enable = 0;
@@ -205,7 +207,7 @@ int main(void) {
 		sensorConfig.blinkSensor.daylightCompensationLowerThresh = 235;
 		sensorConfig.blinkSensor.sample_frequency = 1000;
 
-		sensorConfig.micSensor.enable = 0;
+		sensorConfig.micSensor.enable = 1;
 		sensorConfig.micSensor.mic_sample_frequency = SAI_AUDIO_FREQUENCY_48K;
 		sensorConfig.micSensor.sys_sample_period_ms = 30000; // 30 seconds
 		sensorConfig.humiditySensor.enable = 1;
