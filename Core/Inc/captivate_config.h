@@ -290,7 +290,8 @@ struct HumiditySensor{
 
 
 // cannot be more than ~490 Bytes
-struct SensorConfig{
+
+struct  SensorConfig{
 	uint8_t systemRunState;
 	uint32_t uuid;
 	uint32_t firmware_version;

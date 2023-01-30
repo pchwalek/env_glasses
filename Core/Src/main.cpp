@@ -166,6 +166,7 @@ int main(void) {
 //	HAL_Delay(1000);
 //	}
 
+	volatile uint8_t test = sizeof(SensorConfig);
 
 	if (isSystemFresh != 0xDEADBEAF) {
 //	if(1){

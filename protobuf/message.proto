@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+import "nanopb.proto";
+option (nanopb_fileopt).packed_struct = true;
+
+enum SensorPacketTypes {
+    UNKNOWN_PACKET_TYPE = 0;
+	PPG_RED         = 1;
+	PPG_IR          = 2;
+	SPECTROMETER    = 3;
+	BME             = 4;
+	CO2             = 5;
+	IMU             = 6;
+	THERMOPILE      = 7;
+	LUX             = 8;
+	LIDAR           = 9;
+	MIC             = 10;
+	SHT             = 11;
+	SGP             = 12;
+	BLINK           = 13;
+} 
+
+message SensorPacketHeader {
+    
+    SensorPacketTypes packetType = 1;
+    uint32 packedID = 2;
+    uint32 msFromtStart = 3;
+    uint32 msFromStart = 4;
+    uint32 epoch = 5;
+    uint32 payloadLength = 6;
+    int32 reserved = 7;
+}
+
+message LuxPacket{
+    SensorPacketHeader header = 1;
+
+    message Payload {
+        uint32 lux = 1;
+        uint32 timestamp = 2;
+    }
+    repeated Payload payload = 2;
+} 

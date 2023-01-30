@@ -203,6 +203,8 @@ void HAL_SAI_RxCpltCallback(SAI_HandleTypeDef *hsai){
 	/* found that when the mic clock gets started via the interrupt call,
 	 * the first several bytes (up to several 100) can be null so a second go
 	 * is warranted.
+	 *
+	 * this is because mic takes 20ms to wakeup as per the datasheet
 	 */
 	if( (secondMicSample == 0) && (micLowPowerMode) ){
 		secondMicSample = 1;

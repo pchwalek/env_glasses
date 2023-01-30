@@ -1,0 +1,3 @@
+
+LuxPacket.payload               max_count:30
+SensorPacketHeader.reserved     max_count:5
