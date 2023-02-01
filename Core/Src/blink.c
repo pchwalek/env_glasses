@@ -62,6 +62,7 @@ uint8_t diodeState = 0;
 
 SensorPacket *sensorPacket;
 
+blink_packet_t message;
 /**
  * @brief Thread initialization.
  * @param  None
@@ -72,13 +73,15 @@ void BlinkTask(void *argument) {
 	uint32_t evt;
 	uint8_t diodeSaturatedFlag = 0;
 	float rolling_avg = 255;
-	uint16_t packetsPerHalfBuffer = ceil( ( (float) BLINK_HALF_BUFFER_SIZE)/BLINK_PACKET_SIZE );
+	uint16_t packetsPerHalfBuffer =  ceil( ( (float) BLINK_HALF_BUFFER_SIZE)/(BLINK_PKT_PAYLOAD_SIZE) );
 	uint16_t payloadLength = 0;
 	uint16_t blinkDataTracker = 0;
 	uint32_t payload_ID = 0;
 	uint32_t tickCnt;
 	uint32_t blinkSampleHalfBuffer_ms = BLINK_HALF_BUFFER_SIZE * (1.0/BLINK_SAMPLE_RATE) * 1000.0;
-	uint32_t packetRemainder = BLINK_SAMPLE_RATE % BLINK_PACKET_SIZE;
+	uint32_t packetRemainder = BLINK_SAMPLE_RATE % BLINK_PKT_PAYLOAD_SIZE;
+
+	bool status;
 
 	osDelay(500);
 
@@ -134,6 +137,8 @@ void BlinkTask(void *argument) {
 //			HAL_GPIO_Init(BLINK_PWM_GPIO_Port, &GPIO_InitStruct);
 //			turnOnDiode();
 
+		    message.has_header = true;
+			message.header.packet_type = SENSOR_PACKET_TYPES_BLINK;
 
 			// reset external infrared detection flag
 			diodeSaturatedFlag = 0;
@@ -170,9 +175,9 @@ void BlinkTask(void *argument) {
 							iterator++) {
 
 						// add to packet maximum sized payload
-						if(blinkDataTracker > BLINK_PACKET_SIZE){
-						    payloadLength = BLINK_PACKET_SIZE;
-						    blinkDataTracker -= BLINK_PACKET_SIZE;
+						if(blinkDataTracker > BLINK_PKT_PAYLOAD_SIZE){
+						    payloadLength = BLINK_PKT_PAYLOAD_SIZE;
+						    blinkDataTracker -= BLINK_PKT_PAYLOAD_SIZE;
 						}else if(blinkDataTracker != 0){
 						    payloadLength = blinkDataTracker;
 						    blinkDataTracker = 0;
@@ -189,27 +194,53 @@ void BlinkTask(void *argument) {
 						    continue;
 						}
 
-						sensorPacket->header.packetType = BLINK;
-						sensorPacket->header.packetID = payload_ID;
-						sensorPacket->header.msFromStart = tickCnt;
-						sensorPacket->header.epoch = 0;
-						sensorPacket->header.payloadLength = payloadLength;
-						sensorPacket->header.reserved[0] = diodeSaturatedFlag;
-						sensorPacket->header.reserved[1] = BLINK_SAMPLE_RATE;
-						sensorPacket->header.reserved[2] = iterator;
+						message.header.packet_id = payload_ID;
+						message.header.ms_from_start = tickCnt;
+						message.header.epoch = 0;
+						message.diode_saturation_flag = diodeSaturatedFlag;
+						message.blink_sample_rate = BLINK_SAMPLE_RATE;
+						message.subpacket_index = iterator;
+
+//						sensorPacket->header.packetType = BLINK;
+//						sensorPacket->header.packetID = payload_ID;
+//						sensorPacket->header.msFromStart = tickCnt;
+//						sensorPacket->header.epoch = 0;
+//						sensorPacket->header.payloadLength = payloadLength;
+//						sensorPacket->header.reserved[0] = diodeSaturatedFlag;
+//						sensorPacket->header.reserved[1] = BLINK_SAMPLE_RATE;
+//						sensorPacket->header.reserved[2] = iterator;
 						tickCnt += payloadLength;
 
-						// copy payload
-						memcpy(sensorPacket->payload,
-								&(blink_ptr_copy[iterator * BLINK_PACKET_SIZE]),
-								payloadLength);
+						sensorPacket->header.packetType = BLINK;
+
+						// reset message buffer
+						memset(message.payload.sample.bytes, 0, sizeof(message.payload.sample.bytes));
+
+						// write lux data
+						memcpy(message.payload.sample.bytes, &(blink_ptr_copy[iterator * BLINK_PKT_PAYLOAD_SIZE]), payloadLength);
+//						message.payload_count = payloadLength;
+						message.has_payload = true;
+						message.payload.sample.size = payloadLength;
+
+						// encode
+						pb_ostream_t stream = pb_ostream_from_buffer(sensorPacket->payload, MAX_PAYLOAD_SIZE);
+						status = pb_encode(&stream, BLINK_PACKET_FIELDS, &message);
+
+						sensorPacket->header.payloadLength = stream.bytes_written;
+
+					    // send to BT packetizer
+						queueUpPacket(sensorPacket);
+//						// copy payload
+//						memcpy(sensorPacket->payload,
+//								&(blink_ptr_copy[iterator * BLINK_PACKET_SIZE]),
+//								payloadLength);
 
 						// add tick cnt
 						previousTick_ms = blinkMsgBuffer_1.tick_ms;
 
-						// put into queue
-						osMessageQueuePut(packet_QueueHandle,
-								&sensorPacket, 0U, 0);
+//						// put into queue
+//						osMessageQueuePut(packet_QueueHandle,
+//								&sensorPacket, 0U, 0);
 
 						payload_ID++;
 

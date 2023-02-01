@@ -36,7 +36,7 @@ static void triggerMicSample(void *argument);
 
 #define MAX_MIC_SAMPLES_PACKET  10
 
-static PacketHeader header;
+//static PacketHeader header;
 //arm_rfft_instance_q31 fft_instance;
 arm_rfft_fast_instance_f32 fft_instance;
 volatile uint8_t buffer_tracker;
@@ -51,6 +51,7 @@ typedef struct micSamples {
 	uint32_t timestamp;
 } luxSample;
 
+static mic_packet message;
 void Mic_Task(void *argument){
 	SensorPacket *packet = NULL;
 
@@ -60,6 +61,8 @@ void Mic_Task(void *argument){
 	uint32_t maxindex;
 	float32_t dominantFrequency;
 	uint16_t startIdx;
+
+	bool status;
 
 	float startFreq;
 
@@ -79,18 +82,20 @@ void Mic_Task(void *argument){
 	sensorSettings.mic_sample_frequency = SAI_AUDIO_FREQUENCY_48K;
 	sensorSettings.sys_sample_period_ms = 30000; // every 30 seconds
 
-	header.packetType = MIC;
-	header.reserved[0] = sensorSettings.mic_sample_frequency;
-	header.reserved[1] = sensorSettings.sys_sample_period_ms;
+	message.header.packet_type = SENSOR_PACKET_TYPES_MIC;
+	message.sample_freq = sensorSettings.mic_sample_frequency;
+	message.system_sample_period = sensorSettings.sys_sample_period_ms;
 
 	float fft_spacing = 48000 / 4096.0;
-	memcpy(&header.reserved[4], (uint32_t *) &fft_spacing, sizeof(fft_spacing));
+
+    message.frequency_spacing = fft_spacing;
+//	memcpy(&header.reserved[4], (uint32_t *) &fft_spacing, sizeof(fft_spacing));
 
 	uint16_t maxMicPayloadSize = floor( (MAX_PAYLOAD_SIZE) / 4); // number of 4 byte floats
 	uint32_t totalMicPayloadSize = (MIC_DATA_SIZE >> 1) - 1; // number of 4 byte floats
 	uint8_t packetsPerMicSample = ceil( ((float) totalMicPayloadSize) / (maxMicPayloadSize) );
 
-	header.reserved[2] = packetsPerMicSample; // total number of packets required to send full FFT
+	message.samples_per_fft = packetsPerMicSample; // total number of packets required to send full FFT
 
 	hsai_BlockA1.Init.AudioFrequency = sensorSettings.mic_sample_frequency;
 
@@ -155,8 +160,8 @@ void Mic_Task(void *argument){
 			/* packetize data */
 
 
-			header.msFromStart = HAL_GetTick();
-			header.packetID = micID;
+			message.header.ms_from_start = HAL_GetTick();
+			message.header.packet_id = micID;
 
 
 			for(int i = 0; i < packetsPerMicSample; i++){
@@ -166,17 +171,38 @@ void Mic_Task(void *argument){
 					startIdx = maxMicPayloadSize * i;
 
 					if( (startIdx + maxMicPayloadSize) > totalMicPayloadSize){
-						header.payloadLength = (totalMicPayloadSize - startIdx) * 4;
+						message.header.payload_length = (totalMicPayloadSize - startIdx) * 4;
+//						message.sample_count = totalMicPayloadSize - startIdx;
 					}else{
-						header.payloadLength = maxMicPayloadSize * 4;
+						message.header.payload_length = maxMicPayloadSize * 4;
+//						message.sample_count = maxMicPayloadSize;
 					}
 
 					startFreq = (startIdx + 1) * fft_spacing;
+//					memcpy(&message.header.reserved[3], (uint32_t *) &startFreq, sizeof(startFreq));
+					message.start_frequency = startFreq;
+//					message.header.start_freq = startFreq;
 
-					memcpy(&header.reserved[3], (uint32_t *) &startFreq, sizeof(startFreq));
-					memcpy(&(packet->header), &header, sizeof(PacketHeader));
-					memcpy(packet->payload, (uint8_t *) &micDataFloat[startIdx + 1], header.payloadLength); //the 1 offset is because the first value is the DC offset which we don't need
+					packet->header.packetType = MIC;
+
+					// reset message buffer
+					memset(message.payload.sample, 0, sizeof(message.payload.sample));
+
+					// write data
+					memcpy(message.payload.sample, (uint8_t *) &micDataFloat[startIdx + 1], message.header.payload_length);
+
+					// encode
+					pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
+					status = pb_encode(&stream, MIC_PACKET_FIELDS, &message);
+
+					packet->header.payloadLength = stream.bytes_written;
+
+					// send to BT packetizer
 					queueUpPacket(packet);
+
+//					memcpy(&(packet->header), &header, sizeof(PacketHeader));
+//					memcpy(packet->payload, (uint8_t *) &micDataFloat[startIdx + 1], header.payloadLength); //the 1 offset is because the first value is the DC offset which we don't need
+//					queueUpPacket(packet);
 				}
 
 			}

@@ -24,25 +24,25 @@
 #define SPEC_FLICKER_DELAY				510
 
 typedef struct specSamples {
-	uint16_t _415;
-	uint16_t _445;
-	uint16_t _480;
-	uint16_t _515;
-	uint16_t _clear_1;
-	uint16_t _nir_1;
-	uint16_t _555;
-	uint16_t _590;
-	uint16_t _630;
-	uint16_t _680;
-	uint16_t _clear_2;
-	uint16_t _nir_2;
-	uint16_t flicker;
+	uint32_t _415;
+	uint32_t _445;
+	uint32_t _480;
+	uint32_t _515;
+	uint32_t _clear_1;
+	uint32_t _nir_1;
+	uint32_t _555;
+	uint32_t _590;
+	uint32_t _630;
+	uint32_t _680;
+	uint32_t _clear_2;
+	uint32_t _nir_2;
+	uint32_t flicker;
 } specSample;
 
 typedef struct specSamplePkts{
 	union SPEC_UNION {
 		specSample s;
-		uint16_t s_array[13];
+		uint32_t s_array[13];
 	} data;
 	uint32_t timestamp;
 } specSamplePkt;
@@ -58,10 +58,13 @@ osTimerId_t periodicSpecTimer_id;
 
 Adafruit_AS7341 specSensor;
 
+static spec_packet message;
 void Spec_Task(void *argument) {
 	SensorPacket *packet = NULL;
 	uint32_t flags;
 	uint32_t timeLeftForSample = 0;
+
+	bool status;
 
 	osDelay(500);
 
@@ -86,9 +89,11 @@ void Spec_Task(void *argument) {
 	specSensor.setASTEP(sensorSettings.integrationStep);
 	specSensor.setGain((as7341_gain_t) sensorSettings.gain);
 
-	header.payloadLength = MAX_SPEC_SAMPLES_PACKET * sizeof(specSamplePkt);
-	header.reserved[0] = sensorSettings.sample_period;
-	header.reserved[1] = SEND_SPEC_EVERY_X_S;
+	message.header.payload_length = MAX_SPEC_SAMPLES_PACKET * sizeof(specSamplePkt);
+	message.sample_period = sensorSettings.sample_period;
+//	message.spec_send_freq = SEND_SPEC_EVERY_X_S;
+
+	message.header.packet_type = SENSOR_PACKET_TYPES_SPECTROMETER;
 
 	uint16_t specIdx = 0;
 	uint32_t specID = 0;
@@ -130,14 +135,34 @@ void Spec_Task(void *argument) {
 			specIdx++;
 
 			if (specIdx >= MAX_SPEC_SAMPLES_PACKET) {
-				header.packetType = SPECTROMETER;
-				header.packetID = specID;
-				header.msFromStart = HAL_GetTick();
+
+				message.header.packet_id = specID;
+				message.header.ms_from_start = HAL_GetTick();
 				packet = grabPacket();
 				if (packet != NULL) {
-					memcpy(&(packet->header), &header, sizeof(PacketHeader));
-					memcpy(packet->payload, specData, header.payloadLength);
+
+					packet->header.packetType = SPECTROMETER;
+
+					// reset message buffer
+					memset(&message.payload[0], 0, sizeof(message.payload));
+
+					// write data
+					memcpy(message.payload, specData, message.header.payload_length);
+					message.payload_count = MAX_SPEC_SAMPLES_PACKET;
+
+					// encode
+					pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
+					status = pb_encode(&stream, SPEC_PACKET_FIELDS, &message);
+
+					packet->header.payloadLength = stream.bytes_written;
+
+					// send to BT packetizer
 					queueUpPacket(packet);
+
+
+//					memcpy(&(packet->header), &header, sizeof(PacketHeader));
+//					memcpy(packet->payload, specData, header.payloadLength);
+//					queueUpPacket(packet);
 				}
 				specID++;
 				specIdx = 0;

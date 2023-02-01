@@ -18,10 +18,10 @@
 #define THERMOPILE_CHANNELS				5
 #define MAX_THERMOPILE_SAMPLES_PACKET	(int)(512-sizeof(PacketHeader))/sizeof(thermopile_packet)
 
-typedef struct thermopile_packets {
-	uint8_t descriptor;
+typedef struct __attribute__((packed)) thermopile_packets {
+	uint32_t descriptor;
 	uint32_t timestamp;
-	uint16_t ambientRaw;
+	uint32_t ambientRaw;
 	uint32_t objectRaw;
 	float ambientTemp;
 	float objectTemp;
@@ -39,7 +39,7 @@ void grabThermopileSamples(thermopile_packet *data, CALIPILE *tp);
 static thermopile_packet thermopileData[THERMOPILE_CHANNELS];
 
 
-static PacketHeader header;
+//static PacketHeader header;
 
 //osThreadId_t thermopileTaskHandle;
 osTimerId_t periodicThermopileTimer_id;
@@ -71,9 +71,12 @@ void grabThermopileSamples(thermopile_packet *data, CALIPILE *tp);
 uint16_t thermIdx;
 uint32_t thermID;
 
+static therm_packet message;
 void Thermopile_Task(void *argument) {
 	SensorPacket *packet = NULL;
 	uint32_t flags;
+
+	bool status;
 
 	struct ThermopileSensor sensorSettings;
 
@@ -100,9 +103,10 @@ void Thermopile_Task(void *argument) {
 	initThermopiles(&tp_temple_back,	THERMOPLE_TEMPLE_BACK_ADDR,	&hi2c3, THERMOPLE_TEMPLE_BACK_ADDR_ID);
 	osSemaphoreRelease(messageI2C3_LockHandle);
 
-	header.payloadLength = THERMOPILE_CHANNELS * sizeof(thermopile_packet);
-	header.reserved[0] = THERMOPILE_SAMPLE_PERIOD_MS;
-	header.reserved[1] = THERMOPILE_CNT;
+	message.header.packet_type = SENSOR_PACKET_TYPES_THERMOPILE;
+	message.header.payload_length = THERMOPILE_CHANNELS * sizeof(thermopile_packet);
+	message.sample_period_ms = THERMOPILE_SAMPLE_PERIOD_MS;
+//	message.header.reserved[1] = THERMOPILE_CNT;
 
 	thermIdx = 0;
 	thermID = 0;
@@ -172,14 +176,30 @@ void queueThermopilePkt(thermopile_packet *sample, uint16_t packetCnt){
 	SensorPacket *packet = NULL;
 	thermIdx++;
 
+	bool status;
+
 //	if (thermIdx >= MAX_THERMOPILE_SAMPLES_PACKET) {
-		header.packetType = THERMOPILE;
-		header.packetID = thermID;
-		header.msFromStart = HAL_GetTick();
+		message.header.packet_id = thermID;
+		message.header.ms_from_start = HAL_GetTick();
 		packet = grabPacket();
 		if (packet != NULL) {
-			memcpy(&(packet->header), &header, sizeof(PacketHeader));
-			memcpy(packet->payload, sample, header.payloadLength);
+
+			packet->header.packetType = THERMOPILE;
+
+			// reset message buffer
+			memset(&message.payload[0], 0, sizeof(message.payload));
+
+			// write data
+			memcpy(message.payload, sample, message.header.payload_length);
+			message.payload_count = packetCnt;
+
+			// encode
+			pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
+			status = pb_encode(&stream, THERM_PACKET_FIELDS, &message);
+
+			packet->header.payloadLength = stream.bytes_written;
+
+			// send to BT packetizer
 			queueUpPacket(packet);
 		}
 		thermID++;

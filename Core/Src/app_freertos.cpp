@@ -94,7 +94,7 @@ const osThreadAttr_t shtTask_attributes = { .name = "shtTask", .attr_bits =
 osThreadId_t bmeTaskHandle;
 const osThreadAttr_t bmeTask_attributes = { .name = "bmeTask", .attr_bits =
 		osThreadDetached, .cb_mem = NULL, .cb_size = 0, .stack_mem = NULL,
-		.stack_size = 512 * 2, .priority = (osPriority_t) osPriorityNormal,
+		.stack_size = 512 * 3, .priority = (osPriority_t) osPriorityNormal,
 		.tz_module = 0, .reserved = 0 };
 
 osThreadId_t sgpTaskHandle;
@@ -254,10 +254,10 @@ void MX_FREERTOS_Init(void) {
 //  blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
 
 	packet_QueueHandle = osMessageQueueNew(MAX_PACKET_QUEUE_SIZE,
-			sizeof(SensorPacket*), &packetQueue_attributes);
+			sizeof(uint8_t*), &packetQueue_attributes);
 
 	packetAvail_QueueHandle = osMessageQueueNew(MAX_PACKET_QUEUE_SIZE,
-			sizeof(SensorPacket*), &packetAvailQueue_attributes);
+			sizeof(uint8_t*), &packetAvailQueue_attributes);
 
 	messageI2C1_LockHandle = osMutexNew(&messageI2C1_Lock_attributes);
 

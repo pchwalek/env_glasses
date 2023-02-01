@@ -29,16 +29,19 @@ static void triggerLuxSample(void *argument);
 static luxSample luxData[MAX_LUX_SAMPLES_PACKET];
 
 
-static PacketHeader header;
+//static PacketHeader header;
 //osThreadId_t specTaskHandle;
 osTimerId_t periodicLuxTimer_id;
 
 TSL2772 luxSensor;
 
+static lux_packet message;
 void LuxTask(void *argument) {
 	SensorPacket *packet = NULL;
 	uint32_t flags;
 	uint32_t timeLeftForSample = 0;
+
+	bool status;
 
 	struct LuxSensor sensorSettings;
 
@@ -61,9 +64,11 @@ void LuxTask(void *argument) {
 
 	luxSensor.enableALS(true);
 
-	header.payloadLength = MAX_LUX_SAMPLES_PACKET * sizeof(luxSample);
-	header.reserved[0] = (uint8_t) TSL2722_INTEGRATIONTIME_101MS;
-	header.reserved[1] = (uint8_t) TSL2722_GAIN_8X;
+	message.has_header = true;
+	message.header.packet_type = SENSOR_PACKET_TYPES_LUX;
+//	message.header.payload_length = MAX_LUX_SAMPLES_PACKET * sizeof(luxSample);
+	message.gain = static_cast<tsl2591_gain_t>(sensorSettings.gain);
+	message.integration_time = static_cast<tsl2591_integration_time_t>(sensorSettings.integration_time);
 
 	uint16_t luxIdx = 0;
 	uint32_t luxID = 0;
@@ -94,13 +99,29 @@ void LuxTask(void *argument) {
 			luxIdx++;
 
 			if (luxIdx >= MAX_LUX_SAMPLES_PACKET) {
-				header.packetType = LUX;
-				header.packetID = luxID;
-				header.msFromStart = HAL_GetTick();
+
+
+				message.header.packet_id = luxID;
+				message.header.ms_from_start = HAL_GetTick();
 				packet = grabPacket();
 				if (packet != NULL) {
-					memcpy(&(packet->header), &header, sizeof(PacketHeader));
-					memcpy(packet->payload, luxData, header.payloadLength);
+
+					packet->header.packetType = LUX;
+
+					// reset message buffer
+					memset(&message.payload[0], 0, sizeof(lux_packet_payload_t)*30);
+
+					// write lux data
+					memcpy(message.payload, luxData, MAX_LUX_SAMPLES_PACKET * sizeof(luxSample));
+					message.payload_count = MAX_LUX_SAMPLES_PACKET;
+
+					// encode
+				    pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
+				    status = pb_encode(&stream, LUX_PACKET_FIELDS, &message);
+
+				    packet->header.payloadLength = stream.bytes_written;
+
+				    // send to BT packetizer
 					queueUpPacket(packet);
 				}
 				luxID++;

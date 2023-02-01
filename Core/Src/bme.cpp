@@ -25,7 +25,8 @@
 
 
 #define BME_SAMPLE_PERIOD_MS		3000
-#define MAX_BME_SAMPLES_PACKET	(int)(512-sizeof(PacketHeader))/sizeof(bsecData)
+//#define MAX_BME_SAMPLES_PACKET	(int)(512-sizeof(PacketHeader))/sizeof(bsecData)
+#define MAX_BME_SAMPLES_PACKET		20
 #define BME_WAIT_TOL			10
 #define BME_SAVE_STATE_PERIOD_MS	7200000 // every 2 hours
 
@@ -46,10 +47,18 @@
 static void triggerBMESample(void *argument);
 
 //static bme_packet bmeData[MAX_BME_SAMPLES_PACKET];
-static bsecData bmeData[MAX_BME_SAMPLES_PACKET];
+typedef struct __attribute__((packed)) BsecDataAirSpec
+{
+    int64_t time_stamp;         /*!< @brief Time stamp in nanosecond resolution as provided as input [ns] */
+    float signal;               /*!< @brief Signal sample in the unit defined for the respective bsec_output_t::sensor_id @sa bsec_virtual_sensor_t */
+    uint32_t signal_dimensions;  /*!< @brief Signal dimensions (reserved for future use, shall be set to 1) */
+    uint32_t sensor_id;
+    uint32_t accuracy;
+} BsecDataAirSpec;
+
+static BsecDataAirSpec bmeData[30];
 
 
-static PacketHeader header;
 //osThreadId_t bmeTaskHandle;
 osTimerId_t periodicBMETimer_id;
 
@@ -59,10 +68,12 @@ uint8_t bmeConfig[BSEC_MAX_PROPERTY_BLOB_SIZE];
 uint8_t bmeState[BSEC_MAX_STATE_BLOB_SIZE];
 
 
+static bme_packet message;
 void BME_Task(void *argument) {
 	SensorPacket *packet = NULL;
 	uint32_t flags = 0;
 
+	bool status;
 
 	uint32_t timeSinceLastStateSave = 0;
 
@@ -89,7 +100,9 @@ void BME_Task(void *argument) {
 //	bme.setIIRFilterSize(BME680_FILTER_SIZE_3);
 //	bme.setGasHeater(320, 150); // 320*C for 150 ms
 
-	header.reserved[0] = BME_SAMPLE_PERIOD_MS;
+	message.has_header = true;
+	message.header.packet_type = SENSOR_PACKET_TYPES_BME;
+	message.sample_period_ms = BME_SAMPLE_PERIOD_MS;
 
 	uint16_t bmeIdx = 0;
 	uint32_t bmeID = 0;
@@ -136,7 +149,12 @@ void BME_Task(void *argument) {
 //			taskEXIT_CRITICAL();
 
 			for(int i = 0; i<bme.outputs.nOutputs; i++){
-				memcpy(&bmeData[bmeIdx++], &bme.outputs.output[i], sizeof(bsecData));
+//				memcpy(&bmeData[bmeIdx++], &bme.outputs.output[i], sizeof(bsecData));
+				bmeData[bmeIdx].time_stamp = bme.outputs.output[i].time_stamp;
+				bmeData[bmeIdx].signal = bme.outputs.output[i].signal;
+				bmeData[bmeIdx].signal_dimensions = bme.outputs.output[i].signal_dimensions;
+				bmeData[bmeIdx].sensor_id = bme.outputs.output[i].sensor_id;
+				bmeData[bmeIdx++].accuracy = bme.outputs.output[i].accuracy;
 			}
 
 //			memcpy(&bmeData[bmeIdx], &bme.outputs, sizeof(bme.outputs));
@@ -150,16 +168,32 @@ void BME_Task(void *argument) {
 //
 //			bmeIdx++;
 //			if (bmeIdx >= (MAX_BME_SAMPLES_PACKET - BSEC_NUMBER_OUTPUTS) ) {
-			if (1) {
+//			if (bmeIdx >= (MAX_BME_SAMPLES_PACKET) ) {
 
-				header.packetType = BME;
-				header.packetID = bmeID;
-				header.msFromStart = HAL_GetTick();
-				header.payloadLength = bmeIdx * sizeof(bsecData);
+			if (bmeIdx > 0) {
+
+				message.header.packet_id = bmeID;
+				message.header.ms_from_start = HAL_GetTick();
+				message.header.payload_length = bmeIdx * sizeof(BsecDataAirSpec);
 				packet = grabPacket();
 				if (packet != NULL) {
-					memcpy(&(packet->header), &header, sizeof(PacketHeader));
-					memcpy(packet->payload, bmeData, header.payloadLength);
+
+					packet->header.packetType = BME;
+
+					// reset message buffer
+					memset(&message.payload[0], 0, sizeof(message.payload));
+
+					// write data
+					memcpy(message.payload, bmeData, message.header.payload_length);
+					message.payload_count = bmeIdx;
+
+					// encode
+					pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
+					status = pb_encode(&stream, BME_PACKET_FIELDS, &message);
+
+					packet->header.payloadLength = stream.bytes_written;
+
+					// send to BT packetizer
 					queueUpPacket(packet);
 				}
 				bmeID++;

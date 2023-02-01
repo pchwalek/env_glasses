@@ -21,7 +21,7 @@
 
 typedef struct sgpSamples {
 	uint16_t srawVoc;
-	uint16_t srawNox;
+	uint32_t srawNox;
 	int32_t voc_index_value;
 	int32_t nox_index_value;
 	uint32_t timestamp;
@@ -29,11 +29,11 @@ typedef struct sgpSamples {
 
 
 static void triggerSgpSample(void *argument);
-static sgpSample sgpData[MAX_SGP_SAMPLES_PACKET];
+static sgpSample sgpData[20];
 
 
 
-static PacketHeader header;
+//static PacketHeader header;
 //osThreadId_t specTaskHandle;
 osTimerId_t periodicSgpTimer_id;
 
@@ -42,12 +42,15 @@ GasIndexAlgorithmParams paramsNox;
 GasIndexAlgorithmParams paramsVoc;
 
 
-
+static sgp_packet message;
 void SgpTask(void *argument) {
 	SensorPacket *packet = NULL;
 	uint32_t flags;
 	uint32_t timeLeftForSample = 0;
 	uint16_t error;
+
+	bool status;
+
 
     uint16_t defaultRh = 0x8000;
     uint16_t defaultT = 0x6666;
@@ -96,13 +99,18 @@ void SgpTask(void *argument) {
     	}
     }
 
+    message.has_header = true;
+	message.header.packet_type = SENSOR_PACKET_TYPES_SGP;
 
-	header.payloadLength = MAX_SGP_SAMPLES_PACKET * sizeof(sgpSample);
+
+//	header.payloadLength = MAX_SGP_SAMPLES_PACKET * sizeof(sgpSample);
 
 	uint16_t sgpIdx = 0;
 	uint32_t sgpID = 0;
 
-	uint32_t sgpSample;
+	uint16_t srawVOC, srawNOX;
+
+//	uint32_t sgpSample;
 
 	// time in seconds needed for NOx conditioning
 	uint16_t conditioning_s = 10;
@@ -131,9 +139,9 @@ void SgpTask(void *argument) {
 				if(shtTemp != -1 && shtHum != -1){
 					_Rh = (65535.0 / 100) * shtHum;
 					_T = (65535.0 / 175) * (shtTemp+45);
-					error = sgp41.executeConditioning(_Rh, _T, sgpData[sgpIdx].srawVoc);
+					error = sgp41.executeConditioning(_Rh, _T,  srawVOC);
 				}else{
-					error = sgp41.executeConditioning(defaultRh, defaultT, sgpData[sgpIdx].srawVoc);
+					error = sgp41.executeConditioning(defaultRh, defaultT, srawVOC);
 				}
 				sgpData[sgpIdx].srawNox = 0;
 			} else {
@@ -141,12 +149,15 @@ void SgpTask(void *argument) {
 				if(shtTemp != -1 && shtHum != -1){
 					_Rh = (65535.0 / 100) * shtHum;
 					_T = (65535.0 / 175) * (shtTemp+45);
-					error = sgp41.measureRawSignals(_Rh, _T, sgpData[sgpIdx].srawVoc, sgpData[sgpIdx].srawNox);
+					error = sgp41.measureRawSignals(_Rh, _T, srawVOC, srawNOX);
 				}else{
-					error = sgp41.measureRawSignals(defaultRh, defaultT, sgpData[sgpIdx].srawVoc, sgpData[sgpIdx].srawNox);
+					error = sgp41.measureRawSignals(defaultRh, defaultT, srawVOC, srawNOX);
 				}
 			}
 			osSemaphoreRelease(messageI2C1_LockHandle);
+
+			sgpData[sgpIdx].srawVoc = srawVOC;
+			sgpData[sgpIdx].srawNox = srawNOX;
 
 			if(error){
 				continue;
@@ -164,14 +175,37 @@ void SgpTask(void *argument) {
 			sgpIdx++;
 
 			if (sgpIdx >= MAX_SGP_SAMPLES_PACKET) {
-				header.packetType = SGP;
-				header.packetID = sgpID;
-				header.msFromStart = HAL_GetTick();
+				message.header.packet_id = sgpID;
+			//	message.header.payload_length = MAX_LUX_SAMPLES_PACKET * sizeof(luxSample);
+
+//				header.packetType = SGP;
+//				header.packetID = sgpID;
+//				header.msFromStart = HAL_GetTick();
+				message.header.ms_from_start = HAL_GetTick();
 				packet = grabPacket();
 				if (packet != NULL) {
-					memcpy(&(packet->header), &header, sizeof(PacketHeader));
-					memcpy(packet->payload, sgpData, header.payloadLength);
+
+					packet->header.packetType = SGP;
+
+					// reset message buffer
+					memset(&message.payload[0], 0, sizeof(message.payload));
+
+					// write data
+					memcpy(message.payload, sgpData, MAX_SGP_SAMPLES_PACKET * sizeof(sgpSample));
+					message.payload_count = MAX_SGP_SAMPLES_PACKET;
+
+					// encode
+					pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
+					status = pb_encode(&stream, SGP_PACKET_FIELDS, &message);
+
+					packet->header.payloadLength = stream.bytes_written;
+
+					// send to BT packetizer
 					queueUpPacket(packet);
+
+//					memcpy(&(packet->header), &header, sizeof(PacketHeader));
+//					memcpy(packet->payload, sgpData, header.payloadLength);
+//					queueUpPacket(packet);
 				}
 				sgpID++;
 				sgpIdx = 0;

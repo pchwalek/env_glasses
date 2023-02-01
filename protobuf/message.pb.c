@@ -15,5 +15,57 @@ PB_BIND(LUX_PACKET, lux_packet_t, 2)
 PB_BIND(LUX_PACKET_PAYLOAD, lux_packet_payload_t, AUTO)
 
 
+PB_BIND(SGP_PACKET, sgp_packet_t, 2)
+
+
+PB_BIND(SGP_PACKET_PAYLOAD, sgp_packet_payload_t, AUTO)
+
+
+PB_BIND(BME_PACKET, bme_packet_t, 2)
+
+
+PB_BIND(BME_PACKET_PAYLOAD, bme_packet_payload_t, AUTO)
+
+
+PB_BIND(BLINK_PACKET, blink_packet_t, 2)
+
+
+PB_BIND(BLINK_PACKET_PAYLOAD, blink_packet_payload_t, 2)
+
+
+PB_BIND(SHT_PACKET, sht_packet_t, 2)
+
+
+PB_BIND(SHT_PACKET_PAYLOAD, sht_packet_payload_t, AUTO)
+
+
+PB_BIND(SPEC_PACKET, spec_packet_t, 2)
+
+
+PB_BIND(SPEC_PACKET_PAYLOAD, spec_packet_payload_t, AUTO)
+
+
+PB_BIND(THERM_PACKET, therm_packet_t, 2)
+
+
+PB_BIND(THERM_PACKET_PAYLOAD, therm_packet_payload_t, AUTO)
+
+
+PB_BIND(IMU_PACKET, imu_packet_t, 2)
+
+
+PB_BIND(IMU_PACKET_PAYLOAD, imu_packet_payload_t, 2)
+
+
+PB_BIND(MIC_PACKET, mic_packet_t, 2)
+
+
+PB_BIND(MIC_PACKET_PAYLOAD, mic_packet_payload_t, 2)
+
+
+
+
+
+
 
 

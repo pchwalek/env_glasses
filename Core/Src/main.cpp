@@ -40,6 +40,10 @@
 
 #include "arm_math.h"
 #include "math.h"
+
+#include <pb_encode.h>
+#include <pb_decode.h>
+#include "message.pb.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -105,7 +109,7 @@ int main(void) {
 	/* Config code for STM32_WPAN (HSE Tuning must be done before system clock configuration) */
 	MX_APPE_Config();
 
-	HAL_Delay(1000);
+	HAL_Delay(200);
 
 	/* USER CODE BEGIN Init */
 
@@ -166,10 +170,35 @@ int main(void) {
 //	HAL_Delay(1000);
 //	}
 
-	volatile uint8_t test = sizeof(SensorConfig);
+	uint8_t buffer[128];
+	volatile size_t message_length;
+	bool status;
+	size_t lenOfBuff;
 
-	if (isSystemFresh != 0xDEADBEAF) {
-//	if(1){
+
+	lux_packet message = LUX_PACKET_INIT_ZERO;
+    pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
+    message.header.packet_type = SENSOR_PACKET_TYPES_SPECTROMETER;
+    status = pb_encode(&stream, LUX_PACKET_PAYLOAD_FIELDS, &message);
+    message_length = stream.bytes_written;
+
+
+    // get encoded size without storing data
+//    pb_get_encoded_size(&lenOfBuff, lux_packet, &message);
+
+
+    /* Allocate space for the decoded message. */
+    lux_packet message2 = LUX_PACKET_INIT_ZERO;
+
+     /* Create a stream that reads from the buffer. */
+     pb_istream_t stream2 = pb_istream_from_buffer(buffer, message_length);
+
+     /* Now we are ready to decode the message. */
+     status = pb_decode(&stream2, LUX_PACKET_PAYLOAD_FIELDS, &message2);
+//	volatile uint8_t test = sizeof(SensorConfig);
+
+//	if (isSystemFresh != 0xDEADBEAF) {
+	if(1){
 		//initialize fresh system
 		sensorConfig.systemRunState = 1;
 		sensorConfig.uuid = LL_FLASH_GetUDN();
@@ -180,7 +209,7 @@ int main(void) {
 		sensorConfig.luxSensor.integration_time = 219;
 		sensorConfig.luxSensor.sample_period = 1000;
 
-		sensorConfig.gasSensor.enable = 0;
+		sensorConfig.gasSensor.enable = 1;
 		sensorConfig.gasSensor.sample_period = 5000;
 
 		sensorConfig.inertialSensor.enable = 0;
@@ -193,25 +222,26 @@ int main(void) {
 		sensorConfig.inertialSensor.accelRange = 3;
 		sensorConfig.inertialSensor.accelSampleRate = 1;
 
-		sensorConfig.colorSensor.enable = 0;
+		sensorConfig.colorSensor.enable = 1;
 		sensorConfig.colorSensor.integrationTime = 100;
 		sensorConfig.colorSensor.integrationStep = 999;
 		sensorConfig.colorSensor.gain = 9;
 		sensorConfig.colorSensor.sample_period = 5000;
 
-		sensorConfig.thermopileSensor.enable = 0;
+		sensorConfig.thermopileSensor.enable = 1;
 		sensorConfig.thermopileSensor.sample_period = 1000;
 
-		sensorConfig.blinkSensor.enable = 0;
+		sensorConfig.blinkSensor.enable = 1;
 		sensorConfig.blinkSensor.daylightCompensationEn = 1;
 		sensorConfig.blinkSensor.daylightCompensationUpperThresh = 7;
 		sensorConfig.blinkSensor.daylightCompensationLowerThresh = 235;
 		sensorConfig.blinkSensor.sample_frequency = 1000;
 
-		sensorConfig.micSensor.enable = 1;
+		sensorConfig.micSensor.enable = 0;
 		sensorConfig.micSensor.mic_sample_frequency = SAI_AUDIO_FREQUENCY_48K;
 		sensorConfig.micSensor.sys_sample_period_ms = 30000; // 30 seconds
-		sensorConfig.humiditySensor.enable = 1;
+
+		sensorConfig.humiditySensor.enable = 0;
 		sensorConfig.humiditySensor.precisionLevel = 0;
 		sensorConfig.humiditySensor.heaterSetting = 0;
 		sensorConfig.humiditySensor.sample_period = 5000;

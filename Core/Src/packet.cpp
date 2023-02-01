@@ -26,6 +26,9 @@ void RTC_FromEpoch(uint32_t epoch, RTC_TimeTypeDef *time, RTC_DateTypeDef *date)
 uint32_t RTC_ToEpoch(RTC_TimeTypeDef *time, RTC_DateTypeDef *date);
 
 static SensorPacket packets[MAX_PACKET_QUEUE_SIZE];
+
+//static uint8_t packets[MAX_PACKET_QUEUE_SIZE][600];
+
 SensorPacket *packetPtr[MAX_PACKET_QUEUE_SIZE];
 
 SensorPacket* grabPacket(void) {
@@ -52,12 +55,22 @@ void senderThread(void *argument) {
 	backupBuffer = allocateBackupBuffer();
 	uint8_t backupPkt = 0;
 
+//	for (int i = 0; i < MAX_PACKET_QUEUE_SIZE; i++) {
+//		packetToSend = &packets[i];
+//		packetToSend->header.systemID = LL_FLASH_GetUDN();
+//		osMessageQueuePut(packetAvail_QueueHandle, &packetToSend, 0U,
+//				osWaitForever);
+//	}
+
 	for (int i = 0; i < MAX_PACKET_QUEUE_SIZE; i++) {
 		packetToSend = &packets[i];
-		packetToSend->header.systemID = LL_FLASH_GetUDN();
+//		packetToSend->header.systemID = LL_FLASH_GetUDN();
 		osMessageQueuePut(packetAvail_QueueHandle, &packetToSend, 0U,
 				osWaitForever);
 	}
+
+
+
 
 	while (1) {
 		/* the logic below prioritizes the latest packets avialable in the queue over
@@ -96,24 +109,31 @@ void senderThread(void *argument) {
 
 		retry = 0;
 
+
+//		uint8_t buffer[128];
+//		volatile size_t message_length;
+//		bool status;
+//		size_t lenOfBuff;
+
 		if(backupPkt != 1){
-			packetToSend->header.systemID = LL_FLASH_GetUDN();
-			packetToSend->header.epoch = getEpoch();
+			//todo: pb refactor
+//			packetToSend->header.systemID = LL_FLASH_GetUDN();
+//			packetToSend->header.epoch = getEpoch();
 		}
 		if(isBluetoothConnected()){
-			while (PACKET_SEND_SUCCESS != sendPacket_BLE(packetToSend)) {
+			while (PACKET_SEND_SUCCESS != sendProtobufPacket_BLE(packetToSend->payload,packetToSend->header.payloadLength)) {
 				if (retry >= MAX_BLE_RETRIES) {
 					break;
 				}
 				retry++;
 	//			osDelay(5);
 			};
-		}else{
-			/* add packet to FRAM if its not IMU or Blink */
-			if( (packetToSend->header.packetType != IMU) &&
-					(packetToSend->header.packetType != BLINK)){
-				pushPacketToFRAM(backupBuffer, packetToSend);
-			}
+//		}else{
+//			/* add packet to FRAM if its not IMU or Blink */
+//			if( (packetToSend->header.packetType != IMU) &&
+//					(packetToSend->header.packetType != BLINK)){
+//				pushPacketToFRAM(backupBuffer, packetToSend);
+//			}
 		}
 
 		// return memory back to pool
@@ -135,6 +155,40 @@ void senderThread(void *argument) {
 
 static DTS_App_Context_t DataTransferServerContext;
 static DTS_App_Context_t DataTransferSysConfigContext;
+
+uint8_t sendProtobufPacket_BLE(uint8_t *packet, uint16_t size) {
+
+	if ((size) > MAX_PAYLOAD_SIZE) {
+		return PACKET_LENGTH_EXCEEDED;
+	}
+
+	tBleStatus status = BLE_STATUS_INVALID_PARAMS;
+//	uint8_t crc_result;
+//
+//	/* compute CRC */
+//	crc_result = APP_BLE_ComputeCRC8((uint8_t*) Notification_Data_Buffer,
+//			(DATA_NOTIFICATION_MAX_PACKET_SIZE - 1));
+//	Notification_Data_Buffer[DATA_NOTIFICATION_MAX_PACKET_SIZE - 1] =
+//			crc_result;
+
+	DataTransferServerContext.TxData.pPayload = (uint8_t*) packet;
+	DataTransferServerContext.TxData.Length = size; //Att_Mtu_Exchanged-10;
+
+//	if(packet->header.packetType==PPG_RED || packet->header.packetType==PPG_IR){
+//		status = Generic_STM_UpdateChar(PPG_CHAR_UUID_DEF,
+//	(uint8_t*) &DataTransferServerContext.TxData);
+//	}
+
+	//COMMENTED BELOW ON 9/20/2022 BUT NEED TO FIX
+	status = DTS_STM_UpdateChar(DATA_TRANSFER_TX_CHAR_UUID,
+			(uint8_t*) &DataTransferServerContext.TxData);
+
+	if (status == BLE_STATUS_SUCCESS) {
+		return PACKET_SEND_SUCCESS;
+	} else {
+		return PACKET_UNDEFINED_ERR;
+	}
+}
 
 uint8_t sendPacket_BLE(SensorPacket *packet) {
 

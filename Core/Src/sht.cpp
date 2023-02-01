@@ -31,7 +31,7 @@ static void triggerShtSample(void *argument);
 static shtSample shtData[MAX_SHT_SAMPLES_PACKET];
 
 
-static PacketHeader header;
+//static PacketHeader header;
 //osThreadId_t specTaskHandle;
 osTimerId_t periodicShtTimer_id;
 
@@ -39,10 +39,13 @@ Adafruit_SHT4x sht4 = Adafruit_SHT4x();
 
 float shtTemp, shtHum;
 
+static sht_packet message;
 void ShtTask(void *argument) {
 	SensorPacket *packet = NULL;
 	uint32_t flags;
 	uint32_t timeLeftForSample = 0;
+
+	bool status;
 
 	shtTemp = -1;
 	shtHum = -1;
@@ -67,9 +70,16 @@ void ShtTask(void *argument) {
 	sht4.setPrecision( (sht4x_precision_t) sensorSettings.precisionLevel);
 	sht4.setHeater( (sht4x_heater_t) sensorSettings.heaterSetting);
 
-	header.payloadLength = MAX_SHT_SAMPLES_PACKET * sizeof(shtSample);
-	header.reserved[0] = (uint8_t) sensorSettings.precisionLevel;
-	header.reserved[1] = (uint8_t) sensorSettings.heaterSetting;
+	osSemaphoreRelease(messageI2C1_LockHandle);
+
+
+    message.has_header = true;
+	message.header.packet_type = SENSOR_PACKET_TYPES_SHT;
+
+
+	message.header.payload_length = MAX_SHT_SAMPLES_PACKET * sizeof(shtSample);
+	message.precision = static_cast<sht45_precision_t>(sensorSettings.precisionLevel);
+	message.heater = static_cast<sht45_heater_t>(sensorSettings.heaterSetting);
 
 	uint16_t shtIdx = 0;
 	uint32_t shtID = 0;
@@ -77,7 +87,6 @@ void ShtTask(void *argument) {
 
 	uint32_t shtSample;
 
-	osSemaphoreRelease(messageI2C1_LockHandle);
 	periodicShtTimer_id = osTimerNew(triggerShtSample, osTimerPeriodic,
 			NULL, NULL);
 	osTimerStart(periodicShtTimer_id, sensorSettings.sample_period);
@@ -96,6 +105,7 @@ void ShtTask(void *argument) {
 
 			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			if(sht4.getEvent()){
+//			if(1){
 				shtData[shtIdx].temp = sht4._temperature;
 				shtData[shtIdx].hum = sht4._humidity;
 				shtData[shtIdx].timestamp = HAL_GetTick();
@@ -112,14 +122,30 @@ void ShtTask(void *argument) {
 			shtIdx++;
 
 			if (shtIdx >= MAX_SHT_SAMPLES_PACKET) {
-				header.packetType = SHT;
-				header.packetID = shtID;
-				header.msFromStart = HAL_GetTick();
+//				header.packetType = SHT;
+				message.header.packet_id = shtID;
+				message.header.ms_from_start = HAL_GetTick();
 				packet = grabPacket();
 				if (packet != NULL) {
-					memcpy(&(packet->header), &header, sizeof(PacketHeader));
-					memcpy(packet->payload, shtData, header.payloadLength);
+
+					packet->header.packetType = SHT;
+
+					// reset message buffer
+					memset(&message.payload[0], 0, sizeof(message.payload));
+
+					// write data
+					memcpy(message.payload, shtData, message.header.payload_length);
+					message.payload_count = MAX_SHT_SAMPLES_PACKET;
+
+					// encode
+					pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
+					status = pb_encode(&stream, SHT_PACKET_FIELDS, &message);
+
+					packet->header.payloadLength = stream.bytes_written;
+
+					// send to BT packetizer
 					queueUpPacket(packet);
+
 				}
 				shtID++;
 				shtIdx = 0;

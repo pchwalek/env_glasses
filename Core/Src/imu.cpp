@@ -27,7 +27,7 @@ static void triggerIMUSample(void *argument);
 
 static imu_sample imuData[MAX_IMU_SAMPLES_PACKET];
 
-static PacketHeader header;
+//static PacketHeader header;
 osTimerId_t periodicIMUTimer_id;
 
 Adafruit_ICM20948 imu;
@@ -38,11 +38,14 @@ uint8_t flag_int_enable = 0;
 
 //static uint8_t tempData[MAX_FIFO_CNT];
 
+static imu_packet message;
 
 void IMU_Task(void *argument){
 	SensorPacket *packet = NULL;
 	uint32_t flags = 0;
 	uint32_t flag_rdy = 0;
+
+	bool status;
 
 	osDelay(1000);
 
@@ -81,12 +84,15 @@ void IMU_Task(void *argument){
 
 	osDelay(1);
 
+    message.has_header = true;
+	message.header.packet_type = SENSOR_PACKET_TYPES_IMU;
+
 //	osDelay(300);
 //  header.payloadLength = MAX_IMU_SAMPLES_PACKET * sizeof(imu_sample);
 //  header.payloadLength = 408;
-  header.packetType = IMU;
+//  header.packetType = IMU;
 
-  header.reserved[0] = IMU_SAMPLE_PERIOD_MS;
+	message.sample_period_ms = IMU_SAMPLE_PERIOD_MS;
 
   uint16_t imuIdx = 0;
   uint32_t imuID = 0;
@@ -156,21 +162,41 @@ void IMU_Task(void *argument){
 				start_idx = 0;
 
 				while(sampleTracker != 0){
-					header.packetID = imuID;
-					header.msFromStart = HAL_GetTick();
+					message.header.packet_id = imuID;
+					message.header.ms_from_start = HAL_GetTick();
+
 					if(sampleTracker >= MAX_IMU_PKT_SIZE){
-						header.payloadLength = MAX_IMU_PKT_SIZE;
+						message.header.payload_length = MAX_IMU_PKT_SIZE;
 					}else{
-						header.payloadLength = sampleTracker;
+						message.header.payload_length = sampleTracker;
 					}
 					packet = grabPacket();
 					if(packet != NULL){
-						memcpy(&(packet->header), &header, sizeof(PacketHeader));
-						memcpy(packet->payload, &data[start_idx], header.payloadLength);
+
+
+						packet->header.packetType = IMU;
+
+						// reset message buffer
+						memset(message.payload.sample.bytes, 0, sizeof(message.payload.sample.bytes));
+
+						// write data
+						memcpy(message.payload.sample.bytes, &data[start_idx], message.header.payload_length);
+//						message.payload_count = message.header.payload_length / 12; // no longer needed
+						message.has_payload = true;
+						message.payload.sample.size = message.header.payload_length;
+
+						// encode
+						pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
+						status = pb_encode(&stream, IMU_PACKET_FIELDS, &message);
+
+						packet->header.payloadLength = stream.bytes_written;
+
+						// send to BT packetizer
 						queueUpPacket(packet);
+
 					}
-					sampleTracker -= header.payloadLength;
-					start_idx += header.payloadLength;
+					sampleTracker -= message.header.payload_length;
+					start_idx += message.header.payload_length;
 					imuID++;
 					osDelay(5);
 				}

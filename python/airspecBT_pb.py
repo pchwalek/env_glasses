@@ -17,6 +17,12 @@ from sensorClass import *
 from bleak import BleakClient, BleakScanner
 from bleak.backends.characteristic import BleakGATTCharacteristic
 
+import numpy as np
+import message_pb2 as MessagePb
+
+header = MessagePb.SensorPacketHeader()
+IMU_PACKET = MessagePb.IMUPacket()
+
 logger = logging.getLogger(__name__)
 
 SERVICE_UUID = "0000fe80-0000-1000-8000-00805f9b34fb"
@@ -28,8 +34,41 @@ SERVER_PORT = 65434  # Port to listen on (non-privileged ports are > 1023)
 
 # checkName(a, ad):
 #     lambda d, ad: d.name and d.name.lower() == "AirSpec_008a65fb"
+UNKNOWN_PACKET_TYPE = 0
+PPG_RED = 1
+PPG_IR = 2
+SPECTROMETER = 3
+BME = 4
+CO2 = 5
+IMU = 6
+THERMOPILE = 7
+LUX = 8
+LIDAR = 9
+MIC = 10
+SHT = 11
+SGP = 12
+BLINK = 13
+
+sensorPacketTracker = np.zeros(14)
+def sensorPrintHelperFunc(pktIdxRx):
+    sensorPacketTracker[pktIdxRx] += 1
+
+    print("UNK: " + str(sensorPacketTracker[UNKNOWN_PACKET_TYPE]) , end ="\t")
+    print("SPEC: " + str(sensorPacketTracker[SPECTROMETER]), end="\t")
+    print("BME: " + str(sensorPacketTracker[BME]), end="\t")
+    print("IMU: " + str(sensorPacketTracker[IMU]), end="\t")
+    print("THERM: " + str(sensorPacketTracker[THERMOPILE]), end="\t")
+    print("LUX: " + str(sensorPacketTracker[LUX]), end="\t")
+    print("MIC: " + str(sensorPacketTracker[MIC]), end="\t")
+    print("SHT: " + str(sensorPacketTracker[SHT]), end="\t")
+    print("SGP: " + str(sensorPacketTracker[SGP]), end="\t")
+    print("Blink: " + str(sensorPacketTracker[BLINK]))
 
 async def main(queue: asyncio.Queue):
+    global sensorPacketTracker
+
+    sensorPacketTracker = np.zeros(14)
+
     logger.info("starting scan...")
     print("starting main")
     # if args.address:
@@ -73,7 +112,25 @@ async def main(queue: asyncio.Queue):
         #     unpack(headerStructType, data[0:headerStructSize])
 
         # try:
-        await queue.put(data)
+        # print(bytes(data))
+        # print(bytes(data))
+        # header.ParseFromString(bytes(data))
+        # print(header.packetType)
+        if(bytes(data)[0] == 10): #newline
+            header.ParseFromString(bytes(data[2:]))
+            print(data)
+        # else:
+            # print(data)
+            # header.ParseFromString(bytes(data[6:]))
+        # print(bytes('\n', 'utf-8'))
+
+        sensorPrintHelperFunc(header.packetType)
+        # print()
+        #
+        #
+        # IMU_PACKET.ParseFromString(bytes(data))
+        # print(IMU_PACKET)
+            # await queue.put(data)
             # s_in.sendall("test")
         # except ConnectionResetError:
         #     client.disconnect()
@@ -163,9 +220,9 @@ async def run_tests():
     queue = asyncio.Queue()
 
     main_task = main(queue)
-    consumer_task = run_queue_consumer(queue)
+    #consumer_task = run_queue_consumer(queue)
 
-    await asyncio.gather(main_task, consumer_task)
+    await asyncio.gather(main_task)
 
 if __name__ == "__main__":
     # with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:

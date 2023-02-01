@@ -16,8 +16,13 @@ extern "C" {
 #include "cmsis_os2.h"
 #include "captivate_config.h"
 
+#include <pb_encode.h>
+#include <pb_decode.h>
+#include "message.pb.h"
+
 #define MAX_PACKET_LEN DATA_NOTIFICATION_MAX_PACKET_SIZE
-#define MAX_PAYLOAD_SIZE 	MAX_PACKET_LEN - sizeof(PacketHeader)
+//#define MAX_PAYLOAD_SIZE 	MAX_PACKET_LEN - sizeof(PacketHeader)
+#define MAX_PAYLOAD_SIZE 	600
 #define MAX_BLE_RETRIES	2
 
 #define PACKET_SEND_SUCCESS			0
@@ -76,6 +81,7 @@ SensorPacket* grabPacket(void);
 void queueUpPacket(SensorPacket *packet);
 void senderThread(void *argument);
 uint8_t sendPacket_BLE(SensorPacket *packet);
+uint8_t sendProtobufPacket_BLE(uint8_t *packet, uint16_t size);
 uint8_t updateSystemConfig_BLE(struct SensorConfig *packet);
 void updateRTC(uint32_t receivedTime);
 uint32_t getEpoch(void);
