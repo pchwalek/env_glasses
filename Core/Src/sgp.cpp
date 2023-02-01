@@ -42,9 +42,8 @@ GasIndexAlgorithmParams paramsNox;
 GasIndexAlgorithmParams paramsVoc;
 
 
-static sgp_packet message;
 void SgpTask(void *argument) {
-	SensorPacket *packet = NULL;
+	SystemPacket *packet = NULL;
 	uint32_t flags;
 	uint32_t timeLeftForSample = 0;
 	uint16_t error;
@@ -99,8 +98,6 @@ void SgpTask(void *argument) {
     	}
     }
 
-    message.has_header = true;
-	message.header.packet_type = SENSOR_PACKET_TYPES_SGP;
 
 
 //	header.payloadLength = MAX_SGP_SAMPLES_PACKET * sizeof(sgpSample);
@@ -175,33 +172,41 @@ void SgpTask(void *argument) {
 			sgpIdx++;
 
 			if (sgpIdx >= MAX_SGP_SAMPLES_PACKET) {
-				message.header.packet_id = sgpID;
+
 			//	message.header.payload_length = MAX_LUX_SAMPLES_PACKET * sizeof(luxSample);
 
 //				header.packetType = SGP;
 //				header.packetID = sgpID;
 //				header.msFromStart = HAL_GetTick();
-				message.header.ms_from_start = HAL_GetTick();
 				packet = grabPacket();
 				if (packet != NULL) {
 
 					packet->header.packetType = SGP;
+					portENTER_CRITICAL();
 
-					// reset message buffer
-					memset(&message.payload[0], 0, sizeof(message.payload));
+					setPacketType(&sensorPacket, SENSOR_PACKET_TYPES_LUX);
+
+					sensorPacket.header.packet_id = sgpID;
+					sensorPacket.header.packet_type = SENSOR_PACKET_TYPES_SGP;
+					sensorPacket.header.ms_from_start = HAL_GetTick();
+
+
+//					// reset message buffer
+//					memset(&message.payload[0], 0, sizeof(message.payload));
 
 					// write data
-					memcpy(message.payload, sgpData, MAX_SGP_SAMPLES_PACKET * sizeof(sgpSample));
-					message.payload_count = MAX_SGP_SAMPLES_PACKET;
+					memcpy(sensorPacket.lux_packet.payload, sgpData, MAX_SGP_SAMPLES_PACKET * sizeof(sgpSample));
+					sensorPacket.lux_packet.payload_count = MAX_SGP_SAMPLES_PACKET;
 
 					// encode
 					pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
-					status = pb_encode(&stream, SGP_PACKET_FIELDS, &message);
+					status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
 
 					packet->header.payloadLength = stream.bytes_written;
 
 					// send to BT packetizer
 					queueUpPacket(packet);
+					portEXIT_CRITICAL();
 
 //					memcpy(&(packet->header), &header, sizeof(PacketHeader));
 //					memcpy(packet->payload, sgpData, header.payloadLength);

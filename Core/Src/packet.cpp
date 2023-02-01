@@ -25,14 +25,14 @@ static const uint16_t week_day[] = { 0x4263, 0xA8BD, 0x42BF, 0x4370, 0xABBF, 0xA
 void RTC_FromEpoch(uint32_t epoch, RTC_TimeTypeDef *time, RTC_DateTypeDef *date);
 uint32_t RTC_ToEpoch(RTC_TimeTypeDef *time, RTC_DateTypeDef *date);
 
-static SensorPacket packets[MAX_PACKET_QUEUE_SIZE];
+static SystemPacket packets[MAX_PACKET_QUEUE_SIZE];
 
 //static uint8_t packets[MAX_PACKET_QUEUE_SIZE][600];
 
-SensorPacket *packetPtr[MAX_PACKET_QUEUE_SIZE];
+SystemPacket *packetPtr[MAX_PACKET_QUEUE_SIZE];
 
-SensorPacket* grabPacket(void) {
-	SensorPacket *packet;
+SystemPacket* grabPacket(void) {
+	SystemPacket *packet;
 	// grab available memory for packet creation
 	if (osOK != osMessageQueueGet(packetAvail_QueueHandle, &packet, 0U, 0)) {
 		return NULL;
@@ -40,14 +40,80 @@ SensorPacket* grabPacket(void) {
 	return packet;
 }
 
-void queueUpPacket(SensorPacket *packet) {
+void queueUpPacket(SystemPacket *packet) {
 	// put into queue
 	osMessageQueuePut(packet_QueueHandle, &packet, 0U, 0);
 }
 
-SensorPacket *packetToSend;
-SensorPacket backupPacket;
+SystemPacket *packetToSend;
+SystemPacket backupPacket;
 CircularBuffer* backupBuffer;
+
+sensor_packet_t sensorPacket = SENSOR_PACKET_INIT_ZERO;
+
+void setPacketType(sensor_packet_t* packetPtr,sensor_packet_types_t type){
+	packetPtr->has_header = true;
+
+	packetPtr->has_lux_packet = false;
+	packetPtr->has_sgp_packet = false;
+	packetPtr->has_bme_packet = false;
+	packetPtr->has_blink_packet = false;
+	packetPtr->has_sht_packet = false;
+	packetPtr->has_spec_packet = false;
+	packetPtr->has_therm_packet = false;
+	packetPtr->has_imu_packet = false;
+	packetPtr->has_mic_packet = false;
+
+	switch(type){
+		case SENSOR_PACKET_TYPES_SPECTROMETER :
+			packetPtr->has_spec_packet = true;
+			packetPtr->header.packet_type = SENSOR_PACKET_TYPES_SPECTROMETER;
+			break;
+
+		case SENSOR_PACKET_TYPES_BME :
+			packetPtr->has_bme_packet = true;
+			packetPtr->header.packet_type = SENSOR_PACKET_TYPES_BME;
+			break;
+
+		case SENSOR_PACKET_TYPES_IMU :
+			packetPtr->has_imu_packet = true;
+			packetPtr->header.packet_type = SENSOR_PACKET_TYPES_IMU;
+			break;
+
+		case SENSOR_PACKET_TYPES_THERMOPILE :
+			packetPtr->has_therm_packet = true;
+			packetPtr->header.packet_type = SENSOR_PACKET_TYPES_THERMOPILE;
+			break;
+
+		case SENSOR_PACKET_TYPES_LUX :
+			packetPtr->has_lux_packet = true;
+			packetPtr->header.packet_type = SENSOR_PACKET_TYPES_LUX;
+			break;
+
+		case SENSOR_PACKET_TYPES_MIC :
+			packetPtr->has_mic_packet = true;
+			packetPtr->header.packet_type = SENSOR_PACKET_TYPES_MIC;
+			break;
+
+		case SENSOR_PACKET_TYPES_SHT :
+			packetPtr->has_sht_packet = true;
+			packetPtr->header.packet_type = SENSOR_PACKET_TYPES_SHT;
+			break;
+
+		case SENSOR_PACKET_TYPES_SGP :
+			packetPtr->has_sgp_packet = true;
+			packetPtr->header.packet_type = SENSOR_PACKET_TYPES_SGP;
+			break;
+
+		case SENSOR_PACKET_TYPES_BLINK :
+			packetPtr->has_blink_packet = true;
+			packetPtr->header.packet_type = SENSOR_PACKET_TYPES_BLINK;
+			break;
+
+		default:
+			break;
+	}
+}
 
 void senderThread(void *argument) {
 	uint8_t retry;
@@ -190,7 +256,7 @@ uint8_t sendProtobufPacket_BLE(uint8_t *packet, uint16_t size) {
 	}
 }
 
-uint8_t sendPacket_BLE(SensorPacket *packet) {
+uint8_t sendPacket_BLE(SystemPacket *packet) {
 
 	if ((packet->header.payloadLength) > MAX_PAYLOAD_SIZE) {
 		return PACKET_LENGTH_EXCEEDED;

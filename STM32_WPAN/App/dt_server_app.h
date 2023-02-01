@@ -60,7 +60,7 @@ void DTS_App_KeyButton3Action(void);
 void DTS_App_TxPoolAvailableNotification(void);
 
 void SendData( void * argument );
-uint8_t sendCaptivatePacket_BLE(SensorPacket *packet);
+uint8_t sendCaptivatePacket_BLE(SystemPacket *packet);
 void senderThread(void *argument);
 void BLE_App_Delay_DataThroughput(void * argument);
 void SendDataBLE( struct LogPacket *sensorPacket );

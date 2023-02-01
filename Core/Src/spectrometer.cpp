@@ -58,9 +58,8 @@ osTimerId_t periodicSpecTimer_id;
 
 Adafruit_AS7341 specSensor;
 
-static spec_packet message;
 void Spec_Task(void *argument) {
-	SensorPacket *packet = NULL;
+	SystemPacket *packet = NULL;
 	uint32_t flags;
 	uint32_t timeLeftForSample = 0;
 
@@ -89,11 +88,8 @@ void Spec_Task(void *argument) {
 	specSensor.setASTEP(sensorSettings.integrationStep);
 	specSensor.setGain((as7341_gain_t) sensorSettings.gain);
 
-	message.header.payload_length = MAX_SPEC_SAMPLES_PACKET * sizeof(specSamplePkt);
-	message.sample_period = sensorSettings.sample_period;
-//	message.spec_send_freq = SEND_SPEC_EVERY_X_S;
 
-	message.header.packet_type = SENSOR_PACKET_TYPES_SPECTROMETER;
+//	message.spec_send_freq = SEND_SPEC_EVERY_X_S;
 
 	uint16_t specIdx = 0;
 	uint32_t specID = 0;
@@ -136,29 +132,39 @@ void Spec_Task(void *argument) {
 
 			if (specIdx >= MAX_SPEC_SAMPLES_PACKET) {
 
-				message.header.packet_id = specID;
-				message.header.ms_from_start = HAL_GetTick();
+
 				packet = grabPacket();
 				if (packet != NULL) {
+
+					portENTER_CRITICAL();
+
+					setPacketType(&sensorPacket, SENSOR_PACKET_TYPES_SPECTROMETER);
+
+					sensorPacket.header.packet_id = specID;
+					sensorPacket.header.ms_from_start = HAL_GetTick();
+
+					sensorPacket.header.payload_length = MAX_SPEC_SAMPLES_PACKET * sizeof(specSamplePkt);
+					sensorPacket.spec_packet.sample_period = sensorSettings.sample_period;
 
 					packet->header.packetType = SPECTROMETER;
 
 					// reset message buffer
-					memset(&message.payload[0], 0, sizeof(message.payload));
+					memset(&sensorPacket.spec_packet.payload[0], 0, sizeof(sensorPacket.spec_packet.payload));
 
 					// write data
-					memcpy(message.payload, specData, message.header.payload_length);
-					message.payload_count = MAX_SPEC_SAMPLES_PACKET;
+					memcpy(sensorPacket.spec_packet.payload, specData, sensorPacket.header.payload_length);
+					sensorPacket.spec_packet.payload_count = MAX_SPEC_SAMPLES_PACKET;
 
 					// encode
 					pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
-					status = pb_encode(&stream, SPEC_PACKET_FIELDS, &message);
+					status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
 
 					packet->header.payloadLength = stream.bytes_written;
 
 					// send to BT packetizer
 					queueUpPacket(packet);
 
+					portEXIT_CRITICAL();
 
 //					memcpy(&(packet->header), &header, sizeof(PacketHeader));
 //					memcpy(packet->payload, specData, header.payloadLength);

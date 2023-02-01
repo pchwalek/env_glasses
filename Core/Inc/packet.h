@@ -75,12 +75,15 @@ typedef struct RX_PacketHeaders {
 typedef struct SensorPackets {
 	PacketHeader header;
 	uint8_t payload[MAX_PAYLOAD_SIZE]; // should be MAX_PACKET_LEN - sizeof(PacketHeader)
-} SensorPacket;
+} SystemPacket;
 
-SensorPacket* grabPacket(void);
-void queueUpPacket(SensorPacket *packet);
+extern sensor_packet_t sensorPacket;
+
+void setPacketType(sensor_packet_t* packetPtr,sensor_packet_types_t type);
+SystemPacket* grabPacket(void);
+void queueUpPacket(SystemPacket *packet);
 void senderThread(void *argument);
-uint8_t sendPacket_BLE(SensorPacket *packet);
+uint8_t sendPacket_BLE(SystemPacket *packet);
 uint8_t sendProtobufPacket_BLE(uint8_t *packet, uint16_t size);
 uint8_t updateSystemConfig_BLE(struct SensorConfig *packet);
 void updateRTC(uint32_t receivedTime);

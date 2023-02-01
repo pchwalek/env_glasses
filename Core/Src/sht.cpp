@@ -39,9 +39,8 @@ Adafruit_SHT4x sht4 = Adafruit_SHT4x();
 
 float shtTemp, shtHum;
 
-static sht_packet message;
 void ShtTask(void *argument) {
-	SensorPacket *packet = NULL;
+	SystemPacket *packet = NULL;
 	uint32_t flags;
 	uint32_t timeLeftForSample = 0;
 
@@ -72,14 +71,6 @@ void ShtTask(void *argument) {
 
 	osSemaphoreRelease(messageI2C1_LockHandle);
 
-
-    message.has_header = true;
-	message.header.packet_type = SENSOR_PACKET_TYPES_SHT;
-
-
-	message.header.payload_length = MAX_SHT_SAMPLES_PACKET * sizeof(shtSample);
-	message.precision = static_cast<sht45_precision_t>(sensorSettings.precisionLevel);
-	message.heater = static_cast<sht45_heater_t>(sensorSettings.heaterSetting);
 
 	uint16_t shtIdx = 0;
 	uint32_t shtID = 0;
@@ -123,28 +114,41 @@ void ShtTask(void *argument) {
 
 			if (shtIdx >= MAX_SHT_SAMPLES_PACKET) {
 //				header.packetType = SHT;
-				message.header.packet_id = shtID;
-				message.header.ms_from_start = HAL_GetTick();
+
 				packet = grabPacket();
 				if (packet != NULL) {
+
+					portENTER_CRITICAL();
+
+					setPacketType(&sensorPacket, SENSOR_PACKET_TYPES_SHT);
+
+					sensorPacket.header.payload_length = MAX_SHT_SAMPLES_PACKET * sizeof(shtSample);
+					sensorPacket.sht_packet.precision = static_cast<sht45_precision_t>(sensorSettings.precisionLevel);
+					sensorPacket.sht_packet.heater = static_cast<sht45_heater_t>(sensorSettings.heaterSetting);
+
+					sensorPacket.header.packet_id = shtID;
+					sensorPacket.header.ms_from_start = HAL_GetTick();
 
 					packet->header.packetType = SHT;
 
 					// reset message buffer
-					memset(&message.payload[0], 0, sizeof(message.payload));
+					memset(&sensorPacket.sht_packet.payload[0], 0, sizeof(sensorPacket.sht_packet.payload));
 
 					// write data
-					memcpy(message.payload, shtData, message.header.payload_length);
-					message.payload_count = MAX_SHT_SAMPLES_PACKET;
+					memcpy(sensorPacket.sht_packet.payload, shtData, sensorPacket.header.payload_length);
+					sensorPacket.sht_packet.payload_count = MAX_SHT_SAMPLES_PACKET;
 
 					// encode
 					pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
-					status = pb_encode(&stream, SHT_PACKET_FIELDS, &message);
+					status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
 
 					packet->header.payloadLength = stream.bytes_written;
 
 					// send to BT packetizer
 					queueUpPacket(packet);
+
+					portEXIT_CRITICAL();
+
 
 				}
 				shtID++;

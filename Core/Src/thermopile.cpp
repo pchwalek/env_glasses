@@ -71,9 +71,8 @@ void grabThermopileSamples(thermopile_packet *data, CALIPILE *tp);
 uint16_t thermIdx;
 uint32_t thermID;
 
-static therm_packet message;
 void Thermopile_Task(void *argument) {
-	SensorPacket *packet = NULL;
+	SystemPacket *packet = NULL;
 	uint32_t flags;
 
 	bool status;
@@ -103,9 +102,7 @@ void Thermopile_Task(void *argument) {
 	initThermopiles(&tp_temple_back,	THERMOPLE_TEMPLE_BACK_ADDR,	&hi2c3, THERMOPLE_TEMPLE_BACK_ADDR_ID);
 	osSemaphoreRelease(messageI2C3_LockHandle);
 
-	message.header.packet_type = SENSOR_PACKET_TYPES_THERMOPILE;
-	message.header.payload_length = THERMOPILE_CHANNELS * sizeof(thermopile_packet);
-	message.sample_period_ms = THERMOPILE_SAMPLE_PERIOD_MS;
+
 //	message.header.reserved[1] = THERMOPILE_CNT;
 
 	thermIdx = 0;
@@ -173,34 +170,45 @@ void initThermopiles(CALIPILE *tp, uint8_t address, I2C_HandleTypeDef* i2c_handl
 }
 
 void queueThermopilePkt(thermopile_packet *sample, uint16_t packetCnt){
-	SensorPacket *packet = NULL;
+	SystemPacket *packet = NULL;
 	thermIdx++;
 
 	bool status;
 
+	portENTER_CRITICAL();
+	setPacketType(&sensorPacket, SENSOR_PACKET_TYPES_THERMOPILE);
+
+
+	sensorPacket.header.payload_length = THERMOPILE_CHANNELS * sizeof(thermopile_packet);
+	sensorPacket.therm_packet.sample_period_ms = THERMOPILE_SAMPLE_PERIOD_MS;
+
+
 //	if (thermIdx >= MAX_THERMOPILE_SAMPLES_PACKET) {
-		message.header.packet_id = thermID;
-		message.header.ms_from_start = HAL_GetTick();
+	sensorPacket.header.packet_id = thermID;
+	sensorPacket.header.ms_from_start = HAL_GetTick();
 		packet = grabPacket();
 		if (packet != NULL) {
 
 			packet->header.packetType = THERMOPILE;
 
 			// reset message buffer
-			memset(&message.payload[0], 0, sizeof(message.payload));
+			memset(&sensorPacket.therm_packet.payload[0], 0, sizeof(sensorPacket.therm_packet.payload));
 
 			// write data
-			memcpy(message.payload, sample, message.header.payload_length);
-			message.payload_count = packetCnt;
+			memcpy(sensorPacket.therm_packet.payload, sample, sensorPacket.header.payload_length);
+			sensorPacket.therm_packet.payload_count = packetCnt;
 
 			// encode
 			pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
-			status = pb_encode(&stream, THERM_PACKET_FIELDS, &message);
+			status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
 
 			packet->header.payloadLength = stream.bytes_written;
 
+
 			// send to BT packetizer
 			queueUpPacket(packet);
+
+			portEXIT_CRITICAL();
 		}
 		thermID++;
 		thermIdx = 0;

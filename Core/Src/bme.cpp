@@ -68,9 +68,8 @@ uint8_t bmeConfig[BSEC_MAX_PROPERTY_BLOB_SIZE];
 uint8_t bmeState[BSEC_MAX_STATE_BLOB_SIZE];
 
 
-static bme_packet message;
 void BME_Task(void *argument) {
-	SensorPacket *packet = NULL;
+	SystemPacket *packet = NULL;
 	uint32_t flags = 0;
 
 	bool status;
@@ -100,9 +99,7 @@ void BME_Task(void *argument) {
 //	bme.setIIRFilterSize(BME680_FILTER_SIZE_3);
 //	bme.setGasHeater(320, 150); // 320*C for 150 ms
 
-	message.has_header = true;
-	message.header.packet_type = SENSOR_PACKET_TYPES_BME;
-	message.sample_period_ms = BME_SAMPLE_PERIOD_MS;
+
 
 	uint16_t bmeIdx = 0;
 	uint32_t bmeID = 0;
@@ -172,29 +169,37 @@ void BME_Task(void *argument) {
 
 			if (bmeIdx > 0) {
 
-				message.header.packet_id = bmeID;
-				message.header.ms_from_start = HAL_GetTick();
-				message.header.payload_length = bmeIdx * sizeof(BsecDataAirSpec);
 				packet = grabPacket();
 				if (packet != NULL) {
+
+					taskENTER_CRITICAL();
+					setPacketType(&sensorPacket, SENSOR_PACKET_TYPES_BME);
+
+					sensorPacket.header.packet_id = bmeID;
+					sensorPacket.header.ms_from_start = HAL_GetTick();
+					sensorPacket.header.payload_length = bmeIdx * sizeof(BsecDataAirSpec);
+
+					sensorPacket.bme_packet.sample_period_ms = BME_SAMPLE_PERIOD_MS;
 
 					packet->header.packetType = BME;
 
 					// reset message buffer
-					memset(&message.payload[0], 0, sizeof(message.payload));
+					memset(&sensorPacket.bme_packet.payload[0], 0, sizeof(sensorPacket.bme_packet.payload));
 
 					// write data
-					memcpy(message.payload, bmeData, message.header.payload_length);
-					message.payload_count = bmeIdx;
+					memcpy(sensorPacket.bme_packet.payload, bmeData, sensorPacket.header.payload_length);
+					sensorPacket.bme_packet.payload_count = bmeIdx;
 
 					// encode
 					pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
-					status = pb_encode(&stream, BME_PACKET_FIELDS, &message);
+					status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
 
 					packet->header.payloadLength = stream.bytes_written;
 
 					// send to BT packetizer
 					queueUpPacket(packet);
+
+					taskEXIT_CRITICAL();
 				}
 				bmeID++;
 				bmeIdx = 0;

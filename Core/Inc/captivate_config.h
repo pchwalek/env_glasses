@@ -344,6 +344,8 @@ struct USB_msgPass {
 	uint8_t buf[10];
 };
 
+
+
 void controlSensors(uint8_t* data, uint16_t numPackets);
 void ingestSensorConfig(struct SensorConfig *config);
 

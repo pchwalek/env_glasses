@@ -20,8 +20,7 @@ from bleak.backends.characteristic import BleakGATTCharacteristic
 import numpy as np
 import message_pb2 as MessagePb
 
-header = MessagePb.SensorPacketHeader()
-IMU_PACKET = MessagePb.IMUPacket()
+sensorPacket = MessagePb.SensorPacket()
 
 logger = logging.getLogger(__name__)
 
@@ -116,15 +115,17 @@ async def main(queue: asyncio.Queue):
         # print(bytes(data))
         # header.ParseFromString(bytes(data))
         # print(header.packetType)
-        if(bytes(data)[0] == 10): #newline
-            header.ParseFromString(bytes(data[2:]))
-            print(data)
+        # if(bytes(data)[0] == 10): #newline
+        #     header.ParseFromString(bytes(data[2:]))
+        #     print(data)
         # else:
             # print(data)
             # header.ParseFromString(bytes(data[6:]))
         # print(bytes('\n', 'utf-8'))
 
-        sensorPrintHelperFunc(header.packetType)
+        sensorPacket.ParseFromString(bytes(data))
+
+        sensorPrintHelperFunc(sensorPacket.header.packet_type)
         # print()
         #
         #

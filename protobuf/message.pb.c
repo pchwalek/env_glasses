@@ -63,6 +63,9 @@ PB_BIND(MIC_PACKET, mic_packet_t, 2)
 PB_BIND(MIC_PACKET_PAYLOAD, mic_packet_payload_t, 2)
 
 
+PB_BIND(SENSOR_PACKET, sensor_packet_t, 2)
+
+
 
 
 

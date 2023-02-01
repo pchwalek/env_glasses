@@ -332,7 +332,7 @@ volatile temp_var = 0;
 //}
 
 #define MAX_BLE_RETRIES	4
-SensorPacket *sensorPacket;
+//SystemPacket *sensorPacket;
 
 //void senderThread(void *argument){
 //    uint8_t retry;
@@ -359,7 +359,7 @@ SensorPacket *sensorPacket;
 //
 //}
 
-uint8_t sendCaptivatePacket_BLE(SensorPacket *packet){
+uint8_t sendCaptivatePacket_BLE(SystemPacket *packet){
 
 	if((packet->header.payloadLength) > MAX_PAYLOAD_SIZE){
 	    return PACKET_LENGTH_EXCEEDED;
