@@ -47,16 +47,16 @@
 static void triggerBMESample(void *argument);
 
 //static bme_packet bmeData[MAX_BME_SAMPLES_PACKET];
-typedef struct __attribute__((packed)) BsecDataAirSpec
-{
-    int64_t time_stamp;         /*!< @brief Time stamp in nanosecond resolution as provided as input [ns] */
-    float signal;               /*!< @brief Signal sample in the unit defined for the respective bsec_output_t::sensor_id @sa bsec_virtual_sensor_t */
-    uint32_t signal_dimensions;  /*!< @brief Signal dimensions (reserved for future use, shall be set to 1) */
-    uint32_t sensor_id;
-    uint32_t accuracy;
-} BsecDataAirSpec;
+//typedef struct __attribute__((packed)) BsecDataAirSpec
+//{
+//    int64_t time_stamp;         /*!< @brief Time stamp in nanosecond resolution as provided as input [ns] */
+//    float signal;               /*!< @brief Signal sample in the unit defined for the respective bsec_output_t::sensor_id @sa bsec_virtual_sensor_t */
+//    uint32_t signal_dimensions;  /*!< @brief Signal dimensions (reserved for future use, shall be set to 1) */
+//    uint32_t sensor_id;
+//    uint32_t accuracy;
+//} BsecDataAirSpec;
 
-static BsecDataAirSpec bmeData[30];
+static bme_packet_payload_t bmeData[12];
 
 
 //osThreadId_t bmeTaskHandle;
@@ -101,7 +101,7 @@ void BME_Task(void *argument) {
 
 
 
-	uint16_t bmeIdx = 0;
+	volatile uint16_t bmeIdx = 0;
 	uint32_t bmeID = 0;
 
 	int64_t timeRemaining;
@@ -177,22 +177,23 @@ void BME_Task(void *argument) {
 
 					sensorPacket.header.packet_id = bmeID;
 					sensorPacket.header.ms_from_start = HAL_GetTick();
-					sensorPacket.header.payload_length = bmeIdx * sizeof(BsecDataAirSpec);
+					sensorPacket.header.payload_length = bmeIdx * sizeof(bme_packet_payload_t);
 
 					sensorPacket.bme_packet.sample_period_ms = BME_SAMPLE_PERIOD_MS;
 
 					packet->header.packetType = BME;
 
-					// reset message buffer
-					memset(&sensorPacket.bme_packet.payload[0], 0, sizeof(sensorPacket.bme_packet.payload));
+//					// reset message buffer
+//					memset(sensorPacket.bme_packet.payload, 0, sizeof(sensorPacket.bme_packet.payload));
 
-					// write data
+					// write data   //sensorPacket.header.payload_length
 					memcpy(sensorPacket.bme_packet.payload, bmeData, sensorPacket.header.payload_length);
 					sensorPacket.bme_packet.payload_count = bmeIdx;
 
 					// encode
 					pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
 					status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
+
 
 					packet->header.payloadLength = stream.bytes_written;
 

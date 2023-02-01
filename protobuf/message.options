@@ -2,7 +2,7 @@ LuxPacket.payload               max_count:30
 
 
 SGPPacket.payload               max_count:20
-BMEPacket.payload               max_count:20
+BMEPacket.payload               max_count:12
 
 #BlinkPacket.payload             max_count:1
 BlinkPacket.Payload.sample      max_size:450

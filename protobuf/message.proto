@@ -89,7 +89,7 @@ message BMEPacket{
     uint32 sample_period_ms = 1;
     
     message Payload {
-        int64 time_stamp = 1;
+        fixed64 time_stamp = 1;
         float signal = 2;
         uint32 signal_dimensions = 3;
         uint32 sensor_id = 4;

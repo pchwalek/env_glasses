@@ -184,10 +184,10 @@ int main(void) {
 		sensorConfig.luxSensor.integration_time = 219;
 		sensorConfig.luxSensor.sample_period = 1000;
 
-		sensorConfig.gasSensor.enable = 0;
+		sensorConfig.gasSensor.enable = 1;
 		sensorConfig.gasSensor.sample_period = 5000;
 
-		sensorConfig.inertialSensor.enable = 0;
+		sensorConfig.inertialSensor.enable = 1;
 		sensorConfig.inertialSensor.gyroLPFEn = 1;
 		sensorConfig.inertialSensor.gyroLPFCutoff = 0;
 		sensorConfig.inertialSensor.gyroRange = 3;
@@ -206,7 +206,7 @@ int main(void) {
 		sensorConfig.thermopileSensor.enable = 1;
 		sensorConfig.thermopileSensor.sample_period = 1000;
 
-		sensorConfig.blinkSensor.enable = 0;
+		sensorConfig.blinkSensor.enable = 1;
 		sensorConfig.blinkSensor.daylightCompensationEn = 1;
 		sensorConfig.blinkSensor.daylightCompensationUpperThresh = 7;
 		sensorConfig.blinkSensor.daylightCompensationLowerThresh = 235;
