@@ -197,7 +197,7 @@ int main(void) {
 		sensorConfig.inertialSensor.accelRange = 3;
 		sensorConfig.inertialSensor.accelSampleRate = 1;
 
-		sensorConfig.colorSensor.enable = 0;
+		sensorConfig.colorSensor.enable = 1;
 		sensorConfig.colorSensor.integrationTime = 100;
 		sensorConfig.colorSensor.integrationStep = 999;
 		sensorConfig.colorSensor.gain = 9;

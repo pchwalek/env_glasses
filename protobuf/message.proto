@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-// import "nanopb.proto";
-// option (nanopb_fileopt).packed_struct = true;
+import "nanopb.proto";
+option (nanopb_fileopt).packed_struct = true;
 
 enum SensorPacketTypes {
     UNKNOWN_PACKET_TYPE = 0;
