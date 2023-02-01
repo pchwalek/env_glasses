@@ -187,7 +187,7 @@ int main(void) {
 		sensorConfig.gasSensor.enable = 1;
 		sensorConfig.gasSensor.sample_period = 5000;
 
-		sensorConfig.inertialSensor.enable = 1;
+		sensorConfig.inertialSensor.enable = 0;
 		sensorConfig.inertialSensor.gyroLPFEn = 1;
 		sensorConfig.inertialSensor.gyroLPFCutoff = 0;
 		sensorConfig.inertialSensor.gyroRange = 3;

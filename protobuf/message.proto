@@ -55,10 +55,11 @@ enum Sht45_heater {
 message SensorPacketHeader {
     
     SensorPacketTypes packet_type = 1;
-    uint32 packet_id = 2;
-    uint32 ms_from_start = 3;
-    uint32 epoch = 4;
-    uint32 payload_length = 5;
+    uint32 system_uid = 2;
+    uint32 packet_id = 3;
+    uint32 ms_from_start = 4;
+    uint32 epoch = 5;
+    uint32 payload_length = 6;
 }
 
 
