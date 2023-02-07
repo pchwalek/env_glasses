@@ -40,7 +40,7 @@ uint8_t flag_int_enable = 0;
 
 
 void IMU_Task(void *argument){
-	SystemPacket *packet = NULL;
+	sensor_packet_t *packet = NULL;
 	uint32_t flags = 0;
 	uint32_t flag_rdy = 0;
 
@@ -170,39 +170,44 @@ void IMU_Task(void *argument){
 					packet = grabPacket();
 					if(packet != NULL){
 
-						portENTER_CRITICAL();
+//						portENTER_CRITICAL();
 
+						setPacketType(packet, SENSOR_PACKET_TYPES_IMU);
 
-						sensorPacket.header.payload_length = packetTracker;
+//						sensorPacket.header.payload_length = packetTracker;
 
+						packet->payload.imu_packet.packet_index = imuID;
 
-						setPacketType(&sensorPacket, SENSOR_PACKET_TYPES_IMU);
+						packet->payload.imu_packet.has_accel_settings = true;
+						packet->payload.imu_packet.accel_settings.has_cutoff = sensorSettings.accelLPFEn;
+						packet->payload.imu_packet.accel_settings.cutoff = static_cast<imu_accel_cutoff_t>(sensorSettings.accelLPFCutoff);
+						packet->payload.imu_packet.accel_settings.range =static_cast<imu_accel_range_t>( sensorSettings.accelRange);
+						packet->payload.imu_packet.accel_settings.sample_rate_divisor = sensorSettings.accelSampleRate;
 
-						sensorPacket.header.packet_id = imuID;
-						sensorPacket.header.ms_from_start = HAL_GetTick();
-						sensorPacket.imu_packet.sample_period_ms = IMU_SAMPLE_PERIOD_MS;
-
-						packet->header.packetType = IMU;
+						packet->payload.imu_packet.has_gyro_settings = true;
+						packet->payload.imu_packet.gyro_settings.has_cutoff = sensorSettings.gyroLPFEn;
+						packet->payload.imu_packet.gyro_settings.cutoff = static_cast<imu_gyro_cutoff_t>(sensorSettings.gyroLPFCutoff);
+						packet->payload.imu_packet.gyro_settings.range = static_cast<imu_gyro_range_t>(sensorSettings.gyroRange);
+						packet->payload.imu_packet.gyro_settings.sample_rate_divisor = sensorSettings.gyroSampleRate;
 
 						// reset message buffer
-						memset(sensorPacket.imu_packet.payload.sample.bytes, 0, sizeof(sensorPacket.imu_packet.payload.sample.bytes));
+//						memset(sensorPacket.imu_packet.payload.sample.bytes, 0, sizeof(sensorPacket.imu_packet.payload.sample.bytes));
 
 						// write data
-						memcpy(sensorPacket.imu_packet.payload.sample.bytes, &data[start_idx], sensorPacket.header.payload_length);
-//						message.payload_count = message.header.payload_length / 12; // no longer needed
-						sensorPacket.imu_packet.has_payload = true;
-						sensorPacket.imu_packet.payload.sample.size = sensorPacket.header.payload_length;
+						memcpy(packet->payload.imu_packet.payload.sample.bytes, &data[start_idx], packetTracker);
+						packet->payload.imu_packet.has_payload = true;
+						packet->payload.imu_packet.payload.sample.size = packetTracker;
 
-						// encode
-						pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
-						status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
-
-						packet->header.payloadLength = stream.bytes_written;
+//						// encode
+//						pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
+//						status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
+//
+//						packet->header.payloadLength = stream.bytes_written;
 
 						// send to BT packetizer
 						queueUpPacket(packet);
 
-						portEXIT_CRITICAL();
+//						portEXIT_CRITICAL();
 
 
 					}

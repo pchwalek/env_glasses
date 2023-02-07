@@ -19,17 +19,17 @@
 //#define MAX_SGP_SAMPLES_PACKET	int((SEND_SGP_EVERY_X_S*1000)/SGP_SAMPLE_SYS_PERIOD_MS)
 #define MAX_SGP_SAMPLES_PACKET	int(1)
 
-typedef struct sgpSamples {
-	uint16_t srawVoc;
-	uint32_t srawNox;
-	int32_t voc_index_value;
-	int32_t nox_index_value;
-	uint32_t timestamp;
-} sgpSample;
+//typedef struct sgpSamples {
+//	uint16_t srawVoc;
+//	uint32_t srawNox;
+//	int32_t voc_index_value;
+//	int32_t nox_index_value;
+//	uint32_t timestamp;
+//} sgpSample;
 
 
 static void triggerSgpSample(void *argument);
-static sgpSample sgpData[20];
+static sgp_packet_payload_t sgpData[20];
 
 
 
@@ -43,12 +43,20 @@ GasIndexAlgorithmParams paramsVoc;
 
 
 void SgpTask(void *argument) {
-	SystemPacket *packet = NULL;
+	sensor_packet_t *packet = NULL;
 	uint32_t flags;
 	uint32_t timeLeftForSample = 0;
 	uint16_t error;
 
 	bool status;
+
+	struct GasSensor sensorSettings;
+
+	if(argument != NULL){
+		memcpy(&sensorSettings,argument,sizeof(struct LuxSensor));
+	}else{
+		sensorSettings.sample_period = SGP_SAMPLE_SYS_PERIOD_MS;
+	}
 
 
     uint16_t defaultRh = 0x8000;
@@ -114,7 +122,7 @@ void SgpTask(void *argument) {
 
 	periodicSgpTimer_id = osTimerNew(triggerSgpSample, osTimerPeriodic,
 			NULL, NULL);
-	osTimerStart(periodicSgpTimer_id, SGP_SAMPLE_SYS_PERIOD_MS);
+	osTimerStart(periodicSgpTimer_id, sensorSettings.sample_period);
 
 
 	while (1) {
@@ -140,7 +148,7 @@ void SgpTask(void *argument) {
 				}else{
 					error = sgp41.executeConditioning(defaultRh, defaultT, srawVOC);
 				}
-				sgpData[sgpIdx].srawNox = 0;
+				sgpData[sgpIdx].sraw_nox = 0;
 			} else {
 				// Read Measurement
 				if(shtTemp != -1 && shtHum != -1){
@@ -153,8 +161,11 @@ void SgpTask(void *argument) {
 			}
 			osSemaphoreRelease(messageI2C1_LockHandle);
 
-			sgpData[sgpIdx].srawVoc = srawVOC;
-			sgpData[sgpIdx].srawNox = srawNOX;
+			sgpData[sgpIdx].sraw_voc = srawVOC;
+			sgpData[sgpIdx].sraw_nox = srawNOX;
+
+			sgpData[sgpIdx].timestamp_unix = getEpoch();
+			sgpData[sgpIdx].timestamp_ms_from_start = HAL_GetTick();
 
 			if(error){
 				continue;
@@ -163,11 +174,12 @@ void SgpTask(void *argument) {
 			if (conditioning_s > 0)	{
 		        conditioning_s--;
 			}else{
-				GasIndexAlgorithm_process(&paramsNox, sgpData[sgpIdx].srawNox, &sgpData[sgpIdx].nox_index_value);
-				GasIndexAlgorithm_process(&paramsVoc, sgpData[sgpIdx].srawVoc, &sgpData[sgpIdx].voc_index_value);
+				GasIndexAlgorithm_process(&paramsNox, sgpData[sgpIdx].sraw_nox, &sgpData[sgpIdx].nox_index_value);
+				GasIndexAlgorithm_process(&paramsVoc, sgpData[sgpIdx].sraw_voc, &sgpData[sgpIdx].voc_index_value);
 			}
 
-			sgpData[sgpIdx].timestamp = HAL_GetTick();
+			sgpData[sgpIdx].timestamp_unix = getEpoch();
+			sgpData[sgpIdx].timestamp_ms_from_start = HAL_GetTick();
 
 			sgpIdx++;
 
@@ -181,32 +193,32 @@ void SgpTask(void *argument) {
 				packet = grabPacket();
 				if (packet != NULL) {
 
-					packet->header.packetType = SGP;
-					portENTER_CRITICAL();
+//					portENTER_CRITICAL();
 
-					setPacketType(&sensorPacket, SENSOR_PACKET_TYPES_LUX);
 
-					sensorPacket.header.packet_id = sgpID;
-					sensorPacket.header.packet_type = SENSOR_PACKET_TYPES_SGP;
-					sensorPacket.header.ms_from_start = HAL_GetTick();
+					setPacketType(packet, SENSOR_PACKET_TYPES_SGP);
+
+					packet->payload.sgp_packet.packet_index = sgpID;
+					packet->payload.sgp_packet.sample_period=sensorSettings.sample_period;
+
 
 
 //					// reset message buffer
 //					memset(&message.payload[0], 0, sizeof(message.payload));
 
 					// write data
-					memcpy(sensorPacket.lux_packet.payload, sgpData, MAX_SGP_SAMPLES_PACKET * sizeof(sgpSample));
-					sensorPacket.lux_packet.payload_count = MAX_SGP_SAMPLES_PACKET;
+					memcpy(packet->payload.sgp_packet.payload, sgpData, sgpIdx * sizeof(sgp_packet_payload_t));
+					packet->payload.sgp_packet.payload_count = sgpIdx;
 
 					// encode
-					pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
-					status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
-
-					packet->header.payloadLength = stream.bytes_written;
+//					pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
+//					status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
+//
+//					packet->header.payloadLength = stream.bytes_written;
 
 					// send to BT packetizer
 					queueUpPacket(packet);
-					portEXIT_CRITICAL();
+//					portEXIT_CRITICAL();
 
 //					memcpy(&(packet->header), &header, sizeof(PacketHeader));
 //					memcpy(packet->payload, sgpData, header.payloadLength);

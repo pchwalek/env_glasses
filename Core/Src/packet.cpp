@@ -25,14 +25,14 @@ static const uint16_t week_day[] = { 0x4263, 0xA8BD, 0x42BF, 0x4370, 0xABBF, 0xA
 void RTC_FromEpoch(uint32_t epoch, RTC_TimeTypeDef *time, RTC_DateTypeDef *date);
 uint32_t RTC_ToEpoch(RTC_TimeTypeDef *time, RTC_DateTypeDef *date);
 
-static SystemPacket packets[MAX_PACKET_QUEUE_SIZE];
+static sensor_packet_t packets[MAX_PACKET_QUEUE_SIZE];
 
 //static uint8_t packets[MAX_PACKET_QUEUE_SIZE][600];
 
-SystemPacket *packetPtr[MAX_PACKET_QUEUE_SIZE];
+sensor_packet_t *packetPtr[MAX_PACKET_QUEUE_SIZE];
 
-SystemPacket* grabPacket(void) {
-	SystemPacket *packet;
+sensor_packet_t* grabPacket(void) {
+	sensor_packet_t *packet;
 	// grab available memory for packet creation
 	if (osOK != osMessageQueueGet(packetAvail_QueueHandle, &packet, 0U, 0)) {
 		return NULL;
@@ -40,13 +40,13 @@ SystemPacket* grabPacket(void) {
 	return packet;
 }
 
-void queueUpPacket(SystemPacket *packet) {
+void queueUpPacket(sensor_packet_t *packet) {
 	// put into queue
 	osMessageQueuePut(packet_QueueHandle, &packet, 0U, 0);
 }
 
-SystemPacket *packetToSend;
-SystemPacket backupPacket;
+sensor_packet_t *packetToSend;
+sensor_packet_t backupPacket;
 CircularBuffer* backupBuffer;
 
 sensor_packet_t sensorPacket = SENSOR_PACKET_INIT_ZERO;
@@ -54,60 +54,52 @@ sensor_packet_t sensorPacket = SENSOR_PACKET_INIT_ZERO;
 void setPacketType(sensor_packet_t* packetPtr,sensor_packet_types_t type){
 	packetPtr->has_header = true;
 
-	packetPtr->has_lux_packet = false;
-	packetPtr->has_sgp_packet = false;
-	packetPtr->has_bme_packet = false;
-	packetPtr->has_blink_packet = false;
-	packetPtr->has_sht_packet = false;
-	packetPtr->has_spec_packet = false;
-	packetPtr->has_therm_packet = false;
-	packetPtr->has_imu_packet = false;
-	packetPtr->has_mic_packet = false;
+//	packetPtr->has_lux_packet = false;
+//	packetPtr->has_sgp_packet = false;
+//	packetPtr->has_bme_packet = false;
+//	packetPtr->has_blink_packet = false;
+//	packetPtr->has_sht_packet = false;
+//	packetPtr->has_spec_packet = false;
+//	packetPtr->has_therm_packet = false;
+//	packetPtr->has_imu_packet = false;
+//	packetPtr->has_mic_packet = false;
+
 
 	switch(type){
 		case SENSOR_PACKET_TYPES_SPECTROMETER :
-			packetPtr->has_spec_packet = true;
-			packetPtr->header.packet_type = SENSOR_PACKET_TYPES_SPECTROMETER;
+			packetPtr->which_payload = SENSOR_PACKET_SPEC_PACKET_TAG;
 			break;
 
 		case SENSOR_PACKET_TYPES_BME :
-			packetPtr->has_bme_packet = true;
-			packetPtr->header.packet_type = SENSOR_PACKET_TYPES_BME;
+			packetPtr->which_payload = SENSOR_PACKET_BME_PACKET_TAG;
 			break;
 
 		case SENSOR_PACKET_TYPES_IMU :
-			packetPtr->has_imu_packet = true;
-			packetPtr->header.packet_type = SENSOR_PACKET_TYPES_IMU;
+			packetPtr->which_payload = SENSOR_PACKET_IMU_PACKET_TAG;
 			break;
 
 		case SENSOR_PACKET_TYPES_THERMOPILE :
-			packetPtr->has_therm_packet = true;
-			packetPtr->header.packet_type = SENSOR_PACKET_TYPES_THERMOPILE;
+			packetPtr->which_payload = SENSOR_PACKET_THERM_PACKET_TAG;
 			break;
 
 		case SENSOR_PACKET_TYPES_LUX :
-			packetPtr->has_lux_packet = true;
-			packetPtr->header.packet_type = SENSOR_PACKET_TYPES_LUX;
+			packetPtr->which_payload = SENSOR_PACKET_LUX_PACKET_TAG;
 			break;
 
 		case SENSOR_PACKET_TYPES_MIC :
-			packetPtr->has_mic_packet = true;
-			packetPtr->header.packet_type = SENSOR_PACKET_TYPES_MIC;
+			packetPtr->which_payload = SENSOR_PACKET_MIC_PACKET_TAG;
 			break;
 
 		case SENSOR_PACKET_TYPES_SHT :
-			packetPtr->has_sht_packet = true;
-			packetPtr->header.packet_type = SENSOR_PACKET_TYPES_SHT;
+			packetPtr->which_payload = SENSOR_PACKET_SHT_PACKET_TAG;
 			break;
 
 		case SENSOR_PACKET_TYPES_SGP :
-			packetPtr->has_sgp_packet = true;
-			packetPtr->header.packet_type = SENSOR_PACKET_TYPES_SGP;
+			packetPtr->which_payload = SENSOR_PACKET_SGP_PACKET_TAG;
 			break;
 
 		case SENSOR_PACKET_TYPES_BLINK :
-			packetPtr->has_blink_packet = true;
-			packetPtr->header.packet_type = SENSOR_PACKET_TYPES_BLINK;
+			packetPtr->which_payload = SENSOR_PACKET_BLINK_PACKET_TAG;
 			break;
 
 		default:
@@ -115,11 +107,21 @@ void setPacketType(sensor_packet_t* packetPtr,sensor_packet_types_t type){
 	}
 }
 
+
+static uint8_t encoded_payload[MAX_PAYLOAD_SIZE];
+pb_ostream_t stream;
+
 void senderThread(void *argument) {
 	uint8_t retry;
 
 	backupBuffer = allocateBackupBuffer();
 	uint8_t backupPkt = 0;
+
+	uint32_t pktLength;
+
+	bool status;
+
+
 
 //	for (int i = 0; i < MAX_PACKET_QUEUE_SIZE; i++) {
 //		packetToSend = &packets[i];
@@ -130,6 +132,8 @@ void senderThread(void *argument) {
 
 	for (int i = 0; i < MAX_PACKET_QUEUE_SIZE; i++) {
 		packetToSend = &packets[i];
+
+		packetToSend->header.system_uid = LL_FLASH_GetUDN();
 //		packetToSend->header.systemID = LL_FLASH_GetUDN();
 		osMessageQueuePut(packetAvail_QueueHandle, &packetToSend, 0U,
 				osWaitForever);
@@ -175,9 +179,12 @@ void senderThread(void *argument) {
 
 		retry = 0;
 
+		packetToSend->header.epoch = getEpoch();
+		packetToSend->header.ms_from_start = HAL_GetTick();
+
 
 //		uint8_t buffer[128];
-//		volatile size_t message_length;
+//		volatile size_t message_length;HAL_GetTick();
 //		bool status;
 //		size_t lenOfBuff;
 
@@ -187,7 +194,12 @@ void senderThread(void *argument) {
 //			packetToSend->header.epoch = getEpoch();
 		}
 		if(isBluetoothConnected()){
-			while (PACKET_SEND_SUCCESS != sendProtobufPacket_BLE(packetToSend->payload,packetToSend->header.payloadLength)) {
+
+			stream = pb_ostream_from_buffer(encoded_payload, MAX_PAYLOAD_SIZE);
+			status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
+			pktLength = stream.bytes_written;
+
+			while (PACKET_SEND_SUCCESS != sendProtobufPacket_BLE(encoded_payload,pktLength)) {
 				if (retry >= MAX_BLE_RETRIES) {
 					break;
 				}
@@ -256,40 +268,40 @@ uint8_t sendProtobufPacket_BLE(uint8_t *packet, uint16_t size) {
 	}
 }
 
-uint8_t sendPacket_BLE(SystemPacket *packet) {
-
-	if ((packet->header.payloadLength) > MAX_PAYLOAD_SIZE) {
-		return PACKET_LENGTH_EXCEEDED;
-	}
-
-	tBleStatus status = BLE_STATUS_INVALID_PARAMS;
-//	uint8_t crc_result;
+//uint8_t sendPacket_BLE(sensor_packet_t *packet) {
 //
-//	/* compute CRC */
-//	crc_result = APP_BLE_ComputeCRC8((uint8_t*) Notification_Data_Buffer,
-//			(DATA_NOTIFICATION_MAX_PACKET_SIZE - 1));
-//	Notification_Data_Buffer[DATA_NOTIFICATION_MAX_PACKET_SIZE - 1] =
-//			crc_result;
-
-	DataTransferServerContext.TxData.pPayload = (uint8_t*) packet;
-	DataTransferServerContext.TxData.Length = packet->header.payloadLength
-			+ sizeof(PacketHeader); //Att_Mtu_Exchanged-10;
-
-//	if(packet->header.packetType==PPG_RED || packet->header.packetType==PPG_IR){
-//		status = Generic_STM_UpdateChar(PPG_CHAR_UUID_DEF,
-//	(uint8_t*) &DataTransferServerContext.TxData);
+//	if ((packet->header.payloadLength) > MAX_PAYLOAD_SIZE) {
+//		return PACKET_LENGTH_EXCEEDED;
 //	}
-
-	//COMMENTED BELOW ON 9/20/2022 BUT NEED TO FIX
-	status = DTS_STM_UpdateChar(DATA_TRANSFER_TX_CHAR_UUID,
-			(uint8_t*) &DataTransferServerContext.TxData);
-
-	if (status == BLE_STATUS_SUCCESS) {
-		return PACKET_SEND_SUCCESS;
-	} else {
-		return PACKET_UNDEFINED_ERR;
-	}
-}
+//
+//	tBleStatus status = BLE_STATUS_INVALID_PARAMS;
+////	uint8_t crc_result;
+////
+////	/* compute CRC */
+////	crc_result = APP_BLE_ComputeCRC8((uint8_t*) Notification_Data_Buffer,
+////			(DATA_NOTIFICATION_MAX_PACKET_SIZE - 1));
+////	Notification_Data_Buffer[DATA_NOTIFICATION_MAX_PACKET_SIZE - 1] =
+////			crc_result;
+//
+//	DataTransferServerContext.TxData.pPayload = (uint8_t*) packet;
+//	DataTransferServerContext.TxData.Length = packet->header.payloadLength
+//			+ sizeof(PacketHeader); //Att_Mtu_Exchanged-10;
+//
+////	if(packet->header.packetType==PPG_RED || packet->header.packetType==PPG_IR){
+////		status = Generic_STM_UpdateChar(PPG_CHAR_UUID_DEF,
+////	(uint8_t*) &DataTransferServerContext.TxData);
+////	}
+//
+//	//COMMENTED BELOW ON 9/20/2022 BUT NEED TO FIX
+//	status = DTS_STM_UpdateChar(DATA_TRANSFER_TX_CHAR_UUID,
+//			(uint8_t*) &DataTransferServerContext.TxData);
+//
+//	if (status == BLE_STATUS_SUCCESS) {
+//		return PACKET_SEND_SUCCESS;
+//	} else {
+//		return PACKET_UNDEFINED_ERR;
+//	}
+//}
 
 uint8_t updateSystemConfig_BLE(struct SensorConfig *packet) {
 

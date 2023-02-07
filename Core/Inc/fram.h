@@ -74,8 +74,8 @@ void extMemChipSelectPin(bool state);
 bool extMemWriteProtectPin(bool state);
 
 CircularBuffer* allocateBackupBuffer(void);
-uint8_t getPacketFromFRAM(CircularBuffer* backupBuffer, SystemPacket* packet);
-uint8_t pushPacketToFRAM(CircularBuffer* backupBuffer, SystemPacket* packet);
+uint8_t getPacketFromFRAM(CircularBuffer* backupBuffer, sensor_packet_t* packet);
+uint8_t pushPacketToFRAM(CircularBuffer* backupBuffer, sensor_packet_t* packet);
 
 #ifdef __cplusplus
 }

@@ -23,25 +23,25 @@
 #define MAX_SPEC_SAMPLES_PACKET	int(1)
 #define SPEC_FLICKER_DELAY				510
 
-typedef struct specSamples {
-	uint32_t _415;
-	uint32_t _445;
-	uint32_t _480;
-	uint32_t _515;
-	uint32_t _clear_1;
-	uint32_t _nir_1;
-	uint32_t _555;
-	uint32_t _590;
-	uint32_t _630;
-	uint32_t _680;
-	uint32_t _clear_2;
-	uint32_t _nir_2;
-	uint32_t flicker;
-} specSample;
+//typedef struct specSamples {
+//	uint32_t _415;
+//	uint32_t _445;
+//	uint32_t _480;
+//	uint32_t _515;
+//	uint32_t _clear_1;
+//	uint32_t _nir_1;
+//	uint32_t _555;
+//	uint32_t _590;
+//	uint32_t _630;
+//	uint32_t _680;
+//	uint32_t _clear_2;
+//	uint32_t _nir_2;
+//	uint32_t flicker;
+//} specSample;
 
 typedef struct specSamplePkts{
 	union SPEC_UNION {
-		specSample s;
+		spec_packet_payload_t s;
 		uint32_t s_array[13];
 	} data;
 	uint32_t timestamp;
@@ -52,14 +52,14 @@ static void triggerSpectrometerSample(void *argument);
 //static SPEC_UNION specData[MAX_SPEC_SAMPLES_PACKET];
 static specSamplePkt specData[MAX_SPEC_SAMPLES_PACKET];
 
-static PacketHeader header;
+//static PacketHeader header;
 //osThreadId_t specTaskHandle;
 osTimerId_t periodicSpecTimer_id;
 
 Adafruit_AS7341 specSensor;
 
 void Spec_Task(void *argument) {
-	SystemPacket *packet = NULL;
+	sensor_packet_t *packet = NULL;
 	uint32_t flags;
 	uint32_t timeLeftForSample = 0;
 
@@ -136,35 +136,41 @@ void Spec_Task(void *argument) {
 				packet = grabPacket();
 				if (packet != NULL) {
 
-					portENTER_CRITICAL();
+//					portENTER_CRITICAL();
 
-					setPacketType(&sensorPacket, SENSOR_PACKET_TYPES_SPECTROMETER);
+					setPacketType(packet, SENSOR_PACKET_TYPES_SPECTROMETER);
 
-					sensorPacket.header.packet_id = specID;
-					sensorPacket.header.ms_from_start = HAL_GetTick();
 
-					sensorPacket.header.payload_length = MAX_SPEC_SAMPLES_PACKET * sizeof(specSamplePkt);
-					sensorPacket.spec_packet.sample_period = sensorSettings.sample_period;
+					packet->payload.spec_packet.packet_index = specID;
+					packet->payload.spec_packet.sample_period = sensorSettings.sample_period;
+					packet->payload.spec_packet.integration_time = 100;
+					packet->payload.spec_packet.integration_step = 999;
+					packet->payload.spec_packet.gain = static_cast<spec_gain_t>(AS7341_GAIN_256X);
 
-					packet->header.packetType = SPECTROMETER;
+
+
+//					sensorPacket.header.payload_length = MAX_SPEC_SAMPLES_PACKET * sizeof(specSamplePkt);
+//					sensorPacket.spec_packet.sample_period = sensorSettings.sample_period;
+
+//					packet->header.packetType = SPECTROMETER;
 
 					// reset message buffer
-					memset(&sensorPacket.spec_packet.payload[0], 0, sizeof(sensorPacket.spec_packet.payload));
+//					memset(&sensorPacket.spec_packet.payload[0], 0, sizeof(sensorPacket.spec_packet.payload));
 
 					// write data
-					memcpy(sensorPacket.spec_packet.payload, specData, sensorPacket.header.payload_length);
-					sensorPacket.spec_packet.payload_count = MAX_SPEC_SAMPLES_PACKET;
+					memcpy(packet->payload.spec_packet.payload, specData, specIdx * sizeof(spec_packet_payload_t));
+					packet->payload.spec_packet.payload_count = specIdx;
 
 					// encode
-					pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
-					status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
-
-					packet->header.payloadLength = stream.bytes_written;
+//					pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
+//					status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
+//
+//					packet->header.payloadLength = stream.bytes_written;
 
 					// send to BT packetizer
 					queueUpPacket(packet);
 
-					portEXIT_CRITICAL();
+//					portEXIT_CRITICAL();
 
 //					memcpy(&(packet->header), &header, sizeof(PacketHeader));
 //					memcpy(packet->payload, specData, header.payloadLength);

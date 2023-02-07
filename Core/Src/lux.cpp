@@ -19,14 +19,14 @@
 //#define MAX_LUX_SAMPLES_PACKET	(SEND_LUX_EVERY_X_S*1000)/LUX_SAMPLE_SYS_PERIOD_MS
 #define MAX_LUX_SAMPLES_PACKET	1
 
-typedef struct luxSamples {
-	uint32_t lux;
-	uint32_t timestamp;
-} luxSample;
+//typedef struct luxSamples {
+//	uint32_t lux;
+//	uint32_t timestamp;
+//} luxSample;
 
 
 static void triggerLuxSample(void *argument);
-static luxSample luxData[MAX_LUX_SAMPLES_PACKET];
+static lux_packet_payload_t luxData[MAX_LUX_SAMPLES_PACKET];
 
 
 //static PacketHeader header;
@@ -36,7 +36,7 @@ osTimerId_t periodicLuxTimer_id;
 TSL2772 luxSensor;
 
 void LuxTask(void *argument) {
-	SystemPacket *packet = NULL;
+	sensor_packet_t *packet = NULL;
 	uint32_t flags;
 	uint32_t timeLeftForSample = 0;
 
@@ -90,7 +90,8 @@ void LuxTask(void *argument) {
 
 			osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
 			luxData[luxIdx].lux = luxSensor.getLux();
-			luxData[luxIdx].timestamp = HAL_GetTick();
+			luxData[luxIdx].timestamp_unix = getEpoch();
+			luxData[luxIdx].timestamp_ms_from_start = HAL_GetTick();
 			osSemaphoreRelease(messageI2C3_LockHandle);
 
 			luxIdx++;
@@ -101,35 +102,32 @@ void LuxTask(void *argument) {
 				packet = grabPacket();
 				if (packet != NULL) {
 
-					portENTER_CRITICAL();
+//					portENTER_CRITICAL();
 
-					setPacketType(&sensorPacket, SENSOR_PACKET_TYPES_LUX);
+					setPacketType(packet, SENSOR_PACKET_TYPES_LUX);
 
-					sensorPacket.header.packet_id = luxID;
-					sensorPacket.header.ms_from_start = HAL_GetTick();
-
-					sensorPacket.lux_packet.gain = static_cast<tsl2591_gain_t>(sensorSettings.gain);
-					sensorPacket.lux_packet.integration_time = static_cast<tsl2591_integration_time_t>(sensorSettings.integration_time);
-
-					packet->header.packetType = LUX;
+					packet->payload.lux_packet.packet_index = luxID;
+					packet->payload.lux_packet.sample_period = sensorSettings.sample_period;
+					packet->payload.lux_packet.gain = static_cast<tsl2591_gain_t>(sensorSettings.gain);
+					packet->payload.lux_packet.integration_time = static_cast<tsl2591_integration_time_t>(sensorSettings.integration_time);
 
 					// reset message buffer
-					memset(&sensorPacket.lux_packet.payload[0], 0, sizeof(lux_packet_payload_t)*30);
+//					memset(&sensorPacket.lux_packet.payload[0], 0, sizeof(lux_packet_payload_t)*30);
 
 					// write lux data
-					memcpy(sensorPacket.lux_packet.payload, luxData, MAX_LUX_SAMPLES_PACKET * sizeof(luxSample));
-					sensorPacket.lux_packet.payload_count = MAX_LUX_SAMPLES_PACKET;
+					memcpy(packet->payload.lux_packet.payload, luxData, luxIdx * sizeof(lux_packet_payload_t));
+					packet->payload.lux_packet.payload_count = luxIdx;
 
-					// encode
-				    pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
-				    status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
+//					// encode
+//				    pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
+//				    status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
 
-				    packet->header.payloadLength = stream.bytes_written;
+//				    packet->header.payloadLength = stream.bytes_written;
 
 				    // send to BT packetizer
 					queueUpPacket(packet);
 
-					portEXIT_CRITICAL();
+//					portEXIT_CRITICAL();
 
 				}
 				luxID++;

@@ -132,7 +132,7 @@ CircularBuffer* allocateBackupBuffer(void){
 	return create_circular_buffer(BACKUP_BUFF_SIZE, BACKUP_START_ADDR, BUFF_PACKET_SIZE);
 }
 
-uint8_t getPacketFromFRAM(CircularBuffer* backupBuffer, SensorPackets* packet){
+uint8_t getPacketFromFRAM(CircularBuffer* backupBuffer, sensor_packet_t* packet){
 
 	uint32_t packetFRAM_Address = pop_front(backupBuffer);
 
@@ -144,7 +144,7 @@ uint8_t getPacketFromFRAM(CircularBuffer* backupBuffer, SensorPackets* packet){
 	}
 }
 
-uint8_t pushPacketToFRAM(CircularBuffer* backupBuffer, SensorPackets* packet){
+uint8_t pushPacketToFRAM(CircularBuffer* backupBuffer, sensor_packet_t* packet){
 
 	/* (1) get address to push to */
 	uint32_t packetFRAM_Address = push_back(backupBuffer);

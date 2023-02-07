@@ -52,7 +52,7 @@ typedef struct micSamples {
 } luxSample;
 
 void Mic_Task(void *argument){
-	SystemPacket *packet = NULL;
+	sensor_packet_t *packet = NULL;
 
 	uint32_t micID = 0;
 	uint32_t flags = 0;
@@ -91,7 +91,7 @@ void Mic_Task(void *argument){
 	uint32_t totalMicPayloadSize = (MIC_DATA_SIZE >> 1) - 1; // number of 4 byte floats
 	uint8_t packetsPerMicSample = ceil( ((float) totalMicPayloadSize) / (maxMicPayloadSize) );
 
-
+	uint32_t sample_count;
 
 	hsai_BlockA1.Init.AudioFrequency = sensorSettings.mic_sample_frequency;
 
@@ -160,52 +160,54 @@ void Mic_Task(void *argument){
 				packet = grabPacket();
 				if(packet != NULL){
 
-					portENTER_CRITICAL();
+//					portENTER_CRITICAL();
 
-					setPacketType(&sensorPacket, SENSOR_PACKET_TYPES_MIC);
+					setPacketType(packet, SENSOR_PACKET_TYPES_MIC);
 
-					sensorPacket.header.ms_from_start = HAL_GetTick();
-					sensorPacket.header.packet_id = micID;
+//					sensorPacket.header.ms_from_start = HAL_GetTick();
+//					sensorPacket.header.packet_id = micID;
 
-					sensorPacket.mic_packet.frequency_spacing = fft_spacing;
-					sensorPacket.mic_packet.sample_freq = sensorSettings.mic_sample_frequency;
-					sensorPacket.mic_packet.system_sample_period = sensorSettings.sys_sample_period_ms;
-					sensorPacket.mic_packet.samples_per_fft = packetsPerMicSample; // total number of packets required to send full FFT
+					packet->payload.mic_packet.packet_index = micID;
+
+					packet->payload.mic_packet.frequency_spacing = fft_spacing;
+					packet->payload.mic_packet.mic_sample_freq = sensorSettings.mic_sample_frequency;
+					packet->payload.mic_packet.sample_period = sensorSettings.sys_sample_period_ms;
+					packet->payload.mic_packet.samples_per_fft = packetsPerMicSample; // total number of packets required to send full FFT
 
 
 					startIdx = maxMicPayloadSize * i;
 
 					if( (startIdx + maxMicPayloadSize) > totalMicPayloadSize){
-						sensorPacket.header.payload_length = (totalMicPayloadSize - startIdx) * 4;
+						sample_count = (totalMicPayloadSize - startIdx);
 //						message.sample_count = totalMicPayloadSize - startIdx;
 					}else{
-						sensorPacket.header.payload_length = maxMicPayloadSize * 4;
+						sample_count = maxMicPayloadSize;
 //						message.sample_count = maxMicPayloadSize;
 					}
 
 					startFreq = (startIdx + 1) * fft_spacing;
 //					memcpy(&message.header.reserved[3], (uint32_t *) &startFreq, sizeof(startFreq));
-					sensorPacket.mic_packet.start_frequency = startFreq;
+					packet->payload.mic_packet.start_frequency = startFreq;
 //					message.header.start_freq = startFreq;
 
-					packet->header.packetType = MIC;
 
 					// reset message buffer
-					memset(sensorPacket.mic_packet.payload.sample, 0, sizeof(sensorPacket.mic_packet.payload.sample));
+//					memset(packet->payload.mic_packet.payload.sample, 0, sizeof(sensorPacket.mic_packet.payload.sample));
 
 					// write data
-					memcpy(sensorPacket.mic_packet.payload.sample, (uint8_t *) &micDataFloat[startIdx + 1], sensorPacket.header.payload_length);
+					memcpy(packet->payload.mic_packet.payload.sample, (uint8_t *) &micDataFloat[startIdx + 1], sample_count * 4);
+					packet->payload.mic_packet.payload.sample_count = sample_count;
 
-					// encode
-					pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
-					status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
-
-					packet->header.payloadLength = stream.bytes_written;
+//					// encode
+//					pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
+//					status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
+//
+//					packet->header.payloadLength = stream.bytes_written;
 
 					// send to BT packetizer
 					queueUpPacket(packet);
 
-					portEXIT_CRITICAL();
+//					portEXIT_CRITICAL();
 
 //					memcpy(&(packet->header), &header, sizeof(PacketHeader));
 //					memcpy(packet->payload, (uint8_t *) &micDataFloat[startIdx + 1], header.payloadLength); //the 1 offset is because the first value is the DC offset which we don't need

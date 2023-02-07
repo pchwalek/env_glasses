@@ -172,14 +172,14 @@ int main(void) {
 
 //	volatile uint8_t test = sizeof(SensorConfig);
 
-//	if (isSystemFresh != 0xDEADBEAF) {
-	if(1){
+	if (isSystemFresh != 0xDEADBEAF) {
+//	if(1){
 		//initialize fresh system
 		sensorConfig.systemRunState = 1;
 		sensorConfig.uuid = LL_FLASH_GetUDN();
 		sensorConfig.firmware_version = 1;
 
-		sensorConfig.luxSensor.enable = 0;
+		sensorConfig.luxSensor.enable = 1;
 		sensorConfig.luxSensor.gain = 1;
 		sensorConfig.luxSensor.integration_time = 219;
 		sensorConfig.luxSensor.sample_period = 1000;
@@ -212,11 +212,11 @@ int main(void) {
 		sensorConfig.blinkSensor.daylightCompensationLowerThresh = 235;
 		sensorConfig.blinkSensor.sample_frequency = 1000;
 
-		sensorConfig.micSensor.enable = 0;
+		sensorConfig.micSensor.enable = 1;
 		sensorConfig.micSensor.mic_sample_frequency = SAI_AUDIO_FREQUENCY_48K;
 		sensorConfig.micSensor.sys_sample_period_ms = 30000; // 30 seconds
 
-		sensorConfig.humiditySensor.enable = 0;
+		sensorConfig.humiditySensor.enable = 1;
 		sensorConfig.humiditySensor.precisionLevel = 0;
 		sensorConfig.humiditySensor.heaterSetting = 0;
 		sensorConfig.humiditySensor.sample_period = 5000;

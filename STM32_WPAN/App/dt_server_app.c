@@ -359,33 +359,33 @@ volatile temp_var = 0;
 //
 //}
 
-uint8_t sendCaptivatePacket_BLE(SystemPacket *packet){
-
-	if((packet->header.payloadLength) > MAX_PAYLOAD_SIZE){
-	    return PACKET_LENGTH_EXCEEDED;
-	}
-
-	tBleStatus status = BLE_STATUS_INVALID_PARAMS;
-//	uint8_t crc_result;
+//uint8_t sendCaptivatePacket_BLE(sensor_packet_t *packet){
 //
-//	/* compute CRC */
-//	crc_result = APP_BLE_ComputeCRC8((uint8_t*) Notification_Data_Buffer,
-//			(DATA_NOTIFICATION_MAX_PACKET_SIZE - 1));
-//	Notification_Data_Buffer[DATA_NOTIFICATION_MAX_PACKET_SIZE - 1] =
-//			crc_result;
-
-	DataTransferServerContext.TxData.pPayload = (uint8_t*) packet;
-	DataTransferServerContext.TxData.Length = packet->header.payloadLength + sizeof(PacketHeader); //Att_Mtu_Exchanged-10;
-
-	status = DTS_STM_UpdateChar(DATA_TRANSFER_TX_CHAR_UUID,
-			(uint8_t*) &DataTransferServerContext.TxData);
-
-	if(status == BLE_STATUS_SUCCESS){
-	    return PACKET_SEND_SUCCESS;
-	}else{
-	    return PACKET_UNDEFINED_ERR;
-	}
-}
+//	if((packet->header.payloadLength) > MAX_PAYLOAD_SIZE){
+//	    return PACKET_LENGTH_EXCEEDED;
+//	}
+//
+//	tBleStatus status = BLE_STATUS_INVALID_PARAMS;
+////	uint8_t crc_result;
+////
+////	/* compute CRC */
+////	crc_result = APP_BLE_ComputeCRC8((uint8_t*) Notification_Data_Buffer,
+////			(DATA_NOTIFICATION_MAX_PACKET_SIZE - 1));
+////	Notification_Data_Buffer[DATA_NOTIFICATION_MAX_PACKET_SIZE - 1] =
+////			crc_result;
+//
+//	DataTransferServerContext.TxData.pPayload = (uint8_t*) packet;
+//	DataTransferServerContext.TxData.Length = packet->header.payloadLength + sizeof(PacketHeader); //Att_Mtu_Exchanged-10;
+//
+//	status = DTS_STM_UpdateChar(DATA_TRANSFER_TX_CHAR_UUID,
+//			(uint8_t*) &DataTransferServerContext.TxData);
+//
+//	if(status == BLE_STATUS_SUCCESS){
+//	    return PACKET_SEND_SUCCESS;
+//	}else{
+//	    return PACKET_UNDEFINED_ERR;
+//	}
+//}
 
 void Resume_Notification(void) {
 	DataTransferServerContext.DtFlowStatus = DTS_APP_FLOW_ON;

@@ -69,10 +69,18 @@ uint8_t bmeState[BSEC_MAX_STATE_BLOB_SIZE];
 
 
 void BME_Task(void *argument) {
-	SystemPacket *packet = NULL;
+	sensor_packet_t *packet = NULL;
 	uint32_t flags = 0;
 
 	bool status;
+
+	struct GasSensor sensorSettings;
+
+	if(argument != NULL){
+		memcpy(&sensorSettings,argument,sizeof(struct LuxSensor));
+	}else{
+		sensorSettings.sample_period = 0;
+	}
 
 	uint32_t timeSinceLastStateSave = 0;
 
@@ -147,11 +155,13 @@ void BME_Task(void *argument) {
 
 			for(int i = 0; i<bme.outputs.nOutputs; i++){
 //				memcpy(&bmeData[bmeIdx++], &bme.outputs.output[i], sizeof(bsecData));
-				bmeData[bmeIdx].time_stamp = bme.outputs.output[i].time_stamp;
+				bmeData[bmeIdx].timestamp_sensor = bme.outputs.output[i].time_stamp;
+				bmeData[bmeIdx].timestamp_unix = getEpoch();
+				bmeData[bmeIdx].timestamp_ms_from_start = HAL_GetTick();
 				bmeData[bmeIdx].signal = bme.outputs.output[i].signal;
 				bmeData[bmeIdx].signal_dimensions = bme.outputs.output[i].signal_dimensions;
-				bmeData[bmeIdx].sensor_id = bme.outputs.output[i].sensor_id;
-				bmeData[bmeIdx++].accuracy = bme.outputs.output[i].accuracy;
+				bmeData[bmeIdx].sensor_id = static_cast<bme680_signal_id_t>(bme.outputs.output[i].sensor_id);
+				bmeData[bmeIdx++].accuracy = static_cast<bme680_accuracy_t>(bme.outputs.output[i].accuracy);
 			}
 
 //			memcpy(&bmeData[bmeIdx], &bme.outputs, sizeof(bme.outputs));
@@ -172,35 +182,35 @@ void BME_Task(void *argument) {
 				packet = grabPacket();
 				if (packet != NULL) {
 
-					taskENTER_CRITICAL();
-					setPacketType(&sensorPacket, SENSOR_PACKET_TYPES_BME);
+//					taskENTER_CRITICAL();
+					setPacketType(packet, SENSOR_PACKET_TYPES_BME);
 
-					sensorPacket.header.packet_id = bmeID;
-					sensorPacket.header.ms_from_start = HAL_GetTick();
-					sensorPacket.header.payload_length = bmeIdx * sizeof(bme_packet_payload_t);
+					packet->payload.bme_packet.packet_index = bmeID;
+//					packet->payload.header.ms_from_start = HAL_GetTick();
+//					packet->payload.header.payload_length = bmeIdx * sizeof(bme_packet_payload_t);
 
-					sensorPacket.bme_packet.sample_period_ms = BME_SAMPLE_PERIOD_MS;
-
-					packet->header.packetType = BME;
+					packet->payload.bme_packet.sample_period = BME_SAMPLE_PERIOD_MS;
+//
+//					packet->header.packetType = BME;
 
 //					// reset message buffer
 //					memset(sensorPacket.bme_packet.payload, 0, sizeof(sensorPacket.bme_packet.payload));
 
 					// write data   //sensorPacket.header.payload_length
-					memcpy(sensorPacket.bme_packet.payload, bmeData, sensorPacket.header.payload_length);
-					sensorPacket.bme_packet.payload_count = bmeIdx;
+					memcpy(packet->payload.bme_packet.payload, bmeData, bmeIdx * sizeof(bme_packet_payload_t));
+					packet->payload.bme_packet.payload_count = bmeIdx;
 
 					// encode
-					pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
-					status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
-
-
-					packet->header.payloadLength = stream.bytes_written;
+//					pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
+//					status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
+//
+//
+//					packet->header.payloadLength = stream.bytes_written;
 
 					// send to BT packetizer
 					queueUpPacket(packet);
 
-					taskEXIT_CRITICAL();
+//					taskEXIT_CRITICAL();
 				}
 				bmeID++;
 				bmeIdx = 0;

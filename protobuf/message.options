@@ -5,8 +5,10 @@ SGPPacket.payload               max_count:20
 BMEPacket.payload               max_count:12
 
 #BlinkPacket.payload             max_count:1
-BlinkPacket.Payload.sample      max_size:450
+#BlinkPacket.Payload.sample      max_size:450
 # BlinkPacket.Payload.sample      max_size:1
+BlinkBytePayload.sample         max_size:450
+BlinkHighResPayload.sample         max_size:350
 
 SHTPacket.payload               max_count:200
 SpecPacket.payload              max_count:30

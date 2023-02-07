@@ -18,25 +18,26 @@
 #define THERMOPILE_CHANNELS				5
 #define MAX_THERMOPILE_SAMPLES_PACKET	(int)(512-sizeof(PacketHeader))/sizeof(thermopile_packet)
 
-typedef struct __attribute__((packed)) thermopile_packets {
-	uint32_t descriptor;
-	uint32_t timestamp;
-	uint32_t ambientRaw;
-	uint32_t objectRaw;
-	float ambientTemp;
-	float objectTemp;
-} thermopile_packet;
+//typedef struct __attribute__((packed)) thermopile_packets {
+//	uint32_t descriptor;
+//	uint32_t timestamp_ms_from_start;
+//	uint32_t timestamp_unix;
+//	uint32_t ambientRaw;
+//	uint32_t objectRaw;
+//	float ambientTemp;
+//	float objectTemp;
+//} thermopile_packet;
 
 //typedef struct wristAirThermopiles {
 //	thermopile_packet inner;
 //	thermopile_packet outer;
 //} wristAirThermopile;
 
-void grabThermopileSamples(thermopile_packet *data, CALIPILE *tp);
+void grabThermopileSamples(therm_packet_payload_t *data, CALIPILE *tp);
 
 //static wristAirThermopile thermopileData[MAX_THERMOPILE_SAMPLES_PACKET];
 //static thermopile_packet thermopileData[MAX_THERMOPILE_SAMPLES_PACKET];
-static thermopile_packet thermopileData[THERMOPILE_CHANNELS];
+static therm_packet_payload_t thermopileData[THERMOPILE_CHANNELS];
 
 
 //static PacketHeader header;
@@ -64,20 +65,20 @@ uint8_t wakeupFlag = 0;
 #define THERMOPLE_TEMPLE_MID_ADDR_ID		4
 #define THERMOPLE_TEMPLE_BACK_ADDR_ID		5
 
-void queueThermopilePkt(thermopile_packet *sample, uint16_t packetCnt);
+void queueThermopilePkt(therm_packet_payload_t *sample, uint16_t packetCnt);
 void initThermopiles(CALIPILE *tp, uint8_t address, I2C_HandleTypeDef* i2c_handle, uint8_t descriptor);
-void grabThermopileSamples(thermopile_packet *data, CALIPILE *tp);
+void grabThermopileSamples(therm_packet_payload_t *data, CALIPILE *tp);
 
-uint16_t thermIdx;
+volatile uint16_t thermIdx;
 uint32_t thermID;
 
+struct ThermopileSensor sensorSettings;
 void Thermopile_Task(void *argument) {
-	SystemPacket *packet = NULL;
+	sensor_packet_t *packet = NULL;
 	uint32_t flags;
 
 	bool status;
 
-	struct ThermopileSensor sensorSettings;
 
 	if(argument != NULL){
 		memcpy(&sensorSettings,argument,sizeof(struct ThermopileSensor));
@@ -134,7 +135,6 @@ void Thermopile_Task(void *argument) {
 			osSemaphoreRelease(messageI2C3_LockHandle);
 
 			queueThermopilePkt(&thermopileData[0], 5);
-			thermIdx = 0;
 
 		}
 
@@ -169,59 +169,52 @@ void initThermopiles(CALIPILE *tp, uint8_t address, I2C_HandleTypeDef* i2c_handl
 
 }
 
-void queueThermopilePkt(thermopile_packet *sample, uint16_t packetCnt){
-	SystemPacket *packet = NULL;
-	thermIdx++;
+void queueThermopilePkt(therm_packet_payload_t *sample, uint16_t packetCnt){
+	sensor_packet_t *packet = NULL;
+	thermIdx+=packetCnt;
 
 	bool status;
 
-	portENTER_CRITICAL();
-	setPacketType(&sensorPacket, SENSOR_PACKET_TYPES_THERMOPILE);
-
-
-	sensorPacket.header.payload_length = THERMOPILE_CHANNELS * sizeof(thermopile_packet);
-	sensorPacket.therm_packet.sample_period_ms = THERMOPILE_SAMPLE_PERIOD_MS;
-
 
 //	if (thermIdx >= MAX_THERMOPILE_SAMPLES_PACKET) {
-	sensorPacket.header.packet_id = thermID;
-	sensorPacket.header.ms_from_start = HAL_GetTick();
 		packet = grabPacket();
 		if (packet != NULL) {
 
-			packet->header.packetType = THERMOPILE;
+			setPacketType(packet, SENSOR_PACKET_TYPES_THERMOPILE);
 
+			packet->payload.therm_packet.packet_index = thermID;
+			packet->payload.therm_packet.sample_period = sensorSettings.sample_period;
 			// reset message buffer
-			memset(&sensorPacket.therm_packet.payload[0], 0, sizeof(sensorPacket.therm_packet.payload));
+//			memset(&sensorPacket.therm_packet.payload[0], 0, sizeof(sensorPacket.therm_packet.payload));
 
 			// write data
-			memcpy(sensorPacket.therm_packet.payload, sample, sensorPacket.header.payload_length);
-			sensorPacket.therm_packet.payload_count = packetCnt;
+			memcpy(packet->payload.therm_packet.payload, sample, thermIdx * sizeof(therm_packet_payload_t));
+			packet->payload.therm_packet.payload_count = packetCnt;
 
-			// encode
-			pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
-			status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
-
-			packet->header.payloadLength = stream.bytes_written;
+//			// encode
+//			pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
+//			status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
+//
+//			packet->header.payloadLength = stream.bytes_written;
 
 
 			// send to BT packetizer
 			queueUpPacket(packet);
 
-			portEXIT_CRITICAL();
 		}
 		thermID++;
 		thermIdx = 0;
 //	}
 }
 
-void grabThermopileSamples(thermopile_packet *data, CALIPILE *tp) {
-	data->descriptor = tp->descriptor;
-	data->timestamp = HAL_GetTick();
-	data->ambientRaw = tp->getTPAMB();
-	data->objectRaw = tp->getTPOBJ();
-	data->ambientTemp = tp->getTamb(data->ambientRaw);
-	data->objectTemp = tp->getTobj(data->objectRaw, data->ambientTemp);
+void grabThermopileSamples(therm_packet_payload_t *data, CALIPILE *tp) {
+	data->descriptor = static_cast<thermopile_location_t>(tp->descriptor);
+	data->timestamp_unix = getEpoch();
+	data->timestamp_ms_from_start = HAL_GetTick();
+	data->ambient_raw = tp->getTPAMB();
+	data->object_raw = tp->getTPOBJ();
+	data->ambient_temp = tp->getTamb(data->ambient_raw);
+	data->object_temp = tp->getTobj(data->object_raw, data->ambient_temp);
 }
 
 static void triggerThermopileSample(void *argument) {

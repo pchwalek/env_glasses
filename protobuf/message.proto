@@ -52,57 +52,254 @@ enum Sht45_heater {
     SHT4X_LOW_HEATER_100MS    = 6;
 } ;
 
-message SensorPacketHeader {
-    
-    SensorPacketTypes packet_type = 1;
-    uint32 system_uid = 2;
-    uint32 packet_id = 3;
-    uint32 ms_from_start = 4;
-    uint32 epoch = 5;
-    uint32 payload_length = 6;
+enum Thermopile_location {
+    TIP_OF_NOSE = 0;
+    NOSE_BRIDGE = 1;
+    FRONT_TEMPLE = 2;
+    MID_TEMPLE = 3;
+    REAR_TEMPLE = 4;
+} ;
+
+/** defined by Bosch */
+enum BME680_accuracy {
+    UNRELIABLE          = 0;
+    LOW_ACCURACY        = 1;
+    MEDIUM_ACCURACY     = 2;
+    HIGH_ACCURACY       = 3;
+} ;
+
+/** defined by Bosch */
+enum BME680_signal_id {
+    UNDEFINED           = 0;
+    IAQ                 = 1;
+    STATIC_IAQ          = 2;
+    CO2_EQ              = 3;
+    BREATH_VOC_EQ       = 4;
+    RAW_TEMPERATURE     = 6;
+    RAW_PRESSURE        = 7;
+    RAW_HUMIDITY        = 8;
+    RAW_GAS             = 9;
+    STABILIZATION_STATUS = 12;
+    RUN_IN_STATUS       = 13;
+    SENSOR_HEAT_COMPEN_TEMP = 14;
+    HEAT_COMPEN_HUMID   = 15;
+    GAS_PERCENTAGE      = 21;
+} ;
+
+/** defined in spectrometer (AS7341) datasheet */
+enum Spec_gain {
+    GAIN_0_5X = 0;
+    GAIN_1X = 1;
+    GAIN_2X = 2;
+    GAIN_4X = 3;
+    GAIN_8X = 4;
+    GAIN_16X = 5;
+    GAIN_32X = 6;
+    GAIN_64X = 7;
+    GAIN_128X = 8;
+    GAIN_256X = 9;
+    GAIN_512X = 10;
 }
 
+/** defined in IMU (ICM20948) datasheet */
+enum IMU_gyro_cutoff {
+	ICM20X_GYRO_FREQ_196_6_HZ = 0;
+	ICM20X_GYRO_FREQ_151_8_HZ = 1;
+	ICM20X_GYRO_FREQ_119_5_HZ = 2;
+	ICM20X_GYRO_FREQ_51_2_HZ = 3;
+	ICM20X_GYRO_FREQ_23_9_HZ = 4;
+	ICM20X_GYRO_FREQ_11_6_HZ = 5;
+	ICM20X_GYRO_FREQ_5_7_HZ = 6;
+	ICM20X_GYRO_FREQ_361_4_HZ = 7;
+} 
 
+/** defined in IMU (ICM20948) datasheet */
+enum IMU_gyro_range {
+    RANGE_250_dps = 0;
+	RANGE_500_dps = 1;
+	RANGE_1000_dps = 2;
+	RANGE_2000_dps = 3;
+} 
+
+
+/** defined in IMU (ICM20948) datasheet */
+enum IMU_accel_cutoff {
+    UNDEFINED_ACCEL_CUTOFF = 0;
+	ICM20X_ACCEL_FREQ_246_0_HZ = 1;
+	ICM20X_ACCEL_FREQ_111_4_HZ = 2;
+	ICM20X_ACCEL_FREQ_50_4_HZ = 3;
+	ICM20X_ACCEL_FREQ_23_9_HZ = 4;
+	ICM20X_ACCEL_FREQ_11_5_HZ = 5;
+	ICM20X_ACCEL_FREQ_5_7_HZ = 6;
+	ICM20X_ACCEL_FREQ_473_HZ = 7;
+} 
+
+/** defined in IMU (ICM20948) datasheet */
+enum IMU_accel_range {
+    RANGE_2G = 0;
+	RANGE_4G = 1;
+	RANGE_8G = 2;
+	RANGE_16G = 3;
+} 
+
+/** defined in IMU (ICM20948) datasheet */
+enum IMU_mag_cutoff {
+    UNDEFINED_MAG_CUTOFF = 0;
+	ICM20X_MAG_10_HZ = 2;
+	ICM20X_MAG_20_HZ = 4;
+	ICM20X_MAG_50_HZ = 6;
+	ICM20X_MAG_100_HZ = 8;
+} 
+
+
+message SensorPacketHeader {
+    uint32 system_uid = 1;
+    uint32 ms_from_start = 2;
+    uint32 epoch = 3;
+}
 
 message LuxPacket{
-    Tsl2591Gain gain = 1;
-    Tsl2591IntegrationTime integration_time = 2;
+    uint32 packet_index = 1;
+    uint32 sample_period = 2;
+    Tsl2591Gain gain = 3;
+    Tsl2591IntegrationTime integration_time = 4;
 
     message Payload {
         uint32 lux = 1;
-        uint32 timestamp = 2;
+        uint32 timestamp_unix = 2;
+        uint32 timestamp_ms_from_start = 3;
+    }
+    repeated Payload payload = 5;
+} 
+
+message SGPPacket{
+    uint32 packet_index = 1;
+    uint32 sample_period = 2;
+
+    message Payload {
+        uint32 timestamp_unix = 1;
+        uint32 timestamp_ms_from_start = 2;
+        uint32 sraw_voc = 3;
+        uint32 sraw_nox = 4;
+        int32 voc_index_value = 5;
+        int32 nox_index_value = 6;
     }
     repeated Payload payload = 3;
 } 
 
-message SGPPacket{
-    message Payload {
-        uint32 sraw_voc = 1;
-        uint32 sraw_nox = 2;
-        int32 voc_index_value = 3;
-        int32 nox_index_value = 4;
-        uint32 timestamp = 5;
-    }
-    repeated Payload payload = 1;
-} 
-
 message BMEPacket{
-    uint32 sample_period_ms = 1;
+    uint32 packet_index = 1;
+    uint32 sample_period = 2;
     
     message Payload {
-        fixed64 time_stamp = 1;
-        float signal = 2;
-        uint32 signal_dimensions = 3;
-        uint32 sensor_id = 4;
-        uint32 accuracy = 5;
+        fixed64 timestamp_sensor = 1;
+        uint32 timestamp_unix = 2;
+        uint32 timestamp_ms_from_start = 3;
+        float signal = 4;
+        uint32 signal_dimensions = 5;
+        BME680_signal_id sensor_id = 6;
+        BME680_accuracy accuracy = 7;
     }
-    repeated Payload payload = 2;
+    repeated Payload payload = 3;
 } 
 
+message Blink_saturation_settings{
+    bool diode_turned_off = 1;
+    uint32 diode_saturation_lower_thresh = 2;
+    uint32 diode_saturation_upper_thresh = 3;
+}
+
+message BlinkBytePayload {
+    bytes sample = 1;
+}
+message BlinkHighResPayload {
+    bytes sample = 1;
+}
 message BlinkPacket{
-    uint32 diode_saturation_flag = 1;
-    uint32 blink_sample_rate = 2;
-    uint32 subpacket_index = 3;
+    uint32 packet_index = 1;
+    Blink_saturation_settings saturation_settings = 2;
+    uint32 sample_rate = 3;
+
+    oneof payload{
+        BlinkBytePayload payloadByte = 4;
+        BlinkHighResPayload payloadHighRes = 5;
+    }
+} 
+
+
+
+message SHTPacket{
+    uint32 packet_index = 1;
+    uint32 sample_period = 2;
+    Sht45_precision precision = 3;
+    Sht45_heater heater = 4;
+
+    message Payload {
+        uint32 timestamp_unix = 1;
+        uint32 timestamp_ms_from_start = 2;
+        float temperature = 3;
+        float humidity = 4;
+    }
+    repeated Payload payload = 5;
+} 
+
+message SpecPacket{
+    uint32 packet_index = 1;
+    uint32 sample_period = 2;
+    uint32 integration_time = 3;
+    uint32 integration_step = 4;
+    Spec_gain gain = 5;
+
+    message Payload {
+        uint32 band_415 = 1;
+        uint32 band_445 = 2;
+        uint32 band_480 = 3;
+        uint32 band_515 = 4;
+        uint32 band_clear_1 = 5;
+        uint32 band_nir_1 = 6;
+        uint32 band_555 = 7;
+        uint32 band_590 = 8;
+        uint32 band_630 = 9;
+        uint32 band_680 = 10;
+        uint32 band_clear_2 = 11;
+        uint32 band_nir_2 = 12;
+        uint32 flicker = 13;
+    }
+    repeated Payload payload = 6;
+} 
+
+message ThermPacket{
+    uint32 packet_index = 1;
+    uint32 sample_period = 2;
+
+    message Payload {
+        Thermopile_location descriptor = 1;
+        uint32 timestamp_unix = 2;
+        uint32 timestamp_ms_from_start = 3;
+        uint32 ambient_raw = 4;
+        uint32 object_raw = 5;
+        float ambient_temp = 6;
+        float object_temp = 7;
+    }
+    repeated Payload payload = 3;
+} 
+
+message IMU_Accel_Settings{
+    optional IMU_accel_cutoff cutoff = 1;
+    IMU_accel_range range = 2;
+    uint32 sample_rate_divisor = 3;
+}
+
+message IMU_Gyro_Settings{
+    optional IMU_gyro_cutoff cutoff = 1;
+    IMU_gyro_range range = 2;
+    uint32 sample_rate_divisor = 3;
+}
+
+message IMUPacket{
+    uint32 packet_index = 1;
+    IMU_Accel_Settings accel_settings = 2;
+    IMU_Gyro_Settings gyro_settings = 3;
 
     message Payload {
         bytes sample = 1;
@@ -110,87 +307,33 @@ message BlinkPacket{
     Payload payload = 4;
 } 
 
-
-
-message SHTPacket{
-    Sht45_precision precision = 1;
-    Sht45_heater heater = 2;
-
-    message Payload {
-        float temperature = 1;
-        float humidity = 2;
-        uint32 timestamp = 3;
-    }
-    repeated Payload payload = 3;
-} 
-
-message SpecPacket{
-    uint32 sample_period = 1;
-
-    message Payload {
-        uint32 _415 = 1;
-        uint32 _445 = 2;
-        uint32 _480 = 3;
-        uint32 _515 = 4;
-        uint32 _clear_1 = 5;
-        uint32 _nir_1 = 6;
-        uint32 _555 = 7;
-        uint32 _590 = 8;
-        uint32 _630 = 9;
-        uint32 _680 = 10;
-        uint32 _clear_2 = 11;
-        uint32 _nir_2 = 12;
-        uint32 flicker = 13;
-    }
-    repeated Payload payload = 2;
-} 
-
-message ThermPacket{
-    uint32 sample_period_ms = 1;
-
-    message Payload {
-        uint32 descriptor = 1;
-        uint32 timestamp = 2;
-        uint32 ambient_raw = 3;
-        uint32 object_raw = 4;
-        float ambient_temp = 5;
-        float object_temp = 6;
-    }
-    repeated Payload payload = 2;
-} 
-
-message IMUPacket{
-    uint32 sample_period_ms = 1;
-
-    message Payload {
-        bytes sample = 1;
-    }
-    Payload payload = 2;
-} 
-
 message MicPacket{
-    uint32 sample_freq = 1;
-    uint32 system_sample_period = 2;
-    uint32 samples_per_fft = 3;
-    float start_frequency = 4; 
-    float frequency_spacing = 5;
+    uint32 packet_index = 1;
+    uint32 sample_period = 3;
+    uint32 mic_sample_freq = 2;
+    uint32 samples_per_fft = 4;
+    float start_frequency = 5; 
+    float frequency_spacing = 6;
 
     message Payload {
         repeated float sample = 1;
     }
-    Payload payload = 6;
+    Payload payload = 7;
 } 
 
 message SensorPacket {
     SensorPacketHeader header = 1;
 
-    optional LuxPacket lux_packet = 2;
-    optional SGPPacket sgp_packet = 3;
-    optional BMEPacket bme_packet = 4;
-    optional BlinkPacket blink_packet = 5;
-    optional SHTPacket sht_packet = 6;
-    optional SpecPacket spec_packet = 7;
-    optional ThermPacket therm_packet = 8;
-    optional IMUPacket imu_packet = 9;
-    optional MicPacket mic_packet = 10;
+    oneof payload {
+        LuxPacket lux_packet = 2;
+        SGPPacket sgp_packet = 3;
+        BMEPacket bme_packet = 4;
+        BlinkPacket blink_packet = 5;
+        SHTPacket sht_packet = 6;
+        SpecPacket spec_packet = 7;
+        ThermPacket therm_packet = 8;
+        IMUPacket imu_packet = 9;
+        MicPacket mic_packet = 10;
+    }
+
 }

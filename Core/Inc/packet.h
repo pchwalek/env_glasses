@@ -48,15 +48,15 @@ typedef enum {
 	BLINK = 13,
 } PacketTypes;
 
-typedef struct PacketHeaders {
-	uint32_t systemID;
-	PacketTypes packetType;
-	uint16_t packetID;
-	uint32_t msFromStart;
-	uint32_t epoch;
-	uint32_t payloadLength;
-	uint32_t reserved[5];
-} PacketHeader;
+//typedef struct PacketHeaders {
+//	uint32_t systemID;
+//	PacketTypes packetType;
+//	uint16_t packetID;
+//	uint32_t msFromStart;
+//	uint32_t epoch;
+//	uint32_t payloadLength;
+//	uint32_t reserved[5];
+//} PacketHeader;
 
 #define CONTROL_LED_PKT_TYPE	1
 #define SET_CLK_PKT_TYPE		2
@@ -72,18 +72,18 @@ typedef struct RX_PacketHeaders {
 
 
 
-typedef struct SensorPackets {
-	PacketHeader header;
-	uint8_t payload[MAX_PAYLOAD_SIZE]; // should be MAX_PACKET_LEN - sizeof(PacketHeader)
-} SystemPacket;
+//typedef struct SensorPackets {
+//	PacketHeader header;
+//	uint8_t payload[MAX_PAYLOAD_SIZE]; // should be MAX_PACKET_LEN - sizeof(PacketHeader)
+//} SystemPacket;
 
 extern sensor_packet_t sensorPacket;
 
 void setPacketType(sensor_packet_t* packetPtr,sensor_packet_types_t type);
-SystemPacket* grabPacket(void);
-void queueUpPacket(SystemPacket *packet);
+sensor_packet_t* grabPacket(void);
+void queueUpPacket(sensor_packet_t *packet);
 void senderThread(void *argument);
-uint8_t sendPacket_BLE(SystemPacket *packet);
+//uint8_t sendPacket_BLE(sensor_packet_t *packet);
 uint8_t sendProtobufPacket_BLE(uint8_t *packet, uint16_t size);
 uint8_t updateSystemConfig_BLE(struct SensorConfig *packet);
 void updateRTC(uint32_t receivedTime);

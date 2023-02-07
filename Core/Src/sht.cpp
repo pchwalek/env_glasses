@@ -20,15 +20,15 @@
 #define SHT_SAMPLE_SYS_PERIOD_MS		500 //how often do we want the system to sample
 #define MAX_SHT_SAMPLES_PACKET	1
 
-typedef struct shtSamples {
-	float temp;
-	float hum;
-	uint32_t timestamp;
-} shtSample;
+//typedef struct shtSamples {
+//	float temp;
+//	float hum;
+//	uint32_t timestamp;
+//} shtSample;
 
 
 static void triggerShtSample(void *argument);
-static shtSample shtData[MAX_SHT_SAMPLES_PACKET];
+static sht_packet_payload_t shtData[MAX_SHT_SAMPLES_PACKET];
 
 
 //static PacketHeader header;
@@ -40,7 +40,7 @@ Adafruit_SHT4x sht4 = Adafruit_SHT4x();
 float shtTemp, shtHum;
 
 void ShtTask(void *argument) {
-	SystemPacket *packet = NULL;
+	sensor_packet_t *packet = NULL;
 	uint32_t flags;
 	uint32_t timeLeftForSample = 0;
 
@@ -97,12 +97,12 @@ void ShtTask(void *argument) {
 			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			if(sht4.getEvent()){
 //			if(1){
-				shtData[shtIdx].temp = sht4._temperature;
-				shtData[shtIdx].hum = sht4._humidity;
-				shtData[shtIdx].timestamp = HAL_GetTick();
-
-				shtTemp = shtData[shtIdx].temp;
-				shtHum = shtData[shtIdx].hum;
+				shtData[shtIdx].temperature = sht4._temperature;
+				shtData[shtIdx].humidity = sht4._humidity;
+				shtData[shtIdx].timestamp_ms_from_start = HAL_GetTick();
+				shtData[shtIdx].timestamp_unix = getEpoch();
+				shtTemp = shtData[shtIdx].temperature;
+				shtHum = shtData[shtIdx].humidity;
 			}else{
 				osSemaphoreRelease(messageI2C1_LockHandle);
 				continue;
@@ -118,36 +118,36 @@ void ShtTask(void *argument) {
 				packet = grabPacket();
 				if (packet != NULL) {
 
-					portENTER_CRITICAL();
+//					portENTER_CRITICAL();
 
-					setPacketType(&sensorPacket, SENSOR_PACKET_TYPES_SHT);
+					setPacketType(packet, SENSOR_PACKET_TYPES_SHT);
 
-					sensorPacket.header.payload_length = MAX_SHT_SAMPLES_PACKET * sizeof(shtSample);
-					sensorPacket.sht_packet.precision = static_cast<sht45_precision_t>(sensorSettings.precisionLevel);
-					sensorPacket.sht_packet.heater = static_cast<sht45_heater_t>(sensorSettings.heaterSetting);
+//					sensorPacket.header.payload_length = MAX_SHT_SAMPLES_PACKET * sizeof(shtSample);
+					packet->payload.sht_packet.precision = static_cast<sht45_precision_t>(sensorSettings.precisionLevel);
+					packet->payload.sht_packet.heater = static_cast<sht45_heater_t>(sensorSettings.heaterSetting);
 
-					sensorPacket.header.packet_id = shtID;
-					sensorPacket.header.ms_from_start = HAL_GetTick();
+//					sensorPacket.header.packet_id = shtID;
+//					sensorPacket.header.ms_from_start = HAL_GetTick();
 
-					packet->header.packetType = SHT;
+//					packet->header.packetType = SHT;
 
-					// reset message buffer
-					memset(&sensorPacket.sht_packet.payload[0], 0, sizeof(sensorPacket.sht_packet.payload));
+//					// reset message buffer
+//					memset(&sensorPacket.sht_packet.payload[0], 0, sizeof(sensorPacket.sht_packet.payload));
 
 					// write data
-					memcpy(sensorPacket.sht_packet.payload, shtData, sensorPacket.header.payload_length);
-					sensorPacket.sht_packet.payload_count = MAX_SHT_SAMPLES_PACKET;
+					memcpy(packet->payload.sht_packet.payload, shtData, shtIdx * sizeof(sht_packet_payload_t));
+					packet->payload.sht_packet.payload_count = shtIdx * sizeof(sht_packet_payload_t);
 
-					// encode
-					pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
-					status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
-
-					packet->header.payloadLength = stream.bytes_written;
+//					// encode
+//					pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
+//					status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
+//
+//					packet->header.payloadLength = stream.bytes_written;
 
 					// send to BT packetizer
 					queueUpPacket(packet);
 
-					portEXIT_CRITICAL();
+//					portEXIT_CRITICAL();
 
 
 				}

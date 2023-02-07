@@ -27,10 +27,16 @@ PB_BIND(BME_PACKET, bme_packet_t, 2)
 PB_BIND(BME_PACKET_PAYLOAD, bme_packet_payload_t, AUTO)
 
 
+PB_BIND(BLINK_SATURATION_SETTINGS, blink_saturation_settings_t, AUTO)
+
+
+PB_BIND(BLINK_BYTE_PAYLOAD, blink_byte_payload_t, 2)
+
+
+PB_BIND(BLINK_HIGH_RES_PAYLOAD, blink_high_res_payload_t, 2)
+
+
 PB_BIND(BLINK_PACKET, blink_packet_t, 2)
-
-
-PB_BIND(BLINK_PACKET_PAYLOAD, blink_packet_payload_t, 2)
 
 
 PB_BIND(SHT_PACKET, sht_packet_t, 2)
@@ -51,6 +57,12 @@ PB_BIND(THERM_PACKET, therm_packet_t, 2)
 PB_BIND(THERM_PACKET_PAYLOAD, therm_packet_payload_t, AUTO)
 
 
+PB_BIND(IMU_ACCEL_SETTINGS, imu_accel_settings_t, AUTO)
+
+
+PB_BIND(IMU_GYRO_SETTINGS, imu_gyro_settings_t, AUTO)
+
+
 PB_BIND(IMU_PACKET, imu_packet_t, 2)
 
 
@@ -64,6 +76,15 @@ PB_BIND(MIC_PACKET_PAYLOAD, mic_packet_payload_t, 2)
 
 
 PB_BIND(SENSOR_PACKET, sensor_packet_t, 2)
+
+
+
+
+
+
+
+
+
 
 
 

@@ -94,7 +94,7 @@ const osThreadAttr_t shtTask_attributes = { .name = "shtTask", .attr_bits =
 osThreadId_t bmeTaskHandle;
 const osThreadAttr_t bmeTask_attributes = { .name = "bmeTask", .attr_bits =
 		osThreadDetached, .cb_mem = NULL, .cb_size = 0, .stack_mem = NULL,
-		.stack_size = 512 * 20, .priority = (osPriority_t) osPriorityNormal,
+		.stack_size = 512 * 6, .priority = (osPriority_t) osPriorityNormal,
 		.tz_module = 0, .reserved = 0 };
 
 osThreadId_t sgpTaskHandle;
