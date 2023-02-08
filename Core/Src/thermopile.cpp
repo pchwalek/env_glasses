@@ -93,14 +93,14 @@ void Thermopile_Task(void *argument) {
 //	tp_temple_front.wake(); 	// wakeup thermopile sensors on i2c3 bus
 
 	osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
-	initThermopiles(&tp_nose_tip,		THERMOPLE_NOSE_TIP_ADDR,	&hi2c1,	THERMOPLE_NOSE_TIP_ID);
-	initThermopiles(&tp_nose_bridge,	THERMOPLE_NOSE_BRIDGE_ADDR,	&hi2c1, THERMOPLE_NOSE_BRIDGE_ID);
+	initThermopiles(&tp_nose_tip,		THERMOPLE_NOSE_TIP_ADDR,	&hi2c1,	THERMOPILE_LOCATION_TIP_OF_NOSE);
+	initThermopiles(&tp_nose_bridge,	THERMOPLE_NOSE_BRIDGE_ADDR,	&hi2c1, THERMOPILE_LOCATION_NOSE_BRIDGE);
 	osSemaphoreRelease(messageI2C1_LockHandle);
 
 	osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
-	initThermopiles(&tp_temple_front,	THERMOPLE_TEMPLE_FRONT_ADDR,&hi2c3, THERMOPLE_TEMPLE_FRONT_ADDR_ID);
-	initThermopiles(&tp_temple_mid,		THERMOPLE_TEMPLE_MID_ADDR,	&hi2c3, THERMOPLE_TEMPLE_MID_ADDR_ID);
-	initThermopiles(&tp_temple_back,	THERMOPLE_TEMPLE_BACK_ADDR,	&hi2c3, THERMOPLE_TEMPLE_BACK_ADDR_ID);
+	initThermopiles(&tp_temple_front,	THERMOPLE_TEMPLE_FRONT_ADDR,&hi2c3, THERMOPILE_LOCATION_FRONT_TEMPLE);
+	initThermopiles(&tp_temple_mid,		THERMOPLE_TEMPLE_MID_ADDR,	&hi2c3, THERMOPILE_LOCATION_MID_TEMPLE);
+	initThermopiles(&tp_temple_back,	THERMOPLE_TEMPLE_BACK_ADDR,	&hi2c3, THERMOPILE_LOCATION_REAR_TEMPLE);
 	osSemaphoreRelease(messageI2C3_LockHandle);
 
 
@@ -207,6 +207,10 @@ void queueThermopilePkt(therm_packet_payload_t *sample, uint16_t packetCnt){
 //	}
 }
 
+float convertKelvinToCelsius(float temperature){
+	return temperature - 273.15;
+}
+
 void grabThermopileSamples(therm_packet_payload_t *data, CALIPILE *tp) {
 	data->descriptor = static_cast<thermopile_location_t>(tp->descriptor);
 	data->timestamp_unix = getEpoch();
@@ -214,7 +218,8 @@ void grabThermopileSamples(therm_packet_payload_t *data, CALIPILE *tp) {
 	data->ambient_raw = tp->getTPAMB();
 	data->object_raw = tp->getTPOBJ();
 	data->ambient_temp = tp->getTamb(data->ambient_raw);
-	data->object_temp = tp->getTobj(data->object_raw, data->ambient_temp);
+	data->object_temp = convertKelvinToCelsius(tp->getTobj(data->object_raw, data->ambient_temp));
+	data->ambient_temp = convertKelvinToCelsius(data->ambient_temp);
 }
 
 static void triggerThermopileSample(void *argument) {

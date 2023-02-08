@@ -49,8 +49,48 @@ SGP = 12
 BLINK = 13
 
 sensorPacketTracker = np.zeros(14)
-def sensorPrintHelperFunc(pktIdxRx):
-    sensorPacketTracker[pktIdxRx] += 1
+def sensorPrintHelperFunc(packet, show_payload=True):
+    # sensorPacketTracker[pktIdxRx] += 1
+
+    print(packet.WhichOneof("payload"))
+    if(packet.WhichOneof("payload") == "lux_packet"):
+        sensorPacketTracker[LUX] += 1
+        if show_payload:
+            print(packet.lux_packet)
+    elif(packet.WhichOneof("payload") == "sgp_packet"):
+        sensorPacketTracker[SGP] += 1
+        if show_payload:
+            print(packet.sgp_packet)
+    elif (packet.WhichOneof("payload") == "bme_packet"):
+        sensorPacketTracker[BME] += 1
+        if show_payload:
+            print(packet.bme_packet)
+    elif (packet.WhichOneof("payload") == "blink_packet"):
+        sensorPacketTracker[BLINK] += 1
+        if show_payload:
+            print(packet.blink_packet)
+    elif (packet.WhichOneof("payload") == "sht_packet"):
+        sensorPacketTracker[SHT] += 1
+        if show_payload:
+            print(packet.sht_packet)
+    elif (packet.WhichOneof("payload") == "spec_packet"):
+        sensorPacketTracker[SPECTROMETER] += 1
+        if show_payload:
+            print(packet.spec_packet)
+    elif (packet.WhichOneof("payload") == "therm_packet"):
+        sensorPacketTracker[THERMOPILE] += 1
+        if show_payload:
+            print(packet.therm_packet)
+    elif (packet.WhichOneof("payload") == "imu_packet"):
+        sensorPacketTracker[IMU] += 1
+        if show_payload:
+            print(packet.imu_packet)
+    elif (packet.WhichOneof("payload") == "mic_packet"):
+        sensorPacketTracker[MIC] += 1
+        if show_payload:
+            print(packet.mic_packet)
+
+
 
     print("UNK: " + str(sensorPacketTracker[UNKNOWN_PACKET_TYPE]) , end ="\t")
     print("SPEC: " + str(sensorPacketTracker[SPECTROMETER]), end="\t")
@@ -80,7 +120,9 @@ async def main(queue: asyncio.Queue):
     # else:
     device = await BleakScanner.find_device_by_filter(
         #lambda d, ad: ad.local_name == "AirSpec_008a65fb",
+        # lambda d, ad: ad.local_name == "AirSpec_01ad7510",
         lambda d, ad: ad.local_name == "AirSpec_01ad6d72",
+
         timeout=60
     )
 
@@ -89,7 +131,7 @@ async def main(queue: asyncio.Queue):
         print(" Bluetooth: could not find device with name '%s'", "AirSpec_008a65fb")
         print(" Bluetooth: will keep trying")
         device = await BleakScanner.find_device_by_filter(
-            lambda d, ad: ad.local_name == "AirSpec_008a65fb",
+            lambda d, ad: ad.local_name == "AirSpec_01AD7510",
             timeout=60
         )
 
@@ -125,12 +167,12 @@ async def main(queue: asyncio.Queue):
         # print(bytes('\n', 'utf-8'))
 
         sensorPacket.ParseFromString(bytes(data))
+        # print(sensorPacket.WhichOneof("payload"))
+        sensorPrintHelperFunc(sensorPacket)
 
-        sensorPrintHelperFunc(sensorPacket.header.packet_type)
-
-        if(sensorPacket.header.packet_type == MIC):
-            print("MIC")
-            print(sensorPacket.mic_packet.payload.sample)
+        # if(sensorPacket.header.packet_type == MIC):
+        #     print("MIC")
+        #     print(sensorPacket.mic_packet.payload.sample)
         # print()
         #
         #

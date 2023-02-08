@@ -641,6 +641,18 @@ void BlueGreenTransitionTask(void *argument){
 
 	memcpy(&blueGreenTran,argument,sizeof(union BlueGreenTransition));
 
+
+	uint8_t step_duration_seconds;
+		uint8_t green_hold_length_seconds;
+		uint8_t transition_delay_seconds;
+
+	/* start sensor subsystems */
+
+
+	/* delay sequence */
+	osDelay(blueGreenTran.val.transition_delay_seconds*1000);
+
+
 	/* start sequence */
 
 	//	timeTracker = HAL_GetTick();
@@ -662,7 +674,7 @@ void BlueGreenTransitionTask(void *argument){
 			blueGreenTranColor.colors_indiv.right_side_b = (i > blueGreenTran.val.blue_max_intensity) ? blueGreenTran.val.blue_max_intensity : i;
 			blueGreenTranColor.colors_indiv.left_side_b = blueGreenTranColor.colors_indiv.right_side_b;
 			osMessageQueuePut(lightsComplexQueueHandle, &blueGreenTranColor, 0, 0);
-			osDelay(blueGreenTran.val.step_duration);
+			osDelay(blueGreenTran.val.step_duration_milliseconds);
 
 			if(i >= blueGreenTran.val.blue_max_intensity){
 				break;
@@ -682,11 +694,12 @@ void BlueGreenTransitionTask(void *argument){
 
 		osMessageQueuePut(lightsComplexQueueHandle, &blueGreenTranColor, 0, 0);
 
-		if( (blueGreenTran.val.green_max_intensity == blueGreenTranColor.colors_indiv.right_side_g) &&
-				(blueGreenTran.val.blue_max_intensity == blueGreenTranColor.colors_indiv.right_side_b)){
+		if( (blueGreenTran.val.green_max_intensity <= blueGreenTranColor.colors_indiv.right_side_g) &&
+				(blueGreenTran.val.blue_min_intensity >= blueGreenTranColor.colors_indiv.right_side_b)){
+			break;
 
 		}else{
-			osDelay(blueGreenTran.val.step_duration);
+			osDelay(blueGreenTran.val.step_duration_milliseconds);
 		}
 	}
 
@@ -695,6 +708,50 @@ void BlueGreenTransitionTask(void *argument){
 //	if(timeTracker < blueGreenTran->val.step_duration){
 //		osDelay(blueGreenTran->val.step_duration - timeTracker);
 //	}
+
+	osDelay(blueGreenTran.val.green_hold_length_seconds*1000);
+
+	uint16_t blue_intensity;
+	uint16_t green_intensity;
+	/* start transition */
+	for(int i = 0;
+			i <= 255;
+			i += blueGreenTran.val.step_size){
+		blue_intensity = blueGreenTran.val.blue_min_intensity + i;
+		blueGreenTranColor.colors_indiv.right_side_b = (blue_intensity > blueGreenTran.val.blue_max_intensity) ? blueGreenTran.val.blue_max_intensity : blue_intensity;
+		blueGreenTranColor.colors_indiv.left_side_b = blueGreenTranColor.colors_indiv.right_side_b;
+
+		green_intensity = blueGreenTran.val.green_max_intensity - i;
+		blueGreenTranColor.colors_indiv.right_side_g = (green_intensity > 0) ? green_intensity : 0;
+		blueGreenTranColor.colors_indiv.left_side_g = blueGreenTranColor.colors_indiv.right_side_g;
+
+		osMessageQueuePut(lightsComplexQueueHandle, &blueGreenTranColor, 0, 0);
+
+		if( (green_intensity <= 0) &&
+				(blue_intensity >= blueGreenTran.val.blue_max_intensity
+						)){
+			break;
+
+		}else{
+			osDelay(blueGreenTran.val.step_duration_milliseconds);
+		}
+	}
+
+	/* decrease blue intensity */
+	if(blueGreenTran.val.blue_max_intensity > blueGreenTran.val.blue_min_intensity){
+		for(int i = blueGreenTran.val.blue_max_intensity;;
+				i -= blueGreenTran.val.step_size){
+
+			blueGreenTranColor.colors_indiv.right_side_b = (i < blueGreenTran.val.blue_min_intensity) ? blueGreenTran.val.blue_min_intensity : i;
+			blueGreenTranColor.colors_indiv.left_side_b = blueGreenTranColor.colors_indiv.right_side_b;
+			osMessageQueuePut(lightsComplexQueueHandle, &blueGreenTranColor, 0, 0);
+			osDelay(blueGreenTran.val.step_duration_milliseconds);
+
+			if(blueGreenTranColor.colors_indiv.right_side_b <= blueGreenTran.val.blue_min_intensity){
+				break;
+			}
+		}
+	}
 
 	vTaskDelete( NULL );
 }

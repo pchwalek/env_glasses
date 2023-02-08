@@ -136,7 +136,7 @@ void ShtTask(void *argument) {
 
 					// write data
 					memcpy(packet->payload.sht_packet.payload, shtData, shtIdx * sizeof(sht_packet_payload_t));
-					packet->payload.sht_packet.payload_count = shtIdx * sizeof(sht_packet_payload_t);
+					packet->payload.sht_packet.payload_count = shtIdx;
 
 //					// encode
 //					pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);

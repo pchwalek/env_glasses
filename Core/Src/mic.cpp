@@ -196,6 +196,7 @@ void Mic_Task(void *argument){
 
 					// write data
 					memcpy(packet->payload.mic_packet.payload.sample, (uint8_t *) &micDataFloat[startIdx + 1], sample_count * 4);
+					packet->payload.mic_packet.has_payload = true;
 					packet->payload.mic_packet.payload.sample_count = sample_count;
 
 //					// encode

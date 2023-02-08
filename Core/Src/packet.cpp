@@ -196,7 +196,7 @@ void senderThread(void *argument) {
 		if(isBluetoothConnected()){
 
 			stream = pb_ostream_from_buffer(encoded_payload, MAX_PAYLOAD_SIZE);
-			status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
+			status = pb_encode(&stream, SENSOR_PACKET_FIELDS, packetToSend);
 			pktLength = stream.bytes_written;
 
 			while (PACKET_SEND_SUCCESS != sendProtobufPacket_BLE(encoded_payload,pktLength)) {

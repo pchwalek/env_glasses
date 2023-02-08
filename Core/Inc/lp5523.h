@@ -54,7 +54,9 @@ typedef union BlueGreenTransition {
 		uint8_t blue_max_intensity;
 		uint8_t green_max_intensity;
 		uint8_t step_size;
-		uint8_t step_duration;
+		uint8_t step_duration_milliseconds;
+		uint32_t green_hold_length_seconds;
+		uint32_t transition_delay_seconds;
 	} val;
 	uint8_t array[6];
 };
