@@ -78,6 +78,63 @@ PB_BIND(MIC_PACKET_PAYLOAD, mic_packet_payload_t, 2)
 PB_BIND(SENSOR_PACKET, sensor_packet_t, 2)
 
 
+PB_BIND(AIR_SPEC_COLORS, air_spec_colors_t, AUTO)
+
+
+PB_BIND(AIR_SPEC_COLOR_POSITION, air_spec_color_position_t, AUTO)
+
+
+PB_BIND(LIGHT_CONTROL_PACKET, light_control_packet_t, AUTO)
+
+
+PB_BIND(SENSOR_CONTROL, sensor_control_t, AUTO)
+
+
+PB_BIND(LUX_SENSOR_CONFIG, lux_sensor_config_t, AUTO)
+
+
+PB_BIND(SGP_SENSOR_CONFIG, sgp_sensor_config_t, AUTO)
+
+
+PB_BIND(BME_SENSOR_CONFIG, bme_sensor_config_t, AUTO)
+
+
+PB_BIND(COLOR_SENSOR_CONFIG, color_sensor_config_t, AUTO)
+
+
+PB_BIND(THERMOPILE_SENSOR_CONFIG, thermopile_sensor_config_t, AUTO)
+
+
+PB_BIND(BLINK_SENSOR_CONFIG, blink_sensor_config_t, AUTO)
+
+
+PB_BIND(MIC_SENSOR_CONFIG, mic_sensor_config_t, AUTO)
+
+
+PB_BIND(HUMIDITY_SENSOR_CONFIG, humidity_sensor_config_t, AUTO)
+
+
+PB_BIND(IMU_SENSOR_CONFIG, imu_sensor_config_t, AUTO)
+
+
+PB_BIND(SENSOR_CONFIG, sensor_config_t, AUTO)
+
+
+PB_BIND(DFU_MODE, dfu_mode_t, AUTO)
+
+
+PB_BIND(BLUE_GREEN_TRANSITION, blue_green_transition_t, AUTO)
+
+
+PB_BIND(RED_FLASH_TASK, red_flash_task_t, AUTO)
+
+
+PB_BIND(AIR_SPEC_CONFIG_HEADER, air_spec_config_header_t, AUTO)
+
+
+PB_BIND(AIR_SPEC_CONFIG_PACKET, air_spec_config_packet_t, AUTO)
+
+
 
 
 

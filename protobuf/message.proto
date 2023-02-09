@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-import "nanopb.proto";
-option (nanopb_fileopt).packed_struct = true;
+//import "nanopb.proto";
+//option (nanopb_fileopt).packed_struct = true;
 
 enum SensorPacketTypes {
     UNKNOWN_PACKET_TYPE = 0;
@@ -321,6 +321,8 @@ message MicPacket{
     Payload payload = 7;
 } 
 
+
+
 message SensorPacket {
     SensorPacketHeader header = 1;
 
@@ -334,6 +336,148 @@ message SensorPacket {
         ThermPacket therm_packet = 8;
         IMUPacket imu_packet = 9;
         MicPacket mic_packet = 10;
+    }
+
+}
+
+/* defining AirSpec incoming packet structure */
+
+message AirSpecColors{
+    uint32 red = 1;
+    uint32 green = 2;
+    uint32 blue = 3;
+}
+
+message AirSpecColorPosition{
+    AirSpecColors forward = 1;
+    AirSpecColors eye = 2;
+    AirSpecColors top = 3;
+}
+
+message LightControlPacket {
+    AirSpecColorPosition left = 1;
+    AirSpecColorPosition right = 2;
+}
+
+message SensorControl{
+    bool enable_all = 1;
+    bool spectrometer = 2;
+    bool bme688 = 3;
+    bool imu = 4;
+    bool thermopiles = 5;
+    bool lux = 6;
+    bool mic = 7;
+    bool sht = 8;
+    bool sgp = 9;
+    bool blink = 10;
+}
+
+message LuxSensorConfig{
+    uint32 sample_period_ms = 1;
+    Tsl2591Gain gain = 2;
+    Tsl2591IntegrationTime integration_time = 3;
+}
+
+message SGP_Sensor_Config{
+    uint32 sample_period_ms = 1;
+}
+
+message BME_Sensor_Config{
+    uint32 sample_period_ms = 1;
+}
+
+message ColorSensorConfig{
+    uint32 sample_period_ms = 1;
+    uint32 integration_time = 2;
+    uint32 integration_step = 3;
+    Spec_gain gain = 4;
+}
+
+message ThermopileSensorConfig{
+    uint32 sample_period_ms = 1;
+    bool enable_top_of_nose = 2;
+    bool enable_nose_bridge = 3;
+    bool enable_front_temple = 4;
+    bool enable_mid_temple = 5;
+    bool enable_rear_temple = 6;
+}
+
+message BlinkSensorConfig{
+    uint32 sample_frequency = 1;
+    bool enable_daylight_compensation = 2;
+    uint32 daylightCompensationUpperThresh = 3;
+    uint32 daylightCompensationLowerThresh = 4;
+    uint32 enable_windowing = 5;
+    uint32 window_size_ms = 6;
+    uint32 window_period_ms = 7;
+}
+
+message MicSensorConfig{
+    uint32 sample_period_ms = 1;
+    uint32 mic_sample_freq = 2;
+}
+
+message HumiditySensorConfig{
+    uint32 sample_period_ms = 1;
+    Sht45_precision precisionLevel = 2;
+    Sht45_heater heaterSettings = 3;
+}
+
+message IMU_SensorConfig{
+    IMU_Accel_Settings accel_settings = 1;
+    IMU_Gyro_Settings gyro_settings = 2;
+    uint32 enable_windowing = 3;
+    uint32 window_size_ms = 4;
+    uint32 window_period_ms = 5;
+}
+
+message SensorConfig{
+    LuxSensorConfig lux = 1;
+    SGP_Sensor_Config sgp = 2;
+    BME_Sensor_Config bme = 3;
+    ColorSensorConfig color = 4;
+    ThermopileSensorConfig thermopile = 5;
+    BlinkSensorConfig blink = 6;
+    MicSensorConfig mic = 7;
+    HumiditySensorConfig humidity = 8;
+}
+
+message DFU_Mode{
+    bool enable = 1;
+}
+
+message BlueGreenTransition{
+    bool enable = 1;
+    uint32 blue_min_intensity = 2;
+    uint32 blue_max_intensity = 3;
+    uint32 green_max_intensity = 4; 
+    uint32 step_size = 5; 
+    uint32 step_duration_ms = 6; 
+    uint32 green_hold_length_seconds = 7; 
+    uint32 transition_delay_seconds = 8; 
+}
+
+message RedFlashTask{
+    bool enable = 1;
+    uint32 red_max_intensity = 2;
+    uint32 red_min_intensity = 3;
+    uint32 duration_ms = 4;
+}
+
+message AirSpecConfigHeader{
+    uint32 timestamp_unix = 1;
+}
+
+message AirSpecConfigPacket {
+    AirSpecConfigHeader header = 1;
+
+    oneof payload {
+        LightControlPacket ctrl_indiv_led = 2;
+        SensorControl sensor_control = 3;
+        SensorConfig sensor_config = 4;
+        DFU_Mode    dfu_mode = 5;
+        BlueGreenTransition blueGreenTransition = 6;
+        RedFlashTask redFlashTask = 7;
     }
 
 }

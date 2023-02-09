@@ -409,6 +409,199 @@ typedef struct sensor_packet {
 } pb_packed sensor_packet_t;
 PB_PACKED_STRUCT_END
 
+PB_PACKED_STRUCT_START
+typedef struct air_spec_colors {
+    uint32_t red;
+    uint32_t green;
+    uint32_t blue;
+} pb_packed air_spec_colors_t;
+PB_PACKED_STRUCT_END
+
+PB_PACKED_STRUCT_START
+typedef struct air_spec_color_position {
+    bool has_forward;
+    air_spec_colors_t forward;
+    bool has_eye;
+    air_spec_colors_t eye;
+    bool has_top;
+    air_spec_colors_t top;
+} pb_packed air_spec_color_position_t;
+PB_PACKED_STRUCT_END
+
+PB_PACKED_STRUCT_START
+typedef struct light_control_packet {
+    bool has_left;
+    air_spec_color_position_t left;
+    bool has_right;
+    air_spec_color_position_t right;
+} pb_packed light_control_packet_t;
+PB_PACKED_STRUCT_END
+
+PB_PACKED_STRUCT_START
+typedef struct sensor_control {
+    bool enable_all;
+    bool spectrometer;
+    bool bme688;
+    bool imu;
+    bool thermopiles;
+    bool lux;
+    bool mic;
+    bool sht;
+    bool sgp;
+    bool blink;
+} pb_packed sensor_control_t;
+PB_PACKED_STRUCT_END
+
+PB_PACKED_STRUCT_START
+typedef struct lux_sensor_config {
+    uint32_t sample_period_ms;
+    tsl2591_gain_t gain;
+    tsl2591_integration_time_t integration_time;
+} pb_packed lux_sensor_config_t;
+PB_PACKED_STRUCT_END
+
+PB_PACKED_STRUCT_START
+typedef struct sgp_sensor_config {
+    uint32_t sample_period_ms;
+} pb_packed sgp_sensor_config_t;
+PB_PACKED_STRUCT_END
+
+PB_PACKED_STRUCT_START
+typedef struct bme_sensor_config {
+    uint32_t sample_period_ms;
+} pb_packed bme_sensor_config_t;
+PB_PACKED_STRUCT_END
+
+PB_PACKED_STRUCT_START
+typedef struct color_sensor_config {
+    uint32_t sample_period_ms;
+    uint32_t integration_time;
+    uint32_t integration_step;
+    spec_gain_t gain;
+} pb_packed color_sensor_config_t;
+PB_PACKED_STRUCT_END
+
+PB_PACKED_STRUCT_START
+typedef struct thermopile_sensor_config {
+    uint32_t sample_period_ms;
+    bool enable_top_of_nose;
+    bool enable_nose_bridge;
+    bool enable_front_temple;
+    bool enable_mid_temple;
+    bool enable_rear_temple;
+} pb_packed thermopile_sensor_config_t;
+PB_PACKED_STRUCT_END
+
+PB_PACKED_STRUCT_START
+typedef struct blink_sensor_config {
+    uint32_t sample_frequency;
+    bool enable_daylight_compensation;
+    uint32_t daylight_compensation_upper_thresh;
+    uint32_t daylight_compensation_lower_thresh;
+    uint32_t enable_windowing;
+    uint32_t window_size_ms;
+    uint32_t window_period_ms;
+} pb_packed blink_sensor_config_t;
+PB_PACKED_STRUCT_END
+
+PB_PACKED_STRUCT_START
+typedef struct mic_sensor_config {
+    uint32_t sample_period_ms;
+    uint32_t mic_sample_freq;
+} pb_packed mic_sensor_config_t;
+PB_PACKED_STRUCT_END
+
+PB_PACKED_STRUCT_START
+typedef struct humidity_sensor_config {
+    uint32_t sample_period_ms;
+    sht45_precision_t precision_level;
+    sht45_heater_t heater_settings;
+} pb_packed humidity_sensor_config_t;
+PB_PACKED_STRUCT_END
+
+PB_PACKED_STRUCT_START
+typedef struct imu_sensor_config {
+    bool has_accel_settings;
+    imu_accel_settings_t accel_settings;
+    bool has_gyro_settings;
+    imu_gyro_settings_t gyro_settings;
+    uint32_t enable_windowing;
+    uint32_t window_size_ms;
+    uint32_t window_period_ms;
+} pb_packed imu_sensor_config_t;
+PB_PACKED_STRUCT_END
+
+PB_PACKED_STRUCT_START
+typedef struct sensor_config {
+    bool has_lux;
+    lux_sensor_config_t lux;
+    bool has_sgp;
+    sgp_sensor_config_t sgp;
+    bool has_bme;
+    bme_sensor_config_t bme;
+    bool has_color;
+    color_sensor_config_t color;
+    bool has_thermopile;
+    thermopile_sensor_config_t thermopile;
+    bool has_blink;
+    blink_sensor_config_t blink;
+    bool has_mic;
+    mic_sensor_config_t mic;
+    bool has_humidity;
+    humidity_sensor_config_t humidity;
+} pb_packed sensor_config_t;
+PB_PACKED_STRUCT_END
+
+PB_PACKED_STRUCT_START
+typedef struct dfu_mode {
+    bool enable;
+} pb_packed dfu_mode_t;
+PB_PACKED_STRUCT_END
+
+PB_PACKED_STRUCT_START
+typedef struct blue_green_transition {
+    bool enable;
+    uint32_t blue_min_intensity;
+    uint32_t blue_max_intensity;
+    uint32_t green_max_intensity;
+    uint32_t step_size;
+    uint32_t step_duration_ms;
+    uint32_t green_hold_length_seconds;
+    uint32_t transition_delay_seconds;
+} pb_packed blue_green_transition_t;
+PB_PACKED_STRUCT_END
+
+PB_PACKED_STRUCT_START
+typedef struct red_flash_task {
+    bool enable;
+    uint32_t red_max_intensity;
+    uint32_t red_min_intensity;
+    uint32_t duration_ms;
+} pb_packed red_flash_task_t;
+PB_PACKED_STRUCT_END
+
+PB_PACKED_STRUCT_START
+typedef struct air_spec_config_header {
+    uint32_t timestamp_unix;
+} pb_packed air_spec_config_header_t;
+PB_PACKED_STRUCT_END
+
+PB_PACKED_STRUCT_START
+typedef struct air_spec_config_packet {
+    bool has_header;
+    air_spec_config_header_t header;
+    pb_size_t which_payload;
+    union {
+        light_control_packet_t ctrl_indiv_led;
+        sensor_control_t sensor_control;
+        sensor_config_t sensor_config;
+        dfu_mode_t dfu_mode;
+        blue_green_transition_t blue_green_transition;
+        red_flash_task_t red_flash_task;
+    } payload;
+} pb_packed air_spec_config_packet_t;
+PB_PACKED_STRUCT_END
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -508,6 +701,30 @@ extern "C" {
 
 
 
+
+
+
+#define lux_sensor_config_t_gain_ENUMTYPE tsl2591_gain_t
+#define lux_sensor_config_t_integration_time_ENUMTYPE tsl2591_integration_time_t
+
+
+
+#define color_sensor_config_t_gain_ENUMTYPE spec_gain_t
+
+
+
+
+#define humidity_sensor_config_t_precision_level_ENUMTYPE sht45_precision_t
+#define humidity_sensor_config_t_heater_settings_ENUMTYPE sht45_heater_t
+
+
+
+
+
+
+
+
+
 /* Initializer values for message structs */
 #define SENSOR_PACKET_HEADER_INIT_DEFAULT        {0, 0, 0}
 #define LUX_PACKET_INIT_DEFAULT                  {0, 0, _TSL2591_GAIN_MIN, _TSL2591_INTEGRATION_TIME_MIN, 0, {LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT}}
@@ -533,6 +750,25 @@ extern "C" {
 #define MIC_PACKET_INIT_DEFAULT                  {0, 0, 0, 0, 0, 0, false, MIC_PACKET_PAYLOAD_INIT_DEFAULT}
 #define MIC_PACKET_PAYLOAD_INIT_DEFAULT          {0, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
 #define SENSOR_PACKET_INIT_DEFAULT               {false, SENSOR_PACKET_HEADER_INIT_DEFAULT, 0, {LUX_PACKET_INIT_DEFAULT}}
+#define AIR_SPEC_COLORS_INIT_DEFAULT             {0, 0, 0}
+#define AIR_SPEC_COLOR_POSITION_INIT_DEFAULT     {false, AIR_SPEC_COLORS_INIT_DEFAULT, false, AIR_SPEC_COLORS_INIT_DEFAULT, false, AIR_SPEC_COLORS_INIT_DEFAULT}
+#define LIGHT_CONTROL_PACKET_INIT_DEFAULT        {false, AIR_SPEC_COLOR_POSITION_INIT_DEFAULT, false, AIR_SPEC_COLOR_POSITION_INIT_DEFAULT}
+#define SENSOR_CONTROL_INIT_DEFAULT              {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+#define LUX_SENSOR_CONFIG_INIT_DEFAULT           {0, _TSL2591_GAIN_MIN, _TSL2591_INTEGRATION_TIME_MIN}
+#define SGP_SENSOR_CONFIG_INIT_DEFAULT           {0}
+#define BME_SENSOR_CONFIG_INIT_DEFAULT           {0}
+#define COLOR_SENSOR_CONFIG_INIT_DEFAULT         {0, 0, 0, _SPEC_GAIN_MIN}
+#define THERMOPILE_SENSOR_CONFIG_INIT_DEFAULT    {0, 0, 0, 0, 0, 0}
+#define BLINK_SENSOR_CONFIG_INIT_DEFAULT         {0, 0, 0, 0, 0, 0, 0}
+#define MIC_SENSOR_CONFIG_INIT_DEFAULT           {0, 0}
+#define HUMIDITY_SENSOR_CONFIG_INIT_DEFAULT      {0, _SHT45_PRECISION_MIN, _SHT45_HEATER_MIN}
+#define IMU_SENSOR_CONFIG_INIT_DEFAULT           {false, IMU_ACCEL_SETTINGS_INIT_DEFAULT, false, IMU_GYRO_SETTINGS_INIT_DEFAULT, 0, 0, 0}
+#define SENSOR_CONFIG_INIT_DEFAULT               {false, LUX_SENSOR_CONFIG_INIT_DEFAULT, false, SGP_SENSOR_CONFIG_INIT_DEFAULT, false, BME_SENSOR_CONFIG_INIT_DEFAULT, false, COLOR_SENSOR_CONFIG_INIT_DEFAULT, false, THERMOPILE_SENSOR_CONFIG_INIT_DEFAULT, false, BLINK_SENSOR_CONFIG_INIT_DEFAULT, false, MIC_SENSOR_CONFIG_INIT_DEFAULT, false, HUMIDITY_SENSOR_CONFIG_INIT_DEFAULT}
+#define DFU_MODE_INIT_DEFAULT                    {0}
+#define BLUE_GREEN_TRANSITION_INIT_DEFAULT       {0, 0, 0, 0, 0, 0, 0, 0}
+#define RED_FLASH_TASK_INIT_DEFAULT              {0, 0, 0, 0}
+#define AIR_SPEC_CONFIG_HEADER_INIT_DEFAULT      {0}
+#define AIR_SPEC_CONFIG_PACKET_INIT_DEFAULT      {false, AIR_SPEC_CONFIG_HEADER_INIT_DEFAULT, 0, {LIGHT_CONTROL_PACKET_INIT_DEFAULT}}
 #define SENSOR_PACKET_HEADER_INIT_ZERO           {0, 0, 0}
 #define LUX_PACKET_INIT_ZERO                     {0, 0, _TSL2591_GAIN_MIN, _TSL2591_INTEGRATION_TIME_MIN, 0, {LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO}}
 #define LUX_PACKET_PAYLOAD_INIT_ZERO             {0, 0, 0}
@@ -557,6 +793,25 @@ extern "C" {
 #define MIC_PACKET_INIT_ZERO                     {0, 0, 0, 0, 0, 0, false, MIC_PACKET_PAYLOAD_INIT_ZERO}
 #define MIC_PACKET_PAYLOAD_INIT_ZERO             {0, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
 #define SENSOR_PACKET_INIT_ZERO                  {false, SENSOR_PACKET_HEADER_INIT_ZERO, 0, {LUX_PACKET_INIT_ZERO}}
+#define AIR_SPEC_COLORS_INIT_ZERO                {0, 0, 0}
+#define AIR_SPEC_COLOR_POSITION_INIT_ZERO        {false, AIR_SPEC_COLORS_INIT_ZERO, false, AIR_SPEC_COLORS_INIT_ZERO, false, AIR_SPEC_COLORS_INIT_ZERO}
+#define LIGHT_CONTROL_PACKET_INIT_ZERO           {false, AIR_SPEC_COLOR_POSITION_INIT_ZERO, false, AIR_SPEC_COLOR_POSITION_INIT_ZERO}
+#define SENSOR_CONTROL_INIT_ZERO                 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+#define LUX_SENSOR_CONFIG_INIT_ZERO              {0, _TSL2591_GAIN_MIN, _TSL2591_INTEGRATION_TIME_MIN}
+#define SGP_SENSOR_CONFIG_INIT_ZERO              {0}
+#define BME_SENSOR_CONFIG_INIT_ZERO              {0}
+#define COLOR_SENSOR_CONFIG_INIT_ZERO            {0, 0, 0, _SPEC_GAIN_MIN}
+#define THERMOPILE_SENSOR_CONFIG_INIT_ZERO       {0, 0, 0, 0, 0, 0}
+#define BLINK_SENSOR_CONFIG_INIT_ZERO            {0, 0, 0, 0, 0, 0, 0}
+#define MIC_SENSOR_CONFIG_INIT_ZERO              {0, 0}
+#define HUMIDITY_SENSOR_CONFIG_INIT_ZERO         {0, _SHT45_PRECISION_MIN, _SHT45_HEATER_MIN}
+#define IMU_SENSOR_CONFIG_INIT_ZERO              {false, IMU_ACCEL_SETTINGS_INIT_ZERO, false, IMU_GYRO_SETTINGS_INIT_ZERO, 0, 0, 0}
+#define SENSOR_CONFIG_INIT_ZERO                  {false, LUX_SENSOR_CONFIG_INIT_ZERO, false, SGP_SENSOR_CONFIG_INIT_ZERO, false, BME_SENSOR_CONFIG_INIT_ZERO, false, COLOR_SENSOR_CONFIG_INIT_ZERO, false, THERMOPILE_SENSOR_CONFIG_INIT_ZERO, false, BLINK_SENSOR_CONFIG_INIT_ZERO, false, MIC_SENSOR_CONFIG_INIT_ZERO, false, HUMIDITY_SENSOR_CONFIG_INIT_ZERO}
+#define DFU_MODE_INIT_ZERO                       {0}
+#define BLUE_GREEN_TRANSITION_INIT_ZERO          {0, 0, 0, 0, 0, 0, 0, 0}
+#define RED_FLASH_TASK_INIT_ZERO                 {0, 0, 0, 0}
+#define AIR_SPEC_CONFIG_HEADER_INIT_ZERO         {0}
+#define AIR_SPEC_CONFIG_PACKET_INIT_ZERO         {false, AIR_SPEC_CONFIG_HEADER_INIT_ZERO, 0, {LIGHT_CONTROL_PACKET_INIT_ZERO}}
 
 /* Field tags (for use in manual encoding/decoding) */
 #define SENSOR_PACKET_HEADER_SYSTEM_UID_TAG      1
@@ -666,6 +921,85 @@ extern "C" {
 #define SENSOR_PACKET_THERM_PACKET_TAG           8
 #define SENSOR_PACKET_IMU_PACKET_TAG             9
 #define SENSOR_PACKET_MIC_PACKET_TAG             10
+#define AIR_SPEC_COLORS_RED_TAG                  1
+#define AIR_SPEC_COLORS_GREEN_TAG                2
+#define AIR_SPEC_COLORS_BLUE_TAG                 3
+#define AIR_SPEC_COLOR_POSITION_FORWARD_TAG      1
+#define AIR_SPEC_COLOR_POSITION_EYE_TAG          2
+#define AIR_SPEC_COLOR_POSITION_TOP_TAG          3
+#define LIGHT_CONTROL_PACKET_LEFT_TAG            1
+#define LIGHT_CONTROL_PACKET_RIGHT_TAG           2
+#define SENSOR_CONTROL_ENABLE_ALL_TAG            1
+#define SENSOR_CONTROL_SPECTROMETER_TAG          2
+#define SENSOR_CONTROL_BME688_TAG                3
+#define SENSOR_CONTROL_IMU_TAG                   4
+#define SENSOR_CONTROL_THERMOPILES_TAG           5
+#define SENSOR_CONTROL_LUX_TAG                   6
+#define SENSOR_CONTROL_MIC_TAG                   7
+#define SENSOR_CONTROL_SHT_TAG                   8
+#define SENSOR_CONTROL_SGP_TAG                   9
+#define SENSOR_CONTROL_BLINK_TAG                 10
+#define LUX_SENSOR_CONFIG_SAMPLE_PERIOD_MS_TAG   1
+#define LUX_SENSOR_CONFIG_GAIN_TAG               2
+#define LUX_SENSOR_CONFIG_INTEGRATION_TIME_TAG   3
+#define SGP_SENSOR_CONFIG_SAMPLE_PERIOD_MS_TAG   1
+#define BME_SENSOR_CONFIG_SAMPLE_PERIOD_MS_TAG   1
+#define COLOR_SENSOR_CONFIG_SAMPLE_PERIOD_MS_TAG 1
+#define COLOR_SENSOR_CONFIG_INTEGRATION_TIME_TAG 2
+#define COLOR_SENSOR_CONFIG_INTEGRATION_STEP_TAG 3
+#define COLOR_SENSOR_CONFIG_GAIN_TAG             4
+#define THERMOPILE_SENSOR_CONFIG_SAMPLE_PERIOD_MS_TAG 1
+#define THERMOPILE_SENSOR_CONFIG_ENABLE_TOP_OF_NOSE_TAG 2
+#define THERMOPILE_SENSOR_CONFIG_ENABLE_NOSE_BRIDGE_TAG 3
+#define THERMOPILE_SENSOR_CONFIG_ENABLE_FRONT_TEMPLE_TAG 4
+#define THERMOPILE_SENSOR_CONFIG_ENABLE_MID_TEMPLE_TAG 5
+#define THERMOPILE_SENSOR_CONFIG_ENABLE_REAR_TEMPLE_TAG 6
+#define BLINK_SENSOR_CONFIG_SAMPLE_FREQUENCY_TAG 1
+#define BLINK_SENSOR_CONFIG_ENABLE_DAYLIGHT_COMPENSATION_TAG 2
+#define BLINK_SENSOR_CONFIG_DAYLIGHT_COMPENSATION_UPPER_THRESH_TAG 3
+#define BLINK_SENSOR_CONFIG_DAYLIGHT_COMPENSATION_LOWER_THRESH_TAG 4
+#define BLINK_SENSOR_CONFIG_ENABLE_WINDOWING_TAG 5
+#define BLINK_SENSOR_CONFIG_WINDOW_SIZE_MS_TAG   6
+#define BLINK_SENSOR_CONFIG_WINDOW_PERIOD_MS_TAG 7
+#define MIC_SENSOR_CONFIG_SAMPLE_PERIOD_MS_TAG   1
+#define MIC_SENSOR_CONFIG_MIC_SAMPLE_FREQ_TAG    2
+#define HUMIDITY_SENSOR_CONFIG_SAMPLE_PERIOD_MS_TAG 1
+#define HUMIDITY_SENSOR_CONFIG_PRECISION_LEVEL_TAG 2
+#define HUMIDITY_SENSOR_CONFIG_HEATER_SETTINGS_TAG 3
+#define IMU_SENSOR_CONFIG_ACCEL_SETTINGS_TAG     1
+#define IMU_SENSOR_CONFIG_GYRO_SETTINGS_TAG      2
+#define IMU_SENSOR_CONFIG_ENABLE_WINDOWING_TAG   3
+#define IMU_SENSOR_CONFIG_WINDOW_SIZE_MS_TAG     4
+#define IMU_SENSOR_CONFIG_WINDOW_PERIOD_MS_TAG   5
+#define SENSOR_CONFIG_LUX_TAG                    1
+#define SENSOR_CONFIG_SGP_TAG                    2
+#define SENSOR_CONFIG_BME_TAG                    3
+#define SENSOR_CONFIG_COLOR_TAG                  4
+#define SENSOR_CONFIG_THERMOPILE_TAG             5
+#define SENSOR_CONFIG_BLINK_TAG                  6
+#define SENSOR_CONFIG_MIC_TAG                    7
+#define SENSOR_CONFIG_HUMIDITY_TAG               8
+#define DFU_MODE_ENABLE_TAG                      1
+#define BLUE_GREEN_TRANSITION_ENABLE_TAG         1
+#define BLUE_GREEN_TRANSITION_BLUE_MIN_INTENSITY_TAG 2
+#define BLUE_GREEN_TRANSITION_BLUE_MAX_INTENSITY_TAG 3
+#define BLUE_GREEN_TRANSITION_GREEN_MAX_INTENSITY_TAG 4
+#define BLUE_GREEN_TRANSITION_STEP_SIZE_TAG      5
+#define BLUE_GREEN_TRANSITION_STEP_DURATION_MS_TAG 6
+#define BLUE_GREEN_TRANSITION_GREEN_HOLD_LENGTH_SECONDS_TAG 7
+#define BLUE_GREEN_TRANSITION_TRANSITION_DELAY_SECONDS_TAG 8
+#define RED_FLASH_TASK_ENABLE_TAG                1
+#define RED_FLASH_TASK_RED_MAX_INTENSITY_TAG     2
+#define RED_FLASH_TASK_RED_MIN_INTENSITY_TAG     3
+#define RED_FLASH_TASK_DURATION_MS_TAG           4
+#define AIR_SPEC_CONFIG_HEADER_TIMESTAMP_UNIX_TAG 1
+#define AIR_SPEC_CONFIG_PACKET_HEADER_TAG        1
+#define AIR_SPEC_CONFIG_PACKET_CTRL_INDIV_LED_TAG 2
+#define AIR_SPEC_CONFIG_PACKET_SENSOR_CONTROL_TAG 3
+#define AIR_SPEC_CONFIG_PACKET_SENSOR_CONFIG_TAG 4
+#define AIR_SPEC_CONFIG_PACKET_DFU_MODE_TAG      5
+#define AIR_SPEC_CONFIG_PACKET_BLUE_GREEN_TRANSITION_TAG 6
+#define AIR_SPEC_CONFIG_PACKET_RED_FLASH_TASK_TAG 7
 
 /* Struct field encoding specification for nanopb */
 #define SENSOR_PACKET_HEADER_FIELDLIST(X, a) \
@@ -894,6 +1228,183 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (payload,mic_packet,payload.mic_packet),  10)
 #define sensor_packet_t_payload_imu_packet_MSGTYPE imu_packet_t
 #define sensor_packet_t_payload_mic_packet_MSGTYPE mic_packet_t
 
+#define AIR_SPEC_COLORS_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT32,   red,               1) \
+X(a, STATIC,   SINGULAR, UINT32,   green,             2) \
+X(a, STATIC,   SINGULAR, UINT32,   blue,              3)
+#define AIR_SPEC_COLORS_CALLBACK NULL
+#define AIR_SPEC_COLORS_DEFAULT NULL
+
+#define AIR_SPEC_COLOR_POSITION_FIELDLIST(X, a) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  forward,           1) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  eye,               2) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  top,               3)
+#define AIR_SPEC_COLOR_POSITION_CALLBACK NULL
+#define AIR_SPEC_COLOR_POSITION_DEFAULT NULL
+#define air_spec_color_position_t_forward_MSGTYPE air_spec_colors_t
+#define air_spec_color_position_t_eye_MSGTYPE air_spec_colors_t
+#define air_spec_color_position_t_top_MSGTYPE air_spec_colors_t
+
+#define LIGHT_CONTROL_PACKET_FIELDLIST(X, a) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  left,              1) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  right,             2)
+#define LIGHT_CONTROL_PACKET_CALLBACK NULL
+#define LIGHT_CONTROL_PACKET_DEFAULT NULL
+#define light_control_packet_t_left_MSGTYPE air_spec_color_position_t
+#define light_control_packet_t_right_MSGTYPE air_spec_color_position_t
+
+#define SENSOR_CONTROL_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, BOOL,     enable_all,        1) \
+X(a, STATIC,   SINGULAR, BOOL,     spectrometer,      2) \
+X(a, STATIC,   SINGULAR, BOOL,     bme688,            3) \
+X(a, STATIC,   SINGULAR, BOOL,     imu,               4) \
+X(a, STATIC,   SINGULAR, BOOL,     thermopiles,       5) \
+X(a, STATIC,   SINGULAR, BOOL,     lux,               6) \
+X(a, STATIC,   SINGULAR, BOOL,     mic,               7) \
+X(a, STATIC,   SINGULAR, BOOL,     sht,               8) \
+X(a, STATIC,   SINGULAR, BOOL,     sgp,               9) \
+X(a, STATIC,   SINGULAR, BOOL,     blink,            10)
+#define SENSOR_CONTROL_CALLBACK NULL
+#define SENSOR_CONTROL_DEFAULT NULL
+
+#define LUX_SENSOR_CONFIG_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT32,   sample_period_ms,   1) \
+X(a, STATIC,   SINGULAR, UENUM,    gain,              2) \
+X(a, STATIC,   SINGULAR, UENUM,    integration_time,   3)
+#define LUX_SENSOR_CONFIG_CALLBACK NULL
+#define LUX_SENSOR_CONFIG_DEFAULT NULL
+
+#define SGP_SENSOR_CONFIG_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT32,   sample_period_ms,   1)
+#define SGP_SENSOR_CONFIG_CALLBACK NULL
+#define SGP_SENSOR_CONFIG_DEFAULT NULL
+
+#define BME_SENSOR_CONFIG_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT32,   sample_period_ms,   1)
+#define BME_SENSOR_CONFIG_CALLBACK NULL
+#define BME_SENSOR_CONFIG_DEFAULT NULL
+
+#define COLOR_SENSOR_CONFIG_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT32,   sample_period_ms,   1) \
+X(a, STATIC,   SINGULAR, UINT32,   integration_time,   2) \
+X(a, STATIC,   SINGULAR, UINT32,   integration_step,   3) \
+X(a, STATIC,   SINGULAR, UENUM,    gain,              4)
+#define COLOR_SENSOR_CONFIG_CALLBACK NULL
+#define COLOR_SENSOR_CONFIG_DEFAULT NULL
+
+#define THERMOPILE_SENSOR_CONFIG_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT32,   sample_period_ms,   1) \
+X(a, STATIC,   SINGULAR, BOOL,     enable_top_of_nose,   2) \
+X(a, STATIC,   SINGULAR, BOOL,     enable_nose_bridge,   3) \
+X(a, STATIC,   SINGULAR, BOOL,     enable_front_temple,   4) \
+X(a, STATIC,   SINGULAR, BOOL,     enable_mid_temple,   5) \
+X(a, STATIC,   SINGULAR, BOOL,     enable_rear_temple,   6)
+#define THERMOPILE_SENSOR_CONFIG_CALLBACK NULL
+#define THERMOPILE_SENSOR_CONFIG_DEFAULT NULL
+
+#define BLINK_SENSOR_CONFIG_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT32,   sample_frequency,   1) \
+X(a, STATIC,   SINGULAR, BOOL,     enable_daylight_compensation,   2) \
+X(a, STATIC,   SINGULAR, UINT32,   daylight_compensation_upper_thresh,   3) \
+X(a, STATIC,   SINGULAR, UINT32,   daylight_compensation_lower_thresh,   4) \
+X(a, STATIC,   SINGULAR, UINT32,   enable_windowing,   5) \
+X(a, STATIC,   SINGULAR, UINT32,   window_size_ms,    6) \
+X(a, STATIC,   SINGULAR, UINT32,   window_period_ms,   7)
+#define BLINK_SENSOR_CONFIG_CALLBACK NULL
+#define BLINK_SENSOR_CONFIG_DEFAULT NULL
+
+#define MIC_SENSOR_CONFIG_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT32,   sample_period_ms,   1) \
+X(a, STATIC,   SINGULAR, UINT32,   mic_sample_freq,   2)
+#define MIC_SENSOR_CONFIG_CALLBACK NULL
+#define MIC_SENSOR_CONFIG_DEFAULT NULL
+
+#define HUMIDITY_SENSOR_CONFIG_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT32,   sample_period_ms,   1) \
+X(a, STATIC,   SINGULAR, UENUM,    precision_level,   2) \
+X(a, STATIC,   SINGULAR, UENUM,    heater_settings,   3)
+#define HUMIDITY_SENSOR_CONFIG_CALLBACK NULL
+#define HUMIDITY_SENSOR_CONFIG_DEFAULT NULL
+
+#define IMU_SENSOR_CONFIG_FIELDLIST(X, a) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  accel_settings,    1) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  gyro_settings,     2) \
+X(a, STATIC,   SINGULAR, UINT32,   enable_windowing,   3) \
+X(a, STATIC,   SINGULAR, UINT32,   window_size_ms,    4) \
+X(a, STATIC,   SINGULAR, UINT32,   window_period_ms,   5)
+#define IMU_SENSOR_CONFIG_CALLBACK NULL
+#define IMU_SENSOR_CONFIG_DEFAULT NULL
+#define imu_sensor_config_t_accel_settings_MSGTYPE imu_accel_settings_t
+#define imu_sensor_config_t_gyro_settings_MSGTYPE imu_gyro_settings_t
+
+#define SENSOR_CONFIG_FIELDLIST(X, a) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  lux,               1) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  sgp,               2) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  bme,               3) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  color,             4) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  thermopile,        5) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  blink,             6) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  mic,               7) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  humidity,          8)
+#define SENSOR_CONFIG_CALLBACK NULL
+#define SENSOR_CONFIG_DEFAULT NULL
+#define sensor_config_t_lux_MSGTYPE lux_sensor_config_t
+#define sensor_config_t_sgp_MSGTYPE sgp_sensor_config_t
+#define sensor_config_t_bme_MSGTYPE bme_sensor_config_t
+#define sensor_config_t_color_MSGTYPE color_sensor_config_t
+#define sensor_config_t_thermopile_MSGTYPE thermopile_sensor_config_t
+#define sensor_config_t_blink_MSGTYPE blink_sensor_config_t
+#define sensor_config_t_mic_MSGTYPE mic_sensor_config_t
+#define sensor_config_t_humidity_MSGTYPE humidity_sensor_config_t
+
+#define DFU_MODE_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, BOOL,     enable,            1)
+#define DFU_MODE_CALLBACK NULL
+#define DFU_MODE_DEFAULT NULL
+
+#define BLUE_GREEN_TRANSITION_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, BOOL,     enable,            1) \
+X(a, STATIC,   SINGULAR, UINT32,   blue_min_intensity,   2) \
+X(a, STATIC,   SINGULAR, UINT32,   blue_max_intensity,   3) \
+X(a, STATIC,   SINGULAR, UINT32,   green_max_intensity,   4) \
+X(a, STATIC,   SINGULAR, UINT32,   step_size,         5) \
+X(a, STATIC,   SINGULAR, UINT32,   step_duration_ms,   6) \
+X(a, STATIC,   SINGULAR, UINT32,   green_hold_length_seconds,   7) \
+X(a, STATIC,   SINGULAR, UINT32,   transition_delay_seconds,   8)
+#define BLUE_GREEN_TRANSITION_CALLBACK NULL
+#define BLUE_GREEN_TRANSITION_DEFAULT NULL
+
+#define RED_FLASH_TASK_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, BOOL,     enable,            1) \
+X(a, STATIC,   SINGULAR, UINT32,   red_max_intensity,   2) \
+X(a, STATIC,   SINGULAR, UINT32,   red_min_intensity,   3) \
+X(a, STATIC,   SINGULAR, UINT32,   duration_ms,       4)
+#define RED_FLASH_TASK_CALLBACK NULL
+#define RED_FLASH_TASK_DEFAULT NULL
+
+#define AIR_SPEC_CONFIG_HEADER_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT32,   timestamp_unix,    1)
+#define AIR_SPEC_CONFIG_HEADER_CALLBACK NULL
+#define AIR_SPEC_CONFIG_HEADER_DEFAULT NULL
+
+#define AIR_SPEC_CONFIG_PACKET_FIELDLIST(X, a) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  header,            1) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (payload,ctrl_indiv_led,payload.ctrl_indiv_led),   2) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (payload,sensor_control,payload.sensor_control),   3) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (payload,sensor_config,payload.sensor_config),   4) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (payload,dfu_mode,payload.dfu_mode),   5) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (payload,blue_green_transition,payload.blue_green_transition),   6) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (payload,red_flash_task,payload.red_flash_task),   7)
+#define AIR_SPEC_CONFIG_PACKET_CALLBACK NULL
+#define AIR_SPEC_CONFIG_PACKET_DEFAULT NULL
+#define air_spec_config_packet_t_header_MSGTYPE air_spec_config_header_t
+#define air_spec_config_packet_t_payload_ctrl_indiv_led_MSGTYPE light_control_packet_t
+#define air_spec_config_packet_t_payload_sensor_control_MSGTYPE sensor_control_t
+#define air_spec_config_packet_t_payload_sensor_config_MSGTYPE sensor_config_t
+#define air_spec_config_packet_t_payload_dfu_mode_MSGTYPE dfu_mode_t
+#define air_spec_config_packet_t_payload_blue_green_transition_MSGTYPE blue_green_transition_t
+#define air_spec_config_packet_t_payload_red_flash_task_MSGTYPE red_flash_task_t
+
 extern const pb_msgdesc_t sensor_packet_header_t_msg;
 extern const pb_msgdesc_t lux_packet_t_msg;
 extern const pb_msgdesc_t lux_packet_payload_t_msg;
@@ -918,6 +1429,25 @@ extern const pb_msgdesc_t imu_packet_payload_t_msg;
 extern const pb_msgdesc_t mic_packet_t_msg;
 extern const pb_msgdesc_t mic_packet_payload_t_msg;
 extern const pb_msgdesc_t sensor_packet_t_msg;
+extern const pb_msgdesc_t air_spec_colors_t_msg;
+extern const pb_msgdesc_t air_spec_color_position_t_msg;
+extern const pb_msgdesc_t light_control_packet_t_msg;
+extern const pb_msgdesc_t sensor_control_t_msg;
+extern const pb_msgdesc_t lux_sensor_config_t_msg;
+extern const pb_msgdesc_t sgp_sensor_config_t_msg;
+extern const pb_msgdesc_t bme_sensor_config_t_msg;
+extern const pb_msgdesc_t color_sensor_config_t_msg;
+extern const pb_msgdesc_t thermopile_sensor_config_t_msg;
+extern const pb_msgdesc_t blink_sensor_config_t_msg;
+extern const pb_msgdesc_t mic_sensor_config_t_msg;
+extern const pb_msgdesc_t humidity_sensor_config_t_msg;
+extern const pb_msgdesc_t imu_sensor_config_t_msg;
+extern const pb_msgdesc_t sensor_config_t_msg;
+extern const pb_msgdesc_t dfu_mode_t_msg;
+extern const pb_msgdesc_t blue_green_transition_t_msg;
+extern const pb_msgdesc_t red_flash_task_t_msg;
+extern const pb_msgdesc_t air_spec_config_header_t_msg;
+extern const pb_msgdesc_t air_spec_config_packet_t_msg;
 
 /* Defines for backwards compatibility with code written before nanopb-0.4.0 */
 #define SENSOR_PACKET_HEADER_FIELDS &sensor_packet_header_t_msg
@@ -944,30 +1474,68 @@ extern const pb_msgdesc_t sensor_packet_t_msg;
 #define MIC_PACKET_FIELDS &mic_packet_t_msg
 #define MIC_PACKET_PAYLOAD_FIELDS &mic_packet_payload_t_msg
 #define SENSOR_PACKET_FIELDS &sensor_packet_t_msg
+#define AIR_SPEC_COLORS_FIELDS &air_spec_colors_t_msg
+#define AIR_SPEC_COLOR_POSITION_FIELDS &air_spec_color_position_t_msg
+#define LIGHT_CONTROL_PACKET_FIELDS &light_control_packet_t_msg
+#define SENSOR_CONTROL_FIELDS &sensor_control_t_msg
+#define LUX_SENSOR_CONFIG_FIELDS &lux_sensor_config_t_msg
+#define SGP_SENSOR_CONFIG_FIELDS &sgp_sensor_config_t_msg
+#define BME_SENSOR_CONFIG_FIELDS &bme_sensor_config_t_msg
+#define COLOR_SENSOR_CONFIG_FIELDS &color_sensor_config_t_msg
+#define THERMOPILE_SENSOR_CONFIG_FIELDS &thermopile_sensor_config_t_msg
+#define BLINK_SENSOR_CONFIG_FIELDS &blink_sensor_config_t_msg
+#define MIC_SENSOR_CONFIG_FIELDS &mic_sensor_config_t_msg
+#define HUMIDITY_SENSOR_CONFIG_FIELDS &humidity_sensor_config_t_msg
+#define IMU_SENSOR_CONFIG_FIELDS &imu_sensor_config_t_msg
+#define SENSOR_CONFIG_FIELDS &sensor_config_t_msg
+#define DFU_MODE_FIELDS &dfu_mode_t_msg
+#define BLUE_GREEN_TRANSITION_FIELDS &blue_green_transition_t_msg
+#define RED_FLASH_TASK_FIELDS &red_flash_task_t_msg
+#define AIR_SPEC_CONFIG_HEADER_FIELDS &air_spec_config_header_t_msg
+#define AIR_SPEC_CONFIG_PACKET_FIELDS &air_spec_config_packet_t_msg
 
 /* Maximum encoded size of messages (where known) */
+#define AIR_SPEC_COLORS_SIZE                     18
+#define AIR_SPEC_COLOR_POSITION_SIZE             60
+#define AIR_SPEC_CONFIG_HEADER_SIZE              6
+#define AIR_SPEC_CONFIG_PACKET_SIZE              146
 #define BLINK_BYTE_PAYLOAD_SIZE                  453
 #define BLINK_HIGH_RES_PAYLOAD_SIZE              353
 #define BLINK_PACKET_SIZE                        484
 #define BLINK_SATURATION_SETTINGS_SIZE           14
+#define BLINK_SENSOR_CONFIG_SIZE                 38
+#define BLUE_GREEN_TRANSITION_SIZE               44
 #define BME_PACKET_PAYLOAD_SIZE                  36
 #define BME_PACKET_SIZE                          468
+#define BME_SENSOR_CONFIG_SIZE                   6
+#define COLOR_SENSOR_CONFIG_SIZE                 20
+#define DFU_MODE_SIZE                            2
+#define HUMIDITY_SENSOR_CONFIG_SIZE              10
 #define IMU_ACCEL_SETTINGS_SIZE                  10
 #define IMU_GYRO_SETTINGS_SIZE                   10
 #define IMU_PACKET_PAYLOAD_SIZE                  443
 #define IMU_PACKET_SIZE                          476
+#define IMU_SENSOR_CONFIG_SIZE                   42
+#define LIGHT_CONTROL_PACKET_SIZE                124
 #define LUX_PACKET_PAYLOAD_SIZE                  18
 #define LUX_PACKET_SIZE                          617
+#define LUX_SENSOR_CONFIG_SIZE                   11
 #define MIC_PACKET_PAYLOAD_SIZE                  650
 #define MIC_PACKET_SIZE                          687
+#define MIC_SENSOR_CONFIG_SIZE                   12
+#define RED_FLASH_TASK_SIZE                      20
+#define SENSOR_CONFIG_SIZE                       135
+#define SENSOR_CONTROL_SIZE                      20
 #define SENSOR_PACKET_HEADER_SIZE                18
 #define SENSOR_PACKET_SIZE                       4839
 #define SGP_PACKET_PAYLOAD_SIZE                  46
 #define SGP_PACKET_SIZE                          972
+#define SGP_SENSOR_CONFIG_SIZE                   6
 #define SHT_PACKET_PAYLOAD_SIZE                  22
 #define SHT_PACKET_SIZE                          4816
 #define SPEC_PACKET_PAYLOAD_SIZE                 78
 #define SPEC_PACKET_SIZE                         2426
+#define THERMOPILE_SENSOR_CONFIG_SIZE            16
 #define THERM_PACKET_PAYLOAD_SIZE                36
 #define THERM_PACKET_SIZE                        1912
 
