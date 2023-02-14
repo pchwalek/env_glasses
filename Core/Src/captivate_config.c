@@ -124,6 +124,61 @@ void controlBlink(bool state){
 	}
 }
 
+blink_sensor_config_t blinkConfigNoWindow;
+void controlBlinkNoWindow(bool state){
+
+	osThreadFlagsSet(blinkTaskHandle, TERMINATE_THREAD_BIT);
+
+	memcpy(&blinkConfigNoWindow,&sysState.config.blink,sizeof(blink_sensor_config_t));
+	blinkConfigNoWindow.enable_windowing = 0;
+
+	if(state){
+		osThreadState_t threadState = osThreadGetState(blinkTaskHandle);
+		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
+			blinkTaskHandle = osThreadNew(BlinkTask, &blinkConfigNoWindow, &blinkTask_attributes);
+		}
+	}else{
+		osThreadFlagsSet(blinkTaskHandle, TERMINATE_THREAD_BIT);
+
+	}
+}
+
+//blink_sensor_config_t blinkConfigNoWindow;
+//void controlBlinkNoWindow(bool state){
+//
+//	osThreadFlagsSet(blinkTaskHandle, TERMINATE_THREAD_BIT);
+//
+//	memcpy(&blinkConfigNoWindow,&sysState.config.blink,sizeof(blink_sensor_config_t));
+//	blinkConfigNoWindow.enable_windowing = 0;
+//
+//	if(state){
+//		osThreadState_t threadState = osThreadGetState(blinkTaskHandle);
+//		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
+//			blinkTaskHandle = osThreadNew(BlinkTask, &blinkConfigNoWindow, &blinkTask_attributes);
+//		}
+//	}else{
+//		osThreadFlagsSet(blinkTaskHandle, TERMINATE_THREAD_BIT);
+//
+//	}
+//}
+//
+//imu_sensor_config_t imuConfigNoWindow;
+//void controlIMUNoWindow(bool state){
+//	osThreadFlagsSet(imuTaskHandle, TERMINATE_THREAD_BIT);
+//
+//	memcpy(&imuConfigNoWindow,&sysState.config.imu,sizeof(imu_sensor_config_t));
+//	imuConfigNoWindow.enable_windowing = 0;
+//
+//	if(state){
+//		osThreadState_t threadState = osThreadGetState(imuTaskHandle);
+//		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
+//			imuTaskHandle = osThreadNew(IMU_Task,&imuConfigNoWindow, &imuTask_attributes);
+//		}
+//	}else{
+//		osThreadFlagsSet(imuTaskHandle, TERMINATE_THREAD_BIT);
+//	}
+//}
+
 void controlAllSensors(bool state){
 	controlSpectrometer(state);
 	controlBME(state);
