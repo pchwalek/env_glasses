@@ -49,14 +49,14 @@ void ShtTask(void *argument) {
 	shtTemp = -1;
 	shtHum = -1;
 
-	struct HumiditySensor sensorSettings;
+	humidity_sensor_config_t sensorSettings;
 
 	if(argument != NULL){
 		memcpy(&sensorSettings,argument,sizeof(struct HumiditySensor));
 	}else{
-		sensorSettings.heaterSetting = SHT4X_NO_HEATER;
-		sensorSettings.precisionLevel = SHT4X_HIGH_PRECISION;
-		sensorSettings.sample_period = SHT_SAMPLE_SYS_PERIOD_MS;
+		sensorSettings.heater_settings = SHT45_HEATER_SHT4_X_LOW_HEATER_100_MS;
+		sensorSettings.precision_level = SHT45_PRECISION_SHT4_X_HIGH_PRECISION;
+		sensorSettings.sample_period_ms = SHT_SAMPLE_SYS_PERIOD_MS;
 	}
 
 	osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
@@ -66,8 +66,8 @@ void ShtTask(void *argument) {
 		osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 	}
 
-	sht4.setPrecision( (sht4x_precision_t) sensorSettings.precisionLevel);
-	sht4.setHeater( (sht4x_heater_t) sensorSettings.heaterSetting);
+	sht4.setPrecision( (sht4x_precision_t) sensorSettings.precision_level);
+	sht4.setHeater( (sht4x_heater_t) sensorSettings.heater_settings);
 
 	osSemaphoreRelease(messageI2C1_LockHandle);
 
@@ -80,7 +80,7 @@ void ShtTask(void *argument) {
 
 	periodicShtTimer_id = osTimerNew(triggerShtSample, osTimerPeriodic,
 			NULL, NULL);
-	osTimerStart(periodicShtTimer_id, sensorSettings.sample_period);
+	osTimerStart(periodicShtTimer_id, sensorSettings.sample_period_ms);
 
 
 	while (1) {
@@ -123,8 +123,8 @@ void ShtTask(void *argument) {
 					setPacketType(packet, SENSOR_PACKET_TYPES_SHT);
 
 //					sensorPacket.header.payload_length = MAX_SHT_SAMPLES_PACKET * sizeof(shtSample);
-					packet->payload.sht_packet.precision = static_cast<sht45_precision_t>(sensorSettings.precisionLevel);
-					packet->payload.sht_packet.heater = static_cast<sht45_heater_t>(sensorSettings.heaterSetting);
+					packet->payload.sht_packet.precision = static_cast<sht45_precision_t>(sensorSettings.precision_level);
+					packet->payload.sht_packet.heater = static_cast<sht45_heater_t>(sensorSettings.heater_settings);
 
 //					sensorPacket.header.packet_id = shtID;
 //					sensorPacket.header.ms_from_start = HAL_GetTick();

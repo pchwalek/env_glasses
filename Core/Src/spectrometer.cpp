@@ -67,15 +67,15 @@ void Spec_Task(void *argument) {
 
 	osDelay(500);
 
-	struct ColorSensor sensorSettings;
+	color_sensor_config_t sensorSettings;
 
 	if(argument != NULL){
-		memcpy(&sensorSettings,argument,sizeof(struct ColorSensor));
+		memcpy(&sensorSettings,argument,sizeof(color_sensor_config_t));
 	}else{
-		sensorSettings.integrationTime = 100;
-		sensorSettings.integrationStep = 999;
-		sensorSettings.gain = AS7341_GAIN_256X;
-		sensorSettings.sample_period = SPEC_SAMPLE_SYS_PERIOD_MS;
+		sensorSettings.integration_time = 100;
+		sensorSettings.integration_step = 999;
+		sensorSettings.gain = SPEC_GAIN_GAIN_256_X;
+		sensorSettings.sample_period_ms = SPEC_SAMPLE_SYS_PERIOD_MS;
 	}
 
 	osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
@@ -84,8 +84,8 @@ void Spec_Task(void *argument) {
 		osDelay(100);
 		osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 	}
-	specSensor.setATIME(sensorSettings.integrationTime);
-	specSensor.setASTEP(sensorSettings.integrationStep);
+	specSensor.setATIME(sensorSettings.integration_time);
+	specSensor.setASTEP(sensorSettings.integration_step);
 	specSensor.setGain((as7341_gain_t) sensorSettings.gain);
 
 
@@ -100,7 +100,7 @@ void Spec_Task(void *argument) {
 	osSemaphoreRelease(messageI2C1_LockHandle);
 	periodicSpecTimer_id = osTimerNew(triggerSpectrometerSample, osTimerPeriodic,
 			NULL, NULL);
-	osTimerStart(periodicSpecTimer_id, sensorSettings.sample_period);
+	osTimerStart(periodicSpecTimer_id, sensorSettings.sample_period_ms);
 
 	while (1) {
 		flags = osThreadFlagsWait(GRAB_SAMPLE_BIT | TERMINATE_THREAD_BIT,
@@ -142,7 +142,7 @@ void Spec_Task(void *argument) {
 
 
 					packet->payload.spec_packet.packet_index = specID;
-					packet->payload.spec_packet.sample_period = sensorSettings.sample_period;
+					packet->payload.spec_packet.sample_period = sensorSettings.sample_period_ms;
 					packet->payload.spec_packet.integration_time = 100;
 					packet->payload.spec_packet.integration_step = 999;
 					packet->payload.spec_packet.gain = static_cast<spec_gain_t>(AS7341_GAIN_256X);

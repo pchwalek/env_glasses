@@ -53,6 +53,21 @@ void MX_TIM2_Init(void)
   {
     Error_Handler();
   }
+  if (HAL_TIM_PWM_Init(&htim2) != HAL_OK)
+    {
+      Error_Handler();
+    }
+    sConfigOC.OCMode = TIM_OCMODE_PWM1;
+    sConfigOC.Pulse = 5;
+    sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+    sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
+    sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+    sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
+    sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
+    if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
+    {
+      Error_Handler();
+    }
   sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
   if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
   {
@@ -134,7 +149,7 @@ void MX_TIM16_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN TIM16_Init 2 */
-
+  HAL_TIM_MspPostInit(&htim2);
   /* USER CODE END TIM16_Init 2 */
   HAL_TIM_MspPostInit(&htim16);
 
@@ -236,6 +251,27 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef* timHandle)
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     GPIO_InitStruct.Alternate = GPIO_AF14_TIM16;
     HAL_GPIO_Init(BLINK_PWM_GPIO_Port, &GPIO_InitStruct);
+
+  /* USER CODE BEGIN TIM16_MspPostInit 1 */
+
+  /* USER CODE END TIM16_MspPostInit 1 */
+  }
+  if(timHandle->Instance==TIM2)
+  {
+  /* USER CODE BEGIN TIM16_MspPostInit 0 */
+
+  /* USER CODE END TIM16_MspPostInit 0 */
+
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    /**TIM16 GPIO Configuration
+    PA6     ------> TIM16_CH1
+    */
+    GPIO_InitStruct.Pin = SPEAKER_OUT_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    GPIO_InitStruct.Alternate = GPIO_AF14_TIM2;
+    HAL_GPIO_Init(SPEAKER_OUT_GPIO_Port, &GPIO_InitStruct);
 
   /* USER CODE BEGIN TIM16_MspPostInit 1 */
 

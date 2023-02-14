@@ -282,13 +282,18 @@
 #define DATA_TRANSFER_SERVICE_UUID                                     (0xFE80)
 #define DATA_TRANSFER_TX_CHAR_UUID                                     (0xFE81)
 #define DATA_TRANSFER_RX_CHAR_UUID                                     (0xFE82)    
-#define DATA_TRANSFER_SENSOR_CONFIG_CHAR_UUID                          (0xFE83)
 
 /* UUIDs for custom battery service */ 
 #define CUSTOM_BATTERY_SERVICE_UUID                                    (0xF2F0)
 #define CUSTOM_BATTERY_LEVEL_CHAR_UUID                                 (0xF2F1)
 
 /* Custom Services*/
+/* UUIDs for data transfer service */
+#define DATA_TRANSFER_SERVICE_UUID                                     (0xFE80)
+#define DATA_TRANSFER_TX_CHAR_UUID                                     (0xFE81)
+#define DATA_TRANSFER_RX_CHAR_UUID                                     (0xFE82)
+#define DATA_TRANSFER_SENSOR_CONFIG_CHAR_UUID                          (0xFE83)
+
 /* UUIDs for data transfer service */
 #define LED_BUTTON_SERVICE_UUID                                       (0x1A30)
 #define LED_CHAR_UUID                                                 (0x2B50)

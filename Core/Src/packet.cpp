@@ -303,13 +303,20 @@ uint8_t sendProtobufPacket_BLE(uint8_t *packet, uint16_t size) {
 //	}
 //}
 
-uint8_t updateSystemConfig_BLE(struct SensorConfig *packet) {
+uint8_t buffer[500];
+uint8_t updateSystemConfig_BLE(system_state_t *packet) {
 
 		tBleStatus status = BLE_STATUS_INVALID_PARAMS;
 
-		DataTransferSysConfigContext.TxData.pPayload = (uint8_t*) packet;
-		DataTransferSysConfigContext.TxData.Length = sizeof(struct SensorConfig);
 
+        /* Create a stream that will write to our buffer. */
+        pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
+
+        /* Now we are ready to encode the message! */
+        status = pb_encode(&stream, SYSTEM_STATE_FIELDS, packet);
+
+		DataTransferSysConfigContext.TxData.pPayload = buffer;
+		DataTransferSysConfigContext.TxData.Length = stream.bytes_written;
 
 		status = DTS_STM_UpdateChar(DATA_TRANSFER_SENSOR_CONFIG_CHAR_UUID,
 				(uint8_t*) &DataTransferSysConfigContext.TxData);

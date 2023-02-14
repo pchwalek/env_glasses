@@ -72,7 +72,7 @@ void grabThermopileSamples(therm_packet_payload_t *data, CALIPILE *tp);
 volatile uint16_t thermIdx;
 uint32_t thermID;
 
-struct ThermopileSensor sensorSettings;
+thermopile_sensor_config_t sensorSettings;
 void Thermopile_Task(void *argument) {
 	sensor_packet_t *packet = NULL;
 	uint32_t flags;
@@ -83,8 +83,12 @@ void Thermopile_Task(void *argument) {
 	if(argument != NULL){
 		memcpy(&sensorSettings,argument,sizeof(struct ThermopileSensor));
 	}else{
-		sensorSettings.enable = 1;
-		sensorSettings.sample_period = 1;
+		sensorSettings.sample_period_ms = 500;
+		sensorSettings.enable_top_of_nose = true;
+		sensorSettings.enable_nose_bridge = 500;
+		sensorSettings.enable_front_temple = 500;
+		sensorSettings.enable_mid_temple = 500;
+		sensorSettings.enable_rear_temple = 500;
 	}
 
 //	tp_nose_bridge.setup((uint8_t) THERMOPLE_NOSE_BRIDGE_ADDR, &hi2c1, THERMOPLE_NOSE_BRIDGE_ID);
@@ -111,7 +115,7 @@ void Thermopile_Task(void *argument) {
 
 	periodicThermopileTimer_id = osTimerNew(triggerThermopileSample,
 			osTimerPeriodic, NULL, NULL);
-	osTimerStart(periodicThermopileTimer_id, sensorSettings.sample_period);
+	osTimerStart(periodicThermopileTimer_id, sensorSettings.sample_period_ms);
 
 	while (1) {
 
@@ -183,7 +187,7 @@ void queueThermopilePkt(therm_packet_payload_t *sample, uint16_t packetCnt){
 			setPacketType(packet, SENSOR_PACKET_TYPES_THERMOPILE);
 
 			packet->payload.therm_packet.packet_index = thermID;
-			packet->payload.therm_packet.sample_period = sensorSettings.sample_period;
+			packet->payload.therm_packet.sample_period = sensorSettings.sample_period_ms;
 			// reset message buffer
 //			memset(&sensorPacket.therm_packet.payload[0], 0, sizeof(sensorPacket.therm_packet.payload));
 

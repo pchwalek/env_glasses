@@ -52,7 +52,7 @@ osTimerId_t resetTimer;
  *
  *************************************************************/
 
-#define MAX_BRIGHTNESS 255 //up to 255
+#define MAX_BRIGHTNESS 150 //up to 255
 
 uint8_t led_left_PWM[9] = { 0 };
 uint8_t led_right_PWM[9] = { 0 };
@@ -636,10 +636,14 @@ void ledStartupSequence(void){
 
 union ColorComplex blueGreenTranColor;
 void BlueGreenTransitionTask(void *argument){
-	union BlueGreenTransition blueGreenTran;
+//	union BlueGreenTransition blueGreenTran;
+
+	blue_green_transition_t blueGreenTran;
+
+
 	uint32_t timeTracker = 0;
 
-	memcpy(&blueGreenTran,argument,sizeof(union BlueGreenTransition));
+	memcpy(&blueGreenTran,argument,sizeof(blue_green_transition_t));
 
 
 	uint8_t step_duration_seconds;
@@ -650,7 +654,7 @@ void BlueGreenTransitionTask(void *argument){
 
 
 	/* delay sequence */
-	osDelay(blueGreenTran.val.transition_delay_seconds*1000);
+	osDelay(blueGreenTran.transition_delay_seconds*1000);
 
 
 	/* start sequence */
@@ -661,22 +665,22 @@ void BlueGreenTransitionTask(void *argument){
 
 
 	// error condition: if step size exceeds intensity range
-	if( (blueGreenTran.val.step_size >= blueGreenTran.val.blue_max_intensity) ||
-			(blueGreenTran.val.step_size >= blueGreenTran.val.green_max_intensity)){
+	if( (blueGreenTran.step_size >= blueGreenTran.blue_max_intensity) ||
+			(blueGreenTran.step_size >= blueGreenTran.green_max_intensity)){
 		vTaskDelete( NULL );
 	}
 
 	/* increase blue intensity */
-	if(blueGreenTran.val.blue_max_intensity > blueGreenTran.val.blue_min_intensity){
-		for(int i = blueGreenTran.val.blue_min_intensity;;
-				i += blueGreenTran.val.step_size){
+	if(blueGreenTran.blue_max_intensity > blueGreenTran.blue_min_intensity){
+		for(int i = blueGreenTran.blue_min_intensity;;
+				i += blueGreenTran.step_size){
 
-			blueGreenTranColor.colors_indiv.right_side_b = (i > blueGreenTran.val.blue_max_intensity) ? blueGreenTran.val.blue_max_intensity : i;
+			blueGreenTranColor.colors_indiv.right_side_b = (i > blueGreenTran.blue_max_intensity) ? blueGreenTran.blue_max_intensity : i;
 			blueGreenTranColor.colors_indiv.left_side_b = blueGreenTranColor.colors_indiv.right_side_b;
 			osMessageQueuePut(lightsComplexQueueHandle, &blueGreenTranColor, 0, 0);
-			osDelay(blueGreenTran.val.step_duration_milliseconds);
+			osDelay(blueGreenTran.step_duration_ms);
 
-			if(i >= blueGreenTran.val.blue_max_intensity){
+			if(i >= blueGreenTran.blue_max_intensity){
 				break;
 			}
 		}
@@ -685,21 +689,21 @@ void BlueGreenTransitionTask(void *argument){
 	/* start transition */
 	for(int i = 0;
 			i <= 255;
-			i += blueGreenTran.val.step_size){
-		blueGreenTranColor.colors_indiv.right_side_b = (i > blueGreenTran.val.blue_max_intensity) ? 0 : blueGreenTran.val.blue_max_intensity - i;
+			i += blueGreenTran.step_size){
+		blueGreenTranColor.colors_indiv.right_side_b = (i > blueGreenTran.blue_max_intensity) ? 0 : blueGreenTran.blue_max_intensity - i;
 		blueGreenTranColor.colors_indiv.left_side_b = blueGreenTranColor.colors_indiv.right_side_b;
 
-		blueGreenTranColor.colors_indiv.right_side_g = (i > blueGreenTran.val.green_max_intensity) ? blueGreenTran.val.green_max_intensity : i;
+		blueGreenTranColor.colors_indiv.right_side_g = (i > blueGreenTran.green_max_intensity) ? blueGreenTran.green_max_intensity : i;
 		blueGreenTranColor.colors_indiv.left_side_g = blueGreenTranColor.colors_indiv.right_side_g;
 
 		osMessageQueuePut(lightsComplexQueueHandle, &blueGreenTranColor, 0, 0);
 
-		if( (blueGreenTran.val.green_max_intensity <= blueGreenTranColor.colors_indiv.right_side_g) &&
-				(blueGreenTran.val.blue_min_intensity >= blueGreenTranColor.colors_indiv.right_side_b)){
+		if( (blueGreenTran.green_max_intensity <= blueGreenTranColor.colors_indiv.right_side_g) &&
+				(blueGreenTran.blue_min_intensity >= blueGreenTranColor.colors_indiv.right_side_b)){
 			break;
 
 		}else{
-			osDelay(blueGreenTran.val.step_duration_milliseconds);
+			osDelay(blueGreenTran.step_duration_ms);
 		}
 	}
 
@@ -709,45 +713,45 @@ void BlueGreenTransitionTask(void *argument){
 //		osDelay(blueGreenTran->val.step_duration - timeTracker);
 //	}
 
-	osDelay(blueGreenTran.val.green_hold_length_seconds*1000);
+	osDelay(blueGreenTran.green_hold_length_seconds*1000);
 
 	uint16_t blue_intensity;
 	uint16_t green_intensity;
 	/* start transition */
 	for(int i = 0;
 			i <= 255;
-			i += blueGreenTran.val.step_size){
-		blue_intensity = blueGreenTran.val.blue_min_intensity + i;
-		blueGreenTranColor.colors_indiv.right_side_b = (blue_intensity > blueGreenTran.val.blue_max_intensity) ? blueGreenTran.val.blue_max_intensity : blue_intensity;
+			i += blueGreenTran.step_size){
+		blue_intensity = blueGreenTran.blue_min_intensity + i;
+		blueGreenTranColor.colors_indiv.right_side_b = (blue_intensity > blueGreenTran.blue_max_intensity) ? blueGreenTran.blue_max_intensity : blue_intensity;
 		blueGreenTranColor.colors_indiv.left_side_b = blueGreenTranColor.colors_indiv.right_side_b;
 
-		green_intensity = blueGreenTran.val.green_max_intensity - i;
+		green_intensity = blueGreenTran.green_max_intensity - i;
 		blueGreenTranColor.colors_indiv.right_side_g = (green_intensity > 0) ? green_intensity : 0;
 		blueGreenTranColor.colors_indiv.left_side_g = blueGreenTranColor.colors_indiv.right_side_g;
 
 		osMessageQueuePut(lightsComplexQueueHandle, &blueGreenTranColor, 0, 0);
 
 		if( (green_intensity <= 0) &&
-				(blue_intensity >= blueGreenTran.val.blue_max_intensity
+				(blue_intensity >= blueGreenTran.blue_max_intensity
 						)){
 			break;
 
 		}else{
-			osDelay(blueGreenTran.val.step_duration_milliseconds);
+			osDelay(blueGreenTran.step_duration_ms);
 		}
 	}
 
 	/* decrease blue intensity */
-	if(blueGreenTran.val.blue_max_intensity > blueGreenTran.val.blue_min_intensity){
-		for(int i = blueGreenTran.val.blue_max_intensity;;
-				i -= blueGreenTran.val.step_size){
+	if(blueGreenTran.blue_max_intensity > blueGreenTran.blue_min_intensity){
+		for(int i = blueGreenTran.blue_max_intensity;i>=0;
+				i -= blueGreenTran.step_size){
 
-			blueGreenTranColor.colors_indiv.right_side_b = (i < blueGreenTran.val.blue_min_intensity) ? blueGreenTran.val.blue_min_intensity : i;
+			blueGreenTranColor.colors_indiv.right_side_b = (i < blueGreenTran.blue_min_intensity) ? blueGreenTran.blue_min_intensity : i;
 			blueGreenTranColor.colors_indiv.left_side_b = blueGreenTranColor.colors_indiv.right_side_b;
 			osMessageQueuePut(lightsComplexQueueHandle, &blueGreenTranColor, 0, 0);
-			osDelay(blueGreenTran.val.step_duration_milliseconds);
+			osDelay(blueGreenTran.step_duration_ms);
 
-			if(blueGreenTranColor.colors_indiv.right_side_b <= blueGreenTran.val.blue_min_intensity){
+			if(blueGreenTranColor.colors_indiv.right_side_b <= blueGreenTran.blue_min_intensity){
 				break;
 			}
 		}
@@ -758,29 +762,30 @@ void BlueGreenTransitionTask(void *argument){
 
 union ColorComplex redFlashColor;
 void RedFlashTask(void *argument){
-	union RedFlash redFlash;
+	red_flash_task_t redFlash;
 
 	uint32_t timeTracker = 0;
+	uint32_t halfPeriod = 0;
 
-	memcpy(&redFlash,argument,sizeof(union RedFlash));
+	memcpy(&redFlash,argument,sizeof(red_flash_task_t));
 
 	// since we one delay will be a cycle of turning on and off an LED
-	redFlash.val_flash.delay_duration = redFlash.val_flash.delay_duration / 2;
+	halfPeriod = (1000.0/ ((float) redFlash.frequency)) / 2;
 
 	/* start sequence */
 
 	resetColor(&redFlashColor);
 
-	if(redFlash.val_flash.total_duration > 0){
+	if(redFlash.duration_ms > 0){
 		uint32_t start_time = HAL_GetTick();
-		while( (HAL_GetTick() - start_time) < redFlash.val_flash.total_duration){
+		while( (HAL_GetTick() - start_time) < redFlash.duration_ms){
 				timeTracker = HAL_GetTick();
 				if(redFlashColor.colors_indiv.right_side_r == 0){
-					redFlashColor.colors_indiv.right_side_r = redFlash.val_flash.intensity;
-					redFlashColor.colors_indiv.left_side_r = redFlash.val_flash.intensity;
+					redFlashColor.colors_indiv.right_side_r = redFlash.red_max_intensity;
+					redFlashColor.colors_indiv.left_side_r = redFlash.red_max_intensity;
 				}else{
-					redFlashColor.colors_indiv.right_side_r = 0;
-					redFlashColor.colors_indiv.left_side_r = 0;
+					redFlashColor.colors_indiv.right_side_r = redFlash.red_min_intensity;
+					redFlashColor.colors_indiv.left_side_r = redFlash.red_min_intensity;
 				}
 
 				osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
@@ -794,10 +799,10 @@ void RedFlashTask(void *argument){
 
 
 //				osMessageQueuePut(lightsComplexQueueHandle, &redFlashColor, 0, 0);
-				timeTracker = HAL_GetTick() - HAL_GetTick();
+				timeTracker = HAL_GetTick() - timeTracker;
 
-				if(timeTracker <= redFlash.val_flash.delay_duration){
-					osDelay(redFlash.val_flash.delay_duration - timeTracker);
+				if(timeTracker <= halfPeriod){
+					osDelay(halfPeriod - timeTracker);
 				}
 			}
 		resetLED();
@@ -805,11 +810,11 @@ void RedFlashTask(void *argument){
 		while(1){
 				timeTracker = HAL_GetTick();
 				if(redFlashColor.colors_indiv.right_side_r == 0){
-					redFlashColor.colors_indiv.right_side_r = redFlash.val_flash.intensity;
-					redFlashColor.colors_indiv.left_side_r = redFlash.val_flash.intensity;
+					redFlashColor.colors_indiv.right_side_r = redFlash.red_max_intensity;
+					redFlashColor.colors_indiv.left_side_r = redFlash.red_max_intensity;
 				}else{
-					redFlashColor.colors_indiv.right_side_r = 0;
-					redFlashColor.colors_indiv.left_side_r = 0;
+					redFlashColor.colors_indiv.right_side_r = redFlash.red_min_intensity;
+					redFlashColor.colors_indiv.left_side_r = redFlash.red_min_intensity;
 				}
 
 				osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
@@ -822,10 +827,10 @@ void RedFlashTask(void *argument){
 				osSemaphoreRelease(messageI2C1_LockHandle);
 
 //				osMessageQueuePut(lightsComplexQueueHandle, &redFlashColor, 0, 0);
-				timeTracker = HAL_GetTick() - HAL_GetTick();
+				timeTracker = HAL_GetTick() - timeTracker;
 
-				if(timeTracker <= redFlash.val_flash.delay_duration){
-					osDelay(redFlash.val_flash.delay_duration - timeTracker);
+				if(timeTracker <= halfPeriod){
+					osDelay(halfPeriod - timeTracker);
 				}
 			}
 	}

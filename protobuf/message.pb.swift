@@ -1921,6 +1921,15 @@ public struct SensorConfig {
   /// Clears the value of `humidity`. Subsequent reads from it will return its default value.
   public mutating func clearHumidity() {_uniqueStorage()._humidity = nil}
 
+  public var imu: IMU_SensorConfig {
+    get {return _storage._imu ?? IMU_SensorConfig()}
+    set {_uniqueStorage()._imu = newValue}
+  }
+  /// Returns true if `imu` has been explicitly set.
+  public var hasImu: Bool {return _storage._imu != nil}
+  /// Clears the value of `imu`. Subsequent reads from it will return its default value.
+  public mutating func clearImu() {_uniqueStorage()._imu = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -1977,7 +1986,11 @@ public struct RedFlashTask {
 
   public var redMinIntensity: UInt32 = 0
 
+  public var frequency: UInt32 = 0
+
   public var durationMs: UInt32 = 0
+
+  public var enableSpeaker: UInt32 = 0
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -2111,6 +2124,39 @@ public struct AirSpecConfigPacket {
   fileprivate var _header: AirSpecConfigHeader? = nil
 }
 
+public struct systemState {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var firmwareVersion: UInt32 = 0
+
+  public var control: SensorControl {
+    get {return _control ?? SensorControl()}
+    set {_control = newValue}
+  }
+  /// Returns true if `control` has been explicitly set.
+  public var hasControl: Bool {return self._control != nil}
+  /// Clears the value of `control`. Subsequent reads from it will return its default value.
+  public mutating func clearControl() {self._control = nil}
+
+  public var config: SensorConfig {
+    get {return _config ?? SensorConfig()}
+    set {_config = newValue}
+  }
+  /// Returns true if `config` has been explicitly set.
+  public var hasConfig: Bool {return self._config != nil}
+  /// Clears the value of `config`. Subsequent reads from it will return its default value.
+  public mutating func clearConfig() {self._config = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _control: SensorControl? = nil
+  fileprivate var _config: SensorConfig? = nil
+}
+
 #if swift(>=5.5) && canImport(_Concurrency)
 extension SensorPacketTypes: @unchecked Sendable {}
 extension Tsl2591Gain: @unchecked Sendable {}
@@ -2172,6 +2218,7 @@ extension RedFlashTask: @unchecked Sendable {}
 extension AirSpecConfigHeader: @unchecked Sendable {}
 extension AirSpecConfigPacket: @unchecked Sendable {}
 extension AirSpecConfigPacket.OneOf_Payload: @unchecked Sendable {}
+extension systemState: @unchecked Sendable {}
 #endif  // swift(>=5.5) && canImport(_Concurrency)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
@@ -4467,6 +4514,7 @@ extension SensorConfig: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
     6: .same(proto: "blink"),
     7: .same(proto: "mic"),
     8: .same(proto: "humidity"),
+    9: .same(proto: "imu"),
   ]
 
   fileprivate class _StorageClass {
@@ -4478,6 +4526,7 @@ extension SensorConfig: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
     var _blink: BlinkSensorConfig? = nil
     var _mic: MicSensorConfig? = nil
     var _humidity: HumiditySensorConfig? = nil
+    var _imu: IMU_SensorConfig? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -4492,6 +4541,7 @@ extension SensorConfig: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
       _blink = source._blink
       _mic = source._mic
       _humidity = source._humidity
+      _imu = source._imu
     }
   }
 
@@ -4518,6 +4568,7 @@ extension SensorConfig: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
         case 6: try { try decoder.decodeSingularMessageField(value: &_storage._blink) }()
         case 7: try { try decoder.decodeSingularMessageField(value: &_storage._mic) }()
         case 8: try { try decoder.decodeSingularMessageField(value: &_storage._humidity) }()
+        case 9: try { try decoder.decodeSingularMessageField(value: &_storage._imu) }()
         default: break
         }
       }
@@ -4554,6 +4605,9 @@ extension SensorConfig: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
       try { if let v = _storage._humidity {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
       } }()
+      try { if let v = _storage._imu {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -4571,6 +4625,7 @@ extension SensorConfig: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
         if _storage._blink != rhs_storage._blink {return false}
         if _storage._mic != rhs_storage._mic {return false}
         if _storage._humidity != rhs_storage._humidity {return false}
+        if _storage._imu != rhs_storage._imu {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -4692,7 +4747,9 @@ extension RedFlashTask: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
     1: .same(proto: "enable"),
     2: .standard(proto: "red_max_intensity"),
     3: .standard(proto: "red_min_intensity"),
-    4: .standard(proto: "duration_ms"),
+    4: .same(proto: "frequency"),
+    5: .standard(proto: "duration_ms"),
+    6: .standard(proto: "enable_speaker"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -4704,7 +4761,9 @@ extension RedFlashTask: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
       case 1: try { try decoder.decodeSingularBoolField(value: &self.enable) }()
       case 2: try { try decoder.decodeSingularUInt32Field(value: &self.redMaxIntensity) }()
       case 3: try { try decoder.decodeSingularUInt32Field(value: &self.redMinIntensity) }()
-      case 4: try { try decoder.decodeSingularUInt32Field(value: &self.durationMs) }()
+      case 4: try { try decoder.decodeSingularUInt32Field(value: &self.frequency) }()
+      case 5: try { try decoder.decodeSingularUInt32Field(value: &self.durationMs) }()
+      case 6: try { try decoder.decodeSingularUInt32Field(value: &self.enableSpeaker) }()
       default: break
       }
     }
@@ -4720,8 +4779,14 @@ extension RedFlashTask: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
     if self.redMinIntensity != 0 {
       try visitor.visitSingularUInt32Field(value: self.redMinIntensity, fieldNumber: 3)
     }
+    if self.frequency != 0 {
+      try visitor.visitSingularUInt32Field(value: self.frequency, fieldNumber: 4)
+    }
     if self.durationMs != 0 {
-      try visitor.visitSingularUInt32Field(value: self.durationMs, fieldNumber: 4)
+      try visitor.visitSingularUInt32Field(value: self.durationMs, fieldNumber: 5)
+    }
+    if self.enableSpeaker != 0 {
+      try visitor.visitSingularUInt32Field(value: self.enableSpeaker, fieldNumber: 6)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -4730,7 +4795,9 @@ extension RedFlashTask: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
     if lhs.enable != rhs.enable {return false}
     if lhs.redMaxIntensity != rhs.redMaxIntensity {return false}
     if lhs.redMinIntensity != rhs.redMinIntensity {return false}
+    if lhs.frequency != rhs.frequency {return false}
     if lhs.durationMs != rhs.durationMs {return false}
+    if lhs.enableSpeaker != rhs.enableSpeaker {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -4911,6 +4978,54 @@ extension AirSpecConfigPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
   public static func ==(lhs: AirSpecConfigPacket, rhs: AirSpecConfigPacket) -> Bool {
     if lhs._header != rhs._header {return false}
     if lhs.payload != rhs.payload {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension systemState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = "systemState"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .standard(proto: "firmware_version"),
+    2: .same(proto: "control"),
+    3: .same(proto: "config"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.firmwareVersion) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._control) }()
+      case 3: try { try decoder.decodeSingularMessageField(value: &self._config) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if self.firmwareVersion != 0 {
+      try visitor.visitSingularUInt32Field(value: self.firmwareVersion, fieldNumber: 1)
+    }
+    try { if let v = self._control {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
+    try { if let v = self._config {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: systemState, rhs: systemState) -> Bool {
+    if lhs.firmwareVersion != rhs.firmwareVersion {return false}
+    if lhs._control != rhs._control {return false}
+    if lhs._config != rhs._config {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

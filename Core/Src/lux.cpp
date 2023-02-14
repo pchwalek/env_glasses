@@ -42,14 +42,14 @@ void LuxTask(void *argument) {
 
 	bool status;
 
-	struct LuxSensor sensorSettings;
+	lux_sensor_config_t sensorSettings;
 
 	if(argument != NULL){
 		memcpy(&sensorSettings,argument,sizeof(struct LuxSensor));
 	}else{
-		sensorSettings.gain = TSL2722_GAIN_8X;
-		sensorSettings.integration_time = TSL2722_INTEGRATIONTIME_101MS;
-		sensorSettings.sample_period = 500;
+		sensorSettings.gain = TSL2591_GAIN_TSL2722_GAIN_8_X;
+		sensorSettings.integration_time = TSL2591_INTEGRATION_TIME_TSL2722_INTEGRATIONTIME_101_MS;
+		sensorSettings.sample_period_ms = 500;
 	}
 
 	osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
@@ -75,7 +75,7 @@ void LuxTask(void *argument) {
 	osSemaphoreRelease(messageI2C3_LockHandle);
 	periodicLuxTimer_id = osTimerNew(triggerLuxSample, osTimerPeriodic,
 			NULL, NULL);
-	osTimerStart(periodicLuxTimer_id, sensorSettings.sample_period);
+	osTimerStart(periodicLuxTimer_id, sensorSettings.sample_period_ms);
 
 	while (1) {
 		flags = osThreadFlagsWait(GRAB_SAMPLE_BIT | TERMINATE_THREAD_BIT,
@@ -107,7 +107,7 @@ void LuxTask(void *argument) {
 					setPacketType(packet, SENSOR_PACKET_TYPES_LUX);
 
 					packet->payload.lux_packet.packet_index = luxID;
-					packet->payload.lux_packet.sample_period = sensorSettings.sample_period;
+					packet->payload.lux_packet.sample_period = sensorSettings.sample_period_ms;
 					packet->payload.lux_packet.gain = static_cast<tsl2591_gain_t>(sensorSettings.gain);
 					packet->payload.lux_packet.integration_time = static_cast<tsl2591_integration_time_t>(sensorSettings.integration_time);
 

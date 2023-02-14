@@ -89,8 +89,7 @@ void reset_DFU_trigger(void);
 void RTC_FromEpoch(uint32_t epoch, RTC_TimeTypeDef *time,
 		RTC_DateTypeDef *date);
 //__attribute__((section(".noinit"))) volatile int my_non_initialized_integer;
-
-struct SensorConfig sensorConfig;
+system_state_t sysState;
 /* USER CODE END 0 */
 
 /**
@@ -172,66 +171,75 @@ int main(void) {
 
 //	volatile uint8_t test = sizeof(SensorConfig);
 
-	if (isSystemFresh != 0xDEADBEAF) {
-//	if(1){
+//	if (isSystemFresh != 0xDEADBEAF) {
+	if(1){
 		//initialize fresh system
-		sensorConfig.systemRunState = 1;
-		sensorConfig.uuid = LL_FLASH_GetUDN();
-		sensorConfig.firmware_version = 1;
+//		sensorConfig.systemRunState = 1;
+//		sensorConfig.uuid = LL_FLASH_GetUDN();
+		sysState.firmware_version = 1;
 
-		sensorConfig.luxSensor.enable = 1;
-		sensorConfig.luxSensor.gain = 1;
-		sensorConfig.luxSensor.integration_time = 219;
-		sensorConfig.luxSensor.sample_period = 1000;
+		sysState.control.lux = 1;
+		sysState.config.lux.gain = TSL2591_GAIN_TSL2722_GAIN_8_X;
+		sysState.config.lux.integration_time = TSL2591_INTEGRATION_TIME_TSL2722_INTEGRATIONTIME_101_MS;
+		sysState.config.lux.sample_period_ms = 1000;
 
-		sensorConfig.gasSensor.enable = 1;
-		sensorConfig.gasSensor.sample_period = 5000;
+		sysState.control.bme688 = 1;
+		sysState.config.bme.sample_period_ms = 5000;
 
-		sensorConfig.inertialSensor.enable = 0;
-		sensorConfig.inertialSensor.gyroLPFEn = 1;
-		sensorConfig.inertialSensor.gyroLPFCutoff = 0;
-		sensorConfig.inertialSensor.gyroRange = 3;
-		sensorConfig.inertialSensor.gyroSampleRate = 1;
-		sensorConfig.inertialSensor.accelLPFEn = 1;
-		sensorConfig.inertialSensor.accelLPFCutoff = 0;
-		sensorConfig.inertialSensor.accelRange = 3;
-		sensorConfig.inertialSensor.accelSampleRate = 1;
+		sysState.control.sgp = 1;
+		sysState.config.sgp.sample_period_ms = 5000;
 
-		sensorConfig.colorSensor.enable = 1;
-		sensorConfig.colorSensor.integrationTime = 100;
-		sensorConfig.colorSensor.integrationStep = 999;
-		sensorConfig.colorSensor.gain = 9;
-		sensorConfig.colorSensor.sample_period = 5000;
+		sysState.control.imu = 0;
+		sysState.config.imu.gyro_settings.has_cutoff = true;
+		sysState.config.imu.gyro_settings.cutoff = IMU_GYRO_CUTOFF_ICM20_X_GYRO_FREQ_196_6_HZ;
+		sysState.config.imu.gyro_settings.range = IMU_GYRO_RANGE_RANGE_2000_DPS;
+		sysState.config.imu.gyro_settings.sample_rate_divisor = 1;
+		sysState.config.imu.accel_settings.has_cutoff = true;
+		sysState.config.imu.accel_settings.cutoff = IMU_ACCEL_CUTOFF_ICM20_X_ACCEL_FREQ_246_0_HZ;
+		sysState.config.imu.accel_settings.range = IMU_ACCEL_RANGE_RANGE_8_G;
+		sysState.config.imu.accel_settings.sample_rate_divisor = 1;
 
-		sensorConfig.thermopileSensor.enable = 1;
-		sensorConfig.thermopileSensor.sample_period = 1000;
+		sysState.control.spectrometer = 1;
+		sysState.config.color.integration_time = 100;
+		sysState.config.color.integration_step = 999;
+		sysState.config.color.gain = SPEC_GAIN_GAIN_256_X;
+		sysState.config.color.sample_period_ms = 5000;
 
-		sensorConfig.blinkSensor.enable = 1;
-		sensorConfig.blinkSensor.daylightCompensationEn = 1;
-		sensorConfig.blinkSensor.daylightCompensationUpperThresh = 7;
-		sensorConfig.blinkSensor.daylightCompensationLowerThresh = 235;
-		sensorConfig.blinkSensor.sample_frequency = 1000;
-
-		sensorConfig.micSensor.enable = 1;
-		sensorConfig.micSensor.mic_sample_frequency = SAI_AUDIO_FREQUENCY_48K;
-		sensorConfig.micSensor.sys_sample_period_ms = 30000; // 30 seconds
-
-		sensorConfig.humiditySensor.enable = 1;
-		sensorConfig.humiditySensor.precisionLevel = 0;
-		sensorConfig.humiditySensor.heaterSetting = 0;
-		sensorConfig.humiditySensor.sample_period = 5000;
+		sysState.control.thermopiles = 1;
+		sysState.config.thermopile.sample_period_ms = 1000;
+		sysState.config.thermopile.enable_top_of_nose = true;
+		sysState.config.thermopile.enable_nose_bridge = true;
+		sysState.config.thermopile.enable_front_temple = true;
+		sysState.config.thermopile.enable_mid_temple = true;
+		sysState.config.thermopile.enable_rear_temple = true;
 
 
-		extMemWriteData(START_ADDR + 4, (uint8_t*) &sensorConfig,
-				sizeof(struct SensorConfig));
-		updateSystemConfig_BLE(&sensorConfig);
+		sysState.control.blink = 1;
+		sysState.config.blink.enable_daylight_compensation = 1;
+		sysState.config.blink.daylight_compensation_upper_thresh = 7;
+		sysState.config.blink.daylight_compensation_lower_thresh = 235;
+		sysState.config.blink.sample_frequency = 1000;
+
+		sysState.control.mic = 0;
+		sysState.config.mic.mic_sample_freq = SAI_AUDIO_FREQUENCY_48K;
+		sysState.config.mic.sample_period_ms = 30000; // 30 seconds
+
+		sysState.control.sht = 1;
+		sysState.config.humidity.precision_level = SHT45_PRECISION_SHT4_X_HIGH_PRECISION;
+		sysState.config.humidity.heater_settings = SHT45_HEATER_SHT4_X_LOW_HEATER_100_MS;
+		sysState.config.humidity.sample_period_ms = 5000;
+
+
+		extMemWriteData(START_ADDR + 4, (uint8_t*) &sysState,
+				sizeof(system_state_t));
+		updateSystemConfig_BLE(&sysState);
 
 		isSystemFresh = 0xDEADBEAF;
 		extMemWriteData(START_ADDR, (uint8_t*) &isSystemFresh, 4);
 	} else {
-		extMemGetData(START_ADDR + 4, (uint8_t*) &sensorConfig,
-				sizeof(struct SensorConfig));
-		updateSystemConfig_BLE(&sensorConfig);
+		extMemGetData(START_ADDR + 4, (uint8_t*) &sysState,
+				sizeof(system_state_t));
+		updateSystemConfig_BLE(&sysState);
 	}
 
 	/* Init scheduler */

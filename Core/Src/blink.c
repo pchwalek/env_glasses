@@ -40,6 +40,9 @@
  *
  *************************************************************/
 
+void initBlink();
+void deinitBlink();
+
 /* GLOBAL DEFINES */
 struct blinkData blinkMsgBuffer_1 = { { 0 }, 0, 0 };
 uint8_t blink_buffer[2000] = { 0 };
@@ -59,9 +62,12 @@ float tick_ms_diff = 0;
 
 //struct LogMessage statusMessage;
 uint8_t diodeState = 0;
+uint8_t diodeSaturatedFlag = 0;
 
 sensor_packet_t *packet = NULL;
 
+osTimerId_t singleShotTimer_id;
+uint32_t startTime;
 /**
  * @brief Thread initialization.
  * @param  None
@@ -70,7 +76,6 @@ sensor_packet_t *packet = NULL;
 void BlinkTask(void *argument) {
 
 	uint32_t evt;
-	uint8_t diodeSaturatedFlag = 0;
 	float rolling_avg = 255;
 	uint16_t packetsPerHalfBuffer =  ceil( ( (float) BLINK_HALF_BUFFER_SIZE)/(BLINK_PKT_PAYLOAD_SIZE) );
 	uint16_t payloadLength = 0;
@@ -80,66 +85,34 @@ void BlinkTask(void *argument) {
 	uint32_t blinkSampleHalfBuffer_ms = BLINK_HALF_BUFFER_SIZE * (1.0/BLINK_SAMPLE_RATE) * 1000.0;
 	uint32_t packetRemainder = BLINK_SAMPLE_RATE % BLINK_PKT_PAYLOAD_SIZE;
 
+
 	bool status;
 
 	osDelay(500);
 
-	struct BlinkSensor sensorSettings;
+	blink_sensor_config_t sensorSettings;
 
 	if(argument != NULL){
-		memcpy(&sensorSettings,argument,sizeof(struct BlinkSensor));
+		memcpy(&sensorSettings,argument,sizeof(blink_sensor_config_t));
 	}else{
-		sensorSettings.daylightCompensationEn = 1;
-		sensorSettings.daylightCompensationUpperThresh = INFRARED_DETECT_UPPER_THRESH;
-		sensorSettings.daylightCompensationLowerThresh = INFRARED_DETECT_LOWER_THRESH;
+		sensorSettings.enable_daylight_compensation = 1;
+		sensorSettings.daylight_compensation_upper_thresh = INFRARED_DETECT_UPPER_THRESH;
+		sensorSettings.daylight_compensation_lower_thresh = INFRARED_DETECT_LOWER_THRESH;
 		sensorSettings.sample_frequency = BLINK_SAMPLE_RATE;
+
+		sensorSettings.enable_windowing = false;
+//		sensorSettings.window_size_ms = BLINK_SAMPLE_RATE;
+//		sensorSettings.window_period_ms = BLINK_SAMPLE_RATE;
 	}
 
 	while (1) {
-//		evt = osThreadFlagsWait(0x00000001U, osFlagsWaitAny, osWaitForever);
+//		evt = osThreadFlagsWait(0x00000001 | TERMINATE_THREAD_BIT, osFlagsWaitAny, osWaitForever);
 		evt = 0x00000001U;
 		// if signal was received successfully, start blink task
 		if ((evt & 0x00000001U) == 0x00000001U) {
 
-			// tell other threads that blink has been activated
-//todo: the oswaitforever option of getting the queue handle should be used or else the system could get messed up down the line
-			//not sure why its not working....
-//			osMessageQueueGet(statusQueueHandle, &statusMessage, 0U, osWaitForever);
-
-//			osMessageQueueGet(statusQueueHandle, &statusMessage, 0U, 1000);
-//			statusMessage.blinkEnabled = 1;
-//			osMessageQueuePut(statusQueueHandle, (void*) &statusMessage, 0U, 0);
-
-			// start timer for ADC to sample at 1kHz
-			HAL_ADC_Start_DMA(&hadc1, (uint32_t*) blink_buffer,
-					sizeof(blink_buffer));
-
-			// start timer for ADC to sample at 1kHz
-//			HAL_ADC_Start_DMA(&hadc1, (uint32_t*) blink_float_buffer, sizeof(blink_float_buffer));
-
-//
-//			 start timer
-			HAL_TIM_Base_Start(&htim2);
-
-			/* using PWM */
-			HAL_TIM_Base_Start(&htim16); // modulation frequency is at 1kHz
-			if(HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1) == HAL_OK){
-				diodeState = 1;
-			}
-
-			/* not using PWM */
-//			GPIO_InitTypeDef GPIO_InitStruct = {0};
-//			GPIO_InitStruct.Pin = BLINK_PWM_Pin;
-//			GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-//			GPIO_InitStruct.Pull = GPIO_PULLUP;
-//			GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-//			HAL_GPIO_Init(BLINK_PWM_GPIO_Port, &GPIO_InitStruct);
-//			turnOnDiode();
-
-
-			// reset external infrared detection flag
-			diodeSaturatedFlag = 0;
-
+			initBlink();
+			startTime = HAL_GetTick();
 			// message passing until told to stop
 			//      note: DMA triggers callback where buffers are switched and the full one
 			//      is passed by reference via queue to masterThread for packetization
@@ -147,21 +120,22 @@ void BlinkTask(void *argument) {
 			while (1) {
 
 				// wait for data ready flag and/or stop task flags
-				evt = osThreadFlagsWait(0x00000006U, osFlagsWaitAny,
+				evt = osThreadFlagsWait(0x00000006U | TERMINATE_THREAD_BIT, osFlagsWaitAny,
 						osWaitForever);
 				blink_ptr_copy = blink_ptr;
-//				memcpy(blink_copy,blink_ptr,1000);
+
+				// if timer triggered, wait for event to be triggered to restart blink sampling
+//				if ((evt & WINDOW_RDY_BIT) == WINDOW_RDY_BIT) {
+//					initBlink();
+//					startTime = HAL_GetTick();
+//				}
 
 				if ((evt & 0x00000004U) == 0x00000004U) {
-
-//					tickCnt = HAL_GetTick() - blinkSampleHalfBuffer_ms;
 
 					// interpolate timestamps for blink packets
 					if (previousTick_ms == 0) {
 						previousTick_ms = HAL_GetTick();
 					}
-//					tick_ms_diff = (HAL_GetTick() - previousTick_ms)
-//							/ ((float) BLINK_ITERATOR_COUNT);
 
 
 
@@ -187,71 +161,33 @@ void BlinkTask(void *argument) {
 							    0)){
 						    //no memory available so increment payload ID and drop packet
 						    payload_ID++;
-//						    tickCnt += payloadLength;
 						    continue;
 						}
 
-//						portENTER_CRITICAL();
 
 						setPacketType(packet, SENSOR_PACKET_TYPES_BLINK);
 
 						packet->payload.blink_packet.packet_index = payload_ID;
 
-						packet->payload.blink_packet.has_saturation_settings = sensorSettings.daylightCompensationEn;
+						packet->payload.blink_packet.has_saturation_settings = sensorSettings.enable_daylight_compensation;
 						packet->payload.blink_packet.saturation_settings.diode_turned_off = diodeSaturatedFlag;
-						packet->payload.blink_packet.saturation_settings.diode_saturation_lower_thresh = sensorSettings.daylightCompensationLowerThresh;
-						packet->payload.blink_packet.saturation_settings.diode_saturation_upper_thresh = sensorSettings.daylightCompensationUpperThresh;
+						packet->payload.blink_packet.saturation_settings.diode_saturation_lower_thresh = sensorSettings.daylight_compensation_lower_thresh;
+						packet->payload.blink_packet.saturation_settings.diode_saturation_upper_thresh = sensorSettings.daylight_compensation_upper_thresh;
 						packet->payload.blink_packet.sample_rate = sensorSettings.sample_frequency;
 						packet->payload.blink_packet.which_payload = BLINK_PACKET_PAYLOAD_BYTE_TAG;
 
-//						sensorPacket->header.packetType = BLINK;
-//						sensorPacket->header.packetID = payload_ID;
-//						sensorPacket->header.msFromStart = tickCnt;
-//						sensorPacket->header.epoch = 0;
-//						sensorPacket->header.payloadLength = payloadLength;
-//						sensorPacket->header.reserved[0] = diodeSaturatedFlag;
-//						sensorPacket->header.reserved[1] = BLINK_SAMPLE_RATE;
-//						sensorPacket->header.reserved[2] = iterator;
-//						tickCnt += payloadLength;
-
-
-//						// reset message buffer
-//						memset(packet->payload.blink_packet.payload.sample.bytes, 0, packet->payload.blink_packet.payload.sample.size);
-
 						// write lux data
 						memcpy(packet->payload.blink_packet.payload.payload_byte.sample.bytes, &(blink_ptr_copy[iterator * BLINK_PKT_PAYLOAD_SIZE]), payloadLength);
-//						message.payload_count = payloadLength;
-//						packet->payload.blink_packet.has_payload = true;
-						packet->payload.blink_packet.payload.payload_byte.sample.size = payloadLength;
 
-//						// encode
-//						pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
-//						status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
-//
-//						packet->header.payloadLength = stream.bytes_written;
+						packet->payload.blink_packet.payload.payload_byte.sample.size = payloadLength;
 
 					    // send to BT packetizer
 						queueUpPacket(packet);
 
-//						portEXIT_CRITICAL();
-
-//						// copy payload
-//						memcpy(sensorPacket->payload,
-//								&(blink_ptr_copy[iterator * BLINK_PACKET_SIZE]),
-//								payloadLength);
-
 						// add tick cnt
 						previousTick_ms = blinkMsgBuffer_1.tick_ms;
 
-//						// put into queue
-//						osMessageQueuePut(packet_QueueHandle,
-//								&sensorPacket, 0U, 0);
-
 						payload_ID++;
-
-//						osDelay(200); // (patrick being extra careful) artificial delay to allow time for other processing to trigger, should be able to remove with no problem
-
-//						if(iterator == 1) break; //TODO: remove
 
 					}
 
@@ -260,10 +196,10 @@ void BlinkTask(void *argument) {
 					 *   otherwise, leave enabled */
 
 					// BLINK_SAMPLE_RATE == size of blink_ptr array
-					if(sensorSettings.daylightCompensationEn){
+					if(sensorSettings.enable_daylight_compensation){
 						diodeSaturatedFlag = externalInfraredDetect(blink_ptr_copy, BLINK_SAMPLE_RATE, &rolling_avg,
-								sensorSettings.daylightCompensationUpperThresh,
-								sensorSettings.daylightCompensationLowerThresh );
+								sensorSettings.daylight_compensation_upper_thresh,
+								sensorSettings.daylight_compensation_lower_thresh );
 
 						/* not using PWM */
 						if(diodeSaturatedFlag){
@@ -273,32 +209,29 @@ void BlinkTask(void *argument) {
 							if(!diodeState) turnOnDiode();
 						}
 					}
+
+
+					if(sensorSettings.enable_windowing){
+
+						if(sensorSettings.window_size_ms < (HAL_GetTick() - startTime)){
+							deinitBlink();
+
+							int32_t waitTime = sensorSettings.window_period_ms - sensorSettings.window_size_ms;
+							if(waitTime < 0) waitTime = 0;
+
+							singleShotTimer_id = osTimerNew(initBlink, osTimerOnce, NULL, NULL);
+							osTimerStart(singleShotTimer_id, waitTime);
+						}
+					}
 				}
 
 				// stop timer and put thread in idle if signal was reset
 				if ((evt & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
 
-					HAL_ADC_Stop_DMA(&hadc1);
-					HAL_TIM_Base_Stop(&htim2);
-					turnOffDiode();
+					osTimerDelete(singleShotTimer_id);
+					deinitBlink();
 
-
-//
-//					/* tell threads that blink is disabled */
-////					osMessageQueueGet(statusQueueHandle, &statusMessage, 0U,
-////							osWaitForever);
-////					statusMessage.blinkEnabled = 0;
-////					// notify 3D localization thread that blink is deactivating if active
-////					if (statusMessage.positionEnabled == 1) {
-////						osSemaphoreRelease(locNotifyHandle);
-////					}
-////					osMessageQueuePut(statusQueueHandle, (void*) &statusMessage,
-////							0U, 0);
-//
-////					// empty queue
-////					osMessageQueueReset(blinkMsgQueueHandle);
-//
-//					// clear any flags
+					// clear any flags
 					osThreadFlagsClear(0x00000006U);
 					vTaskDelete( NULL );
 
@@ -307,6 +240,33 @@ void BlinkTask(void *argument) {
 			}
 		}
 	}
+}
+
+void initBlink(){
+	startTime = HAL_GetTick();
+
+	// start timer for ADC to sample at 1kHz
+	HAL_ADC_Start_DMA(&hadc1, (uint32_t*) blink_buffer,
+			sizeof(blink_buffer));
+
+//			 start timer
+	HAL_TIM_Base_Start(&htim2);
+
+	/* using PWM */
+	HAL_TIM_Base_Start(&htim16); // modulation frequency is at 1kHz
+	if(HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1) == HAL_OK){
+		diodeState = 1;
+	}
+
+	// reset external infrared detection flag
+	diodeSaturatedFlag = 0;
+
+}
+
+void deinitBlink(){
+	HAL_ADC_Stop_DMA(&hadc1);
+	HAL_TIM_Base_Stop(&htim2);
+	turnOffDiode();
 }
 
 void turnOffDiode(){

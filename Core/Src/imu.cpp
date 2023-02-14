@@ -36,6 +36,8 @@ Adafruit_ICM20948 imu;
 static uint8_t data[MAX_FIFO_CNT];
 uint8_t flag_int_enable = 0;
 
+osTimerId_t singleShotTimer_id;
+uint32_t startTime;
 //static uint8_t tempData[MAX_FIFO_CNT];
 
 
@@ -48,48 +50,40 @@ void IMU_Task(void *argument){
 
 	osDelay(1000);
 
-	struct InertialSensor sensorSettings;
+	imu_sensor_config_t sensorSettings;
 
 	if(argument != NULL){
 		memcpy(&sensorSettings,argument,sizeof(struct InertialSensor));
 	}else{
-		sensorSettings.gyroLPFEn = 1;
-		sensorSettings.gyroLPFCutoff= ICM20X_GYRO_FREQ_196_6_HZ,
-		sensorSettings.gyroRange = 3;
-		sensorSettings.gyroSampleRate = 1;
-		sensorSettings.accelLPFEn = 1;
-		sensorSettings.accelLPFCutoff= ICM20X_ACCEL_FREQ_246_0_HZ,
-		sensorSettings.accelRange = 3;
-		sensorSettings.accelSampleRate = 1;
+		sensorSettings.gyro_settings.has_cutoff = true;
+		sensorSettings.gyro_settings.cutoff = IMU_GYRO_CUTOFF_ICM20_X_GYRO_FREQ_196_6_HZ;
+		sensorSettings.gyro_settings.range = IMU_GYRO_RANGE_RANGE_2000_DPS;
+		sensorSettings.gyro_settings.sample_rate_divisor = 1;
+		sensorSettings.accel_settings.has_cutoff = true;
+		sensorSettings.accel_settings.cutoff = IMU_ACCEL_CUTOFF_ICM20_X_ACCEL_FREQ_246_0_HZ;
+		sensorSettings.accel_settings.range = IMU_ACCEL_RANGE_RANGE_8_G;
+		sensorSettings.accel_settings.sample_rate_divisor = 1;
+
+		sensorSettings.enable_windowing = false;
+//		sensorSettings.window_size_ms;
+//		sensorSettings.window_period_ms;
 	}
 
-	imu.updateGyroSettings(sensorSettings.gyroLPFEn,
-			sensorSettings.accelLPFCutoff,
-			sensorSettings.gyroRange,
-			sensorSettings.gyroSampleRate);
-	imu.updateAccelSettings(sensorSettings.accelLPFEn,
-			sensorSettings.accelLPFCutoff,
-			sensorSettings.accelRange,
-			sensorSettings.accelSampleRate);
+	imu.updateGyroSettings(sensorSettings.gyro_settings.has_cutoff,
+			sensorSettings.gyro_settings.cutoff,
+			sensorSettings.gyro_settings.range,
+			sensorSettings.gyro_settings.sample_rate_divisor);
+	imu.updateAccelSettings(sensorSettings.accel_settings.has_cutoff,
+			sensorSettings.accel_settings.cutoff,
+			sensorSettings.accel_settings.range,
+			sensorSettings.accel_settings.sample_rate_divisor);
 
 
 	while(!imu.begin_SPI(&hspi2,IMU_CS_GPIO_Port,IMU_CS_Pin)){
 		osDelay(100);
 	}
 
-//	for(int i=0;i<MAX_FIFO_CNT;i++){
-//		tempData[i] = i;
-//	}
-
 	osDelay(1);
-
-
-//	osDelay(300);
-//  header.payloadLength = MAX_IMU_SAMPLES_PACKET * sizeof(imu_sample);
-//  header.payloadLength = 408;
-//  header.packetType = IMU;
-
-
 
   uint16_t imuIdx = 0;
   uint32_t imuID = 0;
@@ -110,22 +104,15 @@ void IMU_Task(void *argument){
 
   uint16_t failed_read_attempt = 0;
 
-//  periodicIMUTimer_id = osTimerNew(triggerIMUSample,
-//			osTimerPeriodic, NULL, NULL);
-//	osTimerStart(periodicIMUTimer_id, IMU_SAMPLE_PERIOD_MS);
-//
-//  while(1){
-//	  osDelay(100);
-//  }
   while(1){
 //  	flags = osThreadFlagsWait(GRAB_SAMPLE_BIT | TERMINATE_THREAD_BIT,
 //  					osFlagsWaitAny, osWaitForever);
-//
-//  	if ((flags & GRAB_SAMPLE_BIT) == GRAB_SAMPLE_BIT) {
 	  if(1){
 		osDelay(IMU_SAMPLE_PERIOD_MS);
 
 		flags = osThreadFlagsGet();
+
+
 
 		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
 			  imu.reset();
@@ -137,25 +124,13 @@ void IMU_Task(void *argument){
 
   		if(fifo_cnt != 0){
 			fifo_cnt = fifo_cnt - (fifo_cnt % IMU_PKT_SIZE); // ensure reading only complete packets
-	//
-	//  		/* circular buffer logic */
-	//  		if(end_idx == end_idx){
-	//  			if( (end_idx + fifo_cnt) <= MAX_FIFO_CNT){
-	//  		  		imu.readFIFO(&data[end_idx], fifo_cnt );
-	//  		  		end_idx += fifo_cnt;
-	//  			}
-	//  			else{
-	//  		  		imu.readFIFO(&data[end_idx], MAX_FIFO_CNT - end_idx);
-	//
-	//  			}
-	//  		}
+
 			flag_int_enable = 1;
 			osDelay(1);
 			if(imu.readFIFO(data, fifo_cnt) != false){
 
 				sampleTracker += fifo_cnt;
-		//  		imu.getFIFOcnt(&fifo_cnt_2);
-		//  		sampleRate = (fifo_cnt/6.0) / (( HAL_GetTick() - lastTick) / 1000.0);
+
 				lastTick = HAL_GetTick();
 				start_idx = 0;
 
@@ -170,44 +145,30 @@ void IMU_Task(void *argument){
 					packet = grabPacket();
 					if(packet != NULL){
 
-//						portENTER_CRITICAL();
-
 						setPacketType(packet, SENSOR_PACKET_TYPES_IMU);
-
-//						sensorPacket.header.payload_length = packetTracker;
 
 						packet->payload.imu_packet.packet_index = imuID;
 
 						packet->payload.imu_packet.has_accel_settings = true;
-						packet->payload.imu_packet.accel_settings.has_cutoff = sensorSettings.accelLPFEn;
-						packet->payload.imu_packet.accel_settings.cutoff = static_cast<imu_accel_cutoff_t>(sensorSettings.accelLPFCutoff);
-						packet->payload.imu_packet.accel_settings.range =static_cast<imu_accel_range_t>( sensorSettings.accelRange);
-						packet->payload.imu_packet.accel_settings.sample_rate_divisor = sensorSettings.accelSampleRate;
+						packet->payload.imu_packet.accel_settings.has_cutoff = sensorSettings.accel_settings.has_cutoff;
+						packet->payload.imu_packet.accel_settings.cutoff = static_cast<imu_accel_cutoff_t>(sensorSettings.accel_settings.cutoff);
+						packet->payload.imu_packet.accel_settings.range =static_cast<imu_accel_range_t>( sensorSettings.accel_settings.range );
+						packet->payload.imu_packet.accel_settings.sample_rate_divisor = sensorSettings.accel_settings.sample_rate_divisor;
 
 						packet->payload.imu_packet.has_gyro_settings = true;
-						packet->payload.imu_packet.gyro_settings.has_cutoff = sensorSettings.gyroLPFEn;
-						packet->payload.imu_packet.gyro_settings.cutoff = static_cast<imu_gyro_cutoff_t>(sensorSettings.gyroLPFCutoff);
-						packet->payload.imu_packet.gyro_settings.range = static_cast<imu_gyro_range_t>(sensorSettings.gyroRange);
-						packet->payload.imu_packet.gyro_settings.sample_rate_divisor = sensorSettings.gyroSampleRate;
-
-						// reset message buffer
-//						memset(sensorPacket.imu_packet.payload.sample.bytes, 0, sizeof(sensorPacket.imu_packet.payload.sample.bytes));
+						packet->payload.imu_packet.gyro_settings.has_cutoff = sensorSettings.gyro_settings.has_cutoff;
+						packet->payload.imu_packet.gyro_settings.cutoff = static_cast<imu_gyro_cutoff_t>(sensorSettings.gyro_settings.cutoff);
+						packet->payload.imu_packet.gyro_settings.range = static_cast<imu_gyro_range_t>(sensorSettings.gyro_settings.range );
+						packet->payload.imu_packet.gyro_settings.sample_rate_divisor = sensorSettings.gyro_settings.sample_rate_divisor;
 
 						// write data
 						memcpy(packet->payload.imu_packet.payload.sample.bytes, &data[start_idx], packetTracker);
 						packet->payload.imu_packet.has_payload = true;
 						packet->payload.imu_packet.payload.sample.size = packetTracker;
 
-//						// encode
-//						pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
-//						status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
-//
-//						packet->header.payloadLength = stream.bytes_written;
-
 						// send to BT packetizer
 						queueUpPacket(packet);
 
-//						portEXIT_CRITICAL();
 
 
 					}
@@ -217,20 +178,6 @@ void IMU_Task(void *argument){
 					osDelay(5);
 				}
 
-//				header.packetID = imuID;
-//				header.msFromStart = HAL_GetTick();
-//				header.payloadLength = MAX_IMU_PKT_SIZE;
-//				start_idx = 0;
-//				packet = grabPacket();
-//				if(packet != NULL){
-//					memcpy(&(packet->header), &header, sizeof(PacketHeader));
-//					memcpy(packet->payload, &tempData[start_idx], header.payloadLength);
-//					queueUpPacket(packet);
-//				}
-//				sampleTracker -= header.payloadLength;
-////				start_idx += header.payloadLength;
-//				imuID++;
-//				osDelay(5);
 		  	}
 			flag_int_enable = 0;
   		}else{
@@ -242,14 +189,53 @@ void IMU_Task(void *argument){
 
   	  	}
 
-  	}else{
-  		failed_read_attempt+=1;
-  		if(failed_read_attempt >= 10){
-  			imu._init(); // reinit imu
-  			failed_read_attempt = 0;
-  		}
-
   	}
+
+	  if(sensorSettings.enable_windowing){
+
+		if(sensorSettings.window_size_ms < (HAL_GetTick() - startTime)){
+			imu.reset();
+
+			int32_t waitTime = sensorSettings.window_period_ms - sensorSettings.window_size_ms;
+			if(waitTime < 0) waitTime = 0;
+
+			flags = osThreadFlagsWait(TERMINATE_THREAD_BIT,
+					  					osFlagsWaitAny, waitTime);
+
+			if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
+						  vTaskDelete( NULL );
+					}
+
+			imu.updateGyroSettings(sensorSettings.gyro_settings.has_cutoff,
+					sensorSettings.gyro_settings.cutoff,
+					sensorSettings.gyro_settings.range,
+					sensorSettings.gyro_settings.sample_rate_divisor);
+			imu.updateAccelSettings(sensorSettings.accel_settings.has_cutoff,
+					sensorSettings.accel_settings.cutoff,
+					sensorSettings.accel_settings.range,
+					sensorSettings.accel_settings.sample_rate_divisor);
+
+
+			while(!imu.begin_SPI(&hspi2,IMU_CS_GPIO_Port,IMU_CS_Pin)){
+				osDelay(100);
+			}
+
+			osDelay(1);
+
+			imu.spiDataReady = HAL_SPI_IMU_WAIT;
+		}
+
+
+	}
+
+//	  else{
+//  		failed_read_attempt+=1;
+//  		if(failed_read_attempt >= 10){
+//  			imu._init(); // reinit imu
+//  			failed_read_attempt = 0;
+//  		}
+//
+//  	}
 
 //		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
 //			osTimerDelete(periodicIMUTimer_id);

@@ -50,12 +50,12 @@ void SgpTask(void *argument) {
 
 	bool status;
 
-	struct GasSensor sensorSettings;
+	sgp_sensor_config_t sensorSettings;
 
 	if(argument != NULL){
-		memcpy(&sensorSettings,argument,sizeof(struct LuxSensor));
+		memcpy(&sensorSettings,argument,sizeof(sgp_sensor_config_t));
 	}else{
-		sensorSettings.sample_period = SGP_SAMPLE_SYS_PERIOD_MS;
+		sensorSettings.sample_period_ms = SGP_SAMPLE_SYS_PERIOD_MS;
 	}
 
 
@@ -122,7 +122,7 @@ void SgpTask(void *argument) {
 
 	periodicSgpTimer_id = osTimerNew(triggerSgpSample, osTimerPeriodic,
 			NULL, NULL);
-	osTimerStart(periodicSgpTimer_id, sensorSettings.sample_period);
+	osTimerStart(periodicSgpTimer_id, sensorSettings.sample_period_ms);
 
 
 	while (1) {
@@ -199,7 +199,7 @@ void SgpTask(void *argument) {
 					setPacketType(packet, SENSOR_PACKET_TYPES_SGP);
 
 					packet->payload.sgp_packet.packet_index = sgpID;
-					packet->payload.sgp_packet.sample_period=sensorSettings.sample_period;
+					packet->payload.sgp_packet.sample_period=sensorSettings.sample_period_ms;
 
 
 

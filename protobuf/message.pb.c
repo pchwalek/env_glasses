@@ -135,6 +135,9 @@ PB_BIND(AIR_SPEC_CONFIG_HEADER, air_spec_config_header_t, AUTO)
 PB_BIND(AIR_SPEC_CONFIG_PACKET, air_spec_config_packet_t, AUTO)
 
 
+PB_BIND(SYSTEM_STATE, system_state_t, 2)
+
+
 
 
 

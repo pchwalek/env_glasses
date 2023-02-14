@@ -46,7 +46,17 @@
 #define ENTER_BLUE_GREEN_TRANSITION 2
 #define ENTER_RED_FLASH_TRANSITION 3
 
+#define PROTOBUF_RX	1
+
+#ifdef PROTOBUF_RX
+uint8_t rxBuffer[250];
+air_spec_config_packet_t rxConfigPacket = AIR_SPEC_CONFIG_PACKET_INIT_ZERO;
+union ColorComplex airspecColors;
+#else
 RX_PacketHeader rxPacketHeader;
+#endif
+
+
 
 #if (UUID_128_SUPPORTED == 1)
 #define DT_UUID_LENGTH  UUID_TYPE_128
@@ -130,10 +140,19 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *pckt);
 void enterDFUMode(void);
 static DataTransferSvcContext_t aDataTransferContext;
 extern uint16_t Att_Mtu_Exchanged;
+
+#ifdef PROTOBUF_RX
+//light_control_packet_t receivedColor;
+union ColorComplex receivedColor;
+blue_green_transition_t blueGreenTranRX;
+red_flash_task_t redFlashRX;
+system_state_t tempState;
+#else
 struct LogMessage receivedCntrlPacket;
 union ColorComplex receivedColor;
 union BlueGreenTransition blueGreenTranRX;
 union RedFlash redFlashRX;
+#endif
 uint8_t sensorCtrl[26];
 time_t receivedEpoch;
 
@@ -206,73 +225,180 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 						attribute_modified->Attr_Data_Length;
 				DTS_Notification(&Notification);
 
-				// parse header
-				memcpy(&rxPacketHeader, attribute_modified->Attr_Data, sizeof(RX_PacketHeader));
+#ifdef PROTOBUF_RX
 
-				/* make sure whatever mechanism is used below, it copies the memory of the payload
-						because there's a chance it can be overwritten before a thread can handle
-						the data */
-				if(rxPacketHeader.packetType == CONTROL_LED_PKT_TYPE){
-					osMessageQueuePut(lightsComplexQueueHandle,
-							(attribute_modified->Attr_Data + sizeof(RX_PacketHeader)), 0, 0);
-				}
-				else if(rxPacketHeader.packetType == SET_CLK_PKT_TYPE){
-					// do nothing since this will get handled at the end
-				}
-				else if(rxPacketHeader.packetType == CNTRL_SENSORS_PKT_TYPE){
-					memcpy(&sensorCtrl[0],
-							attribute_modified->Attr_Data + sizeof(RX_PacketHeader),
-							rxPacketHeader.payloadSize);
-					controlSensors(&sensorCtrl[0], rxPacketHeader.payloadSize / 2);
-				}
-				else if(rxPacketHeader.packetType == CONFIG_SENSORS_PKT_TYPE){
+				volatile uint8_t status;
 
-				}
-				else if(rxPacketHeader.packetType == TRIGGER_FUNC_PKT_TYPE){
-					uint8_t functionIdentifier;
-					memcpy(&functionIdentifier,
-							attribute_modified->Attr_Data + sizeof(RX_PacketHeader),
-							sizeof(uint8_t));
+				/* Create a stream that reads from the buffer. */
+				pb_istream_t stream = pb_istream_from_buffer(attribute_modified->Attr_Data, attribute_modified->Attr_Data_Length);
 
-					if(functionIdentifier == ENTER_DFU_MODE_UPON_RESET){
+				/* Now we are ready to decode the message. */
+				status = pb_decode(&stream, AIR_SPEC_CONFIG_PACKET_FIELDS, &rxConfigPacket);
+
+				if(rxConfigPacket.has_header == true){
+					updateRTC(rxConfigPacket.header.timestamp_unix);
+				}
+
+				switch(rxConfigPacket.which_payload) {
+
+				   case AIR_SPEC_CONFIG_PACKET_CTRL_INDIV_LED_TAG  :
+					   if(rxConfigPacket.payload.ctrl_indiv_led.has_left){
+						   airspecColors.colors_indiv.left_front_b = rxConfigPacket.payload.ctrl_indiv_led.left.forward.blue;
+						   airspecColors.colors_indiv.left_front_g = rxConfigPacket.payload.ctrl_indiv_led.left.forward.green;
+						   airspecColors.colors_indiv.left_front_r = rxConfigPacket.payload.ctrl_indiv_led.left.forward.blue;
+
+						   airspecColors.colors_indiv.left_side_b = rxConfigPacket.payload.ctrl_indiv_led.left.eye.blue;
+						   airspecColors.colors_indiv.left_side_g = rxConfigPacket.payload.ctrl_indiv_led.left.eye.green;
+						   airspecColors.colors_indiv.left_side_r = rxConfigPacket.payload.ctrl_indiv_led.left.eye.blue;
+
+						   airspecColors.colors_indiv.left_top_b = rxConfigPacket.payload.ctrl_indiv_led.left.top.blue;
+						   airspecColors.colors_indiv.left_top_g = rxConfigPacket.payload.ctrl_indiv_led.left.top.green;
+						   airspecColors.colors_indiv.left_top_r = rxConfigPacket.payload.ctrl_indiv_led.left.top.blue;
+					   }
+					   if(rxConfigPacket.payload.ctrl_indiv_led.has_right){
+						   airspecColors.colors_indiv.right_front_b = rxConfigPacket.payload.ctrl_indiv_led.right.forward.blue;
+						   airspecColors.colors_indiv.right_front_g = rxConfigPacket.payload.ctrl_indiv_led.right.forward.green;
+						   airspecColors.colors_indiv.right_front_r = rxConfigPacket.payload.ctrl_indiv_led.right.forward.blue;
+
+						   airspecColors.colors_indiv.right_side_b = rxConfigPacket.payload.ctrl_indiv_led.right.eye.blue;
+						   airspecColors.colors_indiv.right_side_g = rxConfigPacket.payload.ctrl_indiv_led.right.eye.green;
+						   airspecColors.colors_indiv.right_side_r = rxConfigPacket.payload.ctrl_indiv_led.right.eye.blue;
+
+						   airspecColors.colors_indiv.right_top_b = rxConfigPacket.payload.ctrl_indiv_led.right.top.blue;
+						   airspecColors.colors_indiv.right_top_g = rxConfigPacket.payload.ctrl_indiv_led.right.top.green;
+						   airspecColors.colors_indiv.right_top_r = rxConfigPacket.payload.ctrl_indiv_led.right.top.blue;
+					   }
+					   osMessageQueuePut(lightsComplexQueueHandle, &airspecColors, 0, 0);
+				      break; /* optional */
+
+				   case AIR_SPEC_CONFIG_PACKET_SENSOR_CONTROL_TAG  :
+						memcpy(&sysState.control,  &rxConfigPacket.payload.sensor_control, sizeof(sensor_control_t));
+//						controlSensors(&sensorCtrl[0], rxPacketHeader.payloadSize / 2);
+				      break; /* optional */
+
+				   case AIR_SPEC_CONFIG_PACKET_SENSOR_CONFIG_TAG  :
+					   memcpy(&sysState.config,  &rxConfigPacket.payload.sensor_config, sizeof(sensor_config_t));
+//					   memcpy(&sensorCtrl[0], attribute_modified->Attr_Data + sizeof(RX_PacketHeader), rxPacketHeader.payloadSize);
+//						controlSensors(&sensorCtrl[0], rxPacketHeader.payloadSize / 2);
+				   				      break; /* optional */
+
+				   case AIR_SPEC_CONFIG_PACKET_DFU_MODE_TAG  :
 						ledEnterDFUNotification();
 						enterDFUMode();
-					}
-					else if(functionIdentifier == ENTER_BLUE_GREEN_TRANSITION){
-						memcpy(&blueGreenTranRX, attribute_modified->Attr_Data + sizeof(RX_PacketHeader) + 1, sizeof(union BlueGreenTransition));
+				   				      break; /* optional */
+
+				   case AIR_SPEC_CONFIG_PACKET_BLUE_GREEN_TRANSITION_TAG  :
+						memcpy(&blueGreenTranRX, &rxConfigPacket.payload.blue_green_transition, sizeof(blue_green_transition_t));
 						osThreadTerminate(blueGreenTranTaskHandle); // terminate any existing running thread
 						resetLED();
-						if(blueGreenTranRX.val.start_bit == 1){
+						if(blueGreenTranRX.enable == 1){
 							blueGreenTranTaskHandle = osThreadNew(BlueGreenTransitionTask, &blueGreenTranRX, &blueGreenTask_attributes);
 						}
-					}
-					else if(functionIdentifier == ENTER_RED_FLASH_TRANSITION){
-						memcpy(&redFlashRX, attribute_modified->Attr_Data + sizeof(RX_PacketHeader) + 1, sizeof(union RedFlash));
+					  break; /* optional */
+
+				   case AIR_SPEC_CONFIG_PACKET_RED_FLASH_TASK_TAG  :
+						memcpy(&redFlashRX, &rxConfigPacket.payload.red_flash_task, sizeof(red_flash_task_t));
 						osThreadTerminate(redFlashTaskHandle); // terminate any existing running thread
 						resetLED();
-						if(redFlashRX.val_flash.start_bit == 1){
+						if(redFlashRX.enable == 1){
 							redFlashTaskHandle = osThreadNew(RedFlashTask, &redFlashRX, &redFlashTask_attributes);
 						}
-					}
+				   				      break; /* optional */
+
+				   /* you can have any number of case statements */
+				   default : /* Optional */
+					  break;
 				}
 
-				// update RTC with header's timestamp
-				if(rxPacketHeader.epoch != 0){
-					updateRTC(rxPacketHeader.epoch);
-				}
+
+#else
+				// parse header
+						memcpy(&rxPacketHeader, attribute_modified->Attr_Data, sizeof(RX_PacketHeader));
+
+						/* make sure whatever mechanism is used below, it copies the memory of the payload
+								because there's a chance it can be overwritten before a thread can handle
+								the data */
+						if(rxPacketHeader.packetType == CONTROL_LED_PKT_TYPE){
+							osMessageQueuePut(lightsComplexQueueHandle,
+									(attribute_modified->Attr_Data + sizeof(RX_PacketHeader)), 0, 0);
+						}
+						else if(rxPacketHeader.packetType == SET_CLK_PKT_TYPE){
+							// do nothing since this will get handled at the end
+						}
+						else if(rxPacketHeader.packetType == CNTRL_SENSORS_PKT_TYPE){
+							memcpy(&sensorCtrl[0],
+									attribute_modified->Attr_Data + sizeof(RX_PacketHeader),
+									rxPacketHeader.payloadSize);
+							controlSensors(&sensorCtrl[0], rxPacketHeader.payloadSize / 2);
+						}
+						else if(rxPacketHeader.packetType == CONFIG_SENSORS_PKT_TYPE){
+
+						}
+						else if(rxPacketHeader.packetType == TRIGGER_FUNC_PKT_TYPE){
+							uint8_t functionIdentifier;
+							memcpy(&functionIdentifier,
+									attribute_modified->Attr_Data + sizeof(RX_PacketHeader),
+									sizeof(uint8_t));
+
+							if(functionIdentifier == ENTER_DFU_MODE_UPON_RESET){
+								ledEnterDFUNotification();
+								enterDFUMode();
+							}
+							else if(functionIdentifier == ENTER_BLUE_GREEN_TRANSITION){
+								memcpy(&blueGreenTranRX, attribute_modified->Attr_Data + sizeof(RX_PacketHeader) + 1, sizeof(union BlueGreenTransition));
+								osThreadTerminate(blueGreenTranTaskHandle); // terminate any existing running thread
+								resetLED();
+								if(blueGreenTranRX.val.start_bit == 1){
+									blueGreenTranTaskHandle = osThreadNew(BlueGreenTransitionTask, &blueGreenTranRX, &blueGreenTask_attributes);
+								}
+							}
+							else if(functionIdentifier == ENTER_RED_FLASH_TRANSITION){
+								memcpy(&redFlashRX, attribute_modified->Attr_Data + sizeof(RX_PacketHeader) + 1, sizeof(union RedFlash));
+								osThreadTerminate(redFlashTaskHandle); // terminate any existing running thread
+								resetLED();
+								if(redFlashRX.val_flash.start_bit == 1){
+									redFlashTaskHandle = osThreadNew(RedFlashTask, &redFlashRX, &redFlashTask_attributes);
+								}
+							}
+						}
+
+						// update RTC with header's timestamp
+						if(rxPacketHeader.epoch != 0){
+							updateRTC(rxPacketHeader.epoch);
+						}
+#endif
+
+
 			}
 
 			if (attribute_modified->Attr_Handle
 								== (aDataTransferContext.DataTransferSensorConfigHdle + 1)) {
-				if(attribute_modified->Attr_Data_Length == sizeof(struct SensorConfig)){
-					memcpy(&sensorConfig, attribute_modified->Attr_Data, sizeof(struct SensorConfig));
-					ingestSensorConfig(&sensorConfig);
-				    extMemWriteData(START_ADDR+4, (uint8_t*) &sensorConfig, sizeof(struct SensorConfig));
+
+				uint8_t status;
+
+				/* Create a stream that reads from the buffer. */
+				pb_istream_t stream = pb_istream_from_buffer(attribute_modified->Attr_Data, attribute_modified->Attr_Data_Length);
+
+				/* Now we are ready to decode the message. */
+				status = pb_decode(&stream, SYSTEM_STATE_FIELDS, &tempState);
+
+				// todo: theoretically, unnecessary to do another memcpy.
+				// Can integrate the top line with this one and remove tempState entirely.
+				// Worried about corruption.
+				memcpy(&sysState,&tempState,sizeof(system_state_t));
+
+//				if(attribute_modified->Attr_Data_Length == sizeof(struct SensorConfig)){
+
+
+//					memcpy(&sensorConfig, attribute_modified->Attr_Data, sizeof(struct SensorConfig));
+					ingestSensorConfig(&sysState);
+				    extMemWriteData(START_ADDR+4, (uint8_t*) &sysState, sizeof(system_state_t));
 //				    if()
-					if(sensorConfig.epoch != 0){
-						updateRTC(sensorConfig.epoch);
-					}
-				};
+//					if(sensorConfig.epoch != 0){
+//						updateRTC(sensorConfig.epoch);
+//					}
+//				};
+
 			}
 
 
@@ -531,7 +657,7 @@ void DTS_STM_Init(void) {
 			1, /* isVariable */
 			&(aDataTransferContext.DataTransferSensorConfigHdle));
 
-	updateSystemConfig_BLE(&sensorConfig);
+	updateSystemConfig_BLE(&sysState);
 
 	if (hciCmdResult != 0) {
 		APP_DBG_MSG("error add char Tx\n");

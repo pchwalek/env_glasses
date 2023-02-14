@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-//import "nanopb.proto";
-//option (nanopb_fileopt).packed_struct = true;
+import "nanopb.proto";
+option (nanopb_fileopt).packed_struct = true;
 
 enum SensorPacketTypes {
     UNKNOWN_PACKET_TYPE = 0;
@@ -440,6 +440,7 @@ message SensorConfig{
     BlinkSensorConfig blink = 6;
     MicSensorConfig mic = 7;
     HumiditySensorConfig humidity = 8;
+    IMU_SensorConfig imu = 9;
 }
 
 message DFU_Mode{
@@ -461,7 +462,9 @@ message RedFlashTask{
     bool enable = 1;
     uint32 red_max_intensity = 2;
     uint32 red_min_intensity = 3;
-    uint32 duration_ms = 4;
+    uint32 frequency = 4;
+    uint32 duration_ms = 5;
+    uint32 enable_speaker = 6;
 }
 
 message AirSpecConfigHeader{
@@ -479,5 +482,10 @@ message AirSpecConfigPacket {
         BlueGreenTransition blueGreenTransition = 6;
         RedFlashTask redFlashTask = 7;
     }
+}
 
+message systemState {
+    uint32 firmware_version = 1;
+    SensorControl control = 2;
+    SensorConfig  config = 3;
 }

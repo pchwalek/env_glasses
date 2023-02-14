@@ -35,7 +35,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "message.pb.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -87,6 +87,8 @@ void startInitThread(void);
 #define PD9_Pin GPIO_PIN_9
 #define PD9_GPIO_Port GPIOD
 /* USER CODE BEGIN Private defines */
+#define SPEAKER_OUT_Pin			   GPIO_PIN_10
+#define SPEAKER_OUT_GPIO_Port     GPIOB
 #define CUSTOM_BT_PARAMETERS 1
 //#define DYNAMIC_MODE	1
 
@@ -95,6 +97,7 @@ void startInitThread(void);
 #define TERMINATE_THREAD_BIT					0x0200
 #define IMU_DATA_RDY_BIT						0x0400
 #define MIC_DATA_RDY_BIT						0x0800
+#define WINDOW_RDY_BIT							0x2000
 #define DFU_MODE_ENABLE							0xDEADBEEF
 
 extern volatile unsigned long ulHighFrequencyTimerTicks;
@@ -108,6 +111,9 @@ typedef enum
 
     /* USER CODE END CFG_LPM_Id_t */
 } CFG_LPM_Id_t;
+
+//system_state_t sysState;
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

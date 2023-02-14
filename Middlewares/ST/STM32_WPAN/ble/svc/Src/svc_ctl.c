@@ -155,27 +155,27 @@ void SVCCTL_Init( void )
 
 __WEAK void SVCCTL_SvcInit(void)
 {
-//  BAS_Init();
-//
-//  BLS_Init();
-//
-//  CRS_STM_Init();
-//
-//  DIS_Init();
-//
-//  EDS_STM_Init();
-//
-//  HIDS_Init();
-//
-////  HRS_Init();
-//
-//  HTS_Init();
-//
-//  IAS_Init();
-//
-//  LLS_Init();
-//
-//  TPS_Init();
+  BAS_Init();
+
+  BLS_Init();
+
+  CRS_STM_Init();
+
+  DIS_Init();
+
+  EDS_STM_Init();
+
+  HIDS_Init();
+
+  HRS_Init();
+
+  HTS_Init();
+
+  IAS_Init();
+
+  LLS_Init();
+
+  TPS_Init();
 
   MOTENV_STM_Init();
 

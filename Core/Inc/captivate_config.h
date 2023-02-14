@@ -306,7 +306,9 @@ struct  SensorConfig{
 	struct MicSensor micSensor;
 };
 
-extern struct SensorConfig sensorConfig;
+
+extern system_state_t sysState;
+//extern struct SensorConfig sensorConfig;
 
 extern void startSensorThreads(void);
 
@@ -347,7 +349,7 @@ struct USB_msgPass {
 
 
 void controlSensors(uint8_t* data, uint16_t numPackets);
-void ingestSensorConfig(struct SensorConfig *config);
+void ingestSensorConfig(system_state_t *config);
 
 //typedef struct PacketHeaders{
 //  uint16_t packetType;

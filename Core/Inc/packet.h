@@ -85,7 +85,7 @@ void queueUpPacket(sensor_packet_t *packet);
 void senderThread(void *argument);
 //uint8_t sendPacket_BLE(sensor_packet_t *packet);
 uint8_t sendProtobufPacket_BLE(uint8_t *packet, uint16_t size);
-uint8_t updateSystemConfig_BLE(struct SensorConfig *packet);
+uint8_t updateSystemConfig_BLE(system_state_t *packet);
 void updateRTC(uint32_t receivedTime);
 uint32_t getEpoch(void);
 

@@ -74,12 +74,12 @@ void BME_Task(void *argument) {
 
 	bool status;
 
-	struct GasSensor sensorSettings;
+	bme_sensor_config_t sensorSettings;
 
 	if(argument != NULL){
-		memcpy(&sensorSettings,argument,sizeof(struct LuxSensor));
+		memcpy(&sensorSettings,argument,sizeof(bme_sensor_config_t));
 	}else{
-		sensorSettings.sample_period = 0;
+		sensorSettings.sample_period_ms = 0;
 	}
 
 	uint32_t timeSinceLastStateSave = 0;

@@ -65,7 +65,7 @@ void Mic_Task(void *argument){
 
 	float startFreq;
 
-	struct MicSensor sensorSettings;
+	mic_sensor_config_t sensorSettings;
 
 //	arm_rfft_init_q31(&fft_instance, MIC_HALF_DATA_SIZE, 0, 0);
 	arm_rfft_fast_init_f32(&fft_instance, MIC_DATA_SIZE);
@@ -73,13 +73,13 @@ void Mic_Task(void *argument){
 	if(argument != NULL){
 		memcpy(&sensorSettings,argument,sizeof(struct MicSensor));
 	}else{
-		sensorSettings.mic_sample_frequency = SAI_AUDIO_FREQUENCY_48K;
-		sensorSettings.sys_sample_period_ms = 30000; // every 30 seconds
+		sensorSettings.mic_sample_freq = SAI_AUDIO_FREQUENCY_48K;
+		sensorSettings.sample_period_ms = 30000; // every 30 seconds
 	}
 
 	//todo: temporary code which should be removed once website is updated
-	sensorSettings.mic_sample_frequency = SAI_AUDIO_FREQUENCY_48K;
-	sensorSettings.sys_sample_period_ms = 30000; // every 30 seconds
+	sensorSettings.mic_sample_freq = SAI_AUDIO_FREQUENCY_48K;
+	sensorSettings.sample_period_ms = 30000; // every 30 seconds
 
 
 	float fft_spacing = 48000 / 4096.0;
@@ -93,7 +93,7 @@ void Mic_Task(void *argument){
 
 	uint32_t sample_count;
 
-	hsai_BlockA1.Init.AudioFrequency = sensorSettings.mic_sample_frequency;
+	hsai_BlockA1.Init.AudioFrequency = sensorSettings.mic_sample_freq;
 
 	HAL_SAI_InitProtocol(&hsai_BlockA1, SAI_I2S_STANDARD, SAI_PROTOCOL_DATASIZE_24BIT, 2);
 
@@ -103,7 +103,7 @@ void Mic_Task(void *argument){
 	 */
 	HAL_SAI_Receive(&hsai_BlockA1, (uint8_t *) micData, 256, 1);  //purposeful short timeout
 
-	if(sensorSettings.sys_sample_period_ms >= MIC_SAMPLE_PERIOD_MS_THRESH_TO_TURN_OFF){
+	if(sensorSettings.sample_period_ms >= MIC_SAMPLE_PERIOD_MS_THRESH_TO_TURN_OFF){
 		micLowPowerMode = 1;
 	}else{
 		micLowPowerMode = 0;
@@ -111,7 +111,7 @@ void Mic_Task(void *argument){
 
 	periodicMicTimer_id = osTimerNew(triggerMicSample, osTimerPeriodic,
 				NULL, NULL);
-	osTimerStart(periodicMicTimer_id, sensorSettings.sys_sample_period_ms);
+	osTimerStart(periodicMicTimer_id, sensorSettings.sample_period_ms);
 
 	while(1){
 		flags = osThreadFlagsWait(GRAB_SAMPLE_BIT | TERMINATE_THREAD_BIT,
@@ -170,8 +170,8 @@ void Mic_Task(void *argument){
 					packet->payload.mic_packet.packet_index = micID;
 
 					packet->payload.mic_packet.frequency_spacing = fft_spacing;
-					packet->payload.mic_packet.mic_sample_freq = sensorSettings.mic_sample_frequency;
-					packet->payload.mic_packet.sample_period = sensorSettings.sys_sample_period_ms;
+					packet->payload.mic_packet.mic_sample_freq = sensorSettings.mic_sample_freq;
+					packet->payload.mic_packet.sample_period = sensorSettings.sample_period_ms;
 					packet->payload.mic_packet.samples_per_fft = packetsPerMicSample; // total number of packets required to send full FFT
 
 

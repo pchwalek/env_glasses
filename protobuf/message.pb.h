@@ -549,6 +549,8 @@ typedef struct sensor_config {
     mic_sensor_config_t mic;
     bool has_humidity;
     humidity_sensor_config_t humidity;
+    bool has_imu;
+    imu_sensor_config_t imu;
 } pb_packed sensor_config_t;
 PB_PACKED_STRUCT_END
 
@@ -576,7 +578,9 @@ typedef struct red_flash_task {
     bool enable;
     uint32_t red_max_intensity;
     uint32_t red_min_intensity;
+    uint32_t frequency;
     uint32_t duration_ms;
+    uint32_t enable_speaker;
 } pb_packed red_flash_task_t;
 PB_PACKED_STRUCT_END
 
@@ -600,6 +604,16 @@ typedef struct air_spec_config_packet {
         red_flash_task_t red_flash_task;
     } payload;
 } pb_packed air_spec_config_packet_t;
+PB_PACKED_STRUCT_END
+
+PB_PACKED_STRUCT_START
+typedef struct system_state {
+    uint32_t firmware_version;
+    bool has_control;
+    sensor_control_t control;
+    bool has_config;
+    sensor_config_t config;
+} pb_packed system_state_t;
 PB_PACKED_STRUCT_END
 
 
@@ -725,6 +739,7 @@ extern "C" {
 
 
 
+
 /* Initializer values for message structs */
 #define SENSOR_PACKET_HEADER_INIT_DEFAULT        {0, 0, 0}
 #define LUX_PACKET_INIT_DEFAULT                  {0, 0, _TSL2591_GAIN_MIN, _TSL2591_INTEGRATION_TIME_MIN, 0, {LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT}}
@@ -763,12 +778,13 @@ extern "C" {
 #define MIC_SENSOR_CONFIG_INIT_DEFAULT           {0, 0}
 #define HUMIDITY_SENSOR_CONFIG_INIT_DEFAULT      {0, _SHT45_PRECISION_MIN, _SHT45_HEATER_MIN}
 #define IMU_SENSOR_CONFIG_INIT_DEFAULT           {false, IMU_ACCEL_SETTINGS_INIT_DEFAULT, false, IMU_GYRO_SETTINGS_INIT_DEFAULT, 0, 0, 0}
-#define SENSOR_CONFIG_INIT_DEFAULT               {false, LUX_SENSOR_CONFIG_INIT_DEFAULT, false, SGP_SENSOR_CONFIG_INIT_DEFAULT, false, BME_SENSOR_CONFIG_INIT_DEFAULT, false, COLOR_SENSOR_CONFIG_INIT_DEFAULT, false, THERMOPILE_SENSOR_CONFIG_INIT_DEFAULT, false, BLINK_SENSOR_CONFIG_INIT_DEFAULT, false, MIC_SENSOR_CONFIG_INIT_DEFAULT, false, HUMIDITY_SENSOR_CONFIG_INIT_DEFAULT}
+#define SENSOR_CONFIG_INIT_DEFAULT               {false, LUX_SENSOR_CONFIG_INIT_DEFAULT, false, SGP_SENSOR_CONFIG_INIT_DEFAULT, false, BME_SENSOR_CONFIG_INIT_DEFAULT, false, COLOR_SENSOR_CONFIG_INIT_DEFAULT, false, THERMOPILE_SENSOR_CONFIG_INIT_DEFAULT, false, BLINK_SENSOR_CONFIG_INIT_DEFAULT, false, MIC_SENSOR_CONFIG_INIT_DEFAULT, false, HUMIDITY_SENSOR_CONFIG_INIT_DEFAULT, false, IMU_SENSOR_CONFIG_INIT_DEFAULT}
 #define DFU_MODE_INIT_DEFAULT                    {0}
 #define BLUE_GREEN_TRANSITION_INIT_DEFAULT       {0, 0, 0, 0, 0, 0, 0, 0}
-#define RED_FLASH_TASK_INIT_DEFAULT              {0, 0, 0, 0}
+#define RED_FLASH_TASK_INIT_DEFAULT              {0, 0, 0, 0, 0, 0}
 #define AIR_SPEC_CONFIG_HEADER_INIT_DEFAULT      {0}
 #define AIR_SPEC_CONFIG_PACKET_INIT_DEFAULT      {false, AIR_SPEC_CONFIG_HEADER_INIT_DEFAULT, 0, {LIGHT_CONTROL_PACKET_INIT_DEFAULT}}
+#define SYSTEM_STATE_INIT_DEFAULT                {0, false, SENSOR_CONTROL_INIT_DEFAULT, false, SENSOR_CONFIG_INIT_DEFAULT}
 #define SENSOR_PACKET_HEADER_INIT_ZERO           {0, 0, 0}
 #define LUX_PACKET_INIT_ZERO                     {0, 0, _TSL2591_GAIN_MIN, _TSL2591_INTEGRATION_TIME_MIN, 0, {LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO}}
 #define LUX_PACKET_PAYLOAD_INIT_ZERO             {0, 0, 0}
@@ -806,12 +822,13 @@ extern "C" {
 #define MIC_SENSOR_CONFIG_INIT_ZERO              {0, 0}
 #define HUMIDITY_SENSOR_CONFIG_INIT_ZERO         {0, _SHT45_PRECISION_MIN, _SHT45_HEATER_MIN}
 #define IMU_SENSOR_CONFIG_INIT_ZERO              {false, IMU_ACCEL_SETTINGS_INIT_ZERO, false, IMU_GYRO_SETTINGS_INIT_ZERO, 0, 0, 0}
-#define SENSOR_CONFIG_INIT_ZERO                  {false, LUX_SENSOR_CONFIG_INIT_ZERO, false, SGP_SENSOR_CONFIG_INIT_ZERO, false, BME_SENSOR_CONFIG_INIT_ZERO, false, COLOR_SENSOR_CONFIG_INIT_ZERO, false, THERMOPILE_SENSOR_CONFIG_INIT_ZERO, false, BLINK_SENSOR_CONFIG_INIT_ZERO, false, MIC_SENSOR_CONFIG_INIT_ZERO, false, HUMIDITY_SENSOR_CONFIG_INIT_ZERO}
+#define SENSOR_CONFIG_INIT_ZERO                  {false, LUX_SENSOR_CONFIG_INIT_ZERO, false, SGP_SENSOR_CONFIG_INIT_ZERO, false, BME_SENSOR_CONFIG_INIT_ZERO, false, COLOR_SENSOR_CONFIG_INIT_ZERO, false, THERMOPILE_SENSOR_CONFIG_INIT_ZERO, false, BLINK_SENSOR_CONFIG_INIT_ZERO, false, MIC_SENSOR_CONFIG_INIT_ZERO, false, HUMIDITY_SENSOR_CONFIG_INIT_ZERO, false, IMU_SENSOR_CONFIG_INIT_ZERO}
 #define DFU_MODE_INIT_ZERO                       {0}
 #define BLUE_GREEN_TRANSITION_INIT_ZERO          {0, 0, 0, 0, 0, 0, 0, 0}
-#define RED_FLASH_TASK_INIT_ZERO                 {0, 0, 0, 0}
+#define RED_FLASH_TASK_INIT_ZERO                 {0, 0, 0, 0, 0, 0}
 #define AIR_SPEC_CONFIG_HEADER_INIT_ZERO         {0}
 #define AIR_SPEC_CONFIG_PACKET_INIT_ZERO         {false, AIR_SPEC_CONFIG_HEADER_INIT_ZERO, 0, {LIGHT_CONTROL_PACKET_INIT_ZERO}}
+#define SYSTEM_STATE_INIT_ZERO                   {0, false, SENSOR_CONTROL_INIT_ZERO, false, SENSOR_CONFIG_INIT_ZERO}
 
 /* Field tags (for use in manual encoding/decoding) */
 #define SENSOR_PACKET_HEADER_SYSTEM_UID_TAG      1
@@ -979,6 +996,7 @@ extern "C" {
 #define SENSOR_CONFIG_BLINK_TAG                  6
 #define SENSOR_CONFIG_MIC_TAG                    7
 #define SENSOR_CONFIG_HUMIDITY_TAG               8
+#define SENSOR_CONFIG_IMU_TAG                    9
 #define DFU_MODE_ENABLE_TAG                      1
 #define BLUE_GREEN_TRANSITION_ENABLE_TAG         1
 #define BLUE_GREEN_TRANSITION_BLUE_MIN_INTENSITY_TAG 2
@@ -991,7 +1009,9 @@ extern "C" {
 #define RED_FLASH_TASK_ENABLE_TAG                1
 #define RED_FLASH_TASK_RED_MAX_INTENSITY_TAG     2
 #define RED_FLASH_TASK_RED_MIN_INTENSITY_TAG     3
-#define RED_FLASH_TASK_DURATION_MS_TAG           4
+#define RED_FLASH_TASK_FREQUENCY_TAG             4
+#define RED_FLASH_TASK_DURATION_MS_TAG           5
+#define RED_FLASH_TASK_ENABLE_SPEAKER_TAG        6
 #define AIR_SPEC_CONFIG_HEADER_TIMESTAMP_UNIX_TAG 1
 #define AIR_SPEC_CONFIG_PACKET_HEADER_TAG        1
 #define AIR_SPEC_CONFIG_PACKET_CTRL_INDIV_LED_TAG 2
@@ -1000,6 +1020,9 @@ extern "C" {
 #define AIR_SPEC_CONFIG_PACKET_DFU_MODE_TAG      5
 #define AIR_SPEC_CONFIG_PACKET_BLUE_GREEN_TRANSITION_TAG 6
 #define AIR_SPEC_CONFIG_PACKET_RED_FLASH_TASK_TAG 7
+#define SYSTEM_STATE_FIRMWARE_VERSION_TAG        1
+#define SYSTEM_STATE_CONTROL_TAG                 2
+#define SYSTEM_STATE_CONFIG_TAG                  3
 
 /* Struct field encoding specification for nanopb */
 #define SENSOR_PACKET_HEADER_FIELDLIST(X, a) \
@@ -1345,7 +1368,8 @@ X(a, STATIC,   OPTIONAL, MESSAGE,  color,             4) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  thermopile,        5) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  blink,             6) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  mic,               7) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  humidity,          8)
+X(a, STATIC,   OPTIONAL, MESSAGE,  humidity,          8) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  imu,               9)
 #define SENSOR_CONFIG_CALLBACK NULL
 #define SENSOR_CONFIG_DEFAULT NULL
 #define sensor_config_t_lux_MSGTYPE lux_sensor_config_t
@@ -1356,6 +1380,7 @@ X(a, STATIC,   OPTIONAL, MESSAGE,  humidity,          8)
 #define sensor_config_t_blink_MSGTYPE blink_sensor_config_t
 #define sensor_config_t_mic_MSGTYPE mic_sensor_config_t
 #define sensor_config_t_humidity_MSGTYPE humidity_sensor_config_t
+#define sensor_config_t_imu_MSGTYPE imu_sensor_config_t
 
 #define DFU_MODE_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, BOOL,     enable,            1)
@@ -1378,7 +1403,9 @@ X(a, STATIC,   SINGULAR, UINT32,   transition_delay_seconds,   8)
 X(a, STATIC,   SINGULAR, BOOL,     enable,            1) \
 X(a, STATIC,   SINGULAR, UINT32,   red_max_intensity,   2) \
 X(a, STATIC,   SINGULAR, UINT32,   red_min_intensity,   3) \
-X(a, STATIC,   SINGULAR, UINT32,   duration_ms,       4)
+X(a, STATIC,   SINGULAR, UINT32,   frequency,         4) \
+X(a, STATIC,   SINGULAR, UINT32,   duration_ms,       5) \
+X(a, STATIC,   SINGULAR, UINT32,   enable_speaker,    6)
 #define RED_FLASH_TASK_CALLBACK NULL
 #define RED_FLASH_TASK_DEFAULT NULL
 
@@ -1404,6 +1431,15 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (payload,red_flash_task,payload.red_flash_tas
 #define air_spec_config_packet_t_payload_dfu_mode_MSGTYPE dfu_mode_t
 #define air_spec_config_packet_t_payload_blue_green_transition_MSGTYPE blue_green_transition_t
 #define air_spec_config_packet_t_payload_red_flash_task_MSGTYPE red_flash_task_t
+
+#define SYSTEM_STATE_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT32,   firmware_version,   1) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  control,           2) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  config,            3)
+#define SYSTEM_STATE_CALLBACK NULL
+#define SYSTEM_STATE_DEFAULT NULL
+#define system_state_t_control_MSGTYPE sensor_control_t
+#define system_state_t_config_MSGTYPE sensor_config_t
 
 extern const pb_msgdesc_t sensor_packet_header_t_msg;
 extern const pb_msgdesc_t lux_packet_t_msg;
@@ -1448,6 +1484,7 @@ extern const pb_msgdesc_t blue_green_transition_t_msg;
 extern const pb_msgdesc_t red_flash_task_t_msg;
 extern const pb_msgdesc_t air_spec_config_header_t_msg;
 extern const pb_msgdesc_t air_spec_config_packet_t_msg;
+extern const pb_msgdesc_t system_state_t_msg;
 
 /* Defines for backwards compatibility with code written before nanopb-0.4.0 */
 #define SENSOR_PACKET_HEADER_FIELDS &sensor_packet_header_t_msg
@@ -1493,12 +1530,13 @@ extern const pb_msgdesc_t air_spec_config_packet_t_msg;
 #define RED_FLASH_TASK_FIELDS &red_flash_task_t_msg
 #define AIR_SPEC_CONFIG_HEADER_FIELDS &air_spec_config_header_t_msg
 #define AIR_SPEC_CONFIG_PACKET_FIELDS &air_spec_config_packet_t_msg
+#define SYSTEM_STATE_FIELDS &system_state_t_msg
 
 /* Maximum encoded size of messages (where known) */
 #define AIR_SPEC_COLORS_SIZE                     18
 #define AIR_SPEC_COLOR_POSITION_SIZE             60
 #define AIR_SPEC_CONFIG_HEADER_SIZE              6
-#define AIR_SPEC_CONFIG_PACKET_SIZE              146
+#define AIR_SPEC_CONFIG_PACKET_SIZE              190
 #define BLINK_BYTE_PAYLOAD_SIZE                  453
 #define BLINK_HIGH_RES_PAYLOAD_SIZE              353
 #define BLINK_PACKET_SIZE                        484
@@ -1523,8 +1561,8 @@ extern const pb_msgdesc_t air_spec_config_packet_t_msg;
 #define MIC_PACKET_PAYLOAD_SIZE                  650
 #define MIC_PACKET_SIZE                          687
 #define MIC_SENSOR_CONFIG_SIZE                   12
-#define RED_FLASH_TASK_SIZE                      20
-#define SENSOR_CONFIG_SIZE                       135
+#define RED_FLASH_TASK_SIZE                      32
+#define SENSOR_CONFIG_SIZE                       179
 #define SENSOR_CONTROL_SIZE                      20
 #define SENSOR_PACKET_HEADER_SIZE                18
 #define SENSOR_PACKET_SIZE                       4839
@@ -1535,6 +1573,7 @@ extern const pb_msgdesc_t air_spec_config_packet_t_msg;
 #define SHT_PACKET_SIZE                          4816
 #define SPEC_PACKET_PAYLOAD_SIZE                 78
 #define SPEC_PACKET_SIZE                         2426
+#define SYSTEM_STATE_SIZE                        210
 #define THERMOPILE_SENSOR_CONFIG_SIZE            16
 #define THERM_PACKET_PAYLOAD_SIZE                36
 #define THERM_PACKET_SIZE                        1912
