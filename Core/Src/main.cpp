@@ -171,6 +171,24 @@ int main(void) {
 
 //	volatile uint8_t test = sizeof(SensorConfig);
 
+//	  GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+
+//	  GPIO_InitStruct.Pin = SPEAKER_OUT_Pin;
+//	  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+//	  GPIO_InitStruct.Pull = GPIO_PULLUP;
+//	  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+//	  HAL_GPIO_Init(SPEAKER_OUT_GPIO_Port, &GPIO_InitStruct);
+
+//	HAL_GPIO_WritePin(SPEAKER_OUT_GPIO_Port, SPEAKER_OUT_Pin, GPIO_PIN_SET);
+//	HAL_Delay(100);
+//	HAL_GPIO_WritePin(SPEAKER_OUT_GPIO_Port, SPEAKER_OUT_Pin, GPIO_PIN_RESET);
+
+	/* using PWM */
+	HAL_TIM_Base_Start(&htim2);
+	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
+
+	while(1);
 //	if (isSystemFresh != 0xDEADBEAF) {
 	if(1){
 		//initialize fresh system

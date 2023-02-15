@@ -53,21 +53,7 @@ void MX_TIM2_Init(void)
   {
     Error_Handler();
   }
-  if (HAL_TIM_PWM_Init(&htim2) != HAL_OK)
-    {
-      Error_Handler();
-    }
-    sConfigOC.OCMode = TIM_OCMODE_PWM1;
-    sConfigOC.Pulse = 5;
-    sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-    sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
-    sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-    sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
-    sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
-    if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
-    {
-      Error_Handler();
-    }
+
   sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
   if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
   {
@@ -92,7 +78,23 @@ void MX_TIM2_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN TIM2_Init 2 */
+  if (HAL_TIM_PWM_Init(&htim2) != HAL_OK)
+     {
+       Error_Handler();
+     }
+     sConfigOC.OCMode = TIM_OCMODE_PWM1;
+     sConfigOC.Pulse = 10;
+     sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+     sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
+     sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+     sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
+     sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
+     if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
+     {
+       Error_Handler();
+     }
 
+  HAL_TIM_MspPostInit(&htim2);
   /* USER CODE END TIM2_Init 2 */
 
 }
@@ -149,7 +151,7 @@ void MX_TIM16_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN TIM16_Init 2 */
-  HAL_TIM_MspPostInit(&htim2);
+
   /* USER CODE END TIM16_Init 2 */
   HAL_TIM_MspPostInit(&htim16);
 
@@ -262,7 +264,7 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef* timHandle)
 
   /* USER CODE END TIM16_MspPostInit 0 */
 
-    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
     /**TIM16 GPIO Configuration
     PA6     ------> TIM16_CH1
     */
