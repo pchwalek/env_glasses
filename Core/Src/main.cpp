@@ -183,12 +183,19 @@ int main(void) {
 //	HAL_GPIO_WritePin(SPEAKER_OUT_GPIO_Port, SPEAKER_OUT_Pin, GPIO_PIN_SET);
 //	HAL_Delay(100);
 //	HAL_GPIO_WritePin(SPEAKER_OUT_GPIO_Port, SPEAKER_OUT_Pin, GPIO_PIN_RESET);
+//	HAL_TIM_Base_Start(&htim2);
+//	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
 
 	/* using PWM */
-	HAL_TIM_Base_Start(&htim2);
-	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
+//	while(1){
+//		HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
+//		HAL_Delay(25);
+//		HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_3);
+//		HAL_Delay(25);
+//	};
+//
+//	while(1);
 
-	while(1);
 //	if (isSystemFresh != 0xDEADBEAF) {
 	if(1){
 		//initialize fresh system
@@ -196,18 +203,24 @@ int main(void) {
 //		sensorConfig.uuid = LL_FLASH_GetUDN();
 		sysState.firmware_version = 1;
 
-		sysState.control.lux = 1;
+		sysState.control.lux = 0;
+		sysState.control.bme688 = 0;
+		sysState.control.sgp = 0;
+		sysState.control.imu = 0;
+		sysState.control.spectrometer = 0;
+		sysState.control.thermopiles = 1;
+		sysState.control.blink = 1;
+		sysState.control.mic = 0;
+		sysState.control.sht = 0;
+
 		sysState.config.lux.gain = TSL2591_GAIN_TSL2722_GAIN_8_X;
 		sysState.config.lux.integration_time = TSL2591_INTEGRATION_TIME_TSL2722_INTEGRATIONTIME_101_MS;
 		sysState.config.lux.sample_period_ms = 1000;
 
-		sysState.control.bme688 = 1;
 		sysState.config.bme.sample_period_ms = 5000;
 
-		sysState.control.sgp = 1;
 		sysState.config.sgp.sample_period_ms = 5000;
 
-		sysState.control.imu = 0;
 		sysState.config.imu.gyro_settings.has_cutoff = true;
 		sysState.config.imu.gyro_settings.cutoff = IMU_GYRO_CUTOFF_ICM20_X_GYRO_FREQ_196_6_HZ;
 		sysState.config.imu.gyro_settings.range = IMU_GYRO_RANGE_RANGE_2000_DPS;
@@ -216,14 +229,15 @@ int main(void) {
 		sysState.config.imu.accel_settings.cutoff = IMU_ACCEL_CUTOFF_ICM20_X_ACCEL_FREQ_246_0_HZ;
 		sysState.config.imu.accel_settings.range = IMU_ACCEL_RANGE_RANGE_8_G;
 		sysState.config.imu.accel_settings.sample_rate_divisor = 1;
+		sysState.config.imu.enable_windowing = 1;
+		sysState.config.imu.window_size_ms = 10000;
+		sysState.config.imu.window_period_ms = 30000;
 
-		sysState.control.spectrometer = 1;
 		sysState.config.color.integration_time = 100;
 		sysState.config.color.integration_step = 999;
 		sysState.config.color.gain = SPEC_GAIN_GAIN_256_X;
 		sysState.config.color.sample_period_ms = 5000;
 
-		sysState.control.thermopiles = 1;
 		sysState.config.thermopile.sample_period_ms = 1000;
 		sysState.config.thermopile.enable_top_of_nose = true;
 		sysState.config.thermopile.enable_nose_bridge = true;
@@ -231,18 +245,17 @@ int main(void) {
 		sysState.config.thermopile.enable_mid_temple = true;
 		sysState.config.thermopile.enable_rear_temple = true;
 
-
-		sysState.control.blink = 1;
 		sysState.config.blink.enable_daylight_compensation = 1;
 		sysState.config.blink.daylight_compensation_upper_thresh = 7;
 		sysState.config.blink.daylight_compensation_lower_thresh = 235;
 		sysState.config.blink.sample_frequency = 1000;
+		sysState.config.blink.enable_windowing = 1;
+		sysState.config.blink.window_size_ms = 3000;
+		sysState.config.blink.window_period_ms = 10000;
 
-		sysState.control.mic = 0;
 		sysState.config.mic.mic_sample_freq = SAI_AUDIO_FREQUENCY_48K;
 		sysState.config.mic.sample_period_ms = 30000; // 30 seconds
 
-		sysState.control.sht = 1;
 		sysState.config.humidity.precision_level = SHT45_PRECISION_SHT4_X_HIGH_PRECISION;
 		sysState.config.humidity.heater_settings = SHT45_HEATER_SHT4_X_LOW_HEATER_100_MS;
 		sysState.config.humidity.sample_period_ms = 5000;

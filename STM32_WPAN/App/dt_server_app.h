@@ -44,11 +44,11 @@ typedef void (*IO_RECEIVE_DATA_USER_CALLBACK_TYPE)(uint8_t *rx_data,
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 
-osThreadId_t DataWriteProcessId;
-osThreadId_t DataTransferProcessId;
-osThreadId_t Button_SW1_ProcessId;
-osThreadId_t Button_SW2_ProcessId;
-osThreadId_t Button_SW3_ProcessId;
+//osThreadId_t DataWriteProcessId;
+//osThreadId_t DataTransferProcessId;
+//osThreadId_t Button_SW1_ProcessId;
+//osThreadId_t Button_SW2_ProcessId;
+//osThreadId_t Button_SW3_ProcessId;
 
 /* External variables --------------------------------------------------------*/
 /* Exported macros -----------------------------------------------------------*/
@@ -63,7 +63,7 @@ void SendData( void * argument );
 //uint8_t sendCaptivatePacket_BLE(sensor_packet_t *packet);
 void senderThread(void *argument);
 void BLE_App_Delay_DataThroughput(void * argument);
-void SendDataBLE( struct LogPacket *sensorPacket );
+//void SendDataBLE( struct LogPacket *sensorPacket );
 
 typedef enum {
 	DTS_APP_FLOW_OFF, DTS_APP_FLOW_ON

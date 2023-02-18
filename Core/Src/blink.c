@@ -64,10 +64,10 @@ float tick_ms_diff = 0;
 uint8_t diodeState = 0;
 uint8_t diodeSaturatedFlag = 0;
 
-sensor_packet_t *packet = NULL;
 
-osTimerId_t singleShotTimer_id;
-uint32_t startTime;
+
+osTimerId_t blinkSingleShotTimer_id;
+static uint32_t startTime;
 /**
  * @brief Thread initialization.
  * @param  None
@@ -85,6 +85,7 @@ void BlinkTask(void *argument) {
 	uint32_t blinkSampleHalfBuffer_ms = BLINK_HALF_BUFFER_SIZE * (1.0/BLINK_SAMPLE_RATE) * 1000.0;
 	uint32_t packetRemainder = BLINK_SAMPLE_RATE % BLINK_PKT_PAYLOAD_SIZE;
 
+	sensor_packet_t *packet = NULL;
 
 	bool status;
 
@@ -219,8 +220,8 @@ void BlinkTask(void *argument) {
 							int32_t waitTime = sensorSettings.window_period_ms - sensorSettings.window_size_ms;
 							if(waitTime < 0) waitTime = 0;
 
-							singleShotTimer_id = osTimerNew(initBlink, osTimerOnce, NULL, NULL);
-							osTimerStart(singleShotTimer_id, waitTime);
+							blinkSingleShotTimer_id = osTimerNew(initBlink, osTimerOnce, NULL, NULL);
+							osTimerStart(blinkSingleShotTimer_id, waitTime);
 						}
 					}
 				}
@@ -228,7 +229,7 @@ void BlinkTask(void *argument) {
 				// stop timer and put thread in idle if signal was reset
 				if ((evt & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
 
-					osTimerDelete(singleShotTimer_id);
+					osTimerDelete(blinkSingleShotTimer_id);
 					deinitBlink();
 
 					// clear any flags

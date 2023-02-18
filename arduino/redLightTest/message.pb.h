@@ -3,7 +3,7 @@
 
 #ifndef PB_MESSAGE_PB_H_INCLUDED
 #define PB_MESSAGE_PB_H_INCLUDED
-#include <pb.h>
+#include "pb.h"
 
 #if PB_PROTO_HEADER_VERSION != 40
 #error Regenerate this file with the current version of nanopb generator.
@@ -391,6 +391,25 @@ typedef struct mic_packet {
 PB_PACKED_STRUCT_END
 
 PB_PACKED_STRUCT_START
+typedef struct sensor_packet {
+    bool has_header;
+    sensor_packet_header_t header;
+    pb_size_t which_payload;
+    union {
+        lux_packet_t lux_packet;
+        sgp_packet_t sgp_packet;
+        bme_packet_t bme_packet;
+        blink_packet_t blink_packet;
+        sht_packet_t sht_packet;
+        spec_packet_t spec_packet;
+        therm_packet_t therm_packet;
+        imu_packet_t imu_packet;
+        mic_packet_t mic_packet;
+    } payload;
+} pb_packed sensor_packet_t;
+PB_PACKED_STRUCT_END
+
+PB_PACKED_STRUCT_START
 typedef struct air_spec_colors {
     uint32_t red;
     uint32_t green;
@@ -597,48 +616,6 @@ typedef struct system_state {
 } pb_packed system_state_t;
 PB_PACKED_STRUCT_END
 
-PB_PACKED_STRUCT_START
-typedef struct app_survey_data_payload {
-    int32_t q_index;
-    pb_callback_t q_choice;
-} pb_packed app_survey_data_payload_t;
-PB_PACKED_STRUCT_END
-
-PB_PACKED_STRUCT_START
-typedef struct app_survey_data_packet {
-    uint32_t uid_phone;
-    pb_callback_t payload;
-} pb_packed app_survey_data_packet_t;
-PB_PACKED_STRUCT_END
-
-PB_PACKED_STRUCT_START
-typedef struct app_meta_data_packet {
-    uint32_t uid_phone;
-    pb_callback_t payload;
-} pb_packed app_meta_data_packet_t;
-PB_PACKED_STRUCT_END
-
-PB_PACKED_STRUCT_START
-typedef struct sensor_packet {
-    bool has_header;
-    sensor_packet_header_t header;
-    pb_size_t which_payload;
-    union {
-        lux_packet_t lux_packet;
-        sgp_packet_t sgp_packet;
-        bme_packet_t bme_packet;
-        blink_packet_t blink_packet;
-        sht_packet_t sht_packet;
-        spec_packet_t spec_packet;
-        therm_packet_t therm_packet;
-        imu_packet_t imu_packet;
-        mic_packet_t mic_packet;
-        app_survey_data_packet_t survey_packet;
-        app_meta_data_packet_t meta_data_packet;
-    } payload;
-} pb_packed sensor_packet_t;
-PB_PACKED_STRUCT_END
-
 
 #ifdef __cplusplus
 extern "C" {
@@ -740,6 +717,7 @@ extern "C" {
 
 
 
+
 #define lux_sensor_config_t_gain_ENUMTYPE tsl2591_gain_t
 #define lux_sensor_config_t_integration_time_ENUMTYPE tsl2591_integration_time_t
 
@@ -752,10 +730,6 @@ extern "C" {
 
 #define humidity_sensor_config_t_precision_level_ENUMTYPE sht45_precision_t
 #define humidity_sensor_config_t_heater_settings_ENUMTYPE sht45_heater_t
-
-
-
-
 
 
 
@@ -790,6 +764,7 @@ extern "C" {
 #define IMU_PACKET_PAYLOAD_INIT_DEFAULT          {{0, {0}}}
 #define MIC_PACKET_INIT_DEFAULT                  {0, 0, 0, 0, 0, 0, false, MIC_PACKET_PAYLOAD_INIT_DEFAULT}
 #define MIC_PACKET_PAYLOAD_INIT_DEFAULT          {0, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
+#define SENSOR_PACKET_INIT_DEFAULT               {false, SENSOR_PACKET_HEADER_INIT_DEFAULT, 0, {LUX_PACKET_INIT_DEFAULT}}
 #define AIR_SPEC_COLORS_INIT_DEFAULT             {0, 0, 0}
 #define AIR_SPEC_COLOR_POSITION_INIT_DEFAULT     {false, AIR_SPEC_COLORS_INIT_DEFAULT, false, AIR_SPEC_COLORS_INIT_DEFAULT, false, AIR_SPEC_COLORS_INIT_DEFAULT}
 #define LIGHT_CONTROL_PACKET_INIT_DEFAULT        {false, AIR_SPEC_COLOR_POSITION_INIT_DEFAULT, false, AIR_SPEC_COLOR_POSITION_INIT_DEFAULT}
@@ -810,10 +785,6 @@ extern "C" {
 #define AIR_SPEC_CONFIG_HEADER_INIT_DEFAULT      {0}
 #define AIR_SPEC_CONFIG_PACKET_INIT_DEFAULT      {false, AIR_SPEC_CONFIG_HEADER_INIT_DEFAULT, 0, {LIGHT_CONTROL_PACKET_INIT_DEFAULT}}
 #define SYSTEM_STATE_INIT_DEFAULT                {0, false, SENSOR_CONTROL_INIT_DEFAULT, false, SENSOR_CONFIG_INIT_DEFAULT}
-#define APP_SURVEY_DATA_PAYLOAD_INIT_DEFAULT     {0, {{NULL}, NULL}}
-#define APP_SURVEY_DATA_PACKET_INIT_DEFAULT      {0, {{NULL}, NULL}}
-#define APP_META_DATA_PACKET_INIT_DEFAULT        {0, {{NULL}, NULL}}
-#define SENSOR_PACKET_INIT_DEFAULT               {false, SENSOR_PACKET_HEADER_INIT_DEFAULT, 0, {LUX_PACKET_INIT_DEFAULT}}
 #define SENSOR_PACKET_HEADER_INIT_ZERO           {0, 0, 0}
 #define LUX_PACKET_INIT_ZERO                     {0, 0, _TSL2591_GAIN_MIN, _TSL2591_INTEGRATION_TIME_MIN, 0, {LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO}}
 #define LUX_PACKET_PAYLOAD_INIT_ZERO             {0, 0, 0}
@@ -837,6 +808,7 @@ extern "C" {
 #define IMU_PACKET_PAYLOAD_INIT_ZERO             {{0, {0}}}
 #define MIC_PACKET_INIT_ZERO                     {0, 0, 0, 0, 0, 0, false, MIC_PACKET_PAYLOAD_INIT_ZERO}
 #define MIC_PACKET_PAYLOAD_INIT_ZERO             {0, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
+#define SENSOR_PACKET_INIT_ZERO                  {false, SENSOR_PACKET_HEADER_INIT_ZERO, 0, {LUX_PACKET_INIT_ZERO}}
 #define AIR_SPEC_COLORS_INIT_ZERO                {0, 0, 0}
 #define AIR_SPEC_COLOR_POSITION_INIT_ZERO        {false, AIR_SPEC_COLORS_INIT_ZERO, false, AIR_SPEC_COLORS_INIT_ZERO, false, AIR_SPEC_COLORS_INIT_ZERO}
 #define LIGHT_CONTROL_PACKET_INIT_ZERO           {false, AIR_SPEC_COLOR_POSITION_INIT_ZERO, false, AIR_SPEC_COLOR_POSITION_INIT_ZERO}
@@ -857,10 +829,6 @@ extern "C" {
 #define AIR_SPEC_CONFIG_HEADER_INIT_ZERO         {0}
 #define AIR_SPEC_CONFIG_PACKET_INIT_ZERO         {false, AIR_SPEC_CONFIG_HEADER_INIT_ZERO, 0, {LIGHT_CONTROL_PACKET_INIT_ZERO}}
 #define SYSTEM_STATE_INIT_ZERO                   {0, false, SENSOR_CONTROL_INIT_ZERO, false, SENSOR_CONFIG_INIT_ZERO}
-#define APP_SURVEY_DATA_PAYLOAD_INIT_ZERO        {0, {{NULL}, NULL}}
-#define APP_SURVEY_DATA_PACKET_INIT_ZERO         {0, {{NULL}, NULL}}
-#define APP_META_DATA_PACKET_INIT_ZERO           {0, {{NULL}, NULL}}
-#define SENSOR_PACKET_INIT_ZERO                  {false, SENSOR_PACKET_HEADER_INIT_ZERO, 0, {LUX_PACKET_INIT_ZERO}}
 
 /* Field tags (for use in manual encoding/decoding) */
 #define SENSOR_PACKET_HEADER_SYSTEM_UID_TAG      1
@@ -960,6 +928,16 @@ extern "C" {
 #define MIC_PACKET_START_FREQUENCY_TAG           5
 #define MIC_PACKET_FREQUENCY_SPACING_TAG         6
 #define MIC_PACKET_PAYLOAD_TAG                   7
+#define SENSOR_PACKET_HEADER_TAG                 1
+#define SENSOR_PACKET_LUX_PACKET_TAG             2
+#define SENSOR_PACKET_SGP_PACKET_TAG             3
+#define SENSOR_PACKET_BME_PACKET_TAG             4
+#define SENSOR_PACKET_BLINK_PACKET_TAG           5
+#define SENSOR_PACKET_SHT_PACKET_TAG             6
+#define SENSOR_PACKET_SPEC_PACKET_TAG            7
+#define SENSOR_PACKET_THERM_PACKET_TAG           8
+#define SENSOR_PACKET_IMU_PACKET_TAG             9
+#define SENSOR_PACKET_MIC_PACKET_TAG             10
 #define AIR_SPEC_COLORS_RED_TAG                  1
 #define AIR_SPEC_COLORS_GREEN_TAG                2
 #define AIR_SPEC_COLORS_BLUE_TAG                 3
@@ -1045,24 +1023,6 @@ extern "C" {
 #define SYSTEM_STATE_FIRMWARE_VERSION_TAG        1
 #define SYSTEM_STATE_CONTROL_TAG                 2
 #define SYSTEM_STATE_CONFIG_TAG                  3
-#define APP_SURVEY_DATA_PAYLOAD_Q_INDEX_TAG      1
-#define APP_SURVEY_DATA_PAYLOAD_Q_CHOICE_TAG     2
-#define APP_SURVEY_DATA_PACKET_UID_PHONE_TAG     1
-#define APP_SURVEY_DATA_PACKET_PAYLOAD_TAG       2
-#define APP_META_DATA_PACKET_UID_PHONE_TAG       1
-#define APP_META_DATA_PACKET_PAYLOAD_TAG         2
-#define SENSOR_PACKET_HEADER_TAG                 1
-#define SENSOR_PACKET_LUX_PACKET_TAG             2
-#define SENSOR_PACKET_SGP_PACKET_TAG             3
-#define SENSOR_PACKET_BME_PACKET_TAG             4
-#define SENSOR_PACKET_BLINK_PACKET_TAG           5
-#define SENSOR_PACKET_SHT_PACKET_TAG             6
-#define SENSOR_PACKET_SPEC_PACKET_TAG            7
-#define SENSOR_PACKET_THERM_PACKET_TAG           8
-#define SENSOR_PACKET_IMU_PACKET_TAG             9
-#define SENSOR_PACKET_MIC_PACKET_TAG             10
-#define SENSOR_PACKET_SURVEY_PACKET_TAG          11
-#define SENSOR_PACKET_META_DATA_PACKET_TAG       12
 
 /* Struct field encoding specification for nanopb */
 #define SENSOR_PACKET_HEADER_FIELDLIST(X, a) \
@@ -1267,6 +1227,30 @@ X(a, STATIC,   REPEATED, FLOAT,    sample,            1)
 #define MIC_PACKET_PAYLOAD_CALLBACK NULL
 #define MIC_PACKET_PAYLOAD_DEFAULT NULL
 
+#define SENSOR_PACKET_FIELDLIST(X, a) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  header,            1) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (payload,lux_packet,payload.lux_packet),   2) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (payload,sgp_packet,payload.sgp_packet),   3) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (payload,bme_packet,payload.bme_packet),   4) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (payload,blink_packet,payload.blink_packet),   5) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (payload,sht_packet,payload.sht_packet),   6) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (payload,spec_packet,payload.spec_packet),   7) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (payload,therm_packet,payload.therm_packet),   8) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (payload,imu_packet,payload.imu_packet),   9) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (payload,mic_packet,payload.mic_packet),  10)
+#define SENSOR_PACKET_CALLBACK NULL
+#define SENSOR_PACKET_DEFAULT NULL
+#define sensor_packet_t_header_MSGTYPE sensor_packet_header_t
+#define sensor_packet_t_payload_lux_packet_MSGTYPE lux_packet_t
+#define sensor_packet_t_payload_sgp_packet_MSGTYPE sgp_packet_t
+#define sensor_packet_t_payload_bme_packet_MSGTYPE bme_packet_t
+#define sensor_packet_t_payload_blink_packet_MSGTYPE blink_packet_t
+#define sensor_packet_t_payload_sht_packet_MSGTYPE sht_packet_t
+#define sensor_packet_t_payload_spec_packet_MSGTYPE spec_packet_t
+#define sensor_packet_t_payload_therm_packet_MSGTYPE therm_packet_t
+#define sensor_packet_t_payload_imu_packet_MSGTYPE imu_packet_t
+#define sensor_packet_t_payload_mic_packet_MSGTYPE mic_packet_t
+
 #define AIR_SPEC_COLORS_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   red,               1) \
 X(a, STATIC,   SINGULAR, UINT32,   green,             2) \
@@ -1457,53 +1441,6 @@ X(a, STATIC,   OPTIONAL, MESSAGE,  config,            3)
 #define system_state_t_control_MSGTYPE sensor_control_t
 #define system_state_t_config_MSGTYPE sensor_config_t
 
-#define APP_SURVEY_DATA_PAYLOAD_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, INT32,    q_index,           1) \
-X(a, CALLBACK, SINGULAR, STRING,   q_choice,          2)
-#define APP_SURVEY_DATA_PAYLOAD_CALLBACK pb_default_field_callback
-#define APP_SURVEY_DATA_PAYLOAD_DEFAULT NULL
-
-#define APP_SURVEY_DATA_PACKET_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UINT32,   uid_phone,         1) \
-X(a, CALLBACK, REPEATED, MESSAGE,  payload,           2)
-#define APP_SURVEY_DATA_PACKET_CALLBACK pb_default_field_callback
-#define APP_SURVEY_DATA_PACKET_DEFAULT NULL
-#define app_survey_data_packet_t_payload_MSGTYPE app_survey_data_payload_t
-
-#define APP_META_DATA_PACKET_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UINT32,   uid_phone,         1) \
-X(a, CALLBACK, SINGULAR, STRING,   payload,           2)
-#define APP_META_DATA_PACKET_CALLBACK pb_default_field_callback
-#define APP_META_DATA_PACKET_DEFAULT NULL
-
-#define SENSOR_PACKET_FIELDLIST(X, a) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  header,            1) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (payload,lux_packet,payload.lux_packet),   2) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (payload,sgp_packet,payload.sgp_packet),   3) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (payload,bme_packet,payload.bme_packet),   4) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (payload,blink_packet,payload.blink_packet),   5) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (payload,sht_packet,payload.sht_packet),   6) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (payload,spec_packet,payload.spec_packet),   7) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (payload,therm_packet,payload.therm_packet),   8) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (payload,imu_packet,payload.imu_packet),   9) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (payload,mic_packet,payload.mic_packet),  10) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (payload,survey_packet,payload.survey_packet),  11) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (payload,meta_data_packet,payload.meta_data_packet),  12)
-#define SENSOR_PACKET_CALLBACK NULL
-#define SENSOR_PACKET_DEFAULT NULL
-#define sensor_packet_t_header_MSGTYPE sensor_packet_header_t
-#define sensor_packet_t_payload_lux_packet_MSGTYPE lux_packet_t
-#define sensor_packet_t_payload_sgp_packet_MSGTYPE sgp_packet_t
-#define sensor_packet_t_payload_bme_packet_MSGTYPE bme_packet_t
-#define sensor_packet_t_payload_blink_packet_MSGTYPE blink_packet_t
-#define sensor_packet_t_payload_sht_packet_MSGTYPE sht_packet_t
-#define sensor_packet_t_payload_spec_packet_MSGTYPE spec_packet_t
-#define sensor_packet_t_payload_therm_packet_MSGTYPE therm_packet_t
-#define sensor_packet_t_payload_imu_packet_MSGTYPE imu_packet_t
-#define sensor_packet_t_payload_mic_packet_MSGTYPE mic_packet_t
-#define sensor_packet_t_payload_survey_packet_MSGTYPE app_survey_data_packet_t
-#define sensor_packet_t_payload_meta_data_packet_MSGTYPE app_meta_data_packet_t
-
 extern const pb_msgdesc_t sensor_packet_header_t_msg;
 extern const pb_msgdesc_t lux_packet_t_msg;
 extern const pb_msgdesc_t lux_packet_payload_t_msg;
@@ -1527,6 +1464,7 @@ extern const pb_msgdesc_t imu_packet_t_msg;
 extern const pb_msgdesc_t imu_packet_payload_t_msg;
 extern const pb_msgdesc_t mic_packet_t_msg;
 extern const pb_msgdesc_t mic_packet_payload_t_msg;
+extern const pb_msgdesc_t sensor_packet_t_msg;
 extern const pb_msgdesc_t air_spec_colors_t_msg;
 extern const pb_msgdesc_t air_spec_color_position_t_msg;
 extern const pb_msgdesc_t light_control_packet_t_msg;
@@ -1547,10 +1485,6 @@ extern const pb_msgdesc_t red_flash_task_t_msg;
 extern const pb_msgdesc_t air_spec_config_header_t_msg;
 extern const pb_msgdesc_t air_spec_config_packet_t_msg;
 extern const pb_msgdesc_t system_state_t_msg;
-extern const pb_msgdesc_t app_survey_data_payload_t_msg;
-extern const pb_msgdesc_t app_survey_data_packet_t_msg;
-extern const pb_msgdesc_t app_meta_data_packet_t_msg;
-extern const pb_msgdesc_t sensor_packet_t_msg;
 
 /* Defines for backwards compatibility with code written before nanopb-0.4.0 */
 #define SENSOR_PACKET_HEADER_FIELDS &sensor_packet_header_t_msg
@@ -1576,6 +1510,7 @@ extern const pb_msgdesc_t sensor_packet_t_msg;
 #define IMU_PACKET_PAYLOAD_FIELDS &imu_packet_payload_t_msg
 #define MIC_PACKET_FIELDS &mic_packet_t_msg
 #define MIC_PACKET_PAYLOAD_FIELDS &mic_packet_payload_t_msg
+#define SENSOR_PACKET_FIELDS &sensor_packet_t_msg
 #define AIR_SPEC_COLORS_FIELDS &air_spec_colors_t_msg
 #define AIR_SPEC_COLOR_POSITION_FIELDS &air_spec_color_position_t_msg
 #define LIGHT_CONTROL_PACKET_FIELDS &light_control_packet_t_msg
@@ -1596,16 +1531,8 @@ extern const pb_msgdesc_t sensor_packet_t_msg;
 #define AIR_SPEC_CONFIG_HEADER_FIELDS &air_spec_config_header_t_msg
 #define AIR_SPEC_CONFIG_PACKET_FIELDS &air_spec_config_packet_t_msg
 #define SYSTEM_STATE_FIELDS &system_state_t_msg
-#define APP_SURVEY_DATA_PAYLOAD_FIELDS &app_survey_data_payload_t_msg
-#define APP_SURVEY_DATA_PACKET_FIELDS &app_survey_data_packet_t_msg
-#define APP_META_DATA_PACKET_FIELDS &app_meta_data_packet_t_msg
-#define SENSOR_PACKET_FIELDS &sensor_packet_t_msg
 
 /* Maximum encoded size of messages (where known) */
-/* appSurveyDataPayload_size depends on runtime parameters */
-/* appSurveyDataPacket_size depends on runtime parameters */
-/* appMetaDataPacket_size depends on runtime parameters */
-/* SensorPacket_size depends on runtime parameters */
 #define AIR_SPEC_COLORS_SIZE                     18
 #define AIR_SPEC_COLOR_POSITION_SIZE             60
 #define AIR_SPEC_CONFIG_HEADER_SIZE              6
@@ -1638,6 +1565,7 @@ extern const pb_msgdesc_t sensor_packet_t_msg;
 #define SENSOR_CONFIG_SIZE                       179
 #define SENSOR_CONTROL_SIZE                      20
 #define SENSOR_PACKET_HEADER_SIZE                18
+#define SENSOR_PACKET_SIZE                       4839
 #define SGP_PACKET_PAYLOAD_SIZE                  46
 #define SGP_PACKET_SIZE                          972
 #define SGP_SENSOR_CONFIG_SIZE                   6

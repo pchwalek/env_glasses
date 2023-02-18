@@ -1402,6 +1402,160 @@ public struct MicPacket {
   fileprivate var _payload: MicPacket.Payload? = nil
 }
 
+public struct SensorPacket {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var header: SensorPacketHeader {
+    get {return _header ?? SensorPacketHeader()}
+    set {_header = newValue}
+  }
+  /// Returns true if `header` has been explicitly set.
+  public var hasHeader: Bool {return self._header != nil}
+  /// Clears the value of `header`. Subsequent reads from it will return its default value.
+  public mutating func clearHeader() {self._header = nil}
+
+  public var payload: SensorPacket.OneOf_Payload? = nil
+
+  public var luxPacket: LuxPacket {
+    get {
+      if case .luxPacket(let v)? = payload {return v}
+      return LuxPacket()
+    }
+    set {payload = .luxPacket(newValue)}
+  }
+
+  public var sgpPacket: SGPPacket {
+    get {
+      if case .sgpPacket(let v)? = payload {return v}
+      return SGPPacket()
+    }
+    set {payload = .sgpPacket(newValue)}
+  }
+
+  public var bmePacket: BMEPacket {
+    get {
+      if case .bmePacket(let v)? = payload {return v}
+      return BMEPacket()
+    }
+    set {payload = .bmePacket(newValue)}
+  }
+
+  public var blinkPacket: BlinkPacket {
+    get {
+      if case .blinkPacket(let v)? = payload {return v}
+      return BlinkPacket()
+    }
+    set {payload = .blinkPacket(newValue)}
+  }
+
+  public var shtPacket: SHTPacket {
+    get {
+      if case .shtPacket(let v)? = payload {return v}
+      return SHTPacket()
+    }
+    set {payload = .shtPacket(newValue)}
+  }
+
+  public var specPacket: SpecPacket {
+    get {
+      if case .specPacket(let v)? = payload {return v}
+      return SpecPacket()
+    }
+    set {payload = .specPacket(newValue)}
+  }
+
+  public var thermPacket: ThermPacket {
+    get {
+      if case .thermPacket(let v)? = payload {return v}
+      return ThermPacket()
+    }
+    set {payload = .thermPacket(newValue)}
+  }
+
+  public var imuPacket: IMUPacket {
+    get {
+      if case .imuPacket(let v)? = payload {return v}
+      return IMUPacket()
+    }
+    set {payload = .imuPacket(newValue)}
+  }
+
+  public var micPacket: MicPacket {
+    get {
+      if case .micPacket(let v)? = payload {return v}
+      return MicPacket()
+    }
+    set {payload = .micPacket(newValue)}
+  }
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public enum OneOf_Payload: Equatable {
+    case luxPacket(LuxPacket)
+    case sgpPacket(SGPPacket)
+    case bmePacket(BMEPacket)
+    case blinkPacket(BlinkPacket)
+    case shtPacket(SHTPacket)
+    case specPacket(SpecPacket)
+    case thermPacket(ThermPacket)
+    case imuPacket(IMUPacket)
+    case micPacket(MicPacket)
+
+  #if !swift(>=4.1)
+    public static func ==(lhs: SensorPacket.OneOf_Payload, rhs: SensorPacket.OneOf_Payload) -> Bool {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch (lhs, rhs) {
+      case (.luxPacket, .luxPacket): return {
+        guard case .luxPacket(let l) = lhs, case .luxPacket(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.sgpPacket, .sgpPacket): return {
+        guard case .sgpPacket(let l) = lhs, case .sgpPacket(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.bmePacket, .bmePacket): return {
+        guard case .bmePacket(let l) = lhs, case .bmePacket(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.blinkPacket, .blinkPacket): return {
+        guard case .blinkPacket(let l) = lhs, case .blinkPacket(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.shtPacket, .shtPacket): return {
+        guard case .shtPacket(let l) = lhs, case .shtPacket(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.specPacket, .specPacket): return {
+        guard case .specPacket(let l) = lhs, case .specPacket(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.thermPacket, .thermPacket): return {
+        guard case .thermPacket(let l) = lhs, case .thermPacket(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.imuPacket, .imuPacket): return {
+        guard case .imuPacket(let l) = lhs, case .imuPacket(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.micPacket, .micPacket): return {
+        guard case .micPacket(let l) = lhs, case .micPacket(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      default: return false
+      }
+    }
+  #endif
+  }
+
+  public init() {}
+
+  fileprivate var _header: SensorPacketHeader? = nil
+}
+
 public struct AirSpecColors {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -2003,228 +2157,6 @@ public struct systemState {
   fileprivate var _config: SensorConfig? = nil
 }
 
-public struct appSurveyDataPayload {
-  // SwiftProtobuf.Message conformance is added in an extension below. See the
-  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-  // methods supported on all messages.
-
-  public var qIndex: Int32 = 0
-
-  public var qChoice: String = String()
-
-  public var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  public init() {}
-}
-
-public struct appSurveyDataPacket {
-  // SwiftProtobuf.Message conformance is added in an extension below. See the
-  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-  // methods supported on all messages.
-
-  public var uidPhone: UInt32 = 0
-
-  public var payload: [appSurveyDataPayload] = []
-
-  public var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  public init() {}
-}
-
-public struct appMetaDataPacket {
-  // SwiftProtobuf.Message conformance is added in an extension below. See the
-  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-  // methods supported on all messages.
-
-  public var uidPhone: UInt32 = 0
-
-  public var payload: String = String()
-
-  public var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  public init() {}
-}
-
-public struct SensorPacket {
-  // SwiftProtobuf.Message conformance is added in an extension below. See the
-  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-  // methods supported on all messages.
-
-  public var header: SensorPacketHeader {
-    get {return _header ?? SensorPacketHeader()}
-    set {_header = newValue}
-  }
-  /// Returns true if `header` has been explicitly set.
-  public var hasHeader: Bool {return self._header != nil}
-  /// Clears the value of `header`. Subsequent reads from it will return its default value.
-  public mutating func clearHeader() {self._header = nil}
-
-  public var payload: SensorPacket.OneOf_Payload? = nil
-
-  public var luxPacket: LuxPacket {
-    get {
-      if case .luxPacket(let v)? = payload {return v}
-      return LuxPacket()
-    }
-    set {payload = .luxPacket(newValue)}
-  }
-
-  public var sgpPacket: SGPPacket {
-    get {
-      if case .sgpPacket(let v)? = payload {return v}
-      return SGPPacket()
-    }
-    set {payload = .sgpPacket(newValue)}
-  }
-
-  public var bmePacket: BMEPacket {
-    get {
-      if case .bmePacket(let v)? = payload {return v}
-      return BMEPacket()
-    }
-    set {payload = .bmePacket(newValue)}
-  }
-
-  public var blinkPacket: BlinkPacket {
-    get {
-      if case .blinkPacket(let v)? = payload {return v}
-      return BlinkPacket()
-    }
-    set {payload = .blinkPacket(newValue)}
-  }
-
-  public var shtPacket: SHTPacket {
-    get {
-      if case .shtPacket(let v)? = payload {return v}
-      return SHTPacket()
-    }
-    set {payload = .shtPacket(newValue)}
-  }
-
-  public var specPacket: SpecPacket {
-    get {
-      if case .specPacket(let v)? = payload {return v}
-      return SpecPacket()
-    }
-    set {payload = .specPacket(newValue)}
-  }
-
-  public var thermPacket: ThermPacket {
-    get {
-      if case .thermPacket(let v)? = payload {return v}
-      return ThermPacket()
-    }
-    set {payload = .thermPacket(newValue)}
-  }
-
-  public var imuPacket: IMUPacket {
-    get {
-      if case .imuPacket(let v)? = payload {return v}
-      return IMUPacket()
-    }
-    set {payload = .imuPacket(newValue)}
-  }
-
-  public var micPacket: MicPacket {
-    get {
-      if case .micPacket(let v)? = payload {return v}
-      return MicPacket()
-    }
-    set {payload = .micPacket(newValue)}
-  }
-
-  public var surveyPacket: appSurveyDataPacket {
-    get {
-      if case .surveyPacket(let v)? = payload {return v}
-      return appSurveyDataPacket()
-    }
-    set {payload = .surveyPacket(newValue)}
-  }
-
-  public var metaDataPacket: appMetaDataPacket {
-    get {
-      if case .metaDataPacket(let v)? = payload {return v}
-      return appMetaDataPacket()
-    }
-    set {payload = .metaDataPacket(newValue)}
-  }
-
-  public var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  public enum OneOf_Payload: Equatable {
-    case luxPacket(LuxPacket)
-    case sgpPacket(SGPPacket)
-    case bmePacket(BMEPacket)
-    case blinkPacket(BlinkPacket)
-    case shtPacket(SHTPacket)
-    case specPacket(SpecPacket)
-    case thermPacket(ThermPacket)
-    case imuPacket(IMUPacket)
-    case micPacket(MicPacket)
-    case surveyPacket(appSurveyDataPacket)
-    case metaDataPacket(appMetaDataPacket)
-
-  #if !swift(>=4.1)
-    public static func ==(lhs: SensorPacket.OneOf_Payload, rhs: SensorPacket.OneOf_Payload) -> Bool {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch (lhs, rhs) {
-      case (.luxPacket, .luxPacket): return {
-        guard case .luxPacket(let l) = lhs, case .luxPacket(let r) = rhs else { preconditionFailure() }
-        return l == r
-      }()
-      case (.sgpPacket, .sgpPacket): return {
-        guard case .sgpPacket(let l) = lhs, case .sgpPacket(let r) = rhs else { preconditionFailure() }
-        return l == r
-      }()
-      case (.bmePacket, .bmePacket): return {
-        guard case .bmePacket(let l) = lhs, case .bmePacket(let r) = rhs else { preconditionFailure() }
-        return l == r
-      }()
-      case (.blinkPacket, .blinkPacket): return {
-        guard case .blinkPacket(let l) = lhs, case .blinkPacket(let r) = rhs else { preconditionFailure() }
-        return l == r
-      }()
-      case (.shtPacket, .shtPacket): return {
-        guard case .shtPacket(let l) = lhs, case .shtPacket(let r) = rhs else { preconditionFailure() }
-        return l == r
-      }()
-      case (.specPacket, .specPacket): return {
-        guard case .specPacket(let l) = lhs, case .specPacket(let r) = rhs else { preconditionFailure() }
-        return l == r
-      }()
-      case (.thermPacket, .thermPacket): return {
-        guard case .thermPacket(let l) = lhs, case .thermPacket(let r) = rhs else { preconditionFailure() }
-        return l == r
-      }()
-      case (.imuPacket, .imuPacket): return {
-        guard case .imuPacket(let l) = lhs, case .imuPacket(let r) = rhs else { preconditionFailure() }
-        return l == r
-      }()
-      case (.micPacket, .micPacket): return {
-        guard case .micPacket(let l) = lhs, case .micPacket(let r) = rhs else { preconditionFailure() }
-        return l == r
-      }()
-      case (.surveyPacket, .surveyPacket): return {
-        guard case .surveyPacket(let l) = lhs, case .surveyPacket(let r) = rhs else { preconditionFailure() }
-        return l == r
-      }()
-      case (.metaDataPacket, .metaDataPacket): return {
-        guard case .metaDataPacket(let l) = lhs, case .metaDataPacket(let r) = rhs else { preconditionFailure() }
-        return l == r
-      }()
-      default: return false
-      }
-    }
-  #endif
-  }
-
-  public init() {}
-
-  fileprivate var _header: SensorPacketHeader? = nil
-}
-
 #if swift(>=5.5) && canImport(_Concurrency)
 extension SensorPacketTypes: @unchecked Sendable {}
 extension Tsl2591Gain: @unchecked Sendable {}
@@ -2264,6 +2196,8 @@ extension IMUPacket: @unchecked Sendable {}
 extension IMUPacket.Payload: @unchecked Sendable {}
 extension MicPacket: @unchecked Sendable {}
 extension MicPacket.Payload: @unchecked Sendable {}
+extension SensorPacket: @unchecked Sendable {}
+extension SensorPacket.OneOf_Payload: @unchecked Sendable {}
 extension AirSpecColors: @unchecked Sendable {}
 extension AirSpecColorPosition: @unchecked Sendable {}
 extension LightControlPacket: @unchecked Sendable {}
@@ -2285,11 +2219,6 @@ extension AirSpecConfigHeader: @unchecked Sendable {}
 extension AirSpecConfigPacket: @unchecked Sendable {}
 extension AirSpecConfigPacket.OneOf_Payload: @unchecked Sendable {}
 extension systemState: @unchecked Sendable {}
-extension appSurveyDataPayload: @unchecked Sendable {}
-extension appSurveyDataPacket: @unchecked Sendable {}
-extension appMetaDataPacket: @unchecked Sendable {}
-extension SensorPacket: @unchecked Sendable {}
-extension SensorPacket.OneOf_Payload: @unchecked Sendable {}
 #endif  // swift(>=5.5) && canImport(_Concurrency)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
@@ -3688,6 +3617,208 @@ extension MicPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
   }
 }
 
+extension SensorPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = "SensorPacket"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "header"),
+    2: .standard(proto: "lux_packet"),
+    3: .standard(proto: "sgp_packet"),
+    4: .standard(proto: "bme_packet"),
+    5: .standard(proto: "blink_packet"),
+    6: .standard(proto: "sht_packet"),
+    7: .standard(proto: "spec_packet"),
+    8: .standard(proto: "therm_packet"),
+    9: .standard(proto: "imu_packet"),
+    10: .standard(proto: "mic_packet"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._header) }()
+      case 2: try {
+        var v: LuxPacket?
+        var hadOneofValue = false
+        if let current = self.payload {
+          hadOneofValue = true
+          if case .luxPacket(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .luxPacket(v)
+        }
+      }()
+      case 3: try {
+        var v: SGPPacket?
+        var hadOneofValue = false
+        if let current = self.payload {
+          hadOneofValue = true
+          if case .sgpPacket(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .sgpPacket(v)
+        }
+      }()
+      case 4: try {
+        var v: BMEPacket?
+        var hadOneofValue = false
+        if let current = self.payload {
+          hadOneofValue = true
+          if case .bmePacket(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .bmePacket(v)
+        }
+      }()
+      case 5: try {
+        var v: BlinkPacket?
+        var hadOneofValue = false
+        if let current = self.payload {
+          hadOneofValue = true
+          if case .blinkPacket(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .blinkPacket(v)
+        }
+      }()
+      case 6: try {
+        var v: SHTPacket?
+        var hadOneofValue = false
+        if let current = self.payload {
+          hadOneofValue = true
+          if case .shtPacket(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .shtPacket(v)
+        }
+      }()
+      case 7: try {
+        var v: SpecPacket?
+        var hadOneofValue = false
+        if let current = self.payload {
+          hadOneofValue = true
+          if case .specPacket(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .specPacket(v)
+        }
+      }()
+      case 8: try {
+        var v: ThermPacket?
+        var hadOneofValue = false
+        if let current = self.payload {
+          hadOneofValue = true
+          if case .thermPacket(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .thermPacket(v)
+        }
+      }()
+      case 9: try {
+        var v: IMUPacket?
+        var hadOneofValue = false
+        if let current = self.payload {
+          hadOneofValue = true
+          if case .imuPacket(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .imuPacket(v)
+        }
+      }()
+      case 10: try {
+        var v: MicPacket?
+        var hadOneofValue = false
+        if let current = self.payload {
+          hadOneofValue = true
+          if case .micPacket(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .micPacket(v)
+        }
+      }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._header {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    switch self.payload {
+    case .luxPacket?: try {
+      guard case .luxPacket(let v)? = self.payload else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    }()
+    case .sgpPacket?: try {
+      guard case .sgpPacket(let v)? = self.payload else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+    }()
+    case .bmePacket?: try {
+      guard case .bmePacket(let v)? = self.payload else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+    }()
+    case .blinkPacket?: try {
+      guard case .blinkPacket(let v)? = self.payload else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
+    }()
+    case .shtPacket?: try {
+      guard case .shtPacket(let v)? = self.payload else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
+    }()
+    case .specPacket?: try {
+      guard case .specPacket(let v)? = self.payload else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
+    }()
+    case .thermPacket?: try {
+      guard case .thermPacket(let v)? = self.payload else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
+    }()
+    case .imuPacket?: try {
+      guard case .imuPacket(let v)? = self.payload else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
+    }()
+    case .micPacket?: try {
+      guard case .micPacket(let v)? = self.payload else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
+    }()
+    case nil: break
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: SensorPacket, rhs: SensorPacket) -> Bool {
+    if lhs._header != rhs._header {return false}
+    if lhs.payload != rhs.payload {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
 extension AirSpecColors: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = "AirSpecColors"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
@@ -4895,358 +5026,6 @@ extension systemState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementati
     if lhs.firmwareVersion != rhs.firmwareVersion {return false}
     if lhs._control != rhs._control {return false}
     if lhs._config != rhs._config {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension appSurveyDataPayload: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = "appSurveyDataPayload"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "q_index"),
-    2: .standard(proto: "q_choice"),
-  ]
-
-  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularInt32Field(value: &self.qIndex) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self.qChoice) }()
-      default: break
-      }
-    }
-  }
-
-  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if self.qIndex != 0 {
-      try visitor.visitSingularInt32Field(value: self.qIndex, fieldNumber: 1)
-    }
-    if !self.qChoice.isEmpty {
-      try visitor.visitSingularStringField(value: self.qChoice, fieldNumber: 2)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  public static func ==(lhs: appSurveyDataPayload, rhs: appSurveyDataPayload) -> Bool {
-    if lhs.qIndex != rhs.qIndex {return false}
-    if lhs.qChoice != rhs.qChoice {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension appSurveyDataPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = "appSurveyDataPacket"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "UID_phone"),
-    2: .same(proto: "payload"),
-  ]
-
-  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.uidPhone) }()
-      case 2: try { try decoder.decodeRepeatedMessageField(value: &self.payload) }()
-      default: break
-      }
-    }
-  }
-
-  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if self.uidPhone != 0 {
-      try visitor.visitSingularUInt32Field(value: self.uidPhone, fieldNumber: 1)
-    }
-    if !self.payload.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.payload, fieldNumber: 2)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  public static func ==(lhs: appSurveyDataPacket, rhs: appSurveyDataPacket) -> Bool {
-    if lhs.uidPhone != rhs.uidPhone {return false}
-    if lhs.payload != rhs.payload {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension appMetaDataPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = "appMetaDataPacket"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "UID_phone"),
-    2: .same(proto: "payload"),
-  ]
-
-  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.uidPhone) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self.payload) }()
-      default: break
-      }
-    }
-  }
-
-  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if self.uidPhone != 0 {
-      try visitor.visitSingularUInt32Field(value: self.uidPhone, fieldNumber: 1)
-    }
-    if !self.payload.isEmpty {
-      try visitor.visitSingularStringField(value: self.payload, fieldNumber: 2)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  public static func ==(lhs: appMetaDataPacket, rhs: appMetaDataPacket) -> Bool {
-    if lhs.uidPhone != rhs.uidPhone {return false}
-    if lhs.payload != rhs.payload {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension SensorPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = "SensorPacket"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "header"),
-    2: .standard(proto: "lux_packet"),
-    3: .standard(proto: "sgp_packet"),
-    4: .standard(proto: "bme_packet"),
-    5: .standard(proto: "blink_packet"),
-    6: .standard(proto: "sht_packet"),
-    7: .standard(proto: "spec_packet"),
-    8: .standard(proto: "therm_packet"),
-    9: .standard(proto: "imu_packet"),
-    10: .standard(proto: "mic_packet"),
-    11: .standard(proto: "survey_packet"),
-    12: .standard(proto: "meta_data_packet"),
-  ]
-
-  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularMessageField(value: &self._header) }()
-      case 2: try {
-        var v: LuxPacket?
-        var hadOneofValue = false
-        if let current = self.payload {
-          hadOneofValue = true
-          if case .luxPacket(let m) = current {v = m}
-        }
-        try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {
-          if hadOneofValue {try decoder.handleConflictingOneOf()}
-          self.payload = .luxPacket(v)
-        }
-      }()
-      case 3: try {
-        var v: SGPPacket?
-        var hadOneofValue = false
-        if let current = self.payload {
-          hadOneofValue = true
-          if case .sgpPacket(let m) = current {v = m}
-        }
-        try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {
-          if hadOneofValue {try decoder.handleConflictingOneOf()}
-          self.payload = .sgpPacket(v)
-        }
-      }()
-      case 4: try {
-        var v: BMEPacket?
-        var hadOneofValue = false
-        if let current = self.payload {
-          hadOneofValue = true
-          if case .bmePacket(let m) = current {v = m}
-        }
-        try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {
-          if hadOneofValue {try decoder.handleConflictingOneOf()}
-          self.payload = .bmePacket(v)
-        }
-      }()
-      case 5: try {
-        var v: BlinkPacket?
-        var hadOneofValue = false
-        if let current = self.payload {
-          hadOneofValue = true
-          if case .blinkPacket(let m) = current {v = m}
-        }
-        try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {
-          if hadOneofValue {try decoder.handleConflictingOneOf()}
-          self.payload = .blinkPacket(v)
-        }
-      }()
-      case 6: try {
-        var v: SHTPacket?
-        var hadOneofValue = false
-        if let current = self.payload {
-          hadOneofValue = true
-          if case .shtPacket(let m) = current {v = m}
-        }
-        try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {
-          if hadOneofValue {try decoder.handleConflictingOneOf()}
-          self.payload = .shtPacket(v)
-        }
-      }()
-      case 7: try {
-        var v: SpecPacket?
-        var hadOneofValue = false
-        if let current = self.payload {
-          hadOneofValue = true
-          if case .specPacket(let m) = current {v = m}
-        }
-        try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {
-          if hadOneofValue {try decoder.handleConflictingOneOf()}
-          self.payload = .specPacket(v)
-        }
-      }()
-      case 8: try {
-        var v: ThermPacket?
-        var hadOneofValue = false
-        if let current = self.payload {
-          hadOneofValue = true
-          if case .thermPacket(let m) = current {v = m}
-        }
-        try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {
-          if hadOneofValue {try decoder.handleConflictingOneOf()}
-          self.payload = .thermPacket(v)
-        }
-      }()
-      case 9: try {
-        var v: IMUPacket?
-        var hadOneofValue = false
-        if let current = self.payload {
-          hadOneofValue = true
-          if case .imuPacket(let m) = current {v = m}
-        }
-        try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {
-          if hadOneofValue {try decoder.handleConflictingOneOf()}
-          self.payload = .imuPacket(v)
-        }
-      }()
-      case 10: try {
-        var v: MicPacket?
-        var hadOneofValue = false
-        if let current = self.payload {
-          hadOneofValue = true
-          if case .micPacket(let m) = current {v = m}
-        }
-        try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {
-          if hadOneofValue {try decoder.handleConflictingOneOf()}
-          self.payload = .micPacket(v)
-        }
-      }()
-      case 11: try {
-        var v: appSurveyDataPacket?
-        var hadOneofValue = false
-        if let current = self.payload {
-          hadOneofValue = true
-          if case .surveyPacket(let m) = current {v = m}
-        }
-        try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {
-          if hadOneofValue {try decoder.handleConflictingOneOf()}
-          self.payload = .surveyPacket(v)
-        }
-      }()
-      case 12: try {
-        var v: appMetaDataPacket?
-        var hadOneofValue = false
-        if let current = self.payload {
-          hadOneofValue = true
-          if case .metaDataPacket(let m) = current {v = m}
-        }
-        try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {
-          if hadOneofValue {try decoder.handleConflictingOneOf()}
-          self.payload = .metaDataPacket(v)
-        }
-      }()
-      default: break
-      }
-    }
-  }
-
-  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every if/case branch local when no optimizations
-    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-    // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._header {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-    } }()
-    switch self.payload {
-    case .luxPacket?: try {
-      guard case .luxPacket(let v)? = self.payload else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
-    }()
-    case .sgpPacket?: try {
-      guard case .sgpPacket(let v)? = self.payload else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
-    }()
-    case .bmePacket?: try {
-      guard case .bmePacket(let v)? = self.payload else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
-    }()
-    case .blinkPacket?: try {
-      guard case .blinkPacket(let v)? = self.payload else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
-    }()
-    case .shtPacket?: try {
-      guard case .shtPacket(let v)? = self.payload else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
-    }()
-    case .specPacket?: try {
-      guard case .specPacket(let v)? = self.payload else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
-    }()
-    case .thermPacket?: try {
-      guard case .thermPacket(let v)? = self.payload else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
-    }()
-    case .imuPacket?: try {
-      guard case .imuPacket(let v)? = self.payload else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
-    }()
-    case .micPacket?: try {
-      guard case .micPacket(let v)? = self.payload else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
-    }()
-    case .surveyPacket?: try {
-      guard case .surveyPacket(let v)? = self.payload else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 11)
-    }()
-    case .metaDataPacket?: try {
-      guard case .metaDataPacket(let v)? = self.payload else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 12)
-    }()
-    case nil: break
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  public static func ==(lhs: SensorPacket, rhs: SensorPacket) -> Bool {
-    if lhs._header != rhs._header {return false}
-    if lhs.payload != rhs.payload {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

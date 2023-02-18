@@ -151,20 +151,20 @@ void DTS_App_Init(void) {
 	DataTransferServerContext.DtFlowStatus = DTS_APP_FLOW_ON;
 }
 
-void DTS_App_KeyButtonAction(void) {
-//  UTIL_SEQ_SetTask(1 << CFG_TASK_BUTTON_ID, CFG_SCH_PRIO_0);
-	osThreadFlagsSet(Button_SW1_ProcessId, 1);
-}
-
-void DTS_App_KeyButton2Action(void) {
-//    UTIL_SEQ_SetTask(1 << CFG_TASK_SW2_BUTTON_PUSHED_ID, CFG_SCH_PRIO_0);
-	osThreadFlagsSet(Button_SW2_ProcessId, 1);
-}
-
-void DTS_App_KeyButton3Action(void) {
-//    UTIL_SEQ_SetTask(1 << CFG_TASK_SW3_BUTTON_PUSHED_ID, CFG_SCH_PRIO_0);
-	osThreadFlagsSet(Button_SW2_ProcessId, 1);
-}
+//void DTS_App_KeyButtonAction(void) {
+////  UTIL_SEQ_SetTask(1 << CFG_TASK_BUTTON_ID, CFG_SCH_PRIO_0);
+//	osThreadFlagsSet(Button_SW1_ProcessId, 1);
+//}
+//
+//void DTS_App_KeyButton2Action(void) {
+////    UTIL_SEQ_SetTask(1 << CFG_TASK_SW2_BUTTON_PUSHED_ID, CFG_SCH_PRIO_0);
+//	osThreadFlagsSet(Button_SW2_ProcessId, 1);
+//}
+//
+//void DTS_App_KeyButton3Action(void) {
+////    UTIL_SEQ_SetTask(1 << CFG_TASK_SW3_BUTTON_PUSHED_ID, CFG_SCH_PRIO_0);
+//	osThreadFlagsSet(Button_SW2_ProcessId, 1);
+//}
 
 void DTS_App_TxPoolAvailableNotification(void) {
 	DataTransferServerContext.DtFlowStatus = DTS_APP_FLOW_ON;
@@ -387,28 +387,28 @@ volatile temp_var = 0;
 //	}
 //}
 
-void Resume_Notification(void) {
-	DataTransferServerContext.DtFlowStatus = DTS_APP_FLOW_ON;
-}
-void ButtonTriggerReceived(void *argument) {
-	UNUSED(argument);
-	for (;;) {
-		osThreadFlagsWait(1, osFlagsWaitAny, osWaitForever);
-		if (DataTransferServerContext.ButtonTransferReq
-				!= DTS_APP_TRANSFER_REQ_OFF) {
-//    BSP_LED_Off(LED_BLUE);
-			DataTransferServerContext.ButtonTransferReq =
-					DTS_APP_TRANSFER_REQ_OFF;
-		} else {
-//    BSP_LED_On(LED_BLUE);
-			DataTransferServerContext.ButtonTransferReq =
-					DTS_APP_TRANSFER_REQ_ON;
-//    UTIL_SEQ_SetTask(1 << CFG_TASK_DATA_TRANSFER_UPDATE_ID, CFG_SCH_PRIO_0);
-			osThreadFlagsSet(DataTransferProcessId, 1);
-		}
-	}
-//  return;
-}
+//void Resume_Notification(void) {
+//	DataTransferServerContext.DtFlowStatus = DTS_APP_FLOW_ON;
+//}
+//void ButtonTriggerReceived(void *argument) {
+//	UNUSED(argument);
+//	for (;;) {
+//		osThreadFlagsWait(1, osFlagsWaitAny, osWaitForever);
+//		if (DataTransferServerContext.ButtonTransferReq
+//				!= DTS_APP_TRANSFER_REQ_OFF) {
+////    BSP_LED_Off(LED_BLUE);
+//			DataTransferServerContext.ButtonTransferReq =
+//					DTS_APP_TRANSFER_REQ_OFF;
+//		} else {
+////    BSP_LED_On(LED_BLUE);
+//			DataTransferServerContext.ButtonTransferReq =
+//					DTS_APP_TRANSFER_REQ_ON;
+////    UTIL_SEQ_SetTask(1 << CFG_TASK_DATA_TRANSFER_UPDATE_ID, CFG_SCH_PRIO_0);
+//			osThreadFlagsSet(DataTransferProcessId, 1);
+//		}
+//	}
+////  return;
+//}
 
 void DT_App_Button2_Trigger_Received(void *argument) {
 	UNUSED(argument);

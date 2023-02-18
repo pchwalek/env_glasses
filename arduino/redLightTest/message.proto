@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-// import "nanopb.proto";
-// option (nanopb_fileopt).packed_struct = true;
+import "nanopb.proto";
+option (nanopb_fileopt).packed_struct = true;
 
 enum SensorPacketTypes {
     UNKNOWN_PACKET_TYPE = 0;
@@ -323,6 +323,23 @@ message MicPacket{
 
 
 
+message SensorPacket {
+    SensorPacketHeader header = 1;
+
+    oneof payload {
+        LuxPacket lux_packet = 2;
+        SGPPacket sgp_packet = 3;
+        BMEPacket bme_packet = 4;
+        BlinkPacket blink_packet = 5;
+        SHTPacket sht_packet = 6;
+        SpecPacket spec_packet = 7;
+        ThermPacket therm_packet = 8;
+        IMUPacket imu_packet = 9;
+        MicPacket mic_packet = 10;
+    }
+
+}
+
 /* defining AirSpec incoming packet structure */
 
 message AirSpecColors{
@@ -467,47 +484,8 @@ message AirSpecConfigPacket {
     }
 }
 
-
 message systemState {
     uint32 firmware_version = 1;
     SensorControl control = 2;
     SensorConfig  config = 3;
 }
-
-
-
-message appSurveyDataPayload {
-    int32 q_index = 1;
-    string q_choice = 2;
-}
-
-message appSurveyDataPacket {
-    uint32 UID_phone = 1;
-    repeated appSurveyDataPayload payload = 2;
-}
-
-message appMetaDataPacket {
-    uint32 UID_phone = 1;
-    string payload = 2;
-}
-
-
-message SensorPacket {
-    SensorPacketHeader header = 1;
-
-    oneof payload {
-        LuxPacket lux_packet = 2;
-        SGPPacket sgp_packet = 3;
-        BMEPacket bme_packet = 4;
-        BlinkPacket blink_packet = 5;
-        SHTPacket sht_packet = 6;
-        SpecPacket spec_packet = 7;
-        ThermPacket therm_packet = 8;
-        IMUPacket imu_packet = 9;
-        MicPacket mic_packet = 10;
-        appSurveyDataPacket survey_packet = 11;
-        appMetaDataPacket meta_data_packet = 12;
-    }
-
-}
-

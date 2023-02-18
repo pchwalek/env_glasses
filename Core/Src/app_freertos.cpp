@@ -38,6 +38,7 @@
 #include "sgp.h"
 #include "app_ble.h"
 #include "fram.h"
+#include "lp5523.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -57,6 +58,9 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
+
+red_flash_task_t redFlashTest;
+
 osMessageQueueId_t lightsComplexQueueHandle;
 const osMessageQueueAttr_t lightsComplexQueue_attributes = { .name =
 		"lightsComplexQueue" };
@@ -273,7 +277,18 @@ void MX_FREERTOS_Init(void) {
 
 	sensorThreadsRunning = 1;
 
+//	redFlashTest.duration_ms = 0;
+//	redFlashTest.enable = 1;
+//	redFlashTest.frequency = 20;
+//	redFlashTest.red_max_intensity = 255;
+//	redFlashTest.red_min_intensity = 0;
+//	redFlashTest.enable_speaker = 1;
+//
+//	redFlashTaskHandle = osThreadNew(RedFlashTask, &redFlashTest, &redFlashTask_attributes);
+
 //	osThreadNew(ledCheck, NULL, &defaultTask_attributes);
+
+
 
 	/* USER CODE END RTOS_THREADS */
 

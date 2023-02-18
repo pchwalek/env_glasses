@@ -349,6 +349,10 @@ struct USB_msgPass {
 
 
 void controlSensors(uint8_t* data, uint16_t numPackets);
+void controlBlinkNoWindow(bool state);
+void controlBlink(bool state);
+void controlIMUNoWindow(bool state);
+void controlIMU(bool state);
 void ingestSensorConfig(system_state_t *config);
 
 //typedef struct PacketHeaders{

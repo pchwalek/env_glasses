@@ -22,6 +22,7 @@ extern "C" {
 #include "main.h"
 #include "string.h"
 #include "captivate_config.h"
+#include "tim.h"
 //#include "config.h"
 //#include "master_thread.h"
 
@@ -42,7 +43,7 @@ extern "C" {
 GPIO_TypeDef* GPIO_PORT_DONGLE[3] = {LED1_GPIO_Port, LED2_GPIO_Port, LED3_GPIO_Port};
 const uint16_t GPIO_PIN_DONGLE[3] = {LED1_Pin, LED2_Pin, LED3_Pin};
 #endif
-union ColorComplex receivedColor;
+static union ColorComplex receivedColor;
 osTimerId_t resetTimer;
 /* Functions Definition ------------------------------------------------------*/
 
@@ -52,7 +53,7 @@ osTimerId_t resetTimer;
  *
  *************************************************************/
 
-#define MAX_BRIGHTNESS 150 //up to 255
+#define MAX_BRIGHTNESS 255 //up to 255
 
 uint8_t led_left_PWM[9] = { 0 };
 uint8_t led_right_PWM[9] = { 0 };
@@ -651,7 +652,11 @@ void BlueGreenTransitionTask(void *argument){
 		uint8_t transition_delay_seconds;
 
 	/* start sensor subsystems */
+//	controlBlink(false);
+//	controlIMU(false);
 
+	controlBlinkNoWindow(sysState.control.blink);
+	controlIMUNoWindow(sysState.control.imu);
 
 	/* delay sequence */
 	osDelay(blueGreenTran.transition_delay_seconds*1000);
@@ -659,10 +664,7 @@ void BlueGreenTransitionTask(void *argument){
 
 	/* start sequence */
 
-	//	timeTracker = HAL_GetTick();
-
 	resetColor(&blueGreenTranColor);
-
 
 	// error condition: if step size exceeds intensity range
 	if( (blueGreenTran.step_size >= blueGreenTran.blue_max_intensity) ||
@@ -757,6 +759,15 @@ void BlueGreenTransitionTask(void *argument){
 		}
 	}
 
+
+
+	/* stop sensor subsystems and re-enable windowing, if active previously */
+	controlBlinkNoWindow(false);
+	controlIMUNoWindow(false);
+
+	controlBlink(sysState.control.blink);
+	controlIMU(sysState.control.imu);
+
 	vTaskDelete( NULL );
 }
 
@@ -776,6 +787,10 @@ void RedFlashTask(void *argument){
 
 	resetColor(&redFlashColor);
 
+	if(redFlash.enable_speaker){
+		HAL_TIM_Base_Start(&htim2);
+	}
+
 	if(redFlash.duration_ms > 0){
 		uint32_t start_time = HAL_GetTick();
 		while( (HAL_GetTick() - start_time) < redFlash.duration_ms){
@@ -783,9 +798,15 @@ void RedFlashTask(void *argument){
 				if(redFlashColor.colors_indiv.right_side_r == 0){
 					redFlashColor.colors_indiv.right_side_r = redFlash.red_max_intensity;
 					redFlashColor.colors_indiv.left_side_r = redFlash.red_max_intensity;
+					if(redFlash.enable_speaker){
+						HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
+					}
 				}else{
 					redFlashColor.colors_indiv.right_side_r = redFlash.red_min_intensity;
 					redFlashColor.colors_indiv.left_side_r = redFlash.red_min_intensity;
+					if(redFlash.enable_speaker){
+							HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_3);
+						}
 				}
 
 				osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
@@ -812,9 +833,15 @@ void RedFlashTask(void *argument){
 				if(redFlashColor.colors_indiv.right_side_r == 0){
 					redFlashColor.colors_indiv.right_side_r = redFlash.red_max_intensity;
 					redFlashColor.colors_indiv.left_side_r = redFlash.red_max_intensity;
+					if(redFlash.enable_speaker){
+						HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
+					}
 				}else{
 					redFlashColor.colors_indiv.right_side_r = redFlash.red_min_intensity;
 					redFlashColor.colors_indiv.left_side_r = redFlash.red_min_intensity;
+					if(redFlash.enable_speaker){
+							HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_3);
+						}
 				}
 
 				osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
@@ -835,6 +862,9 @@ void RedFlashTask(void *argument){
 			}
 	}
 
+	if(redFlash.enable_speaker){
+			HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_3);
+		}
 
 	vTaskDelete( NULL );
 }

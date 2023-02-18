@@ -37,7 +37,7 @@ static uint8_t data[MAX_FIFO_CNT];
 uint8_t flag_int_enable = 0;
 
 osTimerId_t singleShotTimer_id;
-uint32_t startTime;
+static uint32_t startTime;
 //static uint8_t tempData[MAX_FIFO_CNT];
 
 
@@ -53,7 +53,7 @@ void IMU_Task(void *argument){
 	imu_sensor_config_t sensorSettings;
 
 	if(argument != NULL){
-		memcpy(&sensorSettings,argument,sizeof(struct InertialSensor));
+		memcpy(&sensorSettings,argument,sizeof(imu_sensor_config_t));
 	}else{
 		sensorSettings.gyro_settings.has_cutoff = true;
 		sensorSettings.gyro_settings.cutoff = IMU_GYRO_CUTOFF_ICM20_X_GYRO_FREQ_196_6_HZ;
@@ -101,6 +101,7 @@ void IMU_Task(void *argument){
 
   uint32_t lastTick = HAL_GetTick();
   float sampleRate = 0;
+  startTime = HAL_GetTick();
 
   uint16_t failed_read_attempt = 0;
 
@@ -202,9 +203,11 @@ void IMU_Task(void *argument){
 			flags = osThreadFlagsWait(TERMINATE_THREAD_BIT,
 					  					osFlagsWaitAny, waitTime);
 
-			if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
+			if((flags != osFlagsErrorTimeout) && ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT)) {
 						  vTaskDelete( NULL );
 					}
+
+			startTime = HAL_GetTick();
 
 			imu.updateGyroSettings(sensorSettings.gyro_settings.has_cutoff,
 					sensorSettings.gyro_settings.cutoff,
@@ -222,6 +225,7 @@ void IMU_Task(void *argument){
 
 			osDelay(1);
 
+			fifo_cnt = 0;
 			imu.spiDataReady = HAL_SPI_IMU_WAIT;
 		}
 

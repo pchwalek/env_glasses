@@ -143,7 +143,7 @@ extern uint16_t Att_Mtu_Exchanged;
 
 #ifdef PROTOBUF_RX
 //light_control_packet_t receivedColor;
-union ColorComplex receivedColor;
+//static union ColorComplex receivedColor;
 blue_green_transition_t blueGreenTranRX;
 red_flash_task_t redFlashRX;
 system_state_t tempState;
@@ -447,7 +447,7 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 		}
 			break;
 		case EVT_BLUE_GATT_TX_POOL_AVAILABLE:
-			Resume_Notification();
+//			Resume_Notification();
 			break;
 
 		case EVT_BLUE_GATT_WRITE_PERMIT_REQ:

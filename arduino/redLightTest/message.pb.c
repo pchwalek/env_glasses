@@ -75,6 +75,9 @@ PB_BIND(MIC_PACKET, mic_packet_t, 2)
 PB_BIND(MIC_PACKET_PAYLOAD, mic_packet_payload_t, 2)
 
 
+PB_BIND(SENSOR_PACKET, sensor_packet_t, 2)
+
+
 PB_BIND(AIR_SPEC_COLORS, air_spec_colors_t, AUTO)
 
 
@@ -133,18 +136,6 @@ PB_BIND(AIR_SPEC_CONFIG_PACKET, air_spec_config_packet_t, AUTO)
 
 
 PB_BIND(SYSTEM_STATE, system_state_t, 2)
-
-
-PB_BIND(APP_SURVEY_DATA_PAYLOAD, app_survey_data_payload_t, AUTO)
-
-
-PB_BIND(APP_SURVEY_DATA_PACKET, app_survey_data_packet_t, AUTO)
-
-
-PB_BIND(APP_META_DATA_PACKET, app_meta_data_packet_t, AUTO)
-
-
-PB_BIND(SENSOR_PACKET, sensor_packet_t, 2)
 
 
 
