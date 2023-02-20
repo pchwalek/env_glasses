@@ -32,6 +32,7 @@ extern osTimerId_t periodicIMUTimer_id;
 
 void IMU_Task(void *argument);
 void HAL_SPI_IMU_WAIT(uint8_t *state);
+void IMUSyncTrigger(void);
 
 #ifdef __cplusplus
 }

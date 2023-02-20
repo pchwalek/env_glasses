@@ -274,13 +274,38 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 				   case AIR_SPEC_CONFIG_PACKET_SENSOR_CONTROL_TAG  :
 						memcpy(&sysState.control,  &rxConfigPacket.payload.sensor_control, sizeof(sensor_control_t));
 //						controlSensors(&sensorCtrl[0], rxPacketHeader.payloadSize / 2);
+						if(sysState.control.synchronize_windows){
+							sysState.config.imu.enable_windowing_sync = 1;
+							sysState.config.imu.window_size_ms = sysState.control.window_size_ms;
+							sysState.config.imu.window_period_ms = sysState.control.window_period_ms;
+
+							sysState.config.blink.enable_windowing_sync = 1;
+							sysState.config.blink.window_size_ms = sysState.control.window_size_ms;
+							sysState.config.blink.window_period_ms = sysState.control.window_period_ms;
+						}else{
+							sysState.config.imu.enable_windowing_sync = 0;
+							sysState.config.blink.enable_windowing_sync = 0;
+						}
 				      break; /* optional */
 
 				   case AIR_SPEC_CONFIG_PACKET_SENSOR_CONFIG_TAG  :
 					   memcpy(&sysState.config,  &rxConfigPacket.payload.sensor_config, sizeof(sensor_config_t));
 //					   memcpy(&sensorCtrl[0], attribute_modified->Attr_Data + sizeof(RX_PacketHeader), rxPacketHeader.payloadSize);
 //						controlSensors(&sensorCtrl[0], rxPacketHeader.payloadSize / 2);
-				   				      break; /* optional */
+						if(sysState.control.synchronize_windows){
+							sysState.config.imu.enable_windowing_sync = 1;
+							sysState.config.imu.window_size_ms = sysState.control.window_size_ms;
+							sysState.config.imu.window_period_ms = sysState.control.window_period_ms;
+
+							sysState.config.blink.enable_windowing_sync = 1;
+							sysState.config.blink.window_size_ms = sysState.control.window_size_ms;
+							sysState.config.blink.window_period_ms = sysState.control.window_period_ms;
+						}else{
+							sysState.config.imu.enable_windowing_sync = 0;
+
+							sysState.config.blink.enable_windowing_sync = 0;
+						}
+						  break; /* optional */
 
 				   case AIR_SPEC_CONFIG_PACKET_DFU_MODE_TAG  :
 						ledEnterDFUNotification();

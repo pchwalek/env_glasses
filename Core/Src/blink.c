@@ -102,6 +102,7 @@ void BlinkTask(void *argument) {
 		sensorSettings.sample_frequency = BLINK_SAMPLE_RATE;
 
 		sensorSettings.enable_windowing = false;
+		sensorSettings.enable_windowing_sync = false;
 //		sensorSettings.window_size_ms = BLINK_SAMPLE_RATE;
 //		sensorSettings.window_period_ms = BLINK_SAMPLE_RATE;
 	}
@@ -215,13 +216,22 @@ void BlinkTask(void *argument) {
 					if(sensorSettings.enable_windowing){
 
 						if(sensorSettings.window_size_ms < (HAL_GetTick() - startTime)){
+
 							deinitBlink();
 
-							int32_t waitTime = sensorSettings.window_period_ms - sensorSettings.window_size_ms;
-							if(waitTime < 0) waitTime = 0;
+							if(sensorSettings.enable_windowing_sync){
+								if(!((evt & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT)){
+									evt = osThreadFlagsWait(TERMINATE_THREAD_BIT | WINDOW_SYNC_RDY_BIT,
+																			osFlagsWaitAny, osWaitForever);
+								}
+							}else{
+								int32_t waitTime = sensorSettings.window_period_ms - sensorSettings.window_size_ms;
+								if(waitTime < 0) waitTime = 0;
 
-							blinkSingleShotTimer_id = osTimerNew(initBlink, osTimerOnce, NULL, NULL);
-							osTimerStart(blinkSingleShotTimer_id, waitTime);
+								blinkSingleShotTimer_id = osTimerNew(initBlink, osTimerOnce, NULL, NULL);
+								osTimerStart(blinkSingleShotTimer_id, waitTime);
+							}
+
 						}
 					}
 				}
@@ -364,6 +374,11 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
 void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc) {
 	blink_ptr = blink_buffer;
 	osThreadFlagsSet(blinkTaskHandle, 0x00000004U);
+
+}
+
+void BlinkSyncTrigger(void) {
+	osThreadFlagsSet(blinkTaskHandle, WINDOW_SYNC_RDY_BIT);
 
 }
 

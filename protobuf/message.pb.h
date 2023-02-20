@@ -430,6 +430,9 @@ typedef struct sensor_control {
     bool sht;
     bool sgp;
     bool blink;
+    bool synchronize_windows;
+    uint32_t window_size_ms;
+    uint32_t window_period_ms;
 } pb_packed sensor_control_t;
 PB_PACKED_STRUCT_END
 
@@ -480,6 +483,7 @@ typedef struct blink_sensor_config {
     uint32_t daylight_compensation_upper_thresh;
     uint32_t daylight_compensation_lower_thresh;
     uint32_t enable_windowing;
+    uint32_t enable_windowing_sync;
     uint32_t window_size_ms;
     uint32_t window_period_ms;
 } pb_packed blink_sensor_config_t;
@@ -507,6 +511,7 @@ typedef struct imu_sensor_config {
     bool has_gyro_settings;
     imu_gyro_settings_t gyro_settings;
     uint32_t enable_windowing;
+    uint32_t enable_windowing_sync;
     uint32_t window_size_ms;
     uint32_t window_period_ms;
 } pb_packed imu_sensor_config_t;
@@ -793,16 +798,16 @@ extern "C" {
 #define AIR_SPEC_COLORS_INIT_DEFAULT             {0, 0, 0}
 #define AIR_SPEC_COLOR_POSITION_INIT_DEFAULT     {false, AIR_SPEC_COLORS_INIT_DEFAULT, false, AIR_SPEC_COLORS_INIT_DEFAULT, false, AIR_SPEC_COLORS_INIT_DEFAULT}
 #define LIGHT_CONTROL_PACKET_INIT_DEFAULT        {false, AIR_SPEC_COLOR_POSITION_INIT_DEFAULT, false, AIR_SPEC_COLOR_POSITION_INIT_DEFAULT}
-#define SENSOR_CONTROL_INIT_DEFAULT              {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+#define SENSOR_CONTROL_INIT_DEFAULT              {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 #define LUX_SENSOR_CONFIG_INIT_DEFAULT           {0, _TSL2591_GAIN_MIN, _TSL2591_INTEGRATION_TIME_MIN}
 #define SGP_SENSOR_CONFIG_INIT_DEFAULT           {0}
 #define BME_SENSOR_CONFIG_INIT_DEFAULT           {0}
 #define COLOR_SENSOR_CONFIG_INIT_DEFAULT         {0, 0, 0, _SPEC_GAIN_MIN}
 #define THERMOPILE_SENSOR_CONFIG_INIT_DEFAULT    {0, 0, 0, 0, 0, 0}
-#define BLINK_SENSOR_CONFIG_INIT_DEFAULT         {0, 0, 0, 0, 0, 0, 0}
+#define BLINK_SENSOR_CONFIG_INIT_DEFAULT         {0, 0, 0, 0, 0, 0, 0, 0}
 #define MIC_SENSOR_CONFIG_INIT_DEFAULT           {0, 0}
 #define HUMIDITY_SENSOR_CONFIG_INIT_DEFAULT      {0, _SHT45_PRECISION_MIN, _SHT45_HEATER_MIN}
-#define IMU_SENSOR_CONFIG_INIT_DEFAULT           {false, IMU_ACCEL_SETTINGS_INIT_DEFAULT, false, IMU_GYRO_SETTINGS_INIT_DEFAULT, 0, 0, 0}
+#define IMU_SENSOR_CONFIG_INIT_DEFAULT           {false, IMU_ACCEL_SETTINGS_INIT_DEFAULT, false, IMU_GYRO_SETTINGS_INIT_DEFAULT, 0, 0, 0, 0}
 #define SENSOR_CONFIG_INIT_DEFAULT               {false, LUX_SENSOR_CONFIG_INIT_DEFAULT, false, SGP_SENSOR_CONFIG_INIT_DEFAULT, false, BME_SENSOR_CONFIG_INIT_DEFAULT, false, COLOR_SENSOR_CONFIG_INIT_DEFAULT, false, THERMOPILE_SENSOR_CONFIG_INIT_DEFAULT, false, BLINK_SENSOR_CONFIG_INIT_DEFAULT, false, MIC_SENSOR_CONFIG_INIT_DEFAULT, false, HUMIDITY_SENSOR_CONFIG_INIT_DEFAULT, false, IMU_SENSOR_CONFIG_INIT_DEFAULT}
 #define DFU_MODE_INIT_DEFAULT                    {0}
 #define BLUE_GREEN_TRANSITION_INIT_DEFAULT       {0, 0, 0, 0, 0, 0, 0, 0}
@@ -840,16 +845,16 @@ extern "C" {
 #define AIR_SPEC_COLORS_INIT_ZERO                {0, 0, 0}
 #define AIR_SPEC_COLOR_POSITION_INIT_ZERO        {false, AIR_SPEC_COLORS_INIT_ZERO, false, AIR_SPEC_COLORS_INIT_ZERO, false, AIR_SPEC_COLORS_INIT_ZERO}
 #define LIGHT_CONTROL_PACKET_INIT_ZERO           {false, AIR_SPEC_COLOR_POSITION_INIT_ZERO, false, AIR_SPEC_COLOR_POSITION_INIT_ZERO}
-#define SENSOR_CONTROL_INIT_ZERO                 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+#define SENSOR_CONTROL_INIT_ZERO                 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 #define LUX_SENSOR_CONFIG_INIT_ZERO              {0, _TSL2591_GAIN_MIN, _TSL2591_INTEGRATION_TIME_MIN}
 #define SGP_SENSOR_CONFIG_INIT_ZERO              {0}
 #define BME_SENSOR_CONFIG_INIT_ZERO              {0}
 #define COLOR_SENSOR_CONFIG_INIT_ZERO            {0, 0, 0, _SPEC_GAIN_MIN}
 #define THERMOPILE_SENSOR_CONFIG_INIT_ZERO       {0, 0, 0, 0, 0, 0}
-#define BLINK_SENSOR_CONFIG_INIT_ZERO            {0, 0, 0, 0, 0, 0, 0}
+#define BLINK_SENSOR_CONFIG_INIT_ZERO            {0, 0, 0, 0, 0, 0, 0, 0}
 #define MIC_SENSOR_CONFIG_INIT_ZERO              {0, 0}
 #define HUMIDITY_SENSOR_CONFIG_INIT_ZERO         {0, _SHT45_PRECISION_MIN, _SHT45_HEATER_MIN}
-#define IMU_SENSOR_CONFIG_INIT_ZERO              {false, IMU_ACCEL_SETTINGS_INIT_ZERO, false, IMU_GYRO_SETTINGS_INIT_ZERO, 0, 0, 0}
+#define IMU_SENSOR_CONFIG_INIT_ZERO              {false, IMU_ACCEL_SETTINGS_INIT_ZERO, false, IMU_GYRO_SETTINGS_INIT_ZERO, 0, 0, 0, 0}
 #define SENSOR_CONFIG_INIT_ZERO                  {false, LUX_SENSOR_CONFIG_INIT_ZERO, false, SGP_SENSOR_CONFIG_INIT_ZERO, false, BME_SENSOR_CONFIG_INIT_ZERO, false, COLOR_SENSOR_CONFIG_INIT_ZERO, false, THERMOPILE_SENSOR_CONFIG_INIT_ZERO, false, BLINK_SENSOR_CONFIG_INIT_ZERO, false, MIC_SENSOR_CONFIG_INIT_ZERO, false, HUMIDITY_SENSOR_CONFIG_INIT_ZERO, false, IMU_SENSOR_CONFIG_INIT_ZERO}
 #define DFU_MODE_INIT_ZERO                       {0}
 #define BLUE_GREEN_TRANSITION_INIT_ZERO          {0, 0, 0, 0, 0, 0, 0, 0}
@@ -978,6 +983,9 @@ extern "C" {
 #define SENSOR_CONTROL_SHT_TAG                   8
 #define SENSOR_CONTROL_SGP_TAG                   9
 #define SENSOR_CONTROL_BLINK_TAG                 10
+#define SENSOR_CONTROL_SYNCHRONIZE_WINDOWS_TAG   11
+#define SENSOR_CONTROL_WINDOW_SIZE_MS_TAG        12
+#define SENSOR_CONTROL_WINDOW_PERIOD_MS_TAG      13
 #define LUX_SENSOR_CONFIG_SAMPLE_PERIOD_MS_TAG   1
 #define LUX_SENSOR_CONFIG_GAIN_TAG               2
 #define LUX_SENSOR_CONFIG_INTEGRATION_TIME_TAG   3
@@ -998,8 +1006,9 @@ extern "C" {
 #define BLINK_SENSOR_CONFIG_DAYLIGHT_COMPENSATION_UPPER_THRESH_TAG 3
 #define BLINK_SENSOR_CONFIG_DAYLIGHT_COMPENSATION_LOWER_THRESH_TAG 4
 #define BLINK_SENSOR_CONFIG_ENABLE_WINDOWING_TAG 5
-#define BLINK_SENSOR_CONFIG_WINDOW_SIZE_MS_TAG   6
-#define BLINK_SENSOR_CONFIG_WINDOW_PERIOD_MS_TAG 7
+#define BLINK_SENSOR_CONFIG_ENABLE_WINDOWING_SYNC_TAG 6
+#define BLINK_SENSOR_CONFIG_WINDOW_SIZE_MS_TAG   7
+#define BLINK_SENSOR_CONFIG_WINDOW_PERIOD_MS_TAG 8
 #define MIC_SENSOR_CONFIG_SAMPLE_PERIOD_MS_TAG   1
 #define MIC_SENSOR_CONFIG_MIC_SAMPLE_FREQ_TAG    2
 #define HUMIDITY_SENSOR_CONFIG_SAMPLE_PERIOD_MS_TAG 1
@@ -1008,8 +1017,9 @@ extern "C" {
 #define IMU_SENSOR_CONFIG_ACCEL_SETTINGS_TAG     1
 #define IMU_SENSOR_CONFIG_GYRO_SETTINGS_TAG      2
 #define IMU_SENSOR_CONFIG_ENABLE_WINDOWING_TAG   3
-#define IMU_SENSOR_CONFIG_WINDOW_SIZE_MS_TAG     4
-#define IMU_SENSOR_CONFIG_WINDOW_PERIOD_MS_TAG   5
+#define IMU_SENSOR_CONFIG_ENABLE_WINDOWING_SYNC_TAG 4
+#define IMU_SENSOR_CONFIG_WINDOW_SIZE_MS_TAG     5
+#define IMU_SENSOR_CONFIG_WINDOW_PERIOD_MS_TAG   6
 #define SENSOR_CONFIG_LUX_TAG                    1
 #define SENSOR_CONFIG_SGP_TAG                    2
 #define SENSOR_CONFIG_BME_TAG                    3
@@ -1302,7 +1312,10 @@ X(a, STATIC,   SINGULAR, BOOL,     lux,               6) \
 X(a, STATIC,   SINGULAR, BOOL,     mic,               7) \
 X(a, STATIC,   SINGULAR, BOOL,     sht,               8) \
 X(a, STATIC,   SINGULAR, BOOL,     sgp,               9) \
-X(a, STATIC,   SINGULAR, BOOL,     blink,            10)
+X(a, STATIC,   SINGULAR, BOOL,     blink,            10) \
+X(a, STATIC,   SINGULAR, BOOL,     synchronize_windows,  11) \
+X(a, STATIC,   SINGULAR, UINT32,   window_size_ms,   12) \
+X(a, STATIC,   SINGULAR, UINT32,   window_period_ms,  13)
 #define SENSOR_CONTROL_CALLBACK NULL
 #define SENSOR_CONTROL_DEFAULT NULL
 
@@ -1347,8 +1360,9 @@ X(a, STATIC,   SINGULAR, BOOL,     enable_daylight_compensation,   2) \
 X(a, STATIC,   SINGULAR, UINT32,   daylight_compensation_upper_thresh,   3) \
 X(a, STATIC,   SINGULAR, UINT32,   daylight_compensation_lower_thresh,   4) \
 X(a, STATIC,   SINGULAR, UINT32,   enable_windowing,   5) \
-X(a, STATIC,   SINGULAR, UINT32,   window_size_ms,    6) \
-X(a, STATIC,   SINGULAR, UINT32,   window_period_ms,   7)
+X(a, STATIC,   SINGULAR, UINT32,   enable_windowing_sync,   6) \
+X(a, STATIC,   SINGULAR, UINT32,   window_size_ms,    7) \
+X(a, STATIC,   SINGULAR, UINT32,   window_period_ms,   8)
 #define BLINK_SENSOR_CONFIG_CALLBACK NULL
 #define BLINK_SENSOR_CONFIG_DEFAULT NULL
 
@@ -1369,8 +1383,9 @@ X(a, STATIC,   SINGULAR, UENUM,    heater_settings,   3)
 X(a, STATIC,   OPTIONAL, MESSAGE,  accel_settings,    1) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  gyro_settings,     2) \
 X(a, STATIC,   SINGULAR, UINT32,   enable_windowing,   3) \
-X(a, STATIC,   SINGULAR, UINT32,   window_size_ms,    4) \
-X(a, STATIC,   SINGULAR, UINT32,   window_period_ms,   5)
+X(a, STATIC,   SINGULAR, UINT32,   enable_windowing_sync,   4) \
+X(a, STATIC,   SINGULAR, UINT32,   window_size_ms,    5) \
+X(a, STATIC,   SINGULAR, UINT32,   window_period_ms,   6)
 #define IMU_SENSOR_CONFIG_CALLBACK NULL
 #define IMU_SENSOR_CONFIG_DEFAULT NULL
 #define imu_sensor_config_t_accel_settings_MSGTYPE imu_accel_settings_t
@@ -1609,12 +1624,12 @@ extern const pb_msgdesc_t sensor_packet_t_msg;
 #define AIR_SPEC_COLORS_SIZE                     18
 #define AIR_SPEC_COLOR_POSITION_SIZE             60
 #define AIR_SPEC_CONFIG_HEADER_SIZE              6
-#define AIR_SPEC_CONFIG_PACKET_SIZE              190
+#define AIR_SPEC_CONFIG_PACKET_SIZE              202
 #define BLINK_BYTE_PAYLOAD_SIZE                  453
 #define BLINK_HIGH_RES_PAYLOAD_SIZE              353
 #define BLINK_PACKET_SIZE                        484
 #define BLINK_SATURATION_SETTINGS_SIZE           14
-#define BLINK_SENSOR_CONFIG_SIZE                 38
+#define BLINK_SENSOR_CONFIG_SIZE                 44
 #define BLUE_GREEN_TRANSITION_SIZE               44
 #define BME_PACKET_PAYLOAD_SIZE                  36
 #define BME_PACKET_SIZE                          468
@@ -1626,7 +1641,7 @@ extern const pb_msgdesc_t sensor_packet_t_msg;
 #define IMU_GYRO_SETTINGS_SIZE                   10
 #define IMU_PACKET_PAYLOAD_SIZE                  443
 #define IMU_PACKET_SIZE                          476
-#define IMU_SENSOR_CONFIG_SIZE                   42
+#define IMU_SENSOR_CONFIG_SIZE                   48
 #define LIGHT_CONTROL_PACKET_SIZE                124
 #define LUX_PACKET_PAYLOAD_SIZE                  18
 #define LUX_PACKET_SIZE                          617
@@ -1635,8 +1650,8 @@ extern const pb_msgdesc_t sensor_packet_t_msg;
 #define MIC_PACKET_SIZE                          687
 #define MIC_SENSOR_CONFIG_SIZE                   12
 #define RED_FLASH_TASK_SIZE                      32
-#define SENSOR_CONFIG_SIZE                       179
-#define SENSOR_CONTROL_SIZE                      20
+#define SENSOR_CONFIG_SIZE                       191
+#define SENSOR_CONTROL_SIZE                      34
 #define SENSOR_PACKET_HEADER_SIZE                18
 #define SGP_PACKET_PAYLOAD_SIZE                  46
 #define SGP_PACKET_SIZE                          972
@@ -1645,7 +1660,7 @@ extern const pb_msgdesc_t sensor_packet_t_msg;
 #define SHT_PACKET_SIZE                          4816
 #define SPEC_PACKET_PAYLOAD_SIZE                 78
 #define SPEC_PACKET_SIZE                         2426
-#define SYSTEM_STATE_SIZE                        210
+#define SYSTEM_STATE_SIZE                        236
 #define THERMOPILE_SENSOR_CONFIG_SIZE            16
 #define THERM_PACKET_PAYLOAD_SIZE                36
 #define THERM_PACKET_SIZE                        1912

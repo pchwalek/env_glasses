@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-// import "nanopb.proto";
-// option (nanopb_fileopt).packed_struct = true;
+//import "nanopb.proto";
+//option (nanopb_fileopt).packed_struct = true;
 
 enum SensorPacketTypes {
     UNKNOWN_PACKET_TYPE = 0;
@@ -353,6 +353,9 @@ message SensorControl{
     bool sht = 8;
     bool sgp = 9;
     bool blink = 10;
+    bool synchronize_windows = 11;
+    uint32 window_size_ms = 12;
+    uint32 window_period_ms = 13;
 }
 
 message LuxSensorConfig{
@@ -391,8 +394,9 @@ message BlinkSensorConfig{
     uint32 daylightCompensationUpperThresh = 3;
     uint32 daylightCompensationLowerThresh = 4;
     uint32 enable_windowing = 5;
-    uint32 window_size_ms = 6;
-    uint32 window_period_ms = 7;
+    uint32 enable_windowing_sync = 6;
+    uint32 window_size_ms = 7;
+    uint32 window_period_ms = 8;
 }
 
 message MicSensorConfig{
@@ -410,8 +414,9 @@ message IMU_SensorConfig{
     IMU_Accel_Settings accel_settings = 1;
     IMU_Gyro_Settings gyro_settings = 2;
     uint32 enable_windowing = 3;
-    uint32 window_size_ms = 4;
-    uint32 window_period_ms = 5;
+    uint32 enable_windowing_sync = 4;
+    uint32 window_size_ms = 5;
+    uint32 window_period_ms = 6;
 }
 
 message SensorConfig{

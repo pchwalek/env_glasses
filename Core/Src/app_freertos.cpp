@@ -61,6 +61,8 @@
 
 red_flash_task_t redFlashTest;
 
+osTimerId_t sensorSyncTimer_id;
+
 osMessageQueueId_t lightsComplexQueueHandle;
 const osMessageQueueAttr_t lightsComplexQueue_attributes = { .name =
 		"lightsComplexQueue" };

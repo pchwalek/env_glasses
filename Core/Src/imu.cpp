@@ -65,6 +65,7 @@ void IMU_Task(void *argument){
 		sensorSettings.accel_settings.sample_rate_divisor = 1;
 
 		sensorSettings.enable_windowing = false;
+		sensorSettings.enable_windowing_sync = false;
 //		sensorSettings.window_size_ms;
 //		sensorSettings.window_period_ms;
 	}
@@ -197,15 +198,26 @@ void IMU_Task(void *argument){
 		if(sensorSettings.window_size_ms < (HAL_GetTick() - startTime)){
 			imu.reset();
 
-			int32_t waitTime = sensorSettings.window_period_ms - sensorSettings.window_size_ms;
-			if(waitTime < 0) waitTime = 0;
 
-			flags = osThreadFlagsWait(TERMINATE_THREAD_BIT,
-					  					osFlagsWaitAny, waitTime);
+			if(sensorSettings.enable_windowing_sync){
+				flags = osThreadFlagsWait(TERMINATE_THREAD_BIT | WINDOW_SYNC_RDY_BIT,
+									  					osFlagsWaitAny, osWaitForever);
+			}else{
+				int32_t waitTime = sensorSettings.window_period_ms - sensorSettings.window_size_ms;
+				if(waitTime < 0) waitTime = 0;
+
+				flags = osThreadFlagsWait(TERMINATE_THREAD_BIT | WINDOW_SYNC_RDY_BIT,
+									  					osFlagsWaitAny, waitTime);
+			}
+
 
 			if((flags != osFlagsErrorTimeout) && ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT)) {
 						  vTaskDelete( NULL );
 					}
+
+			if((flags & WINDOW_SYNC_RDY_BIT) == WINDOW_SYNC_RDY_BIT){
+				// this check is unnessary but leaving it in in case we want to expand further
+			}
 
 			startTime = HAL_GetTick();
 
@@ -264,6 +276,10 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi){
 	flag_int_enable = 0;
 	}
 
+}
+
+void IMUSyncTrigger(void) {
+	osThreadFlagsSet(imuTaskHandle, WINDOW_SYNC_RDY_BIT);
 }
 
 void HAL_SPI_IMU_WAIT(uint8_t *state){

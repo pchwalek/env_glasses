@@ -212,6 +212,10 @@ int main(void) {
 		sysState.control.blink = 1;
 		sysState.control.mic = 0;
 		sysState.control.sht = 0;
+		sysState.control.synchronize_windows = 1;
+		sysState.control.window_size_ms = ONE_MINUTE_MS;
+		sysState.control.window_period_ms = 10 * ONE_MINUTE_MS;
+
 
 		sysState.config.lux.gain = TSL2591_GAIN_TSL2722_GAIN_8_X;
 		sysState.config.lux.integration_time = TSL2591_INTEGRATION_TIME_TSL2722_INTEGRATIONTIME_101_MS;
@@ -232,6 +236,15 @@ int main(void) {
 		sysState.config.imu.enable_windowing = 1;
 		sysState.config.imu.window_size_ms = 10000;
 		sysState.config.imu.window_period_ms = 30000;
+		if(sysState.control.synchronize_windows){
+			sysState.config.imu.enable_windowing_sync = 1;
+			sysState.config.imu.window_size_ms = sysState.control.window_size_ms;
+			sysState.config.imu.window_period_ms = sysState.control.window_period_ms;
+		}else{
+			sysState.config.imu.enable_windowing_sync = 0;
+			sysState.config.imu.window_size_ms = 3000;
+			sysState.config.imu.window_period_ms = 10000;
+		}
 
 		sysState.config.color.integration_time = 100;
 		sysState.config.color.integration_step = 999;
@@ -250,8 +263,15 @@ int main(void) {
 		sysState.config.blink.daylight_compensation_lower_thresh = 235;
 		sysState.config.blink.sample_frequency = 1000;
 		sysState.config.blink.enable_windowing = 1;
-		sysState.config.blink.window_size_ms = 3000;
-		sysState.config.blink.window_period_ms = 10000;
+		if(sysState.control.synchronize_windows){
+			sysState.config.blink.enable_windowing_sync = 1;
+			sysState.config.blink.window_size_ms = sysState.control.window_size_ms;
+			sysState.config.blink.window_period_ms = sysState.control.window_period_ms;
+		}else{
+			sysState.config.blink.enable_windowing_sync = 0;
+			sysState.config.blink.window_size_ms = 3000;
+			sysState.config.blink.window_period_ms = 10000;
+		}
 
 		sysState.config.mic.mic_sample_freq = SAI_AUDIO_FREQUENCY_48K;
 		sysState.config.mic.sample_period_ms = 30000; // 30 seconds

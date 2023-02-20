@@ -29,6 +29,9 @@
 
 #define ALL_SENSORS	1
 
+void syncTimerActive(bool state, uint32_t period);
+void syncTimerTask(void);
+
 void controlSpectrometer(bool state){
 	if(state){
 		osThreadState_t threadState = osThreadGetState(specTaskHandle);
@@ -138,7 +141,6 @@ void controlBlink(bool state){
 		}
 	}else{
 		osThreadFlagsSet(blinkTaskHandle, TERMINATE_THREAD_BIT);
-
 	}
 }
 
@@ -149,7 +151,6 @@ void controlBlinkNoWindow(bool state){
 
 	memcpy(&blinkConfigNoWindow,&sysState.config.blink,sizeof(blink_sensor_config_t));
 	blinkConfigNoWindow.enable_windowing = 0;
-
 
 	if(state){
 		osThreadState_t threadState = osThreadGetState(blinkTaskHandle);
@@ -208,7 +209,30 @@ void controlAllSensors(bool state){
 	controlSHT(state);
 	controlSGP(state);
 	controlBlink(state);
+
+	if(sysState.control.synchronize_windows){
+		syncTimerActive(state, sysState.control.window_period_ms);
+	}else{
+		syncTimerActive(false, 0);
+	}
 }
+
+void syncTimerActive(bool state, uint32_t period){
+	uint32_t timerRunning = osTimerIsRunning(sensorSyncTimer_id);
+
+	if(state && !timerRunning){
+		sensorSyncTimer_id = osTimerNew(syncTimerTask, osTimerPeriodic, NULL, NULL);
+		osTimerStart(sensorSyncTimer_id, period);
+	}else if (!state && timerRunning){
+		osTimerDelete(sensorSyncTimer_id);
+	}
+}
+
+void syncTimerTask(void){
+	BlinkSyncTrigger();
+	IMUSyncTrigger();
+}
+
 
 void ingestSensorConfig(system_state_t *config){
 //	if(config->systemRunState == 0){
@@ -236,6 +260,12 @@ void ingestSensorConfig(system_state_t *config){
 		controlSHT(1);
 		controlSGP(1);
 		controlBlink(1);
+
+		if(config->control.synchronize_windows){
+			syncTimerActive(1, config->control.window_period_ms);
+		}else{
+			syncTimerActive(false, 0);
+		}
 	}else{
 		controlSpectrometer(config->control.spectrometer);
 		controlBME(config->control.bme688);
@@ -247,6 +277,11 @@ void ingestSensorConfig(system_state_t *config){
 		controlSGP(config->control.sgp);
 		controlBlink(config->control.blink);
 
+		if(config->control.synchronize_windows){
+			syncTimerActive(config->control.imu | config->control.blink, config->control.window_period_ms);
+		}else{
+			syncTimerActive(false, 0);
+		}
 	}
 
 

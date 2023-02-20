@@ -94,6 +94,10 @@ extern "C" {
 /* WATCHDOG TIMER */
 #define WATCHDOG_PERIOD							5000 // 5 seconds
 
+#define ONE_SECOND_MS		1000
+#define ONE_MINUTE_MS		60000
+#define ONE_HOUR_MS		ONE_MINUTE_MS * 60
+
 /* ************************************************************************** */
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -166,6 +170,8 @@ extern osMessageQueueId_t lightsSimpleQueueHandle;
 
 extern osThreadId_t frontLightsComplexTaskHandle;
 extern osMessageQueueId_t lightsComplexQueueHandle;
+
+extern osTimerId_t sensorSyncTimer_id;
 
 extern osMessageQueueId_t togLoggingQueueHandle;
 extern osThreadId_t masterTaskHandle;

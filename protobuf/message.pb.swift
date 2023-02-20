@@ -1514,6 +1514,12 @@ public struct SensorControl {
 
   public var blink: Bool = false
 
+  public var synchronizeWindows: Bool = false
+
+  public var windowSizeMs: UInt32 = 0
+
+  public var windowPeriodMs: UInt32 = 0
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -1614,6 +1620,8 @@ public struct BlinkSensorConfig {
 
   public var enableWindowing: UInt32 = 0
 
+  public var enableWindowingSync: UInt32 = 0
+
   public var windowSizeMs: UInt32 = 0
 
   public var windowPeriodMs: UInt32 = 0
@@ -1677,6 +1685,8 @@ public struct IMU_SensorConfig {
   public mutating func clearGyroSettings() {self._gyroSettings = nil}
 
   public var enableWindowing: UInt32 = 0
+
+  public var enableWindowingSync: UInt32 = 0
 
   public var windowSizeMs: UInt32 = 0
 
@@ -3869,6 +3879,9 @@ extension SensorControl: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementa
     8: .same(proto: "sht"),
     9: .same(proto: "sgp"),
     10: .same(proto: "blink"),
+    11: .standard(proto: "synchronize_windows"),
+    12: .standard(proto: "window_size_ms"),
+    13: .standard(proto: "window_period_ms"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -3887,6 +3900,9 @@ extension SensorControl: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementa
       case 8: try { try decoder.decodeSingularBoolField(value: &self.sht) }()
       case 9: try { try decoder.decodeSingularBoolField(value: &self.sgp) }()
       case 10: try { try decoder.decodeSingularBoolField(value: &self.blink) }()
+      case 11: try { try decoder.decodeSingularBoolField(value: &self.synchronizeWindows) }()
+      case 12: try { try decoder.decodeSingularUInt32Field(value: &self.windowSizeMs) }()
+      case 13: try { try decoder.decodeSingularUInt32Field(value: &self.windowPeriodMs) }()
       default: break
       }
     }
@@ -3923,6 +3939,15 @@ extension SensorControl: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementa
     if self.blink != false {
       try visitor.visitSingularBoolField(value: self.blink, fieldNumber: 10)
     }
+    if self.synchronizeWindows != false {
+      try visitor.visitSingularBoolField(value: self.synchronizeWindows, fieldNumber: 11)
+    }
+    if self.windowSizeMs != 0 {
+      try visitor.visitSingularUInt32Field(value: self.windowSizeMs, fieldNumber: 12)
+    }
+    if self.windowPeriodMs != 0 {
+      try visitor.visitSingularUInt32Field(value: self.windowPeriodMs, fieldNumber: 13)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -3937,6 +3962,9 @@ extension SensorControl: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementa
     if lhs.sht != rhs.sht {return false}
     if lhs.sgp != rhs.sgp {return false}
     if lhs.blink != rhs.blink {return false}
+    if lhs.synchronizeWindows != rhs.synchronizeWindows {return false}
+    if lhs.windowSizeMs != rhs.windowSizeMs {return false}
+    if lhs.windowPeriodMs != rhs.windowPeriodMs {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -4170,8 +4198,9 @@ extension BlinkSensorConfig: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
     3: .same(proto: "daylightCompensationUpperThresh"),
     4: .same(proto: "daylightCompensationLowerThresh"),
     5: .standard(proto: "enable_windowing"),
-    6: .standard(proto: "window_size_ms"),
-    7: .standard(proto: "window_period_ms"),
+    6: .standard(proto: "enable_windowing_sync"),
+    7: .standard(proto: "window_size_ms"),
+    8: .standard(proto: "window_period_ms"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -4185,8 +4214,9 @@ extension BlinkSensorConfig: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
       case 3: try { try decoder.decodeSingularUInt32Field(value: &self.daylightCompensationUpperThresh) }()
       case 4: try { try decoder.decodeSingularUInt32Field(value: &self.daylightCompensationLowerThresh) }()
       case 5: try { try decoder.decodeSingularUInt32Field(value: &self.enableWindowing) }()
-      case 6: try { try decoder.decodeSingularUInt32Field(value: &self.windowSizeMs) }()
-      case 7: try { try decoder.decodeSingularUInt32Field(value: &self.windowPeriodMs) }()
+      case 6: try { try decoder.decodeSingularUInt32Field(value: &self.enableWindowingSync) }()
+      case 7: try { try decoder.decodeSingularUInt32Field(value: &self.windowSizeMs) }()
+      case 8: try { try decoder.decodeSingularUInt32Field(value: &self.windowPeriodMs) }()
       default: break
       }
     }
@@ -4208,11 +4238,14 @@ extension BlinkSensorConfig: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
     if self.enableWindowing != 0 {
       try visitor.visitSingularUInt32Field(value: self.enableWindowing, fieldNumber: 5)
     }
+    if self.enableWindowingSync != 0 {
+      try visitor.visitSingularUInt32Field(value: self.enableWindowingSync, fieldNumber: 6)
+    }
     if self.windowSizeMs != 0 {
-      try visitor.visitSingularUInt32Field(value: self.windowSizeMs, fieldNumber: 6)
+      try visitor.visitSingularUInt32Field(value: self.windowSizeMs, fieldNumber: 7)
     }
     if self.windowPeriodMs != 0 {
-      try visitor.visitSingularUInt32Field(value: self.windowPeriodMs, fieldNumber: 7)
+      try visitor.visitSingularUInt32Field(value: self.windowPeriodMs, fieldNumber: 8)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -4223,6 +4256,7 @@ extension BlinkSensorConfig: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
     if lhs.daylightCompensationUpperThresh != rhs.daylightCompensationUpperThresh {return false}
     if lhs.daylightCompensationLowerThresh != rhs.daylightCompensationLowerThresh {return false}
     if lhs.enableWindowing != rhs.enableWindowing {return false}
+    if lhs.enableWindowingSync != rhs.enableWindowingSync {return false}
     if lhs.windowSizeMs != rhs.windowSizeMs {return false}
     if lhs.windowPeriodMs != rhs.windowPeriodMs {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -4318,8 +4352,9 @@ extension IMU_SensorConfig: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
     1: .standard(proto: "accel_settings"),
     2: .standard(proto: "gyro_settings"),
     3: .standard(proto: "enable_windowing"),
-    4: .standard(proto: "window_size_ms"),
-    5: .standard(proto: "window_period_ms"),
+    4: .standard(proto: "enable_windowing_sync"),
+    5: .standard(proto: "window_size_ms"),
+    6: .standard(proto: "window_period_ms"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -4331,8 +4366,9 @@ extension IMU_SensorConfig: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
       case 1: try { try decoder.decodeSingularMessageField(value: &self._accelSettings) }()
       case 2: try { try decoder.decodeSingularMessageField(value: &self._gyroSettings) }()
       case 3: try { try decoder.decodeSingularUInt32Field(value: &self.enableWindowing) }()
-      case 4: try { try decoder.decodeSingularUInt32Field(value: &self.windowSizeMs) }()
-      case 5: try { try decoder.decodeSingularUInt32Field(value: &self.windowPeriodMs) }()
+      case 4: try { try decoder.decodeSingularUInt32Field(value: &self.enableWindowingSync) }()
+      case 5: try { try decoder.decodeSingularUInt32Field(value: &self.windowSizeMs) }()
+      case 6: try { try decoder.decodeSingularUInt32Field(value: &self.windowPeriodMs) }()
       default: break
       }
     }
@@ -4352,11 +4388,14 @@ extension IMU_SensorConfig: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
     if self.enableWindowing != 0 {
       try visitor.visitSingularUInt32Field(value: self.enableWindowing, fieldNumber: 3)
     }
+    if self.enableWindowingSync != 0 {
+      try visitor.visitSingularUInt32Field(value: self.enableWindowingSync, fieldNumber: 4)
+    }
     if self.windowSizeMs != 0 {
-      try visitor.visitSingularUInt32Field(value: self.windowSizeMs, fieldNumber: 4)
+      try visitor.visitSingularUInt32Field(value: self.windowSizeMs, fieldNumber: 5)
     }
     if self.windowPeriodMs != 0 {
-      try visitor.visitSingularUInt32Field(value: self.windowPeriodMs, fieldNumber: 5)
+      try visitor.visitSingularUInt32Field(value: self.windowPeriodMs, fieldNumber: 6)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -4365,6 +4404,7 @@ extension IMU_SensorConfig: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
     if lhs._accelSettings != rhs._accelSettings {return false}
     if lhs._gyroSettings != rhs._gyroSettings {return false}
     if lhs.enableWindowing != rhs.enableWindowing {return false}
+    if lhs.enableWindowingSync != rhs.enableWindowingSync {return false}
     if lhs.windowSizeMs != rhs.windowSizeMs {return false}
     if lhs.windowPeriodMs != rhs.windowPeriodMs {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
