@@ -69,7 +69,7 @@ void controlIMUNoWindow(bool state){
 
 	memcpy(&imuConfigNoWindow,&sysState.config.imu,sizeof(imu_sensor_config_t));
 	imuConfigNoWindow.enable_windowing = 0;
-
+	imuConfigNoWindow.enable_windowing_sync = 0;
 
 	if(state){
 		osThreadState_t threadState = osThreadGetState(imuTaskHandle);
@@ -151,6 +151,8 @@ void controlBlinkNoWindow(bool state){
 
 	memcpy(&blinkConfigNoWindow,&sysState.config.blink,sizeof(blink_sensor_config_t));
 	blinkConfigNoWindow.enable_windowing = 0;
+	blinkConfigNoWindow.enable_windowing_sync = 0;
+
 
 	if(state){
 		osThreadState_t threadState = osThreadGetState(blinkTaskHandle);

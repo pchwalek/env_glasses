@@ -223,7 +223,11 @@ void BlinkTask(void *argument) {
 								if(!((evt & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT)){
 									evt = osThreadFlagsWait(TERMINATE_THREAD_BIT | WINDOW_SYNC_RDY_BIT,
 																			osFlagsWaitAny, osWaitForever);
+									if((evt & WINDOW_SYNC_RDY_BIT) == WINDOW_SYNC_RDY_BIT){
+										initBlink();
+									}
 								}
+
 							}else{
 								int32_t waitTime = sensorSettings.window_period_ms - sensorSettings.window_size_ms;
 								if(waitTime < 0) waitTime = 0;
@@ -277,6 +281,7 @@ void initBlink(){
 void deinitBlink(){
 	HAL_ADC_Stop_DMA(&hadc1);
 	HAL_TIM_Base_Stop(&htim2);
+
 	turnOffDiode();
 }
 

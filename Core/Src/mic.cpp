@@ -78,8 +78,8 @@ void Mic_Task(void *argument){
 	}
 
 	//todo: temporary code which should be removed once website is updated
-	sensorSettings.mic_sample_freq = SAI_AUDIO_FREQUENCY_48K;
-	sensorSettings.sample_period_ms = 30000; // every 30 seconds
+//	sensorSettings.mic_sample_freq = SAI_AUDIO_FREQUENCY_48K;
+//	sensorSettings.sample_period_ms = 30000; // every 30 seconds
 
 
 	float fft_spacing = 48000 / 4096.0;
@@ -103,7 +103,7 @@ void Mic_Task(void *argument){
 	 */
 	HAL_SAI_Receive(&hsai_BlockA1, (uint8_t *) micData, 256, 1);  //purposeful short timeout
 
-	if(sensorSettings.sample_period_ms >= MIC_SAMPLE_PERIOD_MS_THRESH_TO_TURN_OFF){
+	if(sensorSettings.sample_period_ms > MIC_SAMPLE_PERIOD_MS_THRESH_TO_TURN_OFF){
 		micLowPowerMode = 1;
 	}else{
 		micLowPowerMode = 0;

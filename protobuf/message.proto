@@ -264,6 +264,8 @@ message SpecPacket{
         uint32 band_clear_2 = 11;
         uint32 band_nir_2 = 12;
         uint32 flicker = 13;
+        uint32 timestamp_unix = 14;
+        uint32 timestamp_ms_from_start = 15;
     }
     repeated Payload payload = 6;
 } 
@@ -487,13 +489,11 @@ message appSurveyDataPayload {
 }
 
 message appSurveyDataPacket {
-    uint32 UID_phone = 1;
-    repeated appSurveyDataPayload payload = 2;
+    repeated appSurveyDataPayload payload = 1;
 }
 
 message appMetaDataPacket {
-    uint32 UID_phone = 1;
-    string payload = 2;
+    string payload = 1;
 }
 
 

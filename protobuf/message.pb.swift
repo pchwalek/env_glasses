@@ -1204,6 +1204,10 @@ public struct SpecPacket {
 
     public var flicker: UInt32 = 0
 
+    public var timestampUnix: UInt32 = 0
+
+    public var timestampMsFromStart: UInt32 = 0
+
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
     public init() {}
@@ -2032,8 +2036,6 @@ public struct appSurveyDataPacket {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var uidPhone: UInt32 = 0
-
   public var payload: [appSurveyDataPayload] = []
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -2045,8 +2047,6 @@ public struct appMetaDataPacket {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
-
-  public var uidPhone: UInt32 = 0
 
   public var payload: String = String()
 
@@ -3212,6 +3212,8 @@ extension SpecPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     11: .standard(proto: "band_clear_2"),
     12: .standard(proto: "band_nir_2"),
     13: .same(proto: "flicker"),
+    14: .standard(proto: "timestamp_unix"),
+    15: .standard(proto: "timestamp_ms_from_start"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -3233,6 +3235,8 @@ extension SpecPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
       case 11: try { try decoder.decodeSingularUInt32Field(value: &self.bandClear2) }()
       case 12: try { try decoder.decodeSingularUInt32Field(value: &self.bandNir2) }()
       case 13: try { try decoder.decodeSingularUInt32Field(value: &self.flicker) }()
+      case 14: try { try decoder.decodeSingularUInt32Field(value: &self.timestampUnix) }()
+      case 15: try { try decoder.decodeSingularUInt32Field(value: &self.timestampMsFromStart) }()
       default: break
       }
     }
@@ -3278,6 +3282,12 @@ extension SpecPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     if self.flicker != 0 {
       try visitor.visitSingularUInt32Field(value: self.flicker, fieldNumber: 13)
     }
+    if self.timestampUnix != 0 {
+      try visitor.visitSingularUInt32Field(value: self.timestampUnix, fieldNumber: 14)
+    }
+    if self.timestampMsFromStart != 0 {
+      try visitor.visitSingularUInt32Field(value: self.timestampMsFromStart, fieldNumber: 15)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -3295,6 +3305,8 @@ extension SpecPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     if lhs.bandClear2 != rhs.bandClear2 {return false}
     if lhs.bandNir2 != rhs.bandNir2 {return false}
     if lhs.flicker != rhs.flicker {return false}
+    if lhs.timestampUnix != rhs.timestampUnix {return false}
+    if lhs.timestampMsFromStart != rhs.timestampMsFromStart {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -4981,8 +4993,7 @@ extension appSurveyDataPayload: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
 extension appSurveyDataPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = "appSurveyDataPacket"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "UID_phone"),
-    2: .same(proto: "payload"),
+    1: .same(proto: "payload"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -4991,25 +5002,20 @@ extension appSurveyDataPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.uidPhone) }()
-      case 2: try { try decoder.decodeRepeatedMessageField(value: &self.payload) }()
+      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.payload) }()
       default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if self.uidPhone != 0 {
-      try visitor.visitSingularUInt32Field(value: self.uidPhone, fieldNumber: 1)
-    }
     if !self.payload.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.payload, fieldNumber: 2)
+      try visitor.visitRepeatedMessageField(value: self.payload, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: appSurveyDataPacket, rhs: appSurveyDataPacket) -> Bool {
-    if lhs.uidPhone != rhs.uidPhone {return false}
     if lhs.payload != rhs.payload {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -5019,8 +5025,7 @@ extension appSurveyDataPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
 extension appMetaDataPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = "appMetaDataPacket"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "UID_phone"),
-    2: .same(proto: "payload"),
+    1: .same(proto: "payload"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -5029,25 +5034,20 @@ extension appMetaDataPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.uidPhone) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self.payload) }()
+      case 1: try { try decoder.decodeSingularStringField(value: &self.payload) }()
       default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if self.uidPhone != 0 {
-      try visitor.visitSingularUInt32Field(value: self.uidPhone, fieldNumber: 1)
-    }
     if !self.payload.isEmpty {
-      try visitor.visitSingularStringField(value: self.payload, fieldNumber: 2)
+      try visitor.visitSingularStringField(value: self.payload, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: appMetaDataPacket, rhs: appMetaDataPacket) -> Bool {
-    if lhs.uidPhone != rhs.uidPhone {return false}
     if lhs.payload != rhs.payload {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true

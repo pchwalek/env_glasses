@@ -206,15 +206,16 @@ int main(void) {
 		sysState.control.lux = 0;
 		sysState.control.bme688 = 0;
 		sysState.control.sgp = 0;
+
 		sysState.control.imu = 0;
 		sysState.control.spectrometer = 0;
-		sysState.control.thermopiles = 1;
-		sysState.control.blink = 1;
-		sysState.control.mic = 0;
+		sysState.control.thermopiles = 0;
+		sysState.control.blink = 0;
+		sysState.control.mic = 1;
 		sysState.control.sht = 0;
 		sysState.control.synchronize_windows = 1;
-		sysState.control.window_size_ms = ONE_MINUTE_MS;
-		sysState.control.window_period_ms = 10 * ONE_MINUTE_MS;
+		sysState.control.window_size_ms = ONE_SECOND_MS * 30;
+		sysState.control.window_period_ms = ONE_MINUTE_MS;
 
 
 		sysState.config.lux.gain = TSL2591_GAIN_TSL2722_GAIN_8_X;
@@ -274,7 +275,7 @@ int main(void) {
 		}
 
 		sysState.config.mic.mic_sample_freq = SAI_AUDIO_FREQUENCY_48K;
-		sysState.config.mic.sample_period_ms = 30000; // 30 seconds
+		sysState.config.mic.sample_period_ms = 5000; // 30 seconds
 
 		sysState.config.humidity.precision_level = SHT45_PRECISION_SHT4_X_HIGH_PRECISION;
 		sysState.config.humidity.heater_settings = SHT45_HEATER_SHT4_X_LOW_HEATER_100_MS;
