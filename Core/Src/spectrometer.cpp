@@ -39,18 +39,18 @@
 //	uint32_t flicker;
 //} specSample;
 
-typedef struct specSamplePkts{
-	union SPEC_UNION {
-		spec_packet_payload_t s;
-		uint32_t s_array[13];
-	} data;
-	uint32_t timestamp;
-} specSamplePkt;
+//typedef struct specSamplePkts{
+union SpecSamplePkt {
+	spec_packet_payload_t s;
+	uint32_t s_array[13];
+};
+//	uint32_t timestamp;
+//} specSamplePkt;
 
 static void triggerSpectrometerSample(void *argument);
 
 //static SPEC_UNION specData[MAX_SPEC_SAMPLES_PACKET];
-static specSamplePkt specData[MAX_SPEC_SAMPLES_PACKET];
+static union SpecSamplePkt specData[MAX_SPEC_SAMPLES_PACKET];
 
 //static PacketHeader header;
 //osThreadId_t specTaskHandle;
@@ -120,9 +120,12 @@ void Spec_Task(void *argument) {
 				osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			}
 
-			specData[specIdx].timestamp = HAL_GetTick();
+			specData[specIdx].s.timestamp_ms_from_start =  HAL_GetTick();
+			specData[specIdx].s.timestamp_unix = getEpoch();
 
-			specSensor.getAllChannels(specData[specIdx].data.s_array);
+//			specData[specIdx].timestamp = HAL_GetTick();
+
+			specSensor.getAllChannels(specData[specIdx].s_array);
 
 //			specData[specIdx].data.s.flicker = specSensor.detectFlickerHz();
 
@@ -158,7 +161,7 @@ void Spec_Task(void *argument) {
 //					memset(&sensorPacket.spec_packet.payload[0], 0, sizeof(sensorPacket.spec_packet.payload));
 
 					// write data
-					memcpy(packet->payload.spec_packet.payload, specData, specIdx * sizeof(spec_packet_payload_t));
+					memcpy(packet->payload.spec_packet.payload, &specData[0].s, specIdx * sizeof(spec_packet_payload_t));
 					packet->payload.spec_packet.payload_count = specIdx;
 
 					// encode
