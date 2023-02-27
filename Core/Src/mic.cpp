@@ -37,6 +37,7 @@ static void triggerMicSample(void *argument);
 
 #define MAX_MIC_SAMPLES_PACKET  10
 
+
 //static PacketHeader header;
 //arm_rfft_instance_q31 fft_instance;
 arm_rfft_fast_instance_f32 fft_instance;
@@ -115,6 +116,9 @@ void Mic_Task(void *argument){
 	osTimerStart(periodicMicTimer_id, sensorSettings.sample_period_ms);
 
 	while(1){
+
+
+
 		flags = osThreadFlagsWait(GRAB_SAMPLE_BIT | TERMINATE_THREAD_BIT,
 				osFlagsWaitAny, osWaitForever);
 
@@ -135,33 +139,32 @@ void Mic_Task(void *argument){
 			  micData[i] = micData[i] << 8;
 		  }
 
-		  /* convert to float and scale by 2^24 so that we get the exact values
-		   * as intended from the microphone. However, because scale doesn't matter
-		   * for FFT, we can theoretically skip the below two steps and do a Q31
-		   * FFT to save <10ms in computation
-		   */
-		  arm_q31_to_float ((q31_t *) &micData[0],
-						&micDataFloat[0], MIC_DATA_SIZE); //~4ms (16MHz, 4096 data size)
-
-		  arm_scale_f32 (&micDataFloat[0], 16777216, &micDataFloat[0], MIC_DATA_SIZE); //~4ms (16MHz, 4096 data size)
-
-		  /* WARNING: this function modifies dataMicF */
-		  arm_rfft_fast_f32(&fft_instance, micDataFloat, micDataFloat, 0); //~22ms (16MHz, 4096 data size)
-
-		  arm_cmplx_mag_f32(micDataFloat, micDataFloat, MIC_DATA_SIZE >> 1); //~6ms (16MHz, 2048 data size)
-
-		  arm_max_f32(&micDataFloat[1], (MIC_DATA_SIZE >> 1) - 1, &maxvalue, &maxindex); //~2ms (16MHz, 2048 data size)
-
-		  dominantFrequency = maxindex * fft_spacing;
-
-			/* packetize data */
-
-
+//		  /* convert to float and scale by 2^24 so that we get the exact values
+//		   * as intended from the microphone. However, because scale doesn't matter
+//		   * for FFT, we can theoretically skip the below two steps and do a Q31
+//		   * FFT to save <10ms in computation
+//		   */
+//		  arm_q31_to_float ((q31_t *) &micData[0],
+//						&micDataFloat[0], MIC_DATA_SIZE); //~4ms (16MHz, 4096 data size)
+//
+//		  arm_scale_f32 (&micDataFloat[0], 16777216, &micDataFloat[0], MIC_DATA_SIZE); //~4ms (16MHz, 4096 data size)
+//
+//		  /* WARNING: this function modifies dataMicF */
+//		  arm_rfft_fast_f32(&fft_instance, micDataFloat, micDataFloat, 0); //~22ms (16MHz, 4096 data size)
+//
+//		  arm_cmplx_mag_f32(micDataFloat, micDataFloat, MIC_DATA_SIZE >> 1); //~6ms (16MHz, 2048 data size)
+//
+//		  arm_max_f32(&micDataFloat[1], (MIC_DATA_SIZE >> 1) - 1, &maxvalue, &maxindex); //~2ms (16MHz, 2048 data size)
+//
+//		  dominantFrequency = maxindex * fft_spacing;
+//
+//			/* packetize data */
+//
+//
 			for(int i = 0; i < packetsPerMicSample; i++){
 				packet = grabPacket();
 				if(packet != NULL){
 
-//					portENTER_CRITICAL();
 
 					setPacketType(packet, SENSOR_PACKET_TYPES_MIC);
 
