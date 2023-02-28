@@ -124,7 +124,7 @@ const osThreadAttr_t blinkTask_attributes = { .name = "blinkTask", .attr_bits =
 osThreadId_t micTaskHandle;
 const osThreadAttr_t micTask_attributes = { .name = "micTask", .attr_bits =
 		osThreadDetached, .cb_mem = NULL, .cb_size = 0, .stack_mem = NULL,
-		.stack_size = 512, .priority = (osPriority_t) osPriorityBelowNormal,
+		.stack_size = 10*512, .priority = (osPriority_t) osPriorityBelowNormal,
 		.tz_module = 0, .reserved = 0 };
 
 /* Definitions for defaultTask */

@@ -390,6 +390,7 @@ void APP_BLE_Init( void )
   /**
    * Do not allow standby in the application
    */
+  UTIL_LPM_SetStopMode(1 << CFG_LPM_APP_BLE, UTIL_LPM_DISABLE);
   UTIL_LPM_SetOffMode(1 << CFG_LPM_APP_BLE, UTIL_LPM_DISABLE);
 
   /**

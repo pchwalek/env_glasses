@@ -203,16 +203,16 @@ int main(void) {
 //		sensorConfig.uuid = LL_FLASH_GetUDN();
 		sysState.firmware_version = 1;
 
-		sysState.control.lux = 1;
-		sysState.control.bme688 = 1;
-		sysState.control.sgp = 1;
+		sysState.control.lux = 0;
+		sysState.control.bme688 = 0;
+		sysState.control.sgp = 0;
 
-		sysState.control.imu = 1;
-		sysState.control.spectrometer = 1;
-		sysState.control.thermopiles = 1;
-		sysState.control.blink = 1;
-		sysState.control.mic = 0;
-		sysState.control.sht = 1;
+		sysState.control.imu = 0;
+		sysState.control.spectrometer = 0;
+		sysState.control.thermopiles = 0;
+		sysState.control.blink = 0;
+		sysState.control.mic = 1;
+		sysState.control.sht = 0;
 		sysState.control.synchronize_windows = 1;
 		sysState.control.window_size_ms = ONE_SECOND_MS * 30;
 		sysState.control.window_period_ms = ONE_MINUTE_MS;
