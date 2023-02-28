@@ -97,7 +97,7 @@ void Mic_Task(void *argument){
 	}
 
 	//todo: temporary code which should be removed once website is updated
-//	sensorSettings.mic_sample_freq = SAI_AUDIO_FREQUENCY_48K;
+	sensorSettings.mic_sample_freq = SAI_AUDIO_FREQUENCY_8K;
 //	sensorSettings.sample_period_ms = 30000; // every 30 seconds
 
 
@@ -133,6 +133,9 @@ void Mic_Task(void *argument){
 
 	uint32_t* micDataThreadPointer;
 
+	volatile uint32_t keepTime = 0;
+	volatile uint32_t keepTime2 = 0;
+
 //	HAL_SAI_Receive(&hsai_BlockA1, (uint8_t *) micData, 256, 1);  //purposeful short timeout
 //
 //	if(sensorSettings.sample_period_ms > MIC_SAMPLE_PERIOD_MS_THRESH_TO_TURN_OFF){
@@ -152,6 +155,9 @@ void Mic_Task(void *argument){
 		flags = osThreadFlagsWait(GRAB_SAMPLE_BIT | TERMINATE_THREAD_BIT,
 				osFlagsWaitAny, osWaitForever);
 
+
+		keepTime2 = HAL_GetTick() - keepTime;
+		keepTime = HAL_GetTick();
 
 		if ((flags & GRAB_SAMPLE_BIT) == GRAB_SAMPLE_BIT) {
 
