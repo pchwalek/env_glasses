@@ -27,15 +27,11 @@
 /* USER CODE BEGIN Includes */
 #include "captivate_config.h"
 #include "lp5523.h"
-#include "thermopile.h"
-#include "spectrometer.h"
-#include "lux.h"
-#include "bme.h"
+
 #include "imu.h"
-#include "blink.h"
+
 #include "packet.h"
-#include "sht.h"
-#include "sgp.h"
+
 #include "app_ble.h"
 #include "fram.h"
 #include "lp5523.h"
@@ -124,7 +120,7 @@ const osThreadAttr_t blinkTask_attributes = { .name = "blinkTask", .attr_bits =
 osThreadId_t micTaskHandle;
 const osThreadAttr_t micTask_attributes = { .name = "micTask", .attr_bits =
 		osThreadDetached, .cb_mem = NULL, .cb_size = 0, .stack_mem = NULL,
-		.stack_size = 10*512, .priority = (osPriority_t) osPriorityAboveNormal,
+		.stack_size = 4*512, .priority = (osPriority_t) osPriorityAboveNormal,
 		.tz_module = 0, .reserved = 0 };
 
 /* Definitions for defaultTask */
@@ -137,20 +133,20 @@ const osThreadAttr_t defaultTask_attributes = { .name = "defaultTask",
 osThreadId_t frontLightsThreHandle;
 const osThreadAttr_t frontLightsThre_attributes = { .name = "frontLightsTask",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
-		.stack_mem = NULL, .stack_size = 512 * 2, .priority =
+		.stack_mem = NULL, .stack_size = 512 * 1, .priority =
 				(osPriority_t) osPriorityBelowNormal, .tz_module = 0,
 		.reserved = 0 };
 /* Definitions for thermopileTask */
 osThreadId_t thermopileTaskHandle;
 const osThreadAttr_t thermopileTask_attributes = { .name = "thermopileTask",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
-		.stack_mem = NULL, .stack_size = 512 * 2, .priority =
+		.stack_mem = NULL, .stack_size = 512 * 1, .priority =
 				(osPriority_t) osPriorityNormal, .tz_module = 0, .reserved = 0 };
 
 osThreadId_t senderTaskHandle;
 const osThreadAttr_t senderTask_attributes = { .name = "senderTask",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
-		.stack_mem = NULL, .stack_size = 512 * 4, .priority =
+		.stack_mem = NULL, .stack_size = 128, .priority =
 				(osPriority_t) osPriorityAboveNormal, .tz_module = 0, .reserved = 0 };
 
 /* Definitions for messageI2C_Lock */
@@ -259,23 +255,23 @@ void MX_FREERTOS_Init(void) {
 //  imuTaskHandle = osThreadNew(IMU_Task, NULL, &imuTask_attributes);
 //  blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
 
-	packet_QueueHandle = osMessageQueueNew(MAX_PACKET_QUEUE_SIZE,
-			sizeof(uint8_t*), &packetQueue_attributes);
-
-	packetAvail_QueueHandle = osMessageQueueNew(MAX_PACKET_QUEUE_SIZE,
-			sizeof(uint8_t*), &packetAvailQueue_attributes);
+//	packet_QueueHandle = osMessageQueueNew(MAX_PACKET_QUEUE_SIZE,
+//			sizeof(uint8_t*), &packetQueue_attributes);
+//
+//	packetAvail_QueueHandle = osMessageQueueNew(MAX_PACKET_QUEUE_SIZE,
+//			sizeof(uint8_t*), &packetAvailQueue_attributes);
 
 	messageI2C1_LockHandle = osMutexNew(&messageI2C1_Lock_attributes);
 
 	messageI2C3_LockHandle = osMutexNew(&messageI2C3_Lock_attributes);
 
-	lightsComplexQueueHandle = osMessageQueueNew(3, sizeof(union ColorComplex),
-			&lightsComplexQueue_attributes);
+//	lightsComplexQueueHandle = osMessageQueueNew(3, sizeof(union ColorComplex),
+//			&lightsComplexQueue_attributes);
 
-	senderTaskHandle = osThreadNew(senderThread, NULL, &senderTask_attributes);
+//	senderTaskHandle = osThreadNew(senderThread, NULL, &senderTask_attributes);
 
-	frontLightsThreHandle = osThreadNew(ThreadFrontLightsComplexTask, NULL,
-			&frontLightsThre_attributes);
+//	frontLightsThreHandle = osThreadNew(ThreadFrontLightsComplexTask, NULL,
+//			&frontLightsThre_attributes);
 
 	sensorThreadsRunning = 1;
 

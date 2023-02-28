@@ -28,8 +28,10 @@ SERVER_PORT = 65434  # Port to listen on (non-privileged ports are > 1023)
 
 # checkName(a, ad):
 #     lambda d, ad: d.name and d.name.lower() == "AirSpec_008a65fb"
+packet_idx = 0
 
 async def main(queue: asyncio.Queue):
+    packet_idx = 0
     logger.info("starting scan...")
     print("starting main")
     # if args.address:
@@ -41,7 +43,7 @@ async def main(queue: asyncio.Queue):
     #         return
     # else:
     device = await BleakScanner.find_device_by_filter(
-        lambda d, ad: ad.local_name == "AirSpec_008a65fb",
+        lambda d, ad: ad.local_name == "AirSpec_01ad6d7d",
         timeout=60
     )
 
@@ -50,7 +52,7 @@ async def main(queue: asyncio.Queue):
         print(" Bluetooth: could not find device with name '%s'", "AirSpec_008a65fb")
         print(" Bluetooth: will keep trying")
         device = await BleakScanner.find_device_by_filter(
-            lambda d, ad: ad.local_name == "AirSpec_008a65fb",
+            lambda d, ad: ad.local_name == "AirSpec_01ad6d7d",
             timeout=60
         )
 
@@ -63,17 +65,20 @@ async def main(queue: asyncio.Queue):
 
     async def notification_handler(characteristic: BleakGATTCharacteristic, data: bytearray):
         # global s_in
+        global packet_idx
 
         """Simple notification handler which prints the data received."""
         # logger.info("%s: %r", characteristic.description, data)
 
         # print(str(data,"utf-16"))
+        print(packet_idx)
+        packet_idx += 1
         # print(isinstance(data, (bytes, bytearray)))
         # systemID, pktType, pktID, msFromStart, epoch, payloadLen, r0, r1, r2, r3, r4 = \
         #     unpack(headerStructType, data[0:headerStructSize])
 
         # try:
-        await queue.put(data)
+        # await queue.put(data)
             # s_in.sendall("test")
         # except ConnectionResetError:
         #     client.disconnect()
@@ -163,9 +168,11 @@ async def run_tests():
     queue = asyncio.Queue()
 
     main_task = main(queue)
-    consumer_task = run_queue_consumer(queue)
+    # consumer_task = run_queue_consumer(queue)
 
-    await asyncio.gather(main_task, consumer_task)
+    await asyncio.gather(main_task)
+
+    # await asyncio.gather(main_task, consumer_task)
 
 if __name__ == "__main__":
     # with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:

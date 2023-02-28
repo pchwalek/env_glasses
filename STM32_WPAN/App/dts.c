@@ -641,7 +641,7 @@ void DTS_STM_Init(void) {
 	DATA_TRANSFER_NOTIFICATION_LEN_MAX,
 	CHAR_PROP_NOTIFY,
 	ATTR_PERMISSION_NONE,
-	GATT_NOTIFY_ATTRIBUTE_WRITE, /* gattEvtMask */
+	GATT_DONT_NOTIFY_EVENTS, /* gattEvtMask */
 	10, /* encryKeySize */
 	1, /* isVariable */
 	&(aDataTransferContext.DataTransferTxCharHdle));

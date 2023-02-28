@@ -8,15 +8,11 @@
 #include "packet.h"
 #include "captivate_config.h"
 #include "lp5523.h"
-#include "thermopile.h"
-#include "spectrometer.h"
-#include "lux.h"
-#include "bme.h"
+
 #include "imu.h"
-#include "blink.h"
+
 #include "packet.h"
-#include "sht.h"
-#include "sgp.h"
+
 #include "mic.h"
 
 #include "FreeRTOS.h"
@@ -33,72 +29,73 @@ void syncTimerActive(bool state, uint32_t period);
 void syncTimerTask(void);
 
 void controlSpectrometer(bool state){
-	if(state){
-		osThreadState_t threadState = osThreadGetState(specTaskHandle);
-		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
-			specTaskHandle = osThreadNew(Spec_Task, &sysState.config.color, &specTask_attributes);
-		}
-	}else{
-		osThreadFlagsSet(specTaskHandle, TERMINATE_THREAD_BIT);
-	}
+//	if(state){
+//		osThreadState_t threadState = osThreadGetState(specTaskHandle);
+//		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
+//			specTaskHandle = osThreadNew(Spec_Task, &sysState.config.color, &specTask_attributes);
+//		}
+//	}else{
+//		osThreadFlagsSet(specTaskHandle, TERMINATE_THREAD_BIT);
+//	}
 }
 void controlBME(bool state){
-	if(state){
-		osThreadState_t threadState = osThreadGetState(bmeTaskHandle);
-		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
-			bmeTaskHandle = osThreadNew(BME_Task, &sysState.config.bme, &bmeTask_attributes);
-		}
-	}else{
-		osThreadFlagsSet(bmeTaskHandle, TERMINATE_THREAD_BIT);
-	}
+//	if(state){
+//		osThreadState_t threadState = osThreadGetState(bmeTaskHandle);
+//		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
+//			bmeTaskHandle = osThreadNew(BME_Task, &sysState.config.bme, &bmeTask_attributes);
+//		}
+//	}else{
+//		osThreadFlagsSet(bmeTaskHandle, TERMINATE_THREAD_BIT);
+//	}
 }
 void controlIMU(bool state){
-	if(state){
-		osThreadState_t threadState = osThreadGetState(imuTaskHandle);
-		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
-			imuTaskHandle = osThreadNew(IMU_Task,&sysState.config.imu, &imuTask_attributes);
-		}
-	}else{
-		osThreadFlagsSet(imuTaskHandle, TERMINATE_THREAD_BIT);
-	}
+//	if(state){
+//		osThreadState_t threadState = osThreadGetState(imuTaskHandle);
+//		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
+//			imuTaskHandle = osThreadNew(IMU_Task,&sysState.config.imu, &imuTask_attributes);
+//		}
+//	}else{
+//		osThreadFlagsSet(imuTaskHandle, TERMINATE_THREAD_BIT);
+//	}
 }
 
 imu_sensor_config_t imuConfigNoWindow;
 void controlIMUNoWindow(bool state){
-	osThreadFlagsSet(blinkTaskHandle, TERMINATE_THREAD_BIT);
-
-	memcpy(&imuConfigNoWindow,&sysState.config.imu,sizeof(imu_sensor_config_t));
-	imuConfigNoWindow.enable_windowing = 0;
-	imuConfigNoWindow.enable_windowing_sync = 0;
-
-	if(state){
-		osThreadState_t threadState = osThreadGetState(imuTaskHandle);
-		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
-			imuTaskHandle = osThreadNew(IMU_Task,&imuConfigNoWindow, &imuTask_attributes);
-		}
-	}else{
-		osThreadFlagsSet(imuTaskHandle, TERMINATE_THREAD_BIT);
-	}
+//	osThreadFlagsSet(blinkTaskHandle, TERMINATE_THREAD_BIT);
+//
+//	memcpy(&imuConfigNoWindow,&sysState.config.imu,sizeof(imu_sensor_config_t));
+//	imuConfigNoWindow.enable_windowing = 0;
+//	imuConfigNoWindow.enable_windowing_sync = 0;
+//
+//	if(state){
+//		osThreadState_t threadState = osThreadGetState(imuTaskHandle);
+//		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
+//			imuTaskHandle = osThreadNew(IMU_Task,&imuConfigNoWindow, &imuTask_attributes);
+//		}
+//	}else{
+//		osThreadFlagsSet(imuTaskHandle, TERMINATE_THREAD_BIT);
+//	}
 }
+
 void controlThermopile(bool state){
-	if(state){
-		osThreadState_t threadState = osThreadGetState(sgpTaskHandle);
-		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
-			thermopileTaskHandle = osThreadNew(Thermopile_Task, &sysState.config.thermopile, &thermopileTask_attributes);
-		}
-	}else{
-		osThreadFlagsSet(thermopileTaskHandle, TERMINATE_THREAD_BIT);
-	}
+//	if(state){
+//		osThreadState_t threadState = osThreadGetState(sgpTaskHandle);
+//		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
+//			thermopileTaskHandle = osThreadNew(Thermopile_Task, &sysState.config.thermopile, &thermopileTask_attributes);
+//		}
+//	}else{
+//		osThreadFlagsSet(thermopileTaskHandle, TERMINATE_THREAD_BIT);
+//	}
 }
 void controlLux(bool state){
-	if(state){
-		osThreadState_t threadState = osThreadGetState(luxTaskHandle);
-		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
-			luxTaskHandle = osThreadNew(LuxTask, &sysState.config.lux, &luxTask_attributes);
-		}
-	}else{
-		osThreadFlagsSet(luxTaskHandle, TERMINATE_THREAD_BIT);
-	}
+//	if(state){
+//		osThreadState_t threadState = osThreadGetState(luxTaskHandle);
+//		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
+//			luxTaskHandle = osThreadNew(LuxTask, &sysState.config.lux, &luxTask_attributes);
+//		}
+//	}else{
+//		osThreadFlagsSet(luxTaskHandle, TERMINATE_THREAD_BIT);
+//	}
 }
 void controlMic(bool state){
 	if(state){
@@ -111,37 +108,37 @@ void controlMic(bool state){
 	}
 }
 void controlSHT(bool state){
-	if(state){
-		osThreadState_t threadState = osThreadGetState(shtTaskHandle);
-		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
-			shtTaskHandle = osThreadNew(ShtTask, &sysState.config.humidity, &shtTask_attributes);
-		}
-	}else{
-		osThreadFlagsSet(shtTaskHandle, TERMINATE_THREAD_BIT);
-	}
+//	if(state){
+//		osThreadState_t threadState = osThreadGetState(shtTaskHandle);
+//		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
+//			shtTaskHandle = osThreadNew(ShtTask, &sysState.config.humidity, &shtTask_attributes);
+//		}
+//	}else{
+//		osThreadFlagsSet(shtTaskHandle, TERMINATE_THREAD_BIT);
+//	}
 }
 void controlSGP(bool state){
-	if(state){
-		osThreadState_t threadState = osThreadGetState(blinkTaskHandle);
-		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
-			sgpTaskHandle = osThreadNew(SgpTask, &sysState.config.sgp, &sgpTask_attributes);
-		}
-	}else{
-		osThreadFlagsSet(sgpTaskHandle, TERMINATE_THREAD_BIT);
-
-	}
+//	if(state){
+//		osThreadState_t threadState = osThreadGetState(blinkTaskHandle);
+//		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
+//			sgpTaskHandle = osThreadNew(SgpTask, &sysState.config.sgp, &sgpTask_attributes);
+//		}
+//	}else{
+//		osThreadFlagsSet(sgpTaskHandle, TERMINATE_THREAD_BIT);
+//
+//	}
 }
 
 void controlBlink(bool state){
 
-	if(state){
-		osThreadState_t threadState = osThreadGetState(blinkTaskHandle);
-		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
-			blinkTaskHandle = osThreadNew(BlinkTask, &sysState.config.blink, &blinkTask_attributes);
-		}
-	}else{
-		osThreadFlagsSet(blinkTaskHandle, TERMINATE_THREAD_BIT);
-	}
+//	if(state){
+//		osThreadState_t threadState = osThreadGetState(blinkTaskHandle);
+//		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
+//			blinkTaskHandle = osThreadNew(BlinkTask, &sysState.config.blink, &blinkTask_attributes);
+//		}
+//	}else{
+//		osThreadFlagsSet(blinkTaskHandle, TERMINATE_THREAD_BIT);
+//	}
 }
 
 blink_sensor_config_t blinkConfigNoWindow;
@@ -154,15 +151,15 @@ void controlBlinkNoWindow(bool state){
 	blinkConfigNoWindow.enable_windowing_sync = 0;
 
 
-	if(state){
-		osThreadState_t threadState = osThreadGetState(blinkTaskHandle);
-		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
-			blinkTaskHandle = osThreadNew(BlinkTask, &blinkConfigNoWindow, &blinkTask_attributes);
-		}
-	}else{
-		osThreadFlagsSet(blinkTaskHandle, TERMINATE_THREAD_BIT);
-
-	}
+//	if(state){
+//		osThreadState_t threadState = osThreadGetState(blinkTaskHandle);
+//		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
+//			blinkTaskHandle = osThreadNew(BlinkTask, &blinkConfigNoWindow, &blinkTask_attributes);
+//		}
+//	}else{
+//		osThreadFlagsSet(blinkTaskHandle, TERMINATE_THREAD_BIT);
+//
+//	}
 }
 
 //blink_sensor_config_t blinkConfigNoWindow;
@@ -231,8 +228,8 @@ void syncTimerActive(bool state, uint32_t period){
 }
 
 void syncTimerTask(void){
-	BlinkSyncTrigger();
-	IMUSyncTrigger();
+//	BlinkSyncTrigger();
+//	IMUSyncTrigger();
 }
 
 

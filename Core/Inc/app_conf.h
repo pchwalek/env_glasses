@@ -158,8 +158,11 @@
 
 #define L2CAP_REQUEST_NEW_CONN_PARAM             1
 
-#define L2CAP_INTERVAL_MIN              CONN_P(1000) /* 1s */
-#define L2CAP_INTERVAL_MAX              CONN_P(1000) /* 1s */
+
+#define L2CAP_INTERVAL_MIN              CONN_P(400) /* 1s */
+#define L2CAP_INTERVAL_MAX              CONN_P(400) /* 1s */
+//#define L2CAP_INTERVAL_MIN              CONN_P(1000) /* 1s */
+//#define L2CAP_INTERVAL_MAX              CONN_P(1000) /* 1s */
 #define L2CAP_SLAVE_LATENCY             0x0000
 #define L2CAP_TIMEOUT_MULTIPLIER        0x1F4
 

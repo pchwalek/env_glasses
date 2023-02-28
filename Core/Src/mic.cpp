@@ -24,7 +24,7 @@
 // pretty OK tutorial: https://stm32f4-discovery.net/2014/10/stm32f4-fft-example/
 
 //#define MIC_DATA_SIZE		4096 // make multiple of 2 for simplicity
-#define MIC_DATA_SIZE 10000
+#define MIC_DATA_SIZE 32000
 #define MIC_HALF_DATA_SIZE 5000
 #define MIC_PACKET_SAMPLE_SIZE 110
 
@@ -52,7 +52,7 @@ struct MicCal{
 
 //static PacketHeader header;
 //arm_rfft_instance_q31 fft_instance;
-arm_rfft_fast_instance_f32 fft_instance;
+//arm_rfft_fast_instance_f32 fft_instance;
 volatile uint8_t buffer_tracker;
 
 osTimerId_t periodicMicTimer_id;
@@ -87,7 +87,7 @@ void Mic_Task(void *argument){
 	mic_sensor_config_t sensorSettings;
 
 //	arm_rfft_init_q31(&fft_instance, MIC_HALF_DATA_SIZE, 0, 0);
-	arm_rfft_fast_init_f32(&fft_instance, MIC_DATA_SIZE);
+//	arm_rfft_fast_init_f32(&fft_instance, MIC_DATA_SIZE);
 
 	if(argument != NULL){
 		memcpy(&sensorSettings,argument,sizeof(struct MicSensor));
@@ -97,7 +97,7 @@ void Mic_Task(void *argument){
 	}
 
 	//todo: temporary code which should be removed once website is updated
-	sensorSettings.mic_sample_freq = SAI_AUDIO_FREQUENCY_8K;
+	sensorSettings.mic_sample_freq = SAI_AUDIO_FREQUENCY_48K;
 //	sensorSettings.sample_period_ms = 30000; // every 30 seconds
 
 
@@ -122,9 +122,11 @@ void Mic_Task(void *argument){
 	 * (needs to be started to ensure first sample does not have
 	 * null bytes since I2S takes a few cycles to turn on)
 	 */
-	HAL_SAI_Receive_DMA(&hsai_BlockA1,(uint8_t *) micData, MIC_DATA_SIZE);
+//	HAL_SAI_Receive_DMA(&hsai_BlockA1,(uint8_t *) micData, MIC_DATA_SIZE);
+//
+//	HAL_SAI_Receive_DMA(&hsai_BlockA1,(uint8_t *) micData, MIC_DATA_SIZE);
 
-
+	HAL_SAI_Receive(&hsai_BlockA1,(uint8_t *) micData, MIC_DATA_SIZE, 1000);
 
 	uint32_t micPktLen = 0;
 	uint32_t micPktTracker = 0;
@@ -152,14 +154,16 @@ void Mic_Task(void *argument){
 
 
 
-		flags = osThreadFlagsWait(GRAB_SAMPLE_BIT | TERMINATE_THREAD_BIT,
-				osFlagsWaitAny, osWaitForever);
+//		flags = osThreadFlagsWait(GRAB_SAMPLE_BIT | TERMINATE_THREAD_BIT,
+//				osFlagsWaitAny, osWaitForever);
 
 
 		keepTime2 = HAL_GetTick() - keepTime;
 		keepTime = HAL_GetTick();
 
-		if ((flags & GRAB_SAMPLE_BIT) == GRAB_SAMPLE_BIT) {
+
+//		if ((flags & GRAB_SAMPLE_BIT) == GRAB_SAMPLE_BIT) {
+		if(HAL_OK == HAL_SAI_Receive(&hsai_BlockA1,(uint8_t *) micData, MIC_DATA_SIZE, 5000)){
 
 		  micDataThreadPointer = micDataPointer;
 
@@ -170,7 +174,7 @@ void Mic_Task(void *argument){
 		  ptrMicCalData = &micCalData[micCalDataTracker % SIZE_OF_MIC_CAL_DATA];
 	      micCalDataTracker += 1;
 
-			for(int i = 0; i < MIC_HALF_DATA_SIZE; i+=MIC_PACKET_SAMPLE_SIZE){
+			for(int i = 0; i < MIC_DATA_SIZE; i+=MIC_PACKET_SAMPLE_SIZE){
 //				while(packet != NULL){
 //					packet = grabPacket();
 //					if(packet == NULL){
@@ -179,7 +183,7 @@ void Mic_Task(void *argument){
 //				}
 //				if(packet != NULL){
 
-					if( (i + MIC_PACKET_SAMPLE_SIZE) > MIC_HALF_DATA_SIZE){
+					if( (i + MIC_PACKET_SAMPLE_SIZE) > MIC_DATA_SIZE){
 						ptrMicCalData->length = MIC_PACKET_SAMPLE_SIZE - i;
 					}else{
 						ptrMicCalData->length = MIC_PACKET_SAMPLE_SIZE;
@@ -203,7 +207,9 @@ void Mic_Task(void *argument){
 //					taskEXIT_CRITICAL();
 
 					}
-//					osDelay(1);
+//					osDelay(5);
+//					ble_status = DTS_STM_UpdateChar(DATA_TRANSFER_TX_CHAR_UUID,
+//												(uint8_t*) &DataTransferServerContext.TxData);
 
 //				}
 
