@@ -29,7 +29,7 @@
  */
 #define MIC_SAMPLE_PERIOD_MS_THRESH_TO_TURN_OFF	5000
 uint32_t micData[MIC_DATA_SIZE];
-float micDataFloat[4096];
+float micDataFloat[MIC_DATA_SIZE];
 
 static void triggerMicSample(void *argument);
 
@@ -44,6 +44,7 @@ volatile uint8_t buffer_tracker;
 
 osTimerId_t periodicMicTimer_id;
 
+volatile uint8_t start_logging = 0;
 volatile uint8_t secondMicSample = 0;
 volatile uint8_t micLowPowerMode = 0;
 
@@ -108,11 +109,13 @@ void Mic_Task(void *argument){
 		micLowPowerMode = 1;
 	}else{
 		micLowPowerMode = 0;
+		HAL_SAI_InitProtocol(&hsai_BlockA1, SAI_I2S_STANDARD, SAI_PROTOCOL_DATASIZE_24BIT, 2);
 	}
 
 	periodicMicTimer_id = osTimerNew(triggerMicSample, osTimerPeriodic,
 				NULL, NULL);
 	osTimerStart(periodicMicTimer_id, sensorSettings.sample_period_ms);
+//	start_logging = 1;
 
 	while(1){
 		flags = osThreadFlagsWait(GRAB_SAMPLE_BIT | TERMINATE_THREAD_BIT,
@@ -225,6 +228,7 @@ void Mic_Task(void *argument){
 			osTimerDelete(periodicMicTimer_id);
 			HAL_SAI_MspDeInit(&hsai_BlockA1);
 			osThreadExit();
+//			start_logging = 0;
 			break;
 		}
 	}
@@ -243,14 +247,16 @@ void HAL_SAI_RxCpltCallback(SAI_HandleTypeDef *hsai){
 	 *
 	 * this is because mic takes 20ms to wakeup as per the datasheet
 	 */
-	if( (secondMicSample == 0) && (micLowPowerMode) ){
-		secondMicSample = 1;
-		HAL_SAI_Receive_IT(&hsai_BlockA1, (uint8_t *) micData, MIC_DATA_SIZE);
-	}
-	else{
-		secondMicSample = 0;
-		osThreadFlagsSet(micTaskHandle, GRAB_SAMPLE_BIT);
-	}
+//	if(start_logging){
+		if( (secondMicSample == 0) && (micLowPowerMode) ){
+			secondMicSample = 1;
+			HAL_SAI_Receive_IT(&hsai_BlockA1, (uint8_t *) micData, MIC_DATA_SIZE);
+		}
+		else{
+			secondMicSample = 0;
+			osThreadFlagsSet(micTaskHandle, GRAB_SAMPLE_BIT);
+		}
+//	}
 }
 
 //void HAL_SAI_ErrorCallback(SAI_HandleTypeDef *hsai){
