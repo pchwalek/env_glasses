@@ -24,6 +24,7 @@ static const uint16_t week_day[] = { 0x4263, 0xA8BD, 0x42BF, 0x4370, 0xABBF, 0xA
 // https://github.com/LonelyWolf/stm32/blob/master/stm32l-dosfs/RTC.c
 void RTC_FromEpoch(uint32_t epoch, RTC_TimeTypeDef *time, RTC_DateTypeDef *date);
 uint32_t RTC_ToEpoch(RTC_TimeTypeDef *time, RTC_DateTypeDef *date);
+uint64_t RTC_ToEpochMS(RTC_TimeTypeDef *time, RTC_DateTypeDef *date);
 
 static sensor_packet_t packets[MAX_PACKET_QUEUE_SIZE];
 
@@ -340,7 +341,7 @@ void updateRTC(uint32_t receivedTime){
 	HAL_RTC_SetDate(&hrtc, &date, RTC_FORMAT_BIN);
 }
 
-uint32_t getEpoch(void){
+uint64_t getEpoch(void){
 
 	// (1) convert received UNIX time to time struct
 	RTC_TimeTypeDef time;
@@ -349,7 +350,7 @@ uint32_t getEpoch(void){
 	HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN);
 
 	// (2) get time
-	return RTC_ToEpoch(&time, &date);
+	return RTC_ToEpochMS(&time, &date);
 }
 
 // Convert epoch time to Date/Time structures
@@ -428,5 +429,38 @@ uint32_t RTC_ToEpoch(RTC_TimeTypeDef *time, RTC_DateTypeDef *date) {
     JDN += time->Minutes * 60;
     JDN += time->Seconds;
 
+	return JDN;
+}
+
+uint64_t RTC_ToEpochMS(RTC_TimeTypeDef *time, RTC_DateTypeDef *date) {
+	uint8_t  a;
+	uint16_t y;
+	uint8_t  m;
+	uint32_t JDN;
+
+	// These hardcore math's are taken from http://en.wikipedia.org/wiki/Julian_day
+
+	// Calculate some coefficients
+	a = (14 - date->Month) / 12;
+	y = (date->Year + 2000) + 4800 - a; // years since 1 March, 4801 BC
+	m = date->Month + (12 * a) - 3; // since 1 March, 4801 BC
+
+	// Gregorian calendar date compute
+    JDN  = date->Date;
+    JDN += (153 * m + 2) / 5;
+    JDN += 365 * y;
+    JDN += y / 4;
+    JDN += -y / 100;
+    JDN += y / 400;
+    JDN  = JDN - 32045;
+    JDN  = JDN - JULIAN_DATE_BASE;    // Calculate from base date
+    JDN *= 86400;                     // Days to seconds
+    JDN += time->Hours * 3600;    // ... and today seconds
+    JDN += time->Minutes * 60;
+    JDN += time->Seconds;
+
+    // ms conversion
+    JDN = JDN * 1000;
+    JDN += 1000 - ((time->SubSeconds*1000) /  time->SecondFraction);
 	return JDN;
 }

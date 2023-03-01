@@ -315,6 +315,7 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 				   case AIR_SPEC_CONFIG_PACKET_BLUE_GREEN_TRANSITION_TAG  :
 						memcpy(&blueGreenTranRX, &rxConfigPacket.payload.blue_green_transition, sizeof(blue_green_transition_t));
 						osThreadTerminate(blueGreenTranTaskHandle); // terminate any existing running thread
+						BlueGreenTransitionTaskExit();
 						resetLED();
 						if(blueGreenTranRX.enable == 1){
 							blueGreenTranTaskHandle = osThreadNew(BlueGreenTransitionTask, &blueGreenTranRX, &blueGreenTask_attributes);

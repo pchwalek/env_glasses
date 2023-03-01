@@ -234,6 +234,7 @@ void ledEnterDFUNotification(void);
 void BlueGreenTransitionTask(void *argument);
 void RedFlashTask(void *argument);
 void resetLED(void);
+void BlueGreenTransitionTaskExit(void);
 
 void ledCheck(void *argument);
 //class LP5523

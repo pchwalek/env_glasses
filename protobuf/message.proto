@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-//import "nanopb.proto";
-//option (nanopb_fileopt).packed_struct = true;
+import "nanopb.proto";
+option (nanopb_fileopt).packed_struct = true;
 
 enum SensorPacketTypes {
     UNKNOWN_PACKET_TYPE = 0;
@@ -155,7 +155,7 @@ enum IMU_mag_cutoff {
 message SensorPacketHeader {
     uint32 system_uid = 1;
     uint32 ms_from_start = 2;
-    uint32 epoch = 3;
+    uint64 epoch = 3;
 }
 
 message LuxPacket{
@@ -166,7 +166,7 @@ message LuxPacket{
 
     message Payload {
         uint32 lux = 1;
-        uint32 timestamp_unix = 2;
+        uint64 timestamp_unix = 2;
         uint32 timestamp_ms_from_start = 3;
     }
     repeated Payload payload = 5;
@@ -177,7 +177,7 @@ message SGPPacket{
     uint32 sample_period = 2;
 
     message Payload {
-        uint32 timestamp_unix = 1;
+        uint64 timestamp_unix = 1;
         uint32 timestamp_ms_from_start = 2;
         uint32 sraw_voc = 3;
         uint32 sraw_nox = 4;
@@ -193,7 +193,7 @@ message BMEPacket{
     
     message Payload {
         fixed64 timestamp_sensor = 1;
-        uint32 timestamp_unix = 2;
+        uint64 timestamp_unix = 2;
         uint32 timestamp_ms_from_start = 3;
         float signal = 4;
         uint32 signal_dimensions = 5;
@@ -235,7 +235,7 @@ message SHTPacket{
     Sht45_heater heater = 4;
 
     message Payload {
-        uint32 timestamp_unix = 1;
+        uint64 timestamp_unix = 1;
         uint32 timestamp_ms_from_start = 2;
         float temperature = 3;
         float humidity = 4;
@@ -264,7 +264,7 @@ message SpecPacket{
         uint32 band_clear_2 = 11;
         uint32 band_nir_2 = 12;
         uint32 flicker = 13;
-        uint32 timestamp_unix = 14;
+        uint64 timestamp_unix = 14;
         uint32 timestamp_ms_from_start = 15;
     }
     repeated Payload payload = 6;
@@ -276,7 +276,7 @@ message ThermPacket{
 
     message Payload {
         Thermopile_location descriptor = 1;
-        uint32 timestamp_unix = 2;
+        uint64 timestamp_unix = 2;
         uint32 timestamp_ms_from_start = 3;
         uint32 ambient_raw = 4;
         uint32 object_raw = 5;
@@ -458,7 +458,7 @@ message RedFlashTask{
 }
 
 message AirSpecConfigHeader{
-    uint32 timestamp_unix = 1;
+    uint64 timestamp_unix = 1;
 }
 
 message AirSpecConfigPacket {

@@ -162,14 +162,14 @@ PB_PACKED_STRUCT_START
 typedef struct sensor_packet_header {
     uint32_t system_uid;
     uint32_t ms_from_start;
-    uint32_t epoch;
+    uint64_t epoch;
 } pb_packed sensor_packet_header_t;
 PB_PACKED_STRUCT_END
 
 PB_PACKED_STRUCT_START
 typedef struct lux_packet_payload {
     uint32_t lux;
-    uint32_t timestamp_unix;
+    uint64_t timestamp_unix;
     uint32_t timestamp_ms_from_start;
 } pb_packed lux_packet_payload_t;
 PB_PACKED_STRUCT_END
@@ -187,7 +187,7 @@ PB_PACKED_STRUCT_END
 
 PB_PACKED_STRUCT_START
 typedef struct sgp_packet_payload {
-    uint32_t timestamp_unix;
+    uint64_t timestamp_unix;
     uint32_t timestamp_ms_from_start;
     uint32_t sraw_voc;
     uint32_t sraw_nox;
@@ -208,7 +208,7 @@ PB_PACKED_STRUCT_END
 PB_PACKED_STRUCT_START
 typedef struct bme_packet_payload {
     uint64_t timestamp_sensor;
-    uint32_t timestamp_unix;
+    uint64_t timestamp_unix;
     uint32_t timestamp_ms_from_start;
     float signal;
     uint32_t signal_dimensions;
@@ -264,7 +264,7 @@ PB_PACKED_STRUCT_END
 
 PB_PACKED_STRUCT_START
 typedef struct sht_packet_payload {
-    uint32_t timestamp_unix;
+    uint64_t timestamp_unix;
     uint32_t timestamp_ms_from_start;
     float temperature;
     float humidity;
@@ -297,7 +297,7 @@ typedef struct spec_packet_payload {
     uint32_t band_clear_2;
     uint32_t band_nir_2;
     uint32_t flicker;
-    uint32_t timestamp_unix;
+    uint64_t timestamp_unix;
     uint32_t timestamp_ms_from_start;
 } pb_packed spec_packet_payload_t;
 PB_PACKED_STRUCT_END
@@ -317,7 +317,7 @@ PB_PACKED_STRUCT_END
 PB_PACKED_STRUCT_START
 typedef struct therm_packet_payload {
     thermopile_location_t descriptor;
-    uint32_t timestamp_unix;
+    uint64_t timestamp_unix;
     uint32_t timestamp_ms_from_start;
     uint32_t ambient_raw;
     uint32_t object_raw;
@@ -574,7 +574,7 @@ PB_PACKED_STRUCT_END
 
 PB_PACKED_STRUCT_START
 typedef struct air_spec_config_header {
-    uint32_t timestamp_unix;
+    uint64_t timestamp_unix;
 } pb_packed air_spec_config_header_t;
 PB_PACKED_STRUCT_END
 
@@ -1078,7 +1078,7 @@ extern "C" {
 #define SENSOR_PACKET_HEADER_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   system_uid,        1) \
 X(a, STATIC,   SINGULAR, UINT32,   ms_from_start,     2) \
-X(a, STATIC,   SINGULAR, UINT32,   epoch,             3)
+X(a, STATIC,   SINGULAR, UINT64,   epoch,             3)
 #define SENSOR_PACKET_HEADER_CALLBACK NULL
 #define SENSOR_PACKET_HEADER_DEFAULT NULL
 
@@ -1094,7 +1094,7 @@ X(a, STATIC,   REPEATED, MESSAGE,  payload,           5)
 
 #define LUX_PACKET_PAYLOAD_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   lux,               1) \
-X(a, STATIC,   SINGULAR, UINT32,   timestamp_unix,    2) \
+X(a, STATIC,   SINGULAR, UINT64,   timestamp_unix,    2) \
 X(a, STATIC,   SINGULAR, UINT32,   timestamp_ms_from_start,   3)
 #define LUX_PACKET_PAYLOAD_CALLBACK NULL
 #define LUX_PACKET_PAYLOAD_DEFAULT NULL
@@ -1108,7 +1108,7 @@ X(a, STATIC,   REPEATED, MESSAGE,  payload,           3)
 #define sgp_packet_t_payload_MSGTYPE sgp_packet_payload_t
 
 #define SGP_PACKET_PAYLOAD_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UINT32,   timestamp_unix,    1) \
+X(a, STATIC,   SINGULAR, UINT64,   timestamp_unix,    1) \
 X(a, STATIC,   SINGULAR, UINT32,   timestamp_ms_from_start,   2) \
 X(a, STATIC,   SINGULAR, UINT32,   sraw_voc,          3) \
 X(a, STATIC,   SINGULAR, UINT32,   sraw_nox,          4) \
@@ -1127,7 +1127,7 @@ X(a, STATIC,   REPEATED, MESSAGE,  payload,           3)
 
 #define BME_PACKET_PAYLOAD_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, FIXED64,  timestamp_sensor,   1) \
-X(a, STATIC,   SINGULAR, UINT32,   timestamp_unix,    2) \
+X(a, STATIC,   SINGULAR, UINT64,   timestamp_unix,    2) \
 X(a, STATIC,   SINGULAR, UINT32,   timestamp_ms_from_start,   3) \
 X(a, STATIC,   SINGULAR, FLOAT,    signal,            4) \
 X(a, STATIC,   SINGULAR, UINT32,   signal_dimensions,   5) \
@@ -1176,7 +1176,7 @@ X(a, STATIC,   REPEATED, MESSAGE,  payload,           5)
 #define sht_packet_t_payload_MSGTYPE sht_packet_payload_t
 
 #define SHT_PACKET_PAYLOAD_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UINT32,   timestamp_unix,    1) \
+X(a, STATIC,   SINGULAR, UINT64,   timestamp_unix,    1) \
 X(a, STATIC,   SINGULAR, UINT32,   timestamp_ms_from_start,   2) \
 X(a, STATIC,   SINGULAR, FLOAT,    temperature,       3) \
 X(a, STATIC,   SINGULAR, FLOAT,    humidity,          4)
@@ -1208,7 +1208,7 @@ X(a, STATIC,   SINGULAR, UINT32,   band_680,         10) \
 X(a, STATIC,   SINGULAR, UINT32,   band_clear_2,     11) \
 X(a, STATIC,   SINGULAR, UINT32,   band_nir_2,       12) \
 X(a, STATIC,   SINGULAR, UINT32,   flicker,          13) \
-X(a, STATIC,   SINGULAR, UINT32,   timestamp_unix,   14) \
+X(a, STATIC,   SINGULAR, UINT64,   timestamp_unix,   14) \
 X(a, STATIC,   SINGULAR, UINT32,   timestamp_ms_from_start,  15)
 #define SPEC_PACKET_PAYLOAD_CALLBACK NULL
 #define SPEC_PACKET_PAYLOAD_DEFAULT NULL
@@ -1223,7 +1223,7 @@ X(a, STATIC,   REPEATED, MESSAGE,  payload,           3)
 
 #define THERM_PACKET_PAYLOAD_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UENUM,    descriptor,        1) \
-X(a, STATIC,   SINGULAR, UINT32,   timestamp_unix,    2) \
+X(a, STATIC,   SINGULAR, UINT64,   timestamp_unix,    2) \
 X(a, STATIC,   SINGULAR, UINT32,   timestamp_ms_from_start,   3) \
 X(a, STATIC,   SINGULAR, UINT32,   ambient_raw,       4) \
 X(a, STATIC,   SINGULAR, UINT32,   object_raw,        5) \
@@ -1443,7 +1443,7 @@ X(a, STATIC,   SINGULAR, UINT32,   enable_speaker,    6)
 #define RED_FLASH_TASK_DEFAULT NULL
 
 #define AIR_SPEC_CONFIG_HEADER_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UINT32,   timestamp_unix,    1)
+X(a, STATIC,   SINGULAR, UINT64,   timestamp_unix,    1)
 #define AIR_SPEC_CONFIG_HEADER_CALLBACK NULL
 #define AIR_SPEC_CONFIG_HEADER_DEFAULT NULL
 
@@ -1623,16 +1623,16 @@ extern const pb_msgdesc_t sensor_packet_t_msg;
 /* SensorPacket_size depends on runtime parameters */
 #define AIR_SPEC_COLORS_SIZE                     18
 #define AIR_SPEC_COLOR_POSITION_SIZE             60
-#define AIR_SPEC_CONFIG_HEADER_SIZE              6
-#define AIR_SPEC_CONFIG_PACKET_SIZE              202
+#define AIR_SPEC_CONFIG_HEADER_SIZE              11
+#define AIR_SPEC_CONFIG_PACKET_SIZE              207
 #define BLINK_BYTE_PAYLOAD_SIZE                  453
 #define BLINK_HIGH_RES_PAYLOAD_SIZE              353
 #define BLINK_PACKET_SIZE                        484
 #define BLINK_SATURATION_SETTINGS_SIZE           14
 #define BLINK_SENSOR_CONFIG_SIZE                 44
 #define BLUE_GREEN_TRANSITION_SIZE               44
-#define BME_PACKET_PAYLOAD_SIZE                  36
-#define BME_PACKET_SIZE                          468
+#define BME_PACKET_PAYLOAD_SIZE                  41
+#define BME_PACKET_SIZE                          528
 #define BME_SENSOR_CONFIG_SIZE                   6
 #define COLOR_SENSOR_CONFIG_SIZE                 20
 #define DFU_MODE_SIZE                            2
@@ -1643,8 +1643,8 @@ extern const pb_msgdesc_t sensor_packet_t_msg;
 #define IMU_PACKET_SIZE                          476
 #define IMU_SENSOR_CONFIG_SIZE                   48
 #define LIGHT_CONTROL_PACKET_SIZE                124
-#define LUX_PACKET_PAYLOAD_SIZE                  18
-#define LUX_PACKET_SIZE                          617
+#define LUX_PACKET_PAYLOAD_SIZE                  23
+#define LUX_PACKET_SIZE                          767
 #define LUX_SENSOR_CONFIG_SIZE                   11
 #define MIC_PACKET_PAYLOAD_SIZE                  650
 #define MIC_PACKET_SIZE                          687
@@ -1652,18 +1652,18 @@ extern const pb_msgdesc_t sensor_packet_t_msg;
 #define RED_FLASH_TASK_SIZE                      32
 #define SENSOR_CONFIG_SIZE                       191
 #define SENSOR_CONTROL_SIZE                      34
-#define SENSOR_PACKET_HEADER_SIZE                18
-#define SGP_PACKET_PAYLOAD_SIZE                  46
-#define SGP_PACKET_SIZE                          972
+#define SENSOR_PACKET_HEADER_SIZE                23
+#define SGP_PACKET_PAYLOAD_SIZE                  51
+#define SGP_PACKET_SIZE                          1072
 #define SGP_SENSOR_CONFIG_SIZE                   6
-#define SHT_PACKET_PAYLOAD_SIZE                  22
-#define SHT_PACKET_SIZE                          4816
-#define SPEC_PACKET_PAYLOAD_SIZE                 90
-#define SPEC_PACKET_SIZE                         2786
+#define SHT_PACKET_PAYLOAD_SIZE                  27
+#define SHT_PACKET_SIZE                          5816
+#define SPEC_PACKET_PAYLOAD_SIZE                 95
+#define SPEC_PACKET_SIZE                         2936
 #define SYSTEM_STATE_SIZE                        236
 #define THERMOPILE_SENSOR_CONFIG_SIZE            16
-#define THERM_PACKET_PAYLOAD_SIZE                36
-#define THERM_PACKET_SIZE                        1912
+#define THERM_PACKET_PAYLOAD_SIZE                41
+#define THERM_PACKET_SIZE                        2162
 
 #ifdef __cplusplus
 } /* extern "C" */

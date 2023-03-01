@@ -762,13 +762,17 @@ void BlueGreenTransitionTask(void *argument){
 
 
 	/* stop sensor subsystems and re-enable windowing, if active previously */
+	BlueGreenTransitionTaskExit();
+
+	vTaskDelete( NULL );
+}
+
+void BlueGreenTransitionTaskExit(void){
 	controlBlinkNoWindow(false);
 	controlIMUNoWindow(false);
 
 	controlBlink(sysState.control.blink);
 	controlIMU(sysState.control.imu);
-
-	vTaskDelete( NULL );
 }
 
 union ColorComplex redFlashColor;
