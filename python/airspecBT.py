@@ -14,8 +14,16 @@ import binascii
 from struct import *
 from sensorClass import *
 
+import numpy as np
+
+from scipy.io.wavfile import write
+
 from bleak import BleakClient, BleakScanner
 from bleak.backends.characteristic import BleakGATTCharacteristic
+
+
+micHeaderStructType = 'HH'
+micHeaderStructSize = calcsize(micHeaderStructType)
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +38,10 @@ SERVER_PORT = 65434  # Port to listen on (non-privileged ports are > 1023)
 #     lambda d, ad: d.name and d.name.lower() == "AirSpec_008a65fb"
 packet_idx = 0
 
+audio_clip = np.zeros(32000)
+audio_index = 0
+file_index = 0
+
 async def main(queue: asyncio.Queue):
     packet_idx = 0
     logger.info("starting scan...")
@@ -43,7 +55,7 @@ async def main(queue: asyncio.Queue):
     #         return
     # else:
     device = await BleakScanner.find_device_by_filter(
-        lambda d, ad: ad.local_name == "AirSpec_01ad6d7d",
+        lambda d, ad: ad.local_name == "AirSpec_01ad7859",
         timeout=60
     )
 
@@ -52,7 +64,7 @@ async def main(queue: asyncio.Queue):
         print(" Bluetooth: could not find device with name '%s'", "AirSpec_008a65fb")
         print(" Bluetooth: will keep trying")
         device = await BleakScanner.find_device_by_filter(
-            lambda d, ad: ad.local_name == "AirSpec_01ad6d7d",
+            lambda d, ad: ad.local_name == "AirSpec_01ad7859",
             timeout=60
         )
 
@@ -65,14 +77,32 @@ async def main(queue: asyncio.Queue):
 
     async def notification_handler(characteristic: BleakGATTCharacteristic, data: bytearray):
         # global s_in
-        global packet_idx
+        global packet_idx, audio_index, audio_clip, file_index
 
         """Simple notification handler which prints the data received."""
         # logger.info("%s: %r", characteristic.description, data)
 
-        # print(str(data,"utf-16"))
-        print(packet_idx)
-        packet_idx += 1
+        # print(len(data))
+
+        packet_ID, num_samples = unpack(micHeaderStructType, data[0:micHeaderStructSize])
+
+        if(num_samples == 0):
+            audio_clip /= 2147483647
+            write('test_' + str(file_index) + '.wav', 48000, audio_clip)
+            file_index += 1
+            # print(audio_clip)
+            audio_index = 0
+            print("zero")
+        else:
+            result = unpack(str(num_samples) + 'i', data[micHeaderStructSize:(micHeaderStructSize+num_samples*4)])
+            # print(str(data,"utf-16"))
+            packet_idx += 1
+            audio_clip[audio_index:(audio_index+num_samples)] = result
+            print(result)
+            audio_index += num_samples
+
+
+
         # print(isinstance(data, (bytes, bytearray)))
         # systemID, pktType, pktID, msFromStart, epoch, payloadLen, r0, r1, r2, r3, r4 = \
         #     unpack(headerStructType, data[0:headerStructSize])

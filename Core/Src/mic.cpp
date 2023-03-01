@@ -35,7 +35,9 @@
  */
 #define MIC_SAMPLE_PERIOD_MS_THRESH_TO_TURN_OFF	5000
 uint32_t micData[MIC_DATA_SIZE];
-float micDataFloat[4096];
+
+
+//float micDataFloat[4096];
 
 static void triggerMicSample(void *argument);
 
@@ -43,10 +45,11 @@ static void triggerMicSample(void *argument);
 
 #define MAX_MIC_SAMPLES_PACKET  10
 
+int32_t cvt24bit(uint32_t val);
 
 struct MicCal{
-	uint8_t index;
-	uint8_t length;
+	uint16_t index;
+	uint16_t length;
 	uint32_t values[MIC_PACKET_SAMPLE_SIZE];
 };
 
@@ -65,6 +68,13 @@ volatile uint8_t micLowPowerMode = 0;
 static DTS_App_Context_t DataTransferServerContext;
 
 volatile tBleStatus ble_status = BLE_STATUS_INVALID_PARAMS;
+
+struct MicCalEnd{
+	uint16_t index;
+	uint16_t length;
+};
+
+MicCalEnd endMicCal;
 
 #define SIZE_OF_MIC_CAL_DATA   10
 MicCal micCalData[SIZE_OF_MIC_CAL_DATA];
@@ -138,6 +148,8 @@ void Mic_Task(void *argument){
 	volatile uint32_t keepTime = 0;
 	volatile uint32_t keepTime2 = 0;
 
+	endMicCal.length = 0;
+
 //	HAL_SAI_Receive(&hsai_BlockA1, (uint8_t *) micData, 256, 1);  //purposeful short timeout
 //
 //	if(sensorSettings.sample_period_ms > MIC_SAMPLE_PERIOD_MS_THRESH_TO_TURN_OFF){
@@ -165,11 +177,22 @@ void Mic_Task(void *argument){
 //		if ((flags & GRAB_SAMPLE_BIT) == GRAB_SAMPLE_BIT) {
 		if(HAL_OK == HAL_SAI_Receive(&hsai_BlockA1,(uint8_t *) micData, MIC_DATA_SIZE, 5000)){
 
-		  micDataThreadPointer = micDataPointer;
 
-//		  for(int i = 0; i<MIC_DATA_SIZE; i++){
-//			  micDataThreadPointer[i] = micDataThreadPointer[i] << 8;
-//		  }
+		  for(int i = 0; i<MIC_DATA_SIZE; i++){
+
+			  micData[i] = cvt24bit(micData[i]);
+
+//			  if((micData[i]>>16) & 0x80){
+//				  micData[i] |= 0xFF << 24;
+//			  }
+
+		  }
+
+
+//		  arm_q31_to_float ((q31_t *) &micData[0],
+//				  (float32_t *)&micData[0], MIC_DATA_SIZE); //~4ms (16MHz, 4096 data size)
+//
+//		  arm_scale_f32 ((float32_t *)&micData[0], 16777216, (float32_t *)&micData[0], MIC_DATA_SIZE); //~4ms (16MHz, 4096 data size)
 
 		  ptrMicCalData = &micCalData[micCalDataTracker % SIZE_OF_MIC_CAL_DATA];
 	      micCalDataTracker += 1;
@@ -184,13 +207,13 @@ void Mic_Task(void *argument){
 //				if(packet != NULL){
 
 					if( (i + MIC_PACKET_SAMPLE_SIZE) > MIC_DATA_SIZE){
-						ptrMicCalData->length = MIC_PACKET_SAMPLE_SIZE - i;
+						ptrMicCalData->length = MIC_DATA_SIZE - i;
 					}else{
 						ptrMicCalData->length = MIC_PACKET_SAMPLE_SIZE;
 					}
 
 					ptrMicCalData->index = micID;
-					memcpy(&ptrMicCalData->values[0], &micDataThreadPointer[i], ptrMicCalData->length);
+					memcpy(&ptrMicCalData->values[0], &micData[i], ptrMicCalData->length * 4);
 					micID++;
 
 
@@ -215,6 +238,11 @@ void Mic_Task(void *argument){
 
 			}
 
+			DataTransferServerContext.TxData.pPayload = (uint8_t*) &endMicCal;
+			DataTransferServerContext.TxData.Length = 4; //Att_Mtu_Exchanged-10;
+			ble_status = DTS_STM_UpdateChar(DATA_TRANSFER_TX_CHAR_UUID,
+															(uint8_t*) &DataTransferServerContext.TxData);
+			osDelay(2000);
 
 
 		}
@@ -251,6 +279,14 @@ void Mic_Task(void *argument){
 //	}
 //}
 
+int32_t cvt24bit(uint32_t val) {
+    val &= 0xffffff;  // limit to 24 bits -- may not be necessary
+    if (val >= (UINT32_C(1) << 23))
+        return (int32_t)val - (INT32_C(1) << 24);
+    else
+        return val;
+}
+
 /**
   * @brief Rx Transfer completed callback.
   * @param  hsai pointer to a SAI_HandleTypeDef structure that contains
@@ -263,7 +299,7 @@ void HAL_SAI_RxCpltCallback(SAI_HandleTypeDef *hsai)
 //  audio_data_buffer_index = 1;
 //  audio_data_available = 1;
 //  HAL_GPIO_TogglePin(AUDIO_READY_GPIO_Port, AUDIO_READY_Pin);
-	micDataPointer = &micData[MIC_HALF_DATA_SIZE];
+//	micDataPointer = &micData[MIC_HALF_DATA_SIZE];
   osThreadFlagsSet(micTaskHandle, GRAB_SAMPLE_BIT);
 }
 
@@ -279,7 +315,7 @@ void HAL_SAI_RxHalfCpltCallback(SAI_HandleTypeDef *hsai)
 //  audio_data_buffer_index = 0;
 //  audio_data_available = 1;
 //  HAL_GPIO_TogglePin(AUDIO_READY_GPIO_Port, AUDIO_READY_Pin);
-	micDataPointer = &micData[0];
+//	micDataPointer = &micData[0];
   osThreadFlagsSet(micTaskHandle, GRAB_SAMPLE_BIT);
 }
 

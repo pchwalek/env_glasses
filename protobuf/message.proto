@@ -155,7 +155,7 @@ enum IMU_mag_cutoff {
 message SensorPacketHeader {
     uint32 system_uid = 1;
     uint32 ms_from_start = 2;
-    uint32 epoch = 3;
+    uint64 epoch = 3;
 }
 
 message LuxPacket{
