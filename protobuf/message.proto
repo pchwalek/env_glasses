@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-import "nanopb.proto";
-option (nanopb_fileopt).packed_struct = true;
+//import "nanopb.proto";
+//option (nanopb_fileopt).packed_struct = true;
 
 enum SensorPacketTypes {
     UNKNOWN_PACKET_TYPE = 0;
@@ -486,6 +486,8 @@ message systemState {
 message appSurveyDataPayload {
     int32 q_index = 1;
     string q_choice = 2;
+    uint32 q_group_index = 3;
+    uint64 timestamp_unix = 4;
 }
 
 message appSurveyDataPacket {
@@ -494,6 +496,7 @@ message appSurveyDataPacket {
 
 message appMetaDataPacket {
     string payload = 1;
+    uint64 timestamp_unix = 2;
 }
 
 

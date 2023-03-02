@@ -21,7 +21,7 @@
 // pretty OK tutorial: https://stm32f4-discovery.net/2014/10/stm32f4-fft-example/
 
 //#define MIC_DATA_SIZE		4096 // make multiple of 2 for simplicity
-#define MIC_DATA_SIZE 10000
+#define MIC_DATA_SIZE 4096
 #define MIC_HALF_DATA_SIZE	MIC_DATA_SIZE >> 1 // make multiple of 2 for simplicity
 
 /* if the microphone sample period is equal or greater than MIC_SAMPLE_PERIOD_MS_THRESH_TO_TURN_OFF,

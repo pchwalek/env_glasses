@@ -888,7 +888,7 @@ public struct SensorPacketHeader {
 
   public var msFromStart: UInt32 = 0
 
-  public var epoch: UInt32 = 0
+  public var epoch: UInt64 = 0
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -919,7 +919,7 @@ public struct LuxPacket {
 
     public var lux: UInt32 = 0
 
-    public var timestampUnix: UInt32 = 0
+    public var timestampUnix: UInt64 = 0
 
     public var timestampMsFromStart: UInt32 = 0
 
@@ -949,7 +949,7 @@ public struct SGPPacket {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    public var timestampUnix: UInt32 = 0
+    public var timestampUnix: UInt64 = 0
 
     public var timestampMsFromStart: UInt32 = 0
 
@@ -989,7 +989,7 @@ public struct BMEPacket {
 
     public var timestampSensor: UInt64 = 0
 
-    public var timestampUnix: UInt32 = 0
+    public var timestampUnix: UInt64 = 0
 
     public var timestampMsFromStart: UInt32 = 0
 
@@ -1138,7 +1138,7 @@ public struct SHTPacket {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    public var timestampUnix: UInt32 = 0
+    public var timestampUnix: UInt64 = 0
 
     public var timestampMsFromStart: UInt32 = 0
 
@@ -1204,7 +1204,7 @@ public struct SpecPacket {
 
     public var flicker: UInt32 = 0
 
-    public var timestampUnix: UInt32 = 0
+    public var timestampUnix: UInt64 = 0
 
     public var timestampMsFromStart: UInt32 = 0
 
@@ -1236,7 +1236,7 @@ public struct ThermPacket {
 
     public var descriptor: Thermopile_location = .tipOfNose
 
-    public var timestampUnix: UInt32 = 0
+    public var timestampUnix: UInt64 = 0
 
     public var timestampMsFromStart: UInt32 = 0
 
@@ -1862,7 +1862,7 @@ public struct AirSpecConfigHeader {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var timestampUnix: UInt32 = 0
+  public var timestampUnix: UInt64 = 0
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -2026,6 +2026,10 @@ public struct appSurveyDataPayload {
 
   public var qChoice: String = String()
 
+  public var qGroupIndex: UInt32 = 0
+
+  public var timestampUnix: UInt64 = 0
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -2049,6 +2053,8 @@ public struct appMetaDataPacket {
   // methods supported on all messages.
 
   public var payload: String = String()
+
+  public var timestampUnix: UInt64 = 0
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -2486,7 +2492,7 @@ extension SensorPacketHeader: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularUInt32Field(value: &self.systemUid) }()
       case 2: try { try decoder.decodeSingularUInt32Field(value: &self.msFromStart) }()
-      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.epoch) }()
+      case 3: try { try decoder.decodeSingularUInt64Field(value: &self.epoch) }()
       default: break
       }
     }
@@ -2500,7 +2506,7 @@ extension SensorPacketHeader: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
       try visitor.visitSingularUInt32Field(value: self.msFromStart, fieldNumber: 2)
     }
     if self.epoch != 0 {
-      try visitor.visitSingularUInt32Field(value: self.epoch, fieldNumber: 3)
+      try visitor.visitSingularUInt64Field(value: self.epoch, fieldNumber: 3)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -2585,7 +2591,7 @@ extension LuxPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularUInt32Field(value: &self.lux) }()
-      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.timestampUnix) }()
+      case 2: try { try decoder.decodeSingularUInt64Field(value: &self.timestampUnix) }()
       case 3: try { try decoder.decodeSingularUInt32Field(value: &self.timestampMsFromStart) }()
       default: break
       }
@@ -2597,7 +2603,7 @@ extension LuxPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
       try visitor.visitSingularUInt32Field(value: self.lux, fieldNumber: 1)
     }
     if self.timestampUnix != 0 {
-      try visitor.visitSingularUInt32Field(value: self.timestampUnix, fieldNumber: 2)
+      try visitor.visitSingularUInt64Field(value: self.timestampUnix, fieldNumber: 2)
     }
     if self.timestampMsFromStart != 0 {
       try visitor.visitSingularUInt32Field(value: self.timestampMsFromStart, fieldNumber: 3)
@@ -2675,7 +2681,7 @@ extension SGPPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.timestampUnix) }()
+      case 1: try { try decoder.decodeSingularUInt64Field(value: &self.timestampUnix) }()
       case 2: try { try decoder.decodeSingularUInt32Field(value: &self.timestampMsFromStart) }()
       case 3: try { try decoder.decodeSingularUInt32Field(value: &self.srawVoc) }()
       case 4: try { try decoder.decodeSingularUInt32Field(value: &self.srawNox) }()
@@ -2688,7 +2694,7 @@ extension SGPPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if self.timestampUnix != 0 {
-      try visitor.visitSingularUInt32Field(value: self.timestampUnix, fieldNumber: 1)
+      try visitor.visitSingularUInt64Field(value: self.timestampUnix, fieldNumber: 1)
     }
     if self.timestampMsFromStart != 0 {
       try visitor.visitSingularUInt32Field(value: self.timestampMsFromStart, fieldNumber: 2)
@@ -2783,7 +2789,7 @@ extension BMEPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularFixed64Field(value: &self.timestampSensor) }()
-      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.timestampUnix) }()
+      case 2: try { try decoder.decodeSingularUInt64Field(value: &self.timestampUnix) }()
       case 3: try { try decoder.decodeSingularUInt32Field(value: &self.timestampMsFromStart) }()
       case 4: try { try decoder.decodeSingularFloatField(value: &self.signal) }()
       case 5: try { try decoder.decodeSingularUInt32Field(value: &self.signalDimensions) }()
@@ -2799,7 +2805,7 @@ extension BMEPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
       try visitor.visitSingularFixed64Field(value: self.timestampSensor, fieldNumber: 1)
     }
     if self.timestampUnix != 0 {
-      try visitor.visitSingularUInt32Field(value: self.timestampUnix, fieldNumber: 2)
+      try visitor.visitSingularUInt64Field(value: self.timestampUnix, fieldNumber: 2)
     }
     if self.timestampMsFromStart != 0 {
       try visitor.visitSingularUInt32Field(value: self.timestampMsFromStart, fieldNumber: 3)
@@ -3099,7 +3105,7 @@ extension SHTPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.timestampUnix) }()
+      case 1: try { try decoder.decodeSingularUInt64Field(value: &self.timestampUnix) }()
       case 2: try { try decoder.decodeSingularUInt32Field(value: &self.timestampMsFromStart) }()
       case 3: try { try decoder.decodeSingularFloatField(value: &self.temperature) }()
       case 4: try { try decoder.decodeSingularFloatField(value: &self.humidity) }()
@@ -3110,7 +3116,7 @@ extension SHTPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if self.timestampUnix != 0 {
-      try visitor.visitSingularUInt32Field(value: self.timestampUnix, fieldNumber: 1)
+      try visitor.visitSingularUInt64Field(value: self.timestampUnix, fieldNumber: 1)
     }
     if self.timestampMsFromStart != 0 {
       try visitor.visitSingularUInt32Field(value: self.timestampMsFromStart, fieldNumber: 2)
@@ -3235,7 +3241,7 @@ extension SpecPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
       case 11: try { try decoder.decodeSingularUInt32Field(value: &self.bandClear2) }()
       case 12: try { try decoder.decodeSingularUInt32Field(value: &self.bandNir2) }()
       case 13: try { try decoder.decodeSingularUInt32Field(value: &self.flicker) }()
-      case 14: try { try decoder.decodeSingularUInt32Field(value: &self.timestampUnix) }()
+      case 14: try { try decoder.decodeSingularUInt64Field(value: &self.timestampUnix) }()
       case 15: try { try decoder.decodeSingularUInt32Field(value: &self.timestampMsFromStart) }()
       default: break
       }
@@ -3283,7 +3289,7 @@ extension SpecPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
       try visitor.visitSingularUInt32Field(value: self.flicker, fieldNumber: 13)
     }
     if self.timestampUnix != 0 {
-      try visitor.visitSingularUInt32Field(value: self.timestampUnix, fieldNumber: 14)
+      try visitor.visitSingularUInt64Field(value: self.timestampUnix, fieldNumber: 14)
     }
     if self.timestampMsFromStart != 0 {
       try visitor.visitSingularUInt32Field(value: self.timestampMsFromStart, fieldNumber: 15)
@@ -3375,7 +3381,7 @@ extension ThermPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularEnumField(value: &self.descriptor) }()
-      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.timestampUnix) }()
+      case 2: try { try decoder.decodeSingularUInt64Field(value: &self.timestampUnix) }()
       case 3: try { try decoder.decodeSingularUInt32Field(value: &self.timestampMsFromStart) }()
       case 4: try { try decoder.decodeSingularUInt32Field(value: &self.ambientRaw) }()
       case 5: try { try decoder.decodeSingularUInt32Field(value: &self.objectRaw) }()
@@ -3391,7 +3397,7 @@ extension ThermPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       try visitor.visitSingularEnumField(value: self.descriptor, fieldNumber: 1)
     }
     if self.timestampUnix != 0 {
-      try visitor.visitSingularUInt32Field(value: self.timestampUnix, fieldNumber: 2)
+      try visitor.visitSingularUInt64Field(value: self.timestampUnix, fieldNumber: 2)
     }
     if self.timestampMsFromStart != 0 {
       try visitor.visitSingularUInt32Field(value: self.timestampMsFromStart, fieldNumber: 3)
@@ -4736,7 +4742,7 @@ extension AirSpecConfigHeader: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.timestampUnix) }()
+      case 1: try { try decoder.decodeSingularUInt64Field(value: &self.timestampUnix) }()
       default: break
       }
     }
@@ -4744,7 +4750,7 @@ extension AirSpecConfigHeader: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if self.timestampUnix != 0 {
-      try visitor.visitSingularUInt32Field(value: self.timestampUnix, fieldNumber: 1)
+      try visitor.visitSingularUInt64Field(value: self.timestampUnix, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -4957,6 +4963,8 @@ extension appSurveyDataPayload: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "q_index"),
     2: .standard(proto: "q_choice"),
+    3: .standard(proto: "q_group_index"),
+    4: .standard(proto: "timestamp_unix"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -4967,6 +4975,8 @@ extension appSurveyDataPayload: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularInt32Field(value: &self.qIndex) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self.qChoice) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.qGroupIndex) }()
+      case 4: try { try decoder.decodeSingularUInt64Field(value: &self.timestampUnix) }()
       default: break
       }
     }
@@ -4979,12 +4989,20 @@ extension appSurveyDataPayload: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
     if !self.qChoice.isEmpty {
       try visitor.visitSingularStringField(value: self.qChoice, fieldNumber: 2)
     }
+    if self.qGroupIndex != 0 {
+      try visitor.visitSingularUInt32Field(value: self.qGroupIndex, fieldNumber: 3)
+    }
+    if self.timestampUnix != 0 {
+      try visitor.visitSingularUInt64Field(value: self.timestampUnix, fieldNumber: 4)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: appSurveyDataPayload, rhs: appSurveyDataPayload) -> Bool {
     if lhs.qIndex != rhs.qIndex {return false}
     if lhs.qChoice != rhs.qChoice {return false}
+    if lhs.qGroupIndex != rhs.qGroupIndex {return false}
+    if lhs.timestampUnix != rhs.timestampUnix {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -5026,6 +5044,7 @@ extension appMetaDataPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
   public static let protoMessageName: String = "appMetaDataPacket"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "payload"),
+    2: .standard(proto: "timestamp_unix"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -5035,6 +5054,7 @@ extension appMetaDataPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.payload) }()
+      case 2: try { try decoder.decodeSingularUInt64Field(value: &self.timestampUnix) }()
       default: break
       }
     }
@@ -5044,11 +5064,15 @@ extension appMetaDataPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
     if !self.payload.isEmpty {
       try visitor.visitSingularStringField(value: self.payload, fieldNumber: 1)
     }
+    if self.timestampUnix != 0 {
+      try visitor.visitSingularUInt64Field(value: self.timestampUnix, fieldNumber: 2)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: appMetaDataPacket, rhs: appMetaDataPacket) -> Bool {
     if lhs.payload != rhs.payload {return false}
+    if lhs.timestampUnix != rhs.timestampUnix {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

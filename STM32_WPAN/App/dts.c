@@ -245,28 +245,28 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 					   if(rxConfigPacket.payload.ctrl_indiv_led.has_left){
 						   airspecColors.colors_indiv.left_front_b = rxConfigPacket.payload.ctrl_indiv_led.left.forward.blue;
 						   airspecColors.colors_indiv.left_front_g = rxConfigPacket.payload.ctrl_indiv_led.left.forward.green;
-						   airspecColors.colors_indiv.left_front_r = rxConfigPacket.payload.ctrl_indiv_led.left.forward.blue;
+						   airspecColors.colors_indiv.left_front_r = rxConfigPacket.payload.ctrl_indiv_led.left.forward.red;
 
 						   airspecColors.colors_indiv.left_side_b = rxConfigPacket.payload.ctrl_indiv_led.left.eye.blue;
 						   airspecColors.colors_indiv.left_side_g = rxConfigPacket.payload.ctrl_indiv_led.left.eye.green;
-						   airspecColors.colors_indiv.left_side_r = rxConfigPacket.payload.ctrl_indiv_led.left.eye.blue;
+						   airspecColors.colors_indiv.left_side_r = rxConfigPacket.payload.ctrl_indiv_led.left.eye.red;
 
 						   airspecColors.colors_indiv.left_top_b = rxConfigPacket.payload.ctrl_indiv_led.left.top.blue;
 						   airspecColors.colors_indiv.left_top_g = rxConfigPacket.payload.ctrl_indiv_led.left.top.green;
-						   airspecColors.colors_indiv.left_top_r = rxConfigPacket.payload.ctrl_indiv_led.left.top.blue;
+						   airspecColors.colors_indiv.left_top_r = rxConfigPacket.payload.ctrl_indiv_led.left.top.red;
 					   }
 					   if(rxConfigPacket.payload.ctrl_indiv_led.has_right){
 						   airspecColors.colors_indiv.right_front_b = rxConfigPacket.payload.ctrl_indiv_led.right.forward.blue;
 						   airspecColors.colors_indiv.right_front_g = rxConfigPacket.payload.ctrl_indiv_led.right.forward.green;
-						   airspecColors.colors_indiv.right_front_r = rxConfigPacket.payload.ctrl_indiv_led.right.forward.blue;
+						   airspecColors.colors_indiv.right_front_r = rxConfigPacket.payload.ctrl_indiv_led.right.forward.red;
 
 						   airspecColors.colors_indiv.right_side_b = rxConfigPacket.payload.ctrl_indiv_led.right.eye.blue;
 						   airspecColors.colors_indiv.right_side_g = rxConfigPacket.payload.ctrl_indiv_led.right.eye.green;
-						   airspecColors.colors_indiv.right_side_r = rxConfigPacket.payload.ctrl_indiv_led.right.eye.blue;
+						   airspecColors.colors_indiv.right_side_r = rxConfigPacket.payload.ctrl_indiv_led.right.eye.red;
 
 						   airspecColors.colors_indiv.right_top_b = rxConfigPacket.payload.ctrl_indiv_led.right.top.blue;
 						   airspecColors.colors_indiv.right_top_g = rxConfigPacket.payload.ctrl_indiv_led.right.top.green;
-						   airspecColors.colors_indiv.right_top_r = rxConfigPacket.payload.ctrl_indiv_led.right.top.blue;
+						   airspecColors.colors_indiv.right_top_r = rxConfigPacket.payload.ctrl_indiv_led.right.top.red;
 					   }
 					   osMessageQueuePut(lightsComplexQueueHandle, &airspecColors, 0, 0);
 				      break; /* optional */
@@ -314,9 +314,12 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 
 				   case AIR_SPEC_CONFIG_PACKET_BLUE_GREEN_TRANSITION_TAG  :
 						memcpy(&blueGreenTranRX, &rxConfigPacket.payload.blue_green_transition, sizeof(blue_green_transition_t));
-						osThreadTerminate(blueGreenTranTaskHandle); // terminate any existing running thread
-						BlueGreenTransitionTaskExit();
-						resetLED();
+						osThreadState_t threadState = osThreadGetState(blueGreenTranTaskHandle);
+						if((threadState != osThreadTerminated) &&(threadState != osThreadInactive)  && (threadState != osThreadError)){
+							osThreadTerminate(blueGreenTranTaskHandle); // terminate any existing running thread
+							BlueGreenTransitionTaskExit();
+						}
+//						resetLED();
 						if(blueGreenTranRX.enable == 1){
 							blueGreenTranTaskHandle = osThreadNew(BlueGreenTransitionTask, &blueGreenTranRX, &blueGreenTask_attributes);
 						}
