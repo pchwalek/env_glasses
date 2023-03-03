@@ -116,7 +116,7 @@ void Spec_Task(void *argument) {
 			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			while (!specSensor.checkReadingProgress()) {
 				osSemaphoreRelease(messageI2C1_LockHandle);
-				osDelay(5);
+				osDelay(200);
 				osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			}
 
