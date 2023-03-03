@@ -2054,6 +2054,8 @@ public struct appMetaDataPacket {
 
   public var payload: String = String()
 
+  public var type: UInt32 = 0
+
   public var timestampUnix: UInt64 = 0
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -5044,7 +5046,8 @@ extension appMetaDataPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
   public static let protoMessageName: String = "appMetaDataPacket"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "payload"),
-    2: .standard(proto: "timestamp_unix"),
+    2: .same(proto: "type"),
+    3: .standard(proto: "timestamp_unix"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -5054,7 +5057,8 @@ extension appMetaDataPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.payload) }()
-      case 2: try { try decoder.decodeSingularUInt64Field(value: &self.timestampUnix) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.type) }()
+      case 3: try { try decoder.decodeSingularUInt64Field(value: &self.timestampUnix) }()
       default: break
       }
     }
@@ -5064,14 +5068,18 @@ extension appMetaDataPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
     if !self.payload.isEmpty {
       try visitor.visitSingularStringField(value: self.payload, fieldNumber: 1)
     }
+    if self.type != 0 {
+      try visitor.visitSingularUInt32Field(value: self.type, fieldNumber: 2)
+    }
     if self.timestampUnix != 0 {
-      try visitor.visitSingularUInt64Field(value: self.timestampUnix, fieldNumber: 2)
+      try visitor.visitSingularUInt64Field(value: self.timestampUnix, fieldNumber: 3)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: appMetaDataPacket, rhs: appMetaDataPacket) -> Bool {
     if lhs.payload != rhs.payload {return false}
+    if lhs.type != rhs.type {return false}
     if lhs.timestampUnix != rhs.timestampUnix {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true

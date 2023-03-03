@@ -496,7 +496,8 @@ message appSurveyDataPacket {
 
 message appMetaDataPacket {
     string payload = 1;
-    uint64 timestamp_unix = 2;
+    uint32 type = 2;
+    uint64 timestamp_unix = 3;
 }
 
 
