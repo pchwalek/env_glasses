@@ -154,7 +154,7 @@ extern "C" {
 #define PACKET_LENGTH_EXCEEDED	1
 #define PACKET_UNDEFINED_ERR	10
 //#define MAX_PACKET_LEN		DATA_NOTIFICATION_MAX_PACKET_SIZE
-#define MAX_PACKET_QUEUE_SIZE	10
+#define MAX_PACKET_QUEUE_SIZE	20
 /* macros ------------------------------------------------------------*/
 
 /* function prototypes -----------------------------------------------*/

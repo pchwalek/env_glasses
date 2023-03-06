@@ -87,6 +87,7 @@ void senderThread(void *argument);
 uint8_t sendProtobufPacket_BLE(uint8_t *packet, uint16_t size);
 uint8_t updateSystemConfig_BLE(system_state_t *packet);
 void updateRTC(uint32_t receivedTime);
+void updateRTC_MS(uint64_t receivedTime);
 uint64_t getEpoch(void);
 
 #ifdef __cplusplus

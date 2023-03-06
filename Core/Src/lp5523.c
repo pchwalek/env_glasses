@@ -904,10 +904,10 @@ void ledDisconnectNotification(void){
 	if(sensorThreadsRunning){
 		resetColor(&receivedColor);
 
-		receivedColor.colors_indiv.left_side_g = 0;
-		receivedColor.colors_indiv.right_side_g = 0;
-		receivedColor.colors_indiv.left_side_b = NOMINAL_BLUE_VAL;
-		receivedColor.colors_indiv.right_side_b = NOMINAL_BLUE_VAL;
+		receivedColor.colors_indiv.left_side_r = 50;
+		receivedColor.colors_indiv.left_side_b = 50;
+
+
 		osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
 	}
 
@@ -1027,15 +1027,19 @@ void ledConnectNotification(void){
 	if(sensorThreadsRunning){
 		resetColor(&receivedColor);
 
-		receivedColor.colors_indiv.left_side_b = 0;
-		receivedColor.colors_indiv.right_side_b = 0;
-		receivedColor.colors_indiv.left_side_g = 80;
-		receivedColor.colors_indiv.right_side_g = 80;
+
+		receivedColor.colors_indiv.left_side_r = 120;
+		receivedColor.colors_indiv.left_side_b = 120;
+
+//		receivedColor.colors_indiv.left_side_b = 0;
+//		receivedColor.colors_indiv.right_side_b = 0;
+//		receivedColor.colors_indiv.left_side_g = 80;
+//		receivedColor.colors_indiv.right_side_g = 80;
 		osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
 	//	FrontLightsSet(&receivedColor);
 //		osDelay(1000);
-		receivedColor.colors_indiv.left_side_g = 0;
-		receivedColor.colors_indiv.right_side_g = 0;
+//		receivedColor.colors_indiv.left_side_g = 0;
+//		receivedColor.colors_indiv.right_side_g = 0;
 
 		osTimerStart(resetTimer, 1000);
 //		osTimerDelete(resetTimer);

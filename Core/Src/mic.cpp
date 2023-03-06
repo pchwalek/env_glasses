@@ -60,10 +60,13 @@ void Mic_Task(void *argument){
 	uint32_t flags = 0;
 	float32_t maxvalue;
 	uint32_t maxindex;
-	float32_t dominantFrequency;
+//	float32_t dominantFrequency;
 	uint16_t startIdx;
+	uint32_t fft_index = 0;
+	uint64_t fft_time_unix = 0;
+	uint32_t fft_time_ms_from_start = 0;
 
-	bool status;
+//	bool status;
 
 	float startFreq;
 
@@ -121,6 +124,9 @@ void Mic_Task(void *argument){
 		flags = osThreadFlagsWait(GRAB_SAMPLE_BIT | TERMINATE_THREAD_BIT,
 				osFlagsWaitAny, osWaitForever);
 
+		fft_time_unix = getEpoch();
+		fft_time_ms_from_start = HAL_GetTick();
+
 
 		if ((flags & GRAB_SAMPLE_BIT) == GRAB_SAMPLE_BIT) {
 			if(micLowPowerMode){
@@ -155,14 +161,19 @@ void Mic_Task(void *argument){
 
 		  arm_max_f32(&micDataFloat[1], (MIC_DATA_SIZE >> 1) - 1, &maxvalue, &maxindex); //~2ms (16MHz, 2048 data size)
 
-		  dominantFrequency = maxindex * fft_spacing;
+//		  dominantFrequency = maxindex * fft_spacing;
 
 			/* packetize data */
 
 
 			for(int i = 0; i < packetsPerMicSample; i++){
+
 				packet = grabPacket();
-				if(packet != NULL){
+				while( packet == NULL ){
+					osDelay(2);
+					packet = grabPacket();
+				}
+//				if(packet != NULL){
 
 //					portENTER_CRITICAL();
 
@@ -172,11 +183,16 @@ void Mic_Task(void *argument){
 //					sensorPacket.header.packet_id = micID;
 
 					packet->payload.mic_packet.packet_index = micID;
+					packet->payload.mic_packet.fft_index = fft_index;
+
+					packet->payload.mic_packet.timestamp_unix = fft_time_unix;
+					packet->payload.mic_packet.timestamp_ms_from_start = fft_time_ms_from_start;
 
 					packet->payload.mic_packet.frequency_spacing = fft_spacing;
 					packet->payload.mic_packet.mic_sample_freq = sensorSettings.mic_sample_freq;
 					packet->payload.mic_packet.sample_period = sensorSettings.sample_period_ms;
-					packet->payload.mic_packet.samples_per_fft = packetsPerMicSample; // total number of packets required to send full FFT
+					packet->payload.mic_packet.packets_per_fft = packetsPerMicSample; // total number of packets required to send full FFT
+					packet->payload.mic_packet.samples_per_fft = totalMicPayloadSize; // total number of packets required to send full FFT
 
 
 					startIdx = maxMicPayloadSize * i;
@@ -217,11 +233,14 @@ void Mic_Task(void *argument){
 //					memcpy(&(packet->header), &header, sizeof(PacketHeader));
 //					memcpy(packet->payload, (uint8_t *) &micDataFloat[startIdx + 1], header.payloadLength); //the 1 offset is because the first value is the DC offset which we don't need
 //					queueUpPacket(packet);
-				}
+
+//				}
+
+				micID++;
 
 			}
+			fft_index++;
 
-			micID++;
 		}
 
 		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {

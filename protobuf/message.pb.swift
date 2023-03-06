@@ -1056,6 +1056,10 @@ public struct BlinkPacket {
 
   public var packetIndex: UInt32 = 0
 
+  public var timestampUnix: UInt64 = 0
+
+  public var timestampMsFromStart: UInt32 = 0
+
   public var saturationSettings: Blink_saturation_settings {
     get {return _saturationSettings ?? Blink_saturation_settings()}
     set {_saturationSettings = newValue}
@@ -1313,6 +1317,12 @@ public struct IMUPacket {
 
   public var packetIndex: UInt32 = 0
 
+  public var timestampUnix: UInt64 = 0
+
+  public var timestampMsFromStart: UInt32 = 0
+
+  public var samplingFrequency: Float = 0
+
   public var accelSettings: IMU_Accel_Settings {
     get {return _accelSettings ?? IMU_Accel_Settings()}
     set {_accelSettings = newValue}
@@ -1368,10 +1378,20 @@ public struct MicPacket {
 
   public var packetIndex: UInt32 = 0
 
+  public var fftIndex: UInt32 = 0
+
+  public var timestampUnix: UInt64 = 0
+
+  public var timestampMsFromStart: UInt32 = 0
+
   public var samplePeriod: UInt32 = 0
 
   public var micSampleFreq: UInt32 = 0
 
+  ///total packets required to send FFT
+  public var packetsPerFft: UInt32 = 0
+
+  ///total samples per FFT
   public var samplesPerFft: UInt32 = 0
 
   public var startFrequency: Float = 0
@@ -2952,10 +2972,12 @@ extension BlinkPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementati
   public static let protoMessageName: String = "BlinkPacket"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "packet_index"),
-    2: .standard(proto: "saturation_settings"),
-    3: .standard(proto: "sample_rate"),
-    4: .same(proto: "payloadByte"),
-    5: .same(proto: "payloadHighRes"),
+    2: .standard(proto: "timestamp_unix"),
+    3: .standard(proto: "timestamp_ms_from_start"),
+    4: .standard(proto: "saturation_settings"),
+    5: .standard(proto: "sample_rate"),
+    6: .same(proto: "payloadByte"),
+    7: .same(proto: "payloadHighRes"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2965,9 +2987,11 @@ extension BlinkPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementati
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularUInt32Field(value: &self.packetIndex) }()
-      case 2: try { try decoder.decodeSingularMessageField(value: &self._saturationSettings) }()
-      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.sampleRate) }()
-      case 4: try {
+      case 2: try { try decoder.decodeSingularUInt64Field(value: &self.timestampUnix) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.timestampMsFromStart) }()
+      case 4: try { try decoder.decodeSingularMessageField(value: &self._saturationSettings) }()
+      case 5: try { try decoder.decodeSingularUInt32Field(value: &self.sampleRate) }()
+      case 6: try {
         var v: BlinkBytePayload?
         var hadOneofValue = false
         if let current = self.payload {
@@ -2980,7 +3004,7 @@ extension BlinkPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementati
           self.payload = .payloadByte(v)
         }
       }()
-      case 5: try {
+      case 7: try {
         var v: BlinkHighResPayload?
         var hadOneofValue = false
         if let current = self.payload {
@@ -3006,20 +3030,26 @@ extension BlinkPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementati
     if self.packetIndex != 0 {
       try visitor.visitSingularUInt32Field(value: self.packetIndex, fieldNumber: 1)
     }
+    if self.timestampUnix != 0 {
+      try visitor.visitSingularUInt64Field(value: self.timestampUnix, fieldNumber: 2)
+    }
+    if self.timestampMsFromStart != 0 {
+      try visitor.visitSingularUInt32Field(value: self.timestampMsFromStart, fieldNumber: 3)
+    }
     try { if let v = self._saturationSettings {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
     } }()
     if self.sampleRate != 0 {
-      try visitor.visitSingularUInt32Field(value: self.sampleRate, fieldNumber: 3)
+      try visitor.visitSingularUInt32Field(value: self.sampleRate, fieldNumber: 5)
     }
     switch self.payload {
     case .payloadByte?: try {
       guard case .payloadByte(let v)? = self.payload else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
     }()
     case .payloadHighRes?: try {
       guard case .payloadHighRes(let v)? = self.payload else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
     }()
     case nil: break
     }
@@ -3028,6 +3058,8 @@ extension BlinkPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementati
 
   public static func ==(lhs: BlinkPacket, rhs: BlinkPacket) -> Bool {
     if lhs.packetIndex != rhs.packetIndex {return false}
+    if lhs.timestampUnix != rhs.timestampUnix {return false}
+    if lhs.timestampMsFromStart != rhs.timestampMsFromStart {return false}
     if lhs._saturationSettings != rhs._saturationSettings {return false}
     if lhs.sampleRate != rhs.sampleRate {return false}
     if lhs.payload != rhs.payload {return false}
@@ -3532,9 +3564,12 @@ extension IMUPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
   public static let protoMessageName: String = "IMUPacket"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "packet_index"),
-    2: .standard(proto: "accel_settings"),
-    3: .standard(proto: "gyro_settings"),
-    4: .same(proto: "payload"),
+    2: .standard(proto: "timestamp_unix"),
+    3: .standard(proto: "timestamp_ms_from_start"),
+    4: .standard(proto: "sampling_frequency"),
+    5: .standard(proto: "accel_settings"),
+    6: .standard(proto: "gyro_settings"),
+    7: .same(proto: "payload"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -3544,9 +3579,12 @@ extension IMUPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularUInt32Field(value: &self.packetIndex) }()
-      case 2: try { try decoder.decodeSingularMessageField(value: &self._accelSettings) }()
-      case 3: try { try decoder.decodeSingularMessageField(value: &self._gyroSettings) }()
-      case 4: try { try decoder.decodeSingularMessageField(value: &self._payload) }()
+      case 2: try { try decoder.decodeSingularUInt64Field(value: &self.timestampUnix) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.timestampMsFromStart) }()
+      case 4: try { try decoder.decodeSingularFloatField(value: &self.samplingFrequency) }()
+      case 5: try { try decoder.decodeSingularMessageField(value: &self._accelSettings) }()
+      case 6: try { try decoder.decodeSingularMessageField(value: &self._gyroSettings) }()
+      case 7: try { try decoder.decodeSingularMessageField(value: &self._payload) }()
       default: break
       }
     }
@@ -3560,20 +3598,32 @@ extension IMUPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
     if self.packetIndex != 0 {
       try visitor.visitSingularUInt32Field(value: self.packetIndex, fieldNumber: 1)
     }
+    if self.timestampUnix != 0 {
+      try visitor.visitSingularUInt64Field(value: self.timestampUnix, fieldNumber: 2)
+    }
+    if self.timestampMsFromStart != 0 {
+      try visitor.visitSingularUInt32Field(value: self.timestampMsFromStart, fieldNumber: 3)
+    }
+    if self.samplingFrequency != 0 {
+      try visitor.visitSingularFloatField(value: self.samplingFrequency, fieldNumber: 4)
+    }
     try { if let v = self._accelSettings {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
     } }()
     try { if let v = self._gyroSettings {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
     } }()
     try { if let v = self._payload {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
     } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: IMUPacket, rhs: IMUPacket) -> Bool {
     if lhs.packetIndex != rhs.packetIndex {return false}
+    if lhs.timestampUnix != rhs.timestampUnix {return false}
+    if lhs.timestampMsFromStart != rhs.timestampMsFromStart {return false}
+    if lhs.samplingFrequency != rhs.samplingFrequency {return false}
     if lhs._accelSettings != rhs._accelSettings {return false}
     if lhs._gyroSettings != rhs._gyroSettings {return false}
     if lhs._payload != rhs._payload {return false}
@@ -3618,12 +3668,16 @@ extension MicPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
   public static let protoMessageName: String = "MicPacket"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "packet_index"),
-    3: .standard(proto: "sample_period"),
-    2: .standard(proto: "mic_sample_freq"),
-    4: .standard(proto: "samples_per_fft"),
-    5: .standard(proto: "start_frequency"),
-    6: .standard(proto: "frequency_spacing"),
-    7: .same(proto: "payload"),
+    2: .standard(proto: "fft_index"),
+    3: .standard(proto: "timestamp_unix"),
+    4: .standard(proto: "timestamp_ms_from_start"),
+    5: .standard(proto: "sample_period"),
+    6: .standard(proto: "mic_sample_freq"),
+    7: .standard(proto: "packets_per_fft"),
+    8: .standard(proto: "samples_per_fft"),
+    9: .standard(proto: "start_frequency"),
+    10: .standard(proto: "frequency_spacing"),
+    11: .same(proto: "payload"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -3633,12 +3687,16 @@ extension MicPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularUInt32Field(value: &self.packetIndex) }()
-      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.micSampleFreq) }()
-      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.samplePeriod) }()
-      case 4: try { try decoder.decodeSingularUInt32Field(value: &self.samplesPerFft) }()
-      case 5: try { try decoder.decodeSingularFloatField(value: &self.startFrequency) }()
-      case 6: try { try decoder.decodeSingularFloatField(value: &self.frequencySpacing) }()
-      case 7: try { try decoder.decodeSingularMessageField(value: &self._payload) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.fftIndex) }()
+      case 3: try { try decoder.decodeSingularUInt64Field(value: &self.timestampUnix) }()
+      case 4: try { try decoder.decodeSingularUInt32Field(value: &self.timestampMsFromStart) }()
+      case 5: try { try decoder.decodeSingularUInt32Field(value: &self.samplePeriod) }()
+      case 6: try { try decoder.decodeSingularUInt32Field(value: &self.micSampleFreq) }()
+      case 7: try { try decoder.decodeSingularUInt32Field(value: &self.packetsPerFft) }()
+      case 8: try { try decoder.decodeSingularUInt32Field(value: &self.samplesPerFft) }()
+      case 9: try { try decoder.decodeSingularFloatField(value: &self.startFrequency) }()
+      case 10: try { try decoder.decodeSingularFloatField(value: &self.frequencySpacing) }()
+      case 11: try { try decoder.decodeSingularMessageField(value: &self._payload) }()
       default: break
       }
     }
@@ -3652,31 +3710,47 @@ extension MicPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
     if self.packetIndex != 0 {
       try visitor.visitSingularUInt32Field(value: self.packetIndex, fieldNumber: 1)
     }
-    if self.micSampleFreq != 0 {
-      try visitor.visitSingularUInt32Field(value: self.micSampleFreq, fieldNumber: 2)
+    if self.fftIndex != 0 {
+      try visitor.visitSingularUInt32Field(value: self.fftIndex, fieldNumber: 2)
+    }
+    if self.timestampUnix != 0 {
+      try visitor.visitSingularUInt64Field(value: self.timestampUnix, fieldNumber: 3)
+    }
+    if self.timestampMsFromStart != 0 {
+      try visitor.visitSingularUInt32Field(value: self.timestampMsFromStart, fieldNumber: 4)
     }
     if self.samplePeriod != 0 {
-      try visitor.visitSingularUInt32Field(value: self.samplePeriod, fieldNumber: 3)
+      try visitor.visitSingularUInt32Field(value: self.samplePeriod, fieldNumber: 5)
+    }
+    if self.micSampleFreq != 0 {
+      try visitor.visitSingularUInt32Field(value: self.micSampleFreq, fieldNumber: 6)
+    }
+    if self.packetsPerFft != 0 {
+      try visitor.visitSingularUInt32Field(value: self.packetsPerFft, fieldNumber: 7)
     }
     if self.samplesPerFft != 0 {
-      try visitor.visitSingularUInt32Field(value: self.samplesPerFft, fieldNumber: 4)
+      try visitor.visitSingularUInt32Field(value: self.samplesPerFft, fieldNumber: 8)
     }
     if self.startFrequency != 0 {
-      try visitor.visitSingularFloatField(value: self.startFrequency, fieldNumber: 5)
+      try visitor.visitSingularFloatField(value: self.startFrequency, fieldNumber: 9)
     }
     if self.frequencySpacing != 0 {
-      try visitor.visitSingularFloatField(value: self.frequencySpacing, fieldNumber: 6)
+      try visitor.visitSingularFloatField(value: self.frequencySpacing, fieldNumber: 10)
     }
     try { if let v = self._payload {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 11)
     } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: MicPacket, rhs: MicPacket) -> Bool {
     if lhs.packetIndex != rhs.packetIndex {return false}
+    if lhs.fftIndex != rhs.fftIndex {return false}
+    if lhs.timestampUnix != rhs.timestampUnix {return false}
+    if lhs.timestampMsFromStart != rhs.timestampMsFromStart {return false}
     if lhs.samplePeriod != rhs.samplePeriod {return false}
     if lhs.micSampleFreq != rhs.micSampleFreq {return false}
+    if lhs.packetsPerFft != rhs.packetsPerFft {return false}
     if lhs.samplesPerFft != rhs.samplesPerFft {return false}
     if lhs.startFrequency != rhs.startFrequency {return false}
     if lhs.frequencySpacing != rhs.frequencySpacing {return false}

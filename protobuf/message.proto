@@ -217,12 +217,14 @@ message BlinkHighResPayload {
 }
 message BlinkPacket{
     uint32 packet_index = 1;
-    Blink_saturation_settings saturation_settings = 2;
-    uint32 sample_rate = 3;
+    uint64 timestamp_unix = 2;
+    uint32 timestamp_ms_from_start = 3;
+    Blink_saturation_settings saturation_settings = 4;
+    uint32 sample_rate = 5;
 
     oneof payload{
-        BlinkBytePayload payloadByte = 4;
-        BlinkHighResPayload payloadHighRes = 5;
+        BlinkBytePayload payloadByte = 6;
+        BlinkHighResPayload payloadHighRes = 7;
     }
 } 
 
@@ -300,27 +302,34 @@ message IMU_Gyro_Settings{
 
 message IMUPacket{
     uint32 packet_index = 1;
-    IMU_Accel_Settings accel_settings = 2;
-    IMU_Gyro_Settings gyro_settings = 3;
+    uint64 timestamp_unix = 2;
+    uint32 timestamp_ms_from_start = 3;
+    float  sampling_frequency = 4;
+    IMU_Accel_Settings accel_settings = 5;
+    IMU_Gyro_Settings gyro_settings = 6;
 
     message Payload {
         bytes sample = 1;
     }
-    Payload payload = 4;
+    Payload payload = 7;
 } 
 
 message MicPacket{
     uint32 packet_index = 1;
-    uint32 sample_period = 3;
-    uint32 mic_sample_freq = 2;
-    uint32 samples_per_fft = 4;
-    float start_frequency = 5; 
-    float frequency_spacing = 6;
+    uint32 fft_index = 2;
+    uint64 timestamp_unix = 3;
+    uint32 timestamp_ms_from_start = 4;
+    uint32 sample_period = 5;
+    uint32 mic_sample_freq = 6;
+    uint32 packets_per_fft = 7; //total packets required to send FFT
+    uint32 samples_per_fft = 8; //total samples per FFT
+    float start_frequency = 9; 
+    float frequency_spacing = 10;
 
     message Payload {
         repeated float sample = 1;
     }
-    Payload payload = 7;
+    Payload payload = 11;
 } 
 
 

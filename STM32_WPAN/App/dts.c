@@ -236,7 +236,7 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 				status = pb_decode(&stream, AIR_SPEC_CONFIG_PACKET_FIELDS, &rxConfigPacket);
 
 				if(rxConfigPacket.has_header == true){
-					updateRTC(rxConfigPacket.header.timestamp_unix);
+					updateRTC_MS(rxConfigPacket.header.timestamp_unix);
 				}
 
 				switch(rxConfigPacket.which_payload) {
@@ -393,7 +393,7 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 
 						// update RTC with header's timestamp
 						if(rxPacketHeader.epoch != 0){
-							updateRTC(rxPacketHeader.epoch);
+							updateRTC_MS(rxPacketHeader.epoch);
 						}
 #endif
 

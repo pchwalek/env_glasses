@@ -229,11 +229,11 @@ int main(void) {
 		sysState.config.imu.gyro_settings.has_cutoff = true;
 		sysState.config.imu.gyro_settings.cutoff = IMU_GYRO_CUTOFF_ICM20_X_GYRO_FREQ_196_6_HZ;
 		sysState.config.imu.gyro_settings.range = IMU_GYRO_RANGE_RANGE_2000_DPS;
-		sysState.config.imu.gyro_settings.sample_rate_divisor = 1;
+		sysState.config.imu.gyro_settings.sample_rate_divisor = 3;
 		sysState.config.imu.accel_settings.has_cutoff = true;
 		sysState.config.imu.accel_settings.cutoff = IMU_ACCEL_CUTOFF_ICM20_X_ACCEL_FREQ_246_0_HZ;
 		sysState.config.imu.accel_settings.range = IMU_ACCEL_RANGE_RANGE_8_G;
-		sysState.config.imu.accel_settings.sample_rate_divisor = 1;
+		sysState.config.imu.accel_settings.sample_rate_divisor = 4;
 		sysState.config.imu.enable_windowing = 1;
 		sysState.config.imu.window_size_ms = 10000;
 		sysState.config.imu.window_period_ms = 30000;

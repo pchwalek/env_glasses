@@ -64,6 +64,8 @@ float tick_ms_diff = 0;
 uint8_t diodeState = 0;
 uint8_t diodeSaturatedFlag = 0;
 
+volatile uint32_t blinkTimestampMs;
+volatile uint64_t blinkTimestampUnix;
 
 
 osTimerId_t blinkSingleShotTimer_id;
@@ -177,6 +179,10 @@ void BlinkTask(void *argument) {
 						packet->payload.blink_packet.saturation_settings.diode_saturation_upper_thresh = sensorSettings.daylight_compensation_upper_thresh;
 						packet->payload.blink_packet.sample_rate = sensorSettings.sample_frequency;
 						packet->payload.blink_packet.which_payload = BLINK_PACKET_PAYLOAD_BYTE_TAG;
+
+
+						packet->payload.blink_packet.timestamp_unix = blinkTimestampMs;
+						packet->payload.blink_packet.timestamp_ms_from_start = blinkTimestampUnix;
 
 						// write lux data
 						memcpy(packet->payload.blink_packet.payload.payload_byte.sample.bytes, &(blink_ptr_copy[iterator * BLINK_PKT_PAYLOAD_SIZE]), payloadLength);
@@ -374,11 +380,17 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
 	blink_ptr = &blink_buffer[BLINK_HALF_BUFFER_SIZE];
 	osThreadFlagsSet(blinkTaskHandle, 0x00000004U);
 
+	blinkTimestampMs = HAL_GetTick();
+	blinkTimestampUnix = getEpoch();
+
 }
 
 void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc) {
 	blink_ptr = blink_buffer;
 	osThreadFlagsSet(blinkTaskHandle, 0x00000004U);
+
+	blinkTimestampMs = HAL_GetTick();
+	blinkTimestampUnix = getEpoch();
 
 }
 

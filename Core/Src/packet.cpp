@@ -341,6 +341,21 @@ void updateRTC(uint32_t receivedTime){
 	HAL_RTC_SetDate(&hrtc, &date, RTC_FORMAT_BIN);
 }
 
+void updateRTC_MS(uint64_t receivedTime){
+
+	receivedTime = receivedTime / 1000;
+
+	// (1) convert received UNIX time to time struct
+	RTC_TimeTypeDef time;
+	RTC_DateTypeDef date;
+	RTC_FromEpoch(receivedTime, &time, &date);
+
+	// (2) set time
+	HAL_RTC_SetTime(&hrtc, &time, RTC_FORMAT_BIN);
+	HAL_RTC_SetDate(&hrtc, &date, RTC_FORMAT_BIN);
+
+}
+
 uint64_t getEpoch(void){
 
 	// (1) convert received UNIX time to time struct
@@ -436,7 +451,7 @@ uint64_t RTC_ToEpochMS(RTC_TimeTypeDef *time, RTC_DateTypeDef *date) {
 	uint8_t  a;
 	uint16_t y;
 	uint8_t  m;
-	uint32_t JDN;
+	uint64_t JDN;
 
 	// These hardcore math's are taken from http://en.wikipedia.org/wiki/Julian_day
 

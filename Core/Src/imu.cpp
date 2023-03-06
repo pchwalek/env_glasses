@@ -38,8 +38,11 @@ uint8_t flag_int_enable = 0;
 
 osTimerId_t singleShotTimer_id;
 static uint32_t startTime;
+static uint64_t sampleStartTime_Unix;
+static uint32_t sampleStartTime_Ms;
 //static uint8_t tempData[MAX_FIFO_CNT];
-
+volatile uint32_t endTestTick, startTestTick;
+volatile float sampleRateTest, counterTest = 0;
 
 void IMU_Task(void *argument){
 	sensor_packet_t *packet = NULL;
@@ -86,23 +89,33 @@ void IMU_Task(void *argument){
 
 	osDelay(1);
 
-  uint16_t imuIdx = 0;
+//  uint16_t imuIdx = 0;
   uint32_t imuID = 0;
 
   imu.spiDataReady = HAL_SPI_IMU_WAIT;
 
-  uint8_t intStatus[4] = {0};
+//  uint8_t intStatus[4] = {0};
 
-  uint16_t fifo_cnt, fifo_cnt_2;
+  uint16_t fifo_cnt;
+
+  // sample frequency calculation
+  float sampleFrequency = 1125.0 / (1+sensorSettings.accel_settings.sample_rate_divisor);
+  if(sampleFrequency < (1100.0 / (1+sensorSettings.gyro_settings.sample_rate_divisor))){
+	  sampleFrequency = 1100.0 / (1+sensorSettings.gyro_settings.sample_rate_divisor);
+  }
+  float sample_time_offset_ms = 1000.0/sampleFrequency;
 
   uint16_t sampleTracker = 0;
   uint16_t start_idx = 0;
-  uint16_t end_idx = 0;
+//  uint16_t end_idx = 0;
   uint32_t packetTracker = 0;
 
-  uint32_t lastTick = HAL_GetTick();
-  float sampleRate = 0;
+//  uint32_t lastTick = HAL_GetTick();
+//  float sampleRate = 0;
+
   startTime = HAL_GetTick();
+  sampleStartTime_Ms = startTime;
+  sampleStartTime_Unix = getEpoch();
 
   uint16_t failed_read_attempt = 0;
 
@@ -133,7 +146,7 @@ void IMU_Task(void *argument){
 
 				sampleTracker += fifo_cnt;
 
-				lastTick = HAL_GetTick();
+//				lastTick = HAL_GetTick();
 				start_idx = 0;
 
 				while(sampleTracker != 0){
@@ -145,7 +158,13 @@ void IMU_Task(void *argument){
 					}
 
 					packet = grabPacket();
-					if(packet != NULL){
+					while(packet == NULL){
+						osDelay(2);
+						packet = grabPacket();
+
+					}
+
+
 
 						setPacketType(packet, SENSOR_PACKET_TYPES_IMU);
 
@@ -163,21 +182,27 @@ void IMU_Task(void *argument){
 						packet->payload.imu_packet.gyro_settings.range = static_cast<imu_gyro_range_t>(sensorSettings.gyro_settings.range );
 						packet->payload.imu_packet.gyro_settings.sample_rate_divisor = sensorSettings.gyro_settings.sample_rate_divisor;
 
+						packet->payload.imu_packet.sampling_frequency = sampleFrequency;
+
+						packet->payload.imu_packet.timestamp_unix = sampleStartTime_Unix;
+						packet->payload.imu_packet.timestamp_ms_from_start = startTime;
+
+						sampleStartTime_Unix += sample_time_offset_ms * (packetTracker/12.0);
+						sampleStartTime_Ms += sample_time_offset_ms * (packetTracker/12.0);
+
 						// write data
 						memcpy(packet->payload.imu_packet.payload.sample.bytes, &data[start_idx], packetTracker);
 						packet->payload.imu_packet.has_payload = true;
 						packet->payload.imu_packet.payload.sample.size = packetTracker;
-
+						counterTest += packetTracker;
 						// send to BT packetizer
 						queueUpPacket(packet);
 
 
-
-					}
 					sampleTracker -= packetTracker;
 					start_idx += packetTracker;
 					imuID++;
-					osDelay(5);
+					osDelay(15);
 				}
 
 		  	}
@@ -188,7 +213,8 @@ void IMU_Task(void *argument){
   	  			imu._init(); // reinit imu
   	  			failed_read_attempt = 0;
   	  		}
-
+  	  		sampleStartTime_Unix = getEpoch();
+			sampleStartTime_Ms = HAL_GetTick();
   	  	}
 
   	}
@@ -196,6 +222,10 @@ void IMU_Task(void *argument){
 	  if(sensorSettings.enable_windowing){
 
 		if(sensorSettings.window_size_ms < (HAL_GetTick() - startTime)){
+
+//			endTestTick = HAL_GetTick() - startTestTick;
+//			sampleRateTest = (counterTest / 12.0) / (endTestTick / 1000.0);
+
 			imu.reset();
 
 
@@ -219,7 +249,7 @@ void IMU_Task(void *argument){
 				// this check is unnessary but leaving it in in case we want to expand further
 			}
 
-			startTime = HAL_GetTick();
+
 
 			imu.updateGyroSettings(sensorSettings.gyro_settings.has_cutoff,
 					sensorSettings.gyro_settings.cutoff,
@@ -231,6 +261,8 @@ void IMU_Task(void *argument){
 					sensorSettings.accel_settings.sample_rate_divisor);
 
 
+
+
 			while(!imu.begin_SPI(&hspi2,IMU_CS_GPIO_Port,IMU_CS_Pin)){
 				osDelay(100);
 			}
@@ -239,6 +271,12 @@ void IMU_Task(void *argument){
 
 			fifo_cnt = 0;
 			imu.spiDataReady = HAL_SPI_IMU_WAIT;
+//			startTestTick = HAL_GetTick();
+//			counterTest = 0;
+
+			startTime = HAL_GetTick();
+			sampleStartTime_Ms = startTime;
+			sampleStartTime_Unix = getEpoch();
 		}
 
 
