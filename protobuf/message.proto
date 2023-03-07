@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-//import "nanopb.proto";
-//option (nanopb_fileopt).packed_struct = true;
+import "nanopb.proto";
+option (nanopb_fileopt).packed_struct = true;
 
 enum SensorPacketTypes {
     UNKNOWN_PACKET_TYPE = 0;
@@ -163,33 +163,36 @@ message LuxPacket{
     uint32 sample_period = 2;
     Tsl2591Gain gain = 3;
     Tsl2591IntegrationTime integration_time = 4;
+    uint32 sensor_id = 5;
 
     message Payload {
         uint32 lux = 1;
         uint64 timestamp_unix = 2;
         uint32 timestamp_ms_from_start = 3;
     }
-    repeated Payload payload = 5;
+    repeated Payload payload = 6;
 } 
 
 message SGPPacket{
     uint32 packet_index = 1;
     uint32 sample_period = 2;
+    uint32 sensor_id = 3;
 
     message Payload {
-        uint64 timestamp_unix = 1;
-        uint32 timestamp_ms_from_start = 2;
-        uint32 sraw_voc = 3;
-        uint32 sraw_nox = 4;
-        int32 voc_index_value = 5;
-        int32 nox_index_value = 6;
+        uint64 timestamp_unix = 2;
+        uint32 timestamp_ms_from_start = 3;
+        uint32 sraw_voc = 4;
+        uint32 sraw_nox = 5;
+        int32 voc_index_value = 6;
+        int32 nox_index_value = 7;
     }
-    repeated Payload payload = 3;
+    repeated Payload payload = 4;
 } 
 
 message BMEPacket{
     uint32 packet_index = 1;
     uint32 sample_period = 2;
+    uint32 sensor_id = 3;
     
     message Payload {
         fixed64 timestamp_sensor = 1;
@@ -200,7 +203,7 @@ message BMEPacket{
         BME680_signal_id sensor_id = 6;
         BME680_accuracy accuracy = 7;
     }
-    repeated Payload payload = 3;
+    repeated Payload payload = 4;
 } 
 
 message Blink_saturation_settings{
@@ -235,6 +238,7 @@ message SHTPacket{
     uint32 sample_period = 2;
     Sht45_precision precision = 3;
     Sht45_heater heater = 4;
+    uint32 sensor_id = 5;
 
     message Payload {
         uint64 timestamp_unix = 1;
@@ -242,7 +246,7 @@ message SHTPacket{
         float temperature = 3;
         float humidity = 4;
     }
-    repeated Payload payload = 5;
+    repeated Payload payload = 6;
 } 
 
 message SpecPacket{
@@ -251,6 +255,7 @@ message SpecPacket{
     uint32 integration_time = 3;
     uint32 integration_step = 4;
     Spec_gain gain = 5;
+    uint32 sensor_id = 6;
 
     message Payload {
         uint32 band_415 = 1;
@@ -269,7 +274,7 @@ message SpecPacket{
         uint64 timestamp_unix = 14;
         uint32 timestamp_ms_from_start = 15;
     }
-    repeated Payload payload = 6;
+    repeated Payload payload = 7;
 } 
 
 message ThermPacket{

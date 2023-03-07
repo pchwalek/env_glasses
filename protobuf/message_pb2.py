@@ -15,7 +15,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rmessage.proto\"N\n\x12SensorPacketHeader\x12\x12\n\nsystem_uid\x18\x01 \x01(\r\x12\x15\n\rms_from_start\x18\x02 \x01(\r\x12\r\n\x05\x65poch\x18\x03 \x01(\r\"\xfd\x01\n\tLuxPacket\x12\x14\n\x0cpacket_index\x18\x01 \x01(\r\x12\x15\n\rsample_period\x18\x02 \x01(\r\x12\x1a\n\x04gain\x18\x03 \x01(\x0e\x32\x0c.Tsl2591Gain\x12\x31\n\x10integration_time\x18\x04 \x01(\x0e\x32\x17.Tsl2591IntegrationTime\x12#\n\x07payload\x18\x05 \x03(\x0b\x32\x12.LuxPacket.Payload\x1aO\n\x07Payload\x12\x0b\n\x03lux\x18\x01 \x01(\r\x12\x16\n\x0etimestamp_unix\x18\x02 \x01(\r\x12\x1f\n\x17timestamp_ms_from_start\x18\x03 \x01(\r\"\xf8\x01\n\tSGPPacket\x12\x14\n\x0cpacket_index\x18\x01 \x01(\r\x12\x15\n\rsample_period\x18\x02 \x01(\r\x12#\n\x07payload\x18\x03 \x03(\x0b\x32\x12.SGPPacket.Payload\x1a\x98\x01\n\x07Payload\x12\x16\n\x0etimestamp_unix\x18\x01 \x01(\r\x12\x1f\n\x17timestamp_ms_from_start\x18\x02 \x01(\r\x12\x10\n\x08sraw_voc\x18\x03 \x01(\r\x12\x10\n\x08sraw_nox\x18\x04 \x01(\r\x12\x17\n\x0fvoc_index_value\x18\x05 \x01(\x05\x12\x17\n\x0fnox_index_value\x18\x06 \x01(\x05\"\xb1\x02\n\tBMEPacket\x12\x14\n\x0cpacket_index\x18\x01 \x01(\r\x12\x15\n\rsample_period\x18\x02 \x01(\r\x12#\n\x07payload\x18\x03 \x03(\x0b\x32\x12.BMEPacket.Payload\x1a\xd1\x01\n\x07Payload\x12\x18\n\x10timestamp_sensor\x18\x01 \x01(\x06\x12\x16\n\x0etimestamp_unix\x18\x02 \x01(\r\x12\x1f\n\x17timestamp_ms_from_start\x18\x03 \x01(\r\x12\x0e\n\x06signal\x18\x04 \x01(\x02\x12\x19\n\x11signal_dimensions\x18\x05 \x01(\r\x12$\n\tsensor_id\x18\x06 \x01(\x0e\x32\x11.BME680_signal_id\x12\"\n\x08\x61\x63\x63uracy\x18\x07 \x01(\x0e\x32\x10.BME680_accuracy\"\x83\x01\n\x19\x42link_saturation_settings\x12\x18\n\x10\x64iode_turned_off\x18\x01 \x01(\x08\x12%\n\x1d\x64iode_saturation_lower_thresh\x18\x02 \x01(\r\x12%\n\x1d\x64iode_saturation_upper_thresh\x18\x03 \x01(\r\"\"\n\x10\x42linkBytePayload\x12\x0e\n\x06sample\x18\x01 \x01(\x0c\"%\n\x13\x42linkHighResPayload\x12\x0e\n\x06sample\x18\x01 \x01(\x0c\"\xd6\x01\n\x0b\x42linkPacket\x12\x14\n\x0cpacket_index\x18\x01 \x01(\r\x12\x37\n\x13saturation_settings\x18\x02 \x01(\x0b\x32\x1a.Blink_saturation_settings\x12\x13\n\x0bsample_rate\x18\x03 \x01(\r\x12(\n\x0bpayloadByte\x18\x04 \x01(\x0b\x32\x11.BlinkBytePayloadH\x00\x12.\n\x0epayloadHighRes\x18\x05 \x01(\x0b\x32\x14.BlinkHighResPayloadH\x00\x42\t\n\x07payload\"\x8c\x02\n\tSHTPacket\x12\x14\n\x0cpacket_index\x18\x01 \x01(\r\x12\x15\n\rsample_period\x18\x02 \x01(\r\x12#\n\tprecision\x18\x03 \x01(\x0e\x32\x10.Sht45_precision\x12\x1d\n\x06heater\x18\x04 \x01(\x0e\x32\r.Sht45_heater\x12#\n\x07payload\x18\x05 \x03(\x0b\x32\x12.SHTPacket.Payload\x1ai\n\x07Payload\x12\x16\n\x0etimestamp_unix\x18\x01 \x01(\r\x12\x1f\n\x17timestamp_ms_from_start\x18\x02 \x01(\r\x12\x13\n\x0btemperature\x18\x03 \x01(\x02\x12\x10\n\x08humidity\x18\x04 \x01(\x02\"\xae\x03\n\nSpecPacket\x12\x14\n\x0cpacket_index\x18\x01 \x01(\r\x12\x15\n\rsample_period\x18\x02 \x01(\r\x12\x18\n\x10integration_time\x18\x03 \x01(\r\x12\x18\n\x10integration_step\x18\x04 \x01(\r\x12\x18\n\x04gain\x18\x05 \x01(\x0e\x32\n.Spec_gain\x12$\n\x07payload\x18\x06 \x03(\x0b\x32\x13.SpecPacket.Payload\x1a\xfe\x01\n\x07Payload\x12\x10\n\x08\x62\x61nd_415\x18\x01 \x01(\r\x12\x10\n\x08\x62\x61nd_445\x18\x02 \x01(\r\x12\x10\n\x08\x62\x61nd_480\x18\x03 \x01(\r\x12\x10\n\x08\x62\x61nd_515\x18\x04 \x01(\r\x12\x14\n\x0c\x62\x61nd_clear_1\x18\x05 \x01(\r\x12\x12\n\nband_nir_1\x18\x06 \x01(\r\x12\x10\n\x08\x62\x61nd_555\x18\x07 \x01(\r\x12\x10\n\x08\x62\x61nd_590\x18\x08 \x01(\r\x12\x10\n\x08\x62\x61nd_630\x18\t \x01(\r\x12\x10\n\x08\x62\x61nd_680\x18\n \x01(\r\x12\x14\n\x0c\x62\x61nd_clear_2\x18\x0b \x01(\r\x12\x12\n\nband_nir_2\x18\x0c \x01(\r\x12\x0f\n\x07\x66licker\x18\r \x01(\r\"\xa4\x02\n\x0bThermPacket\x12\x14\n\x0cpacket_index\x18\x01 \x01(\r\x12\x15\n\rsample_period\x18\x02 \x01(\r\x12%\n\x07payload\x18\x03 \x03(\x0b\x32\x14.ThermPacket.Payload\x1a\xc0\x01\n\x07Payload\x12(\n\ndescriptor\x18\x01 \x01(\x0e\x32\x14.Thermopile_location\x12\x16\n\x0etimestamp_unix\x18\x02 \x01(\r\x12\x1f\n\x17timestamp_ms_from_start\x18\x03 \x01(\r\x12\x13\n\x0b\x61mbient_raw\x18\x04 \x01(\r\x12\x12\n\nobject_raw\x18\x05 \x01(\r\x12\x14\n\x0c\x61mbient_temp\x18\x06 \x01(\x02\x12\x13\n\x0bobject_temp\x18\x07 \x01(\x02\"\x85\x01\n\x12IMU_Accel_Settings\x12&\n\x06\x63utoff\x18\x01 \x01(\x0e\x32\x11.IMU_accel_cutoffH\x00\x88\x01\x01\x12\x1f\n\x05range\x18\x02 \x01(\x0e\x32\x10.IMU_accel_range\x12\x1b\n\x13sample_rate_divisor\x18\x03 \x01(\rB\t\n\x07_cutoff\"\x82\x01\n\x11IMU_Gyro_Settings\x12%\n\x06\x63utoff\x18\x01 \x01(\x0e\x32\x10.IMU_gyro_cutoffH\x00\x88\x01\x01\x12\x1e\n\x05range\x18\x02 \x01(\x0e\x32\x0f.IMU_gyro_range\x12\x1b\n\x13sample_rate_divisor\x18\x03 \x01(\rB\t\n\x07_cutoff\"\xb9\x01\n\tIMUPacket\x12\x14\n\x0cpacket_index\x18\x01 \x01(\r\x12+\n\x0e\x61\x63\x63\x65l_settings\x18\x02 \x01(\x0b\x32\x13.IMU_Accel_Settings\x12)\n\rgyro_settings\x18\x03 \x01(\x0b\x32\x12.IMU_Gyro_Settings\x12#\n\x07payload\x18\x04 \x01(\x0b\x32\x12.IMUPacket.Payload\x1a\x19\n\x07Payload\x12\x0e\n\x06sample\x18\x01 \x01(\x0c\"\xde\x01\n\tMicPacket\x12\x14\n\x0cpacket_index\x18\x01 \x01(\r\x12\x15\n\rsample_period\x18\x03 \x01(\r\x12\x17\n\x0fmic_sample_freq\x18\x02 \x01(\r\x12\x17\n\x0fsamples_per_fft\x18\x04 \x01(\r\x12\x17\n\x0fstart_frequency\x18\x05 \x01(\x02\x12\x19\n\x11\x66requency_spacing\x18\x06 \x01(\x02\x12#\n\x07payload\x18\x07 \x01(\x0b\x32\x12.MicPacket.Payload\x1a\x19\n\x07Payload\x12\x0e\n\x06sample\x18\x01 \x03(\x02\"\xfa\x02\n\x0cSensorPacket\x12#\n\x06header\x18\x01 \x01(\x0b\x32\x13.SensorPacketHeader\x12 \n\nlux_packet\x18\x02 \x01(\x0b\x32\n.LuxPacketH\x00\x12 \n\nsgp_packet\x18\x03 \x01(\x0b\x32\n.SGPPacketH\x00\x12 \n\nbme_packet\x18\x04 \x01(\x0b\x32\n.BMEPacketH\x00\x12$\n\x0c\x62link_packet\x18\x05 \x01(\x0b\x32\x0c.BlinkPacketH\x00\x12 \n\nsht_packet\x18\x06 \x01(\x0b\x32\n.SHTPacketH\x00\x12\"\n\x0bspec_packet\x18\x07 \x01(\x0b\x32\x0b.SpecPacketH\x00\x12$\n\x0ctherm_packet\x18\x08 \x01(\x0b\x32\x0c.ThermPacketH\x00\x12 \n\nimu_packet\x18\t \x01(\x0b\x32\n.IMUPacketH\x00\x12 \n\nmic_packet\x18\n \x01(\x0b\x32\n.MicPacketH\x00\x42\t\n\x07payload*\xbc\x01\n\x11SensorPacketTypes\x12\x17\n\x13UNKNOWN_PACKET_TYPE\x10\x00\x12\x0b\n\x07PPG_RED\x10\x01\x12\n\n\x06PPG_IR\x10\x02\x12\x10\n\x0cSPECTROMETER\x10\x03\x12\x07\n\x03\x42ME\x10\x04\x12\x07\n\x03\x43O2\x10\x05\x12\x07\n\x03IMU\x10\x06\x12\x0e\n\nTHERMOPILE\x10\x07\x12\x07\n\x03LUX\x10\x08\x12\t\n\x05LIDAR\x10\t\x12\x07\n\x03MIC\x10\n\x12\x07\n\x03SHT\x10\x0b\x12\x07\n\x03SGP\x10\x0c\x12\t\n\x05\x42LINK\x10\r*d\n\x0bTsl2591Gain\x12\x13\n\x0fTSL2722_GAIN_1X\x10\x00\x12\x13\n\x0fTSL2722_GAIN_8X\x10\x01\x12\x14\n\x10TSL2722_GAIN_16X\x10\x02\x12\x15\n\x11TSL2722_GAIN_120X\x10\x03*\xce\x01\n\x16Tsl2591IntegrationTime\x12!\n\x1dTSL2722_INTEGRATIONTIME_600MS\x10\x00\x12#\n\x1eTSL2722_INTEGRATIONTIME_2_73MS\x10\xff\x01\x12$\n\x1fTSL2722_INTEGRATIONTIME_27_30MS\x10\xf6\x01\x12\"\n\x1dTSL2722_INTEGRATIONTIME_101MS\x10\xdb\x01\x12\"\n\x1dTSL2722_INTEGRATIONTIME_175MS\x10\xc0\x01*]\n\x0fSht45_precision\x12\x18\n\x14SHT4X_HIGH_PRECISION\x10\x00\x12\x17\n\x13SHT4X_MED_PRECISION\x10\x01\x12\x17\n\x13SHT4X_LOW_PRECISION\x10\x02*\xc4\x01\n\x0cSht45_heater\x12\x13\n\x0fSHT4X_NO_HEATER\x10\x00\x12\x18\n\x14SHT4X_HIGH_HEATER_1S\x10\x01\x12\x1b\n\x17SHT4X_HIGH_HEATER_100MS\x10\x02\x12\x17\n\x13SHT4X_MED_HEATER_1S\x10\x03\x12\x1a\n\x16SHT4X_MED_HEATER_100MS\x10\x04\x12\x17\n\x13SHT4X_LOW_HEATER_1S\x10\x05\x12\x1a\n\x16SHT4X_LOW_HEATER_100MS\x10\x06*j\n\x13Thermopile_location\x12\x0f\n\x0bTIP_OF_NOSE\x10\x00\x12\x0f\n\x0bNOSE_BRIDGE\x10\x01\x12\x10\n\x0c\x46RONT_TEMPLE\x10\x02\x12\x0e\n\nMID_TEMPLE\x10\x03\x12\x0f\n\x0bREAR_TEMPLE\x10\x04*[\n\x0f\x42ME680_accuracy\x12\x0e\n\nUNRELIABLE\x10\x00\x12\x10\n\x0cLOW_ACCURACY\x10\x01\x12\x13\n\x0fMEDIUM_ACCURACY\x10\x02\x12\x11\n\rHIGH_ACCURACY\x10\x03*\x94\x02\n\x10\x42ME680_signal_id\x12\r\n\tUNDEFINED\x10\x00\x12\x07\n\x03IAQ\x10\x01\x12\x0e\n\nSTATIC_IAQ\x10\x02\x12\n\n\x06\x43O2_EQ\x10\x03\x12\x11\n\rBREATH_VOC_EQ\x10\x04\x12\x13\n\x0fRAW_TEMPERATURE\x10\x06\x12\x10\n\x0cRAW_PRESSURE\x10\x07\x12\x10\n\x0cRAW_HUMIDITY\x10\x08\x12\x0b\n\x07RAW_GAS\x10\t\x12\x18\n\x14STABILIZATION_STATUS\x10\x0c\x12\x11\n\rRUN_IN_STATUS\x10\r\x12\x1b\n\x17SENSOR_HEAT_COMPEN_TEMP\x10\x0e\x12\x15\n\x11HEAT_COMPEN_HUMID\x10\x0f\x12\x12\n\x0eGAS_PERCENTAGE\x10\x15*\xa5\x01\n\tSpec_gain\x12\r\n\tGAIN_0_5X\x10\x00\x12\x0b\n\x07GAIN_1X\x10\x01\x12\x0b\n\x07GAIN_2X\x10\x02\x12\x0b\n\x07GAIN_4X\x10\x03\x12\x0b\n\x07GAIN_8X\x10\x04\x12\x0c\n\x08GAIN_16X\x10\x05\x12\x0c\n\x08GAIN_32X\x10\x06\x12\x0c\n\x08GAIN_64X\x10\x07\x12\r\n\tGAIN_128X\x10\x08\x12\r\n\tGAIN_256X\x10\t\x12\r\n\tGAIN_512X\x10\n*\x84\x02\n\x0fIMU_gyro_cutoff\x12\x1d\n\x19ICM20X_GYRO_FREQ_196_6_HZ\x10\x00\x12\x1d\n\x19ICM20X_GYRO_FREQ_151_8_HZ\x10\x01\x12\x1d\n\x19ICM20X_GYRO_FREQ_119_5_HZ\x10\x02\x12\x1c\n\x18ICM20X_GYRO_FREQ_51_2_HZ\x10\x03\x12\x1c\n\x18ICM20X_GYRO_FREQ_23_9_HZ\x10\x04\x12\x1c\n\x18ICM20X_GYRO_FREQ_11_6_HZ\x10\x05\x12\x1b\n\x17ICM20X_GYRO_FREQ_5_7_HZ\x10\x06\x12\x1d\n\x19ICM20X_GYRO_FREQ_361_4_HZ\x10\x07*^\n\x0eIMU_gyro_range\x12\x11\n\rRANGE_250_dps\x10\x00\x12\x11\n\rRANGE_500_dps\x10\x01\x12\x12\n\x0eRANGE_1000_dps\x10\x02\x12\x12\n\x0eRANGE_2000_dps\x10\x03*\x87\x02\n\x10IMU_accel_cutoff\x12\x1a\n\x16UNDEFINED_ACCEL_CUTOFF\x10\x00\x12\x1e\n\x1aICM20X_ACCEL_FREQ_246_0_HZ\x10\x01\x12\x1e\n\x1aICM20X_ACCEL_FREQ_111_4_HZ\x10\x02\x12\x1d\n\x19ICM20X_ACCEL_FREQ_50_4_HZ\x10\x03\x12\x1d\n\x19ICM20X_ACCEL_FREQ_23_9_HZ\x10\x04\x12\x1d\n\x19ICM20X_ACCEL_FREQ_11_5_HZ\x10\x05\x12\x1c\n\x18ICM20X_ACCEL_FREQ_5_7_HZ\x10\x06\x12\x1c\n\x18ICM20X_ACCEL_FREQ_473_HZ\x10\x07*J\n\x0fIMU_accel_range\x12\x0c\n\x08RANGE_2G\x10\x00\x12\x0c\n\x08RANGE_4G\x10\x01\x12\x0c\n\x08RANGE_8G\x10\x02\x12\r\n\tRANGE_16G\x10\x03*\x83\x01\n\x0eIMU_mag_cutoff\x12\x18\n\x14UNDEFINED_MAG_CUTOFF\x10\x00\x12\x14\n\x10ICM20X_MAG_10_HZ\x10\x02\x12\x14\n\x10ICM20X_MAG_20_HZ\x10\x04\x12\x14\n\x10ICM20X_MAG_50_HZ\x10\x06\x12\x15\n\x11ICM20X_MAG_100_HZ\x10\x08\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rmessage.proto\"N\n\x12SensorPacketHeader\x12\x12\n\nsystem_uid\x18\x01 \x01(\r\x12\x15\n\rms_from_start\x18\x02 \x01(\r\x12\r\n\x05\x65poch\x18\x03 \x01(\x04\"\xfd\x01\n\tLuxPacket\x12\x14\n\x0cpacket_index\x18\x01 \x01(\r\x12\x15\n\rsample_period\x18\x02 \x01(\r\x12\x1a\n\x04gain\x18\x03 \x01(\x0e\x32\x0c.Tsl2591Gain\x12\x31\n\x10integration_time\x18\x04 \x01(\x0e\x32\x17.Tsl2591IntegrationTime\x12#\n\x07payload\x18\x05 \x03(\x0b\x32\x12.LuxPacket.Payload\x1aO\n\x07Payload\x12\x0b\n\x03lux\x18\x01 \x01(\r\x12\x16\n\x0etimestamp_unix\x18\x02 \x01(\x04\x12\x1f\n\x17timestamp_ms_from_start\x18\x03 \x01(\r\"\xf8\x01\n\tSGPPacket\x12\x14\n\x0cpacket_index\x18\x01 \x01(\r\x12\x15\n\rsample_period\x18\x02 \x01(\r\x12#\n\x07payload\x18\x03 \x03(\x0b\x32\x12.SGPPacket.Payload\x1a\x98\x01\n\x07Payload\x12\x16\n\x0etimestamp_unix\x18\x01 \x01(\x04\x12\x1f\n\x17timestamp_ms_from_start\x18\x02 \x01(\r\x12\x10\n\x08sraw_voc\x18\x03 \x01(\r\x12\x10\n\x08sraw_nox\x18\x04 \x01(\r\x12\x17\n\x0fvoc_index_value\x18\x05 \x01(\x05\x12\x17\n\x0fnox_index_value\x18\x06 \x01(\x05\"\xb1\x02\n\tBMEPacket\x12\x14\n\x0cpacket_index\x18\x01 \x01(\r\x12\x15\n\rsample_period\x18\x02 \x01(\r\x12#\n\x07payload\x18\x03 \x03(\x0b\x32\x12.BMEPacket.Payload\x1a\xd1\x01\n\x07Payload\x12\x18\n\x10timestamp_sensor\x18\x01 \x01(\x06\x12\x16\n\x0etimestamp_unix\x18\x02 \x01(\x04\x12\x1f\n\x17timestamp_ms_from_start\x18\x03 \x01(\r\x12\x0e\n\x06signal\x18\x04 \x01(\x02\x12\x19\n\x11signal_dimensions\x18\x05 \x01(\r\x12$\n\tsensor_id\x18\x06 \x01(\x0e\x32\x11.BME680_signal_id\x12\"\n\x08\x61\x63\x63uracy\x18\x07 \x01(\x0e\x32\x10.BME680_accuracy\"\x83\x01\n\x19\x42link_saturation_settings\x12\x18\n\x10\x64iode_turned_off\x18\x01 \x01(\x08\x12%\n\x1d\x64iode_saturation_lower_thresh\x18\x02 \x01(\r\x12%\n\x1d\x64iode_saturation_upper_thresh\x18\x03 \x01(\r\"\"\n\x10\x42linkBytePayload\x12\x0e\n\x06sample\x18\x01 \x01(\x0c\"%\n\x13\x42linkHighResPayload\x12\x0e\n\x06sample\x18\x01 \x01(\x0c\"\x8f\x02\n\x0b\x42linkPacket\x12\x14\n\x0cpacket_index\x18\x01 \x01(\r\x12\x16\n\x0etimestamp_unix\x18\x02 \x01(\x04\x12\x1f\n\x17timestamp_ms_from_start\x18\x03 \x01(\r\x12\x37\n\x13saturation_settings\x18\x04 \x01(\x0b\x32\x1a.Blink_saturation_settings\x12\x13\n\x0bsample_rate\x18\x05 \x01(\r\x12(\n\x0bpayloadByte\x18\x06 \x01(\x0b\x32\x11.BlinkBytePayloadH\x00\x12.\n\x0epayloadHighRes\x18\x07 \x01(\x0b\x32\x14.BlinkHighResPayloadH\x00\x42\t\n\x07payload\"\x8c\x02\n\tSHTPacket\x12\x14\n\x0cpacket_index\x18\x01 \x01(\r\x12\x15\n\rsample_period\x18\x02 \x01(\r\x12#\n\tprecision\x18\x03 \x01(\x0e\x32\x10.Sht45_precision\x12\x1d\n\x06heater\x18\x04 \x01(\x0e\x32\r.Sht45_heater\x12#\n\x07payload\x18\x05 \x03(\x0b\x32\x12.SHTPacket.Payload\x1ai\n\x07Payload\x12\x16\n\x0etimestamp_unix\x18\x01 \x01(\x04\x12\x1f\n\x17timestamp_ms_from_start\x18\x02 \x01(\r\x12\x13\n\x0btemperature\x18\x03 \x01(\x02\x12\x10\n\x08humidity\x18\x04 \x01(\x02\"\xe7\x03\n\nSpecPacket\x12\x14\n\x0cpacket_index\x18\x01 \x01(\r\x12\x15\n\rsample_period\x18\x02 \x01(\r\x12\x18\n\x10integration_time\x18\x03 \x01(\r\x12\x18\n\x10integration_step\x18\x04 \x01(\r\x12\x18\n\x04gain\x18\x05 \x01(\x0e\x32\n.Spec_gain\x12$\n\x07payload\x18\x06 \x03(\x0b\x32\x13.SpecPacket.Payload\x1a\xb7\x02\n\x07Payload\x12\x10\n\x08\x62\x61nd_415\x18\x01 \x01(\r\x12\x10\n\x08\x62\x61nd_445\x18\x02 \x01(\r\x12\x10\n\x08\x62\x61nd_480\x18\x03 \x01(\r\x12\x10\n\x08\x62\x61nd_515\x18\x04 \x01(\r\x12\x14\n\x0c\x62\x61nd_clear_1\x18\x05 \x01(\r\x12\x12\n\nband_nir_1\x18\x06 \x01(\r\x12\x10\n\x08\x62\x61nd_555\x18\x07 \x01(\r\x12\x10\n\x08\x62\x61nd_590\x18\x08 \x01(\r\x12\x10\n\x08\x62\x61nd_630\x18\t \x01(\r\x12\x10\n\x08\x62\x61nd_680\x18\n \x01(\r\x12\x14\n\x0c\x62\x61nd_clear_2\x18\x0b \x01(\r\x12\x12\n\nband_nir_2\x18\x0c \x01(\r\x12\x0f\n\x07\x66licker\x18\r \x01(\r\x12\x16\n\x0etimestamp_unix\x18\x0e \x01(\x04\x12\x1f\n\x17timestamp_ms_from_start\x18\x0f \x01(\r\"\xa4\x02\n\x0bThermPacket\x12\x14\n\x0cpacket_index\x18\x01 \x01(\r\x12\x15\n\rsample_period\x18\x02 \x01(\r\x12%\n\x07payload\x18\x03 \x03(\x0b\x32\x14.ThermPacket.Payload\x1a\xc0\x01\n\x07Payload\x12(\n\ndescriptor\x18\x01 \x01(\x0e\x32\x14.Thermopile_location\x12\x16\n\x0etimestamp_unix\x18\x02 \x01(\x04\x12\x1f\n\x17timestamp_ms_from_start\x18\x03 \x01(\r\x12\x13\n\x0b\x61mbient_raw\x18\x04 \x01(\r\x12\x12\n\nobject_raw\x18\x05 \x01(\r\x12\x14\n\x0c\x61mbient_temp\x18\x06 \x01(\x02\x12\x13\n\x0bobject_temp\x18\x07 \x01(\x02\"\x85\x01\n\x12IMU_Accel_Settings\x12&\n\x06\x63utoff\x18\x01 \x01(\x0e\x32\x11.IMU_accel_cutoffH\x00\x88\x01\x01\x12\x1f\n\x05range\x18\x02 \x01(\x0e\x32\x10.IMU_accel_range\x12\x1b\n\x13sample_rate_divisor\x18\x03 \x01(\rB\t\n\x07_cutoff\"\x82\x01\n\x11IMU_Gyro_Settings\x12%\n\x06\x63utoff\x18\x01 \x01(\x0e\x32\x10.IMU_gyro_cutoffH\x00\x88\x01\x01\x12\x1e\n\x05range\x18\x02 \x01(\x0e\x32\x0f.IMU_gyro_range\x12\x1b\n\x13sample_rate_divisor\x18\x03 \x01(\rB\t\n\x07_cutoff\"\x8e\x02\n\tIMUPacket\x12\x14\n\x0cpacket_index\x18\x01 \x01(\r\x12\x16\n\x0etimestamp_unix\x18\x02 \x01(\x04\x12\x1f\n\x17timestamp_ms_from_start\x18\x03 \x01(\r\x12\x1a\n\x12sampling_frequency\x18\x04 \x01(\x02\x12+\n\x0e\x61\x63\x63\x65l_settings\x18\x05 \x01(\x0b\x32\x13.IMU_Accel_Settings\x12)\n\rgyro_settings\x18\x06 \x01(\x0b\x32\x12.IMU_Gyro_Settings\x12#\n\x07payload\x18\x07 \x01(\x0b\x32\x12.IMUPacket.Payload\x1a\x19\n\x07Payload\x12\x0e\n\x06sample\x18\x01 \x01(\x0c\"\xc3\x02\n\tMicPacket\x12\x14\n\x0cpacket_index\x18\x01 \x01(\r\x12\x11\n\tfft_index\x18\x02 \x01(\r\x12\x16\n\x0etimestamp_unix\x18\x03 \x01(\x04\x12\x1f\n\x17timestamp_ms_from_start\x18\x04 \x01(\r\x12\x15\n\rsample_period\x18\x05 \x01(\r\x12\x17\n\x0fmic_sample_freq\x18\x06 \x01(\r\x12\x17\n\x0fpackets_per_fft\x18\x07 \x01(\r\x12\x17\n\x0fsamples_per_fft\x18\x08 \x01(\r\x12\x17\n\x0fstart_frequency\x18\t \x01(\x02\x12\x19\n\x11\x66requency_spacing\x18\n \x01(\x02\x12#\n\x07payload\x18\x0b \x01(\x0b\x32\x12.MicPacket.Payload\x1a\x19\n\x07Payload\x12\x0e\n\x06sample\x18\x01 \x03(\x02\"9\n\rAirSpecColors\x12\x0b\n\x03red\x18\x01 \x01(\r\x12\r\n\x05green\x18\x02 \x01(\r\x12\x0c\n\x04\x62lue\x18\x03 \x01(\r\"q\n\x14\x41irSpecColorPosition\x12\x1f\n\x07\x66orward\x18\x01 \x01(\x0b\x32\x0e.AirSpecColors\x12\x1b\n\x03\x65ye\x18\x02 \x01(\x0b\x32\x0e.AirSpecColors\x12\x1b\n\x03top\x18\x03 \x01(\x0b\x32\x0e.AirSpecColors\"_\n\x12LightControlPacket\x12#\n\x04left\x18\x01 \x01(\x0b\x32\x15.AirSpecColorPosition\x12$\n\x05right\x18\x02 \x01(\x0b\x32\x15.AirSpecColorPosition\"\xfd\x01\n\rSensorControl\x12\x12\n\nenable_all\x18\x01 \x01(\x08\x12\x14\n\x0cspectrometer\x18\x02 \x01(\x08\x12\x0e\n\x06\x62me688\x18\x03 \x01(\x08\x12\x0b\n\x03imu\x18\x04 \x01(\x08\x12\x13\n\x0bthermopiles\x18\x05 \x01(\x08\x12\x0b\n\x03lux\x18\x06 \x01(\x08\x12\x0b\n\x03mic\x18\x07 \x01(\x08\x12\x0b\n\x03sht\x18\x08 \x01(\x08\x12\x0b\n\x03sgp\x18\t \x01(\x08\x12\r\n\x05\x62link\x18\n \x01(\x08\x12\x1b\n\x13synchronize_windows\x18\x0b \x01(\x08\x12\x16\n\x0ewindow_size_ms\x18\x0c \x01(\r\x12\x18\n\x10window_period_ms\x18\r \x01(\r\"z\n\x0fLuxSensorConfig\x12\x18\n\x10sample_period_ms\x18\x01 \x01(\r\x12\x1a\n\x04gain\x18\x02 \x01(\x0e\x32\x0c.Tsl2591Gain\x12\x31\n\x10integration_time\x18\x03 \x01(\x0e\x32\x17.Tsl2591IntegrationTime\"-\n\x11SGP_Sensor_Config\x12\x18\n\x10sample_period_ms\x18\x01 \x01(\r\"-\n\x11\x42ME_Sensor_Config\x12\x18\n\x10sample_period_ms\x18\x01 \x01(\r\"{\n\x11\x43olorSensorConfig\x12\x18\n\x10sample_period_ms\x18\x01 \x01(\r\x12\x18\n\x10integration_time\x18\x02 \x01(\r\x12\x18\n\x10integration_step\x18\x03 \x01(\r\x12\x18\n\x04gain\x18\x04 \x01(\x0e\x32\n.Spec_gain\"\xbe\x01\n\x16ThermopileSensorConfig\x12\x18\n\x10sample_period_ms\x18\x01 \x01(\r\x12\x1a\n\x12\x65nable_top_of_nose\x18\x02 \x01(\x08\x12\x1a\n\x12\x65nable_nose_bridge\x18\x03 \x01(\x08\x12\x1b\n\x13\x65nable_front_temple\x18\x04 \x01(\x08\x12\x19\n\x11\x65nable_mid_temple\x18\x05 \x01(\x08\x12\x1a\n\x12\x65nable_rear_temple\x18\x06 \x01(\x08\"\x90\x02\n\x11\x42linkSensorConfig\x12\x18\n\x10sample_frequency\x18\x01 \x01(\r\x12$\n\x1c\x65nable_daylight_compensation\x18\x02 \x01(\x08\x12\'\n\x1f\x64\x61ylightCompensationUpperThresh\x18\x03 \x01(\r\x12\'\n\x1f\x64\x61ylightCompensationLowerThresh\x18\x04 \x01(\r\x12\x18\n\x10\x65nable_windowing\x18\x05 \x01(\r\x12\x1d\n\x15\x65nable_windowing_sync\x18\x06 \x01(\r\x12\x16\n\x0ewindow_size_ms\x18\x07 \x01(\r\x12\x18\n\x10window_period_ms\x18\x08 \x01(\r\"D\n\x0fMicSensorConfig\x12\x18\n\x10sample_period_ms\x18\x01 \x01(\r\x12\x17\n\x0fmic_sample_freq\x18\x02 \x01(\r\"\x81\x01\n\x14HumiditySensorConfig\x12\x18\n\x10sample_period_ms\x18\x01 \x01(\r\x12(\n\x0eprecisionLevel\x18\x02 \x01(\x0e\x32\x10.Sht45_precision\x12%\n\x0eheaterSettings\x18\x03 \x01(\x0e\x32\r.Sht45_heater\"\xd5\x01\n\x10IMU_SensorConfig\x12+\n\x0e\x61\x63\x63\x65l_settings\x18\x01 \x01(\x0b\x32\x13.IMU_Accel_Settings\x12)\n\rgyro_settings\x18\x02 \x01(\x0b\x32\x12.IMU_Gyro_Settings\x12\x18\n\x10\x65nable_windowing\x18\x03 \x01(\r\x12\x1d\n\x15\x65nable_windowing_sync\x18\x04 \x01(\r\x12\x16\n\x0ewindow_size_ms\x18\x05 \x01(\r\x12\x18\n\x10window_period_ms\x18\x06 \x01(\r\"\xca\x02\n\x0cSensorConfig\x12\x1d\n\x03lux\x18\x01 \x01(\x0b\x32\x10.LuxSensorConfig\x12\x1f\n\x03sgp\x18\x02 \x01(\x0b\x32\x12.SGP_Sensor_Config\x12\x1f\n\x03\x62me\x18\x03 \x01(\x0b\x32\x12.BME_Sensor_Config\x12!\n\x05\x63olor\x18\x04 \x01(\x0b\x32\x12.ColorSensorConfig\x12+\n\nthermopile\x18\x05 \x01(\x0b\x32\x17.ThermopileSensorConfig\x12!\n\x05\x62link\x18\x06 \x01(\x0b\x32\x12.BlinkSensorConfig\x12\x1d\n\x03mic\x18\x07 \x01(\x0b\x32\x10.MicSensorConfig\x12\'\n\x08humidity\x18\x08 \x01(\x0b\x32\x15.HumiditySensorConfig\x12\x1e\n\x03imu\x18\t \x01(\x0b\x32\x11.IMU_SensorConfig\"\x1a\n\x08\x44\x46U_Mode\x12\x0e\n\x06\x65nable\x18\x01 \x01(\x08\"\xec\x01\n\x13\x42lueGreenTransition\x12\x0e\n\x06\x65nable\x18\x01 \x01(\x08\x12\x1a\n\x12\x62lue_min_intensity\x18\x02 \x01(\r\x12\x1a\n\x12\x62lue_max_intensity\x18\x03 \x01(\r\x12\x1b\n\x13green_max_intensity\x18\x04 \x01(\r\x12\x11\n\tstep_size\x18\x05 \x01(\r\x12\x18\n\x10step_duration_ms\x18\x06 \x01(\r\x12!\n\x19green_hold_length_seconds\x18\x07 \x01(\r\x12 \n\x18transition_delay_seconds\x18\x08 \x01(\r\"\x94\x01\n\x0cRedFlashTask\x12\x0e\n\x06\x65nable\x18\x01 \x01(\x08\x12\x19\n\x11red_max_intensity\x18\x02 \x01(\r\x12\x19\n\x11red_min_intensity\x18\x03 \x01(\r\x12\x11\n\tfrequency\x18\x04 \x01(\r\x12\x13\n\x0b\x64uration_ms\x18\x05 \x01(\r\x12\x16\n\x0e\x65nable_speaker\x18\x06 \x01(\r\"-\n\x13\x41irSpecConfigHeader\x12\x16\n\x0etimestamp_unix\x18\x01 \x01(\x04\"\xc2\x02\n\x13\x41irSpecConfigPacket\x12$\n\x06header\x18\x01 \x01(\x0b\x32\x14.AirSpecConfigHeader\x12-\n\x0e\x63trl_indiv_led\x18\x02 \x01(\x0b\x32\x13.LightControlPacketH\x00\x12(\n\x0esensor_control\x18\x03 \x01(\x0b\x32\x0e.SensorControlH\x00\x12&\n\rsensor_config\x18\x04 \x01(\x0b\x32\r.SensorConfigH\x00\x12\x1d\n\x08\x64\x66u_mode\x18\x05 \x01(\x0b\x32\t.DFU_ModeH\x00\x12\x33\n\x13\x62lueGreenTransition\x18\x06 \x01(\x0b\x32\x14.BlueGreenTransitionH\x00\x12%\n\x0credFlashTask\x18\x07 \x01(\x0b\x32\r.RedFlashTaskH\x00\x42\t\n\x07payload\"g\n\x0bsystemState\x12\x18\n\x10\x66irmware_version\x18\x01 \x01(\r\x12\x1f\n\x07\x63ontrol\x18\x02 \x01(\x0b\x32\x0e.SensorControl\x12\x1d\n\x06\x63onfig\x18\x03 \x01(\x0b\x32\r.SensorConfig\"h\n\x14\x61ppSurveyDataPayload\x12\x0f\n\x07q_index\x18\x01 \x01(\x05\x12\x10\n\x08q_choice\x18\x02 \x01(\t\x12\x15\n\rq_group_index\x18\x03 \x01(\r\x12\x16\n\x0etimestamp_unix\x18\x04 \x01(\x04\"=\n\x13\x61ppSurveyDataPacket\x12&\n\x07payload\x18\x01 \x03(\x0b\x32\x15.appSurveyDataPayload\"J\n\x11\x61ppMetaDataPacket\x12\x0f\n\x07payload\x18\x01 \x01(\t\x12\x0c\n\x04type\x18\x02 \x01(\r\x12\x16\n\x0etimestamp_unix\x18\x03 \x01(\x04\"\xd9\x03\n\x0cSensorPacket\x12#\n\x06header\x18\x01 \x01(\x0b\x32\x13.SensorPacketHeader\x12 \n\nlux_packet\x18\x02 \x01(\x0b\x32\n.LuxPacketH\x00\x12 \n\nsgp_packet\x18\x03 \x01(\x0b\x32\n.SGPPacketH\x00\x12 \n\nbme_packet\x18\x04 \x01(\x0b\x32\n.BMEPacketH\x00\x12$\n\x0c\x62link_packet\x18\x05 \x01(\x0b\x32\x0c.BlinkPacketH\x00\x12 \n\nsht_packet\x18\x06 \x01(\x0b\x32\n.SHTPacketH\x00\x12\"\n\x0bspec_packet\x18\x07 \x01(\x0b\x32\x0b.SpecPacketH\x00\x12$\n\x0ctherm_packet\x18\x08 \x01(\x0b\x32\x0c.ThermPacketH\x00\x12 \n\nimu_packet\x18\t \x01(\x0b\x32\n.IMUPacketH\x00\x12 \n\nmic_packet\x18\n \x01(\x0b\x32\n.MicPacketH\x00\x12-\n\rsurvey_packet\x18\x0b \x01(\x0b\x32\x14.appSurveyDataPacketH\x00\x12.\n\x10meta_data_packet\x18\x0c \x01(\x0b\x32\x12.appMetaDataPacketH\x00\x42\t\n\x07payload*\xbc\x01\n\x11SensorPacketTypes\x12\x17\n\x13UNKNOWN_PACKET_TYPE\x10\x00\x12\x0b\n\x07PPG_RED\x10\x01\x12\n\n\x06PPG_IR\x10\x02\x12\x10\n\x0cSPECTROMETER\x10\x03\x12\x07\n\x03\x42ME\x10\x04\x12\x07\n\x03\x43O2\x10\x05\x12\x07\n\x03IMU\x10\x06\x12\x0e\n\nTHERMOPILE\x10\x07\x12\x07\n\x03LUX\x10\x08\x12\t\n\x05LIDAR\x10\t\x12\x07\n\x03MIC\x10\n\x12\x07\n\x03SHT\x10\x0b\x12\x07\n\x03SGP\x10\x0c\x12\t\n\x05\x42LINK\x10\r*d\n\x0bTsl2591Gain\x12\x13\n\x0fTSL2722_GAIN_1X\x10\x00\x12\x13\n\x0fTSL2722_GAIN_8X\x10\x01\x12\x14\n\x10TSL2722_GAIN_16X\x10\x02\x12\x15\n\x11TSL2722_GAIN_120X\x10\x03*\xce\x01\n\x16Tsl2591IntegrationTime\x12!\n\x1dTSL2722_INTEGRATIONTIME_600MS\x10\x00\x12#\n\x1eTSL2722_INTEGRATIONTIME_2_73MS\x10\xff\x01\x12$\n\x1fTSL2722_INTEGRATIONTIME_27_30MS\x10\xf6\x01\x12\"\n\x1dTSL2722_INTEGRATIONTIME_101MS\x10\xdb\x01\x12\"\n\x1dTSL2722_INTEGRATIONTIME_175MS\x10\xc0\x01*]\n\x0fSht45_precision\x12\x18\n\x14SHT4X_HIGH_PRECISION\x10\x00\x12\x17\n\x13SHT4X_MED_PRECISION\x10\x01\x12\x17\n\x13SHT4X_LOW_PRECISION\x10\x02*\xc4\x01\n\x0cSht45_heater\x12\x13\n\x0fSHT4X_NO_HEATER\x10\x00\x12\x18\n\x14SHT4X_HIGH_HEATER_1S\x10\x01\x12\x1b\n\x17SHT4X_HIGH_HEATER_100MS\x10\x02\x12\x17\n\x13SHT4X_MED_HEATER_1S\x10\x03\x12\x1a\n\x16SHT4X_MED_HEATER_100MS\x10\x04\x12\x17\n\x13SHT4X_LOW_HEATER_1S\x10\x05\x12\x1a\n\x16SHT4X_LOW_HEATER_100MS\x10\x06*j\n\x13Thermopile_location\x12\x0f\n\x0bTIP_OF_NOSE\x10\x00\x12\x0f\n\x0bNOSE_BRIDGE\x10\x01\x12\x10\n\x0c\x46RONT_TEMPLE\x10\x02\x12\x0e\n\nMID_TEMPLE\x10\x03\x12\x0f\n\x0bREAR_TEMPLE\x10\x04*[\n\x0f\x42ME680_accuracy\x12\x0e\n\nUNRELIABLE\x10\x00\x12\x10\n\x0cLOW_ACCURACY\x10\x01\x12\x13\n\x0fMEDIUM_ACCURACY\x10\x02\x12\x11\n\rHIGH_ACCURACY\x10\x03*\x94\x02\n\x10\x42ME680_signal_id\x12\r\n\tUNDEFINED\x10\x00\x12\x07\n\x03IAQ\x10\x01\x12\x0e\n\nSTATIC_IAQ\x10\x02\x12\n\n\x06\x43O2_EQ\x10\x03\x12\x11\n\rBREATH_VOC_EQ\x10\x04\x12\x13\n\x0fRAW_TEMPERATURE\x10\x06\x12\x10\n\x0cRAW_PRESSURE\x10\x07\x12\x10\n\x0cRAW_HUMIDITY\x10\x08\x12\x0b\n\x07RAW_GAS\x10\t\x12\x18\n\x14STABILIZATION_STATUS\x10\x0c\x12\x11\n\rRUN_IN_STATUS\x10\r\x12\x1b\n\x17SENSOR_HEAT_COMPEN_TEMP\x10\x0e\x12\x15\n\x11HEAT_COMPEN_HUMID\x10\x0f\x12\x12\n\x0eGAS_PERCENTAGE\x10\x15*\xa5\x01\n\tSpec_gain\x12\r\n\tGAIN_0_5X\x10\x00\x12\x0b\n\x07GAIN_1X\x10\x01\x12\x0b\n\x07GAIN_2X\x10\x02\x12\x0b\n\x07GAIN_4X\x10\x03\x12\x0b\n\x07GAIN_8X\x10\x04\x12\x0c\n\x08GAIN_16X\x10\x05\x12\x0c\n\x08GAIN_32X\x10\x06\x12\x0c\n\x08GAIN_64X\x10\x07\x12\r\n\tGAIN_128X\x10\x08\x12\r\n\tGAIN_256X\x10\t\x12\r\n\tGAIN_512X\x10\n*\x84\x02\n\x0fIMU_gyro_cutoff\x12\x1d\n\x19ICM20X_GYRO_FREQ_196_6_HZ\x10\x00\x12\x1d\n\x19ICM20X_GYRO_FREQ_151_8_HZ\x10\x01\x12\x1d\n\x19ICM20X_GYRO_FREQ_119_5_HZ\x10\x02\x12\x1c\n\x18ICM20X_GYRO_FREQ_51_2_HZ\x10\x03\x12\x1c\n\x18ICM20X_GYRO_FREQ_23_9_HZ\x10\x04\x12\x1c\n\x18ICM20X_GYRO_FREQ_11_6_HZ\x10\x05\x12\x1b\n\x17ICM20X_GYRO_FREQ_5_7_HZ\x10\x06\x12\x1d\n\x19ICM20X_GYRO_FREQ_361_4_HZ\x10\x07*^\n\x0eIMU_gyro_range\x12\x11\n\rRANGE_250_dps\x10\x00\x12\x11\n\rRANGE_500_dps\x10\x01\x12\x12\n\x0eRANGE_1000_dps\x10\x02\x12\x12\n\x0eRANGE_2000_dps\x10\x03*\x87\x02\n\x10IMU_accel_cutoff\x12\x1a\n\x16UNDEFINED_ACCEL_CUTOFF\x10\x00\x12\x1e\n\x1aICM20X_ACCEL_FREQ_246_0_HZ\x10\x01\x12\x1e\n\x1aICM20X_ACCEL_FREQ_111_4_HZ\x10\x02\x12\x1d\n\x19ICM20X_ACCEL_FREQ_50_4_HZ\x10\x03\x12\x1d\n\x19ICM20X_ACCEL_FREQ_23_9_HZ\x10\x04\x12\x1d\n\x19ICM20X_ACCEL_FREQ_11_5_HZ\x10\x05\x12\x1c\n\x18ICM20X_ACCEL_FREQ_5_7_HZ\x10\x06\x12\x1c\n\x18ICM20X_ACCEL_FREQ_473_HZ\x10\x07*J\n\x0fIMU_accel_range\x12\x0c\n\x08RANGE_2G\x10\x00\x12\x0c\n\x08RANGE_4G\x10\x01\x12\x0c\n\x08RANGE_8G\x10\x02\x12\r\n\tRANGE_16G\x10\x03*\x83\x01\n\x0eIMU_mag_cutoff\x12\x18\n\x14UNDEFINED_MAG_CUTOFF\x10\x00\x12\x14\n\x10ICM20X_MAG_10_HZ\x10\x02\x12\x14\n\x10ICM20X_MAG_20_HZ\x10\x04\x12\x14\n\x10ICM20X_MAG_50_HZ\x10\x06\x12\x15\n\x11ICM20X_MAG_100_HZ\x10\x08\x62\x06proto3')
 
 _SENSORPACKETTYPES = DESCRIPTOR.enum_types_by_name['SensorPacketTypes']
 SensorPacketTypes = enum_type_wrapper.EnumTypeWrapper(_SENSORPACKETTYPES)
@@ -166,6 +166,29 @@ _IMUPACKET = DESCRIPTOR.message_types_by_name['IMUPacket']
 _IMUPACKET_PAYLOAD = _IMUPACKET.nested_types_by_name['Payload']
 _MICPACKET = DESCRIPTOR.message_types_by_name['MicPacket']
 _MICPACKET_PAYLOAD = _MICPACKET.nested_types_by_name['Payload']
+_AIRSPECCOLORS = DESCRIPTOR.message_types_by_name['AirSpecColors']
+_AIRSPECCOLORPOSITION = DESCRIPTOR.message_types_by_name['AirSpecColorPosition']
+_LIGHTCONTROLPACKET = DESCRIPTOR.message_types_by_name['LightControlPacket']
+_SENSORCONTROL = DESCRIPTOR.message_types_by_name['SensorControl']
+_LUXSENSORCONFIG = DESCRIPTOR.message_types_by_name['LuxSensorConfig']
+_SGP_SENSOR_CONFIG = DESCRIPTOR.message_types_by_name['SGP_Sensor_Config']
+_BME_SENSOR_CONFIG = DESCRIPTOR.message_types_by_name['BME_Sensor_Config']
+_COLORSENSORCONFIG = DESCRIPTOR.message_types_by_name['ColorSensorConfig']
+_THERMOPILESENSORCONFIG = DESCRIPTOR.message_types_by_name['ThermopileSensorConfig']
+_BLINKSENSORCONFIG = DESCRIPTOR.message_types_by_name['BlinkSensorConfig']
+_MICSENSORCONFIG = DESCRIPTOR.message_types_by_name['MicSensorConfig']
+_HUMIDITYSENSORCONFIG = DESCRIPTOR.message_types_by_name['HumiditySensorConfig']
+_IMU_SENSORCONFIG = DESCRIPTOR.message_types_by_name['IMU_SensorConfig']
+_SENSORCONFIG = DESCRIPTOR.message_types_by_name['SensorConfig']
+_DFU_MODE = DESCRIPTOR.message_types_by_name['DFU_Mode']
+_BLUEGREENTRANSITION = DESCRIPTOR.message_types_by_name['BlueGreenTransition']
+_REDFLASHTASK = DESCRIPTOR.message_types_by_name['RedFlashTask']
+_AIRSPECCONFIGHEADER = DESCRIPTOR.message_types_by_name['AirSpecConfigHeader']
+_AIRSPECCONFIGPACKET = DESCRIPTOR.message_types_by_name['AirSpecConfigPacket']
+_SYSTEMSTATE = DESCRIPTOR.message_types_by_name['systemState']
+_APPSURVEYDATAPAYLOAD = DESCRIPTOR.message_types_by_name['appSurveyDataPayload']
+_APPSURVEYDATAPACKET = DESCRIPTOR.message_types_by_name['appSurveyDataPacket']
+_APPMETADATAPACKET = DESCRIPTOR.message_types_by_name['appMetaDataPacket']
 _SENSORPACKET = DESCRIPTOR.message_types_by_name['SensorPacket']
 SensorPacketHeader = _reflection.GeneratedProtocolMessageType('SensorPacketHeader', (_message.Message,), {
   'DESCRIPTOR' : _SENSORPACKETHEADER,
@@ -336,6 +359,167 @@ MicPacket = _reflection.GeneratedProtocolMessageType('MicPacket', (_message.Mess
 _sym_db.RegisterMessage(MicPacket)
 _sym_db.RegisterMessage(MicPacket.Payload)
 
+AirSpecColors = _reflection.GeneratedProtocolMessageType('AirSpecColors', (_message.Message,), {
+  'DESCRIPTOR' : _AIRSPECCOLORS,
+  '__module__' : 'message_pb2'
+  # @@protoc_insertion_point(class_scope:AirSpecColors)
+  })
+_sym_db.RegisterMessage(AirSpecColors)
+
+AirSpecColorPosition = _reflection.GeneratedProtocolMessageType('AirSpecColorPosition', (_message.Message,), {
+  'DESCRIPTOR' : _AIRSPECCOLORPOSITION,
+  '__module__' : 'message_pb2'
+  # @@protoc_insertion_point(class_scope:AirSpecColorPosition)
+  })
+_sym_db.RegisterMessage(AirSpecColorPosition)
+
+LightControlPacket = _reflection.GeneratedProtocolMessageType('LightControlPacket', (_message.Message,), {
+  'DESCRIPTOR' : _LIGHTCONTROLPACKET,
+  '__module__' : 'message_pb2'
+  # @@protoc_insertion_point(class_scope:LightControlPacket)
+  })
+_sym_db.RegisterMessage(LightControlPacket)
+
+SensorControl = _reflection.GeneratedProtocolMessageType('SensorControl', (_message.Message,), {
+  'DESCRIPTOR' : _SENSORCONTROL,
+  '__module__' : 'message_pb2'
+  # @@protoc_insertion_point(class_scope:SensorControl)
+  })
+_sym_db.RegisterMessage(SensorControl)
+
+LuxSensorConfig = _reflection.GeneratedProtocolMessageType('LuxSensorConfig', (_message.Message,), {
+  'DESCRIPTOR' : _LUXSENSORCONFIG,
+  '__module__' : 'message_pb2'
+  # @@protoc_insertion_point(class_scope:LuxSensorConfig)
+  })
+_sym_db.RegisterMessage(LuxSensorConfig)
+
+SGP_Sensor_Config = _reflection.GeneratedProtocolMessageType('SGP_Sensor_Config', (_message.Message,), {
+  'DESCRIPTOR' : _SGP_SENSOR_CONFIG,
+  '__module__' : 'message_pb2'
+  # @@protoc_insertion_point(class_scope:SGP_Sensor_Config)
+  })
+_sym_db.RegisterMessage(SGP_Sensor_Config)
+
+BME_Sensor_Config = _reflection.GeneratedProtocolMessageType('BME_Sensor_Config', (_message.Message,), {
+  'DESCRIPTOR' : _BME_SENSOR_CONFIG,
+  '__module__' : 'message_pb2'
+  # @@protoc_insertion_point(class_scope:BME_Sensor_Config)
+  })
+_sym_db.RegisterMessage(BME_Sensor_Config)
+
+ColorSensorConfig = _reflection.GeneratedProtocolMessageType('ColorSensorConfig', (_message.Message,), {
+  'DESCRIPTOR' : _COLORSENSORCONFIG,
+  '__module__' : 'message_pb2'
+  # @@protoc_insertion_point(class_scope:ColorSensorConfig)
+  })
+_sym_db.RegisterMessage(ColorSensorConfig)
+
+ThermopileSensorConfig = _reflection.GeneratedProtocolMessageType('ThermopileSensorConfig', (_message.Message,), {
+  'DESCRIPTOR' : _THERMOPILESENSORCONFIG,
+  '__module__' : 'message_pb2'
+  # @@protoc_insertion_point(class_scope:ThermopileSensorConfig)
+  })
+_sym_db.RegisterMessage(ThermopileSensorConfig)
+
+BlinkSensorConfig = _reflection.GeneratedProtocolMessageType('BlinkSensorConfig', (_message.Message,), {
+  'DESCRIPTOR' : _BLINKSENSORCONFIG,
+  '__module__' : 'message_pb2'
+  # @@protoc_insertion_point(class_scope:BlinkSensorConfig)
+  })
+_sym_db.RegisterMessage(BlinkSensorConfig)
+
+MicSensorConfig = _reflection.GeneratedProtocolMessageType('MicSensorConfig', (_message.Message,), {
+  'DESCRIPTOR' : _MICSENSORCONFIG,
+  '__module__' : 'message_pb2'
+  # @@protoc_insertion_point(class_scope:MicSensorConfig)
+  })
+_sym_db.RegisterMessage(MicSensorConfig)
+
+HumiditySensorConfig = _reflection.GeneratedProtocolMessageType('HumiditySensorConfig', (_message.Message,), {
+  'DESCRIPTOR' : _HUMIDITYSENSORCONFIG,
+  '__module__' : 'message_pb2'
+  # @@protoc_insertion_point(class_scope:HumiditySensorConfig)
+  })
+_sym_db.RegisterMessage(HumiditySensorConfig)
+
+IMU_SensorConfig = _reflection.GeneratedProtocolMessageType('IMU_SensorConfig', (_message.Message,), {
+  'DESCRIPTOR' : _IMU_SENSORCONFIG,
+  '__module__' : 'message_pb2'
+  # @@protoc_insertion_point(class_scope:IMU_SensorConfig)
+  })
+_sym_db.RegisterMessage(IMU_SensorConfig)
+
+SensorConfig = _reflection.GeneratedProtocolMessageType('SensorConfig', (_message.Message,), {
+  'DESCRIPTOR' : _SENSORCONFIG,
+  '__module__' : 'message_pb2'
+  # @@protoc_insertion_point(class_scope:SensorConfig)
+  })
+_sym_db.RegisterMessage(SensorConfig)
+
+DFU_Mode = _reflection.GeneratedProtocolMessageType('DFU_Mode', (_message.Message,), {
+  'DESCRIPTOR' : _DFU_MODE,
+  '__module__' : 'message_pb2'
+  # @@protoc_insertion_point(class_scope:DFU_Mode)
+  })
+_sym_db.RegisterMessage(DFU_Mode)
+
+BlueGreenTransition = _reflection.GeneratedProtocolMessageType('BlueGreenTransition', (_message.Message,), {
+  'DESCRIPTOR' : _BLUEGREENTRANSITION,
+  '__module__' : 'message_pb2'
+  # @@protoc_insertion_point(class_scope:BlueGreenTransition)
+  })
+_sym_db.RegisterMessage(BlueGreenTransition)
+
+RedFlashTask = _reflection.GeneratedProtocolMessageType('RedFlashTask', (_message.Message,), {
+  'DESCRIPTOR' : _REDFLASHTASK,
+  '__module__' : 'message_pb2'
+  # @@protoc_insertion_point(class_scope:RedFlashTask)
+  })
+_sym_db.RegisterMessage(RedFlashTask)
+
+AirSpecConfigHeader = _reflection.GeneratedProtocolMessageType('AirSpecConfigHeader', (_message.Message,), {
+  'DESCRIPTOR' : _AIRSPECCONFIGHEADER,
+  '__module__' : 'message_pb2'
+  # @@protoc_insertion_point(class_scope:AirSpecConfigHeader)
+  })
+_sym_db.RegisterMessage(AirSpecConfigHeader)
+
+AirSpecConfigPacket = _reflection.GeneratedProtocolMessageType('AirSpecConfigPacket', (_message.Message,), {
+  'DESCRIPTOR' : _AIRSPECCONFIGPACKET,
+  '__module__' : 'message_pb2'
+  # @@protoc_insertion_point(class_scope:AirSpecConfigPacket)
+  })
+_sym_db.RegisterMessage(AirSpecConfigPacket)
+
+systemState = _reflection.GeneratedProtocolMessageType('systemState', (_message.Message,), {
+  'DESCRIPTOR' : _SYSTEMSTATE,
+  '__module__' : 'message_pb2'
+  # @@protoc_insertion_point(class_scope:systemState)
+  })
+_sym_db.RegisterMessage(systemState)
+
+appSurveyDataPayload = _reflection.GeneratedProtocolMessageType('appSurveyDataPayload', (_message.Message,), {
+  'DESCRIPTOR' : _APPSURVEYDATAPAYLOAD,
+  '__module__' : 'message_pb2'
+  # @@protoc_insertion_point(class_scope:appSurveyDataPayload)
+  })
+_sym_db.RegisterMessage(appSurveyDataPayload)
+
+appSurveyDataPacket = _reflection.GeneratedProtocolMessageType('appSurveyDataPacket', (_message.Message,), {
+  'DESCRIPTOR' : _APPSURVEYDATAPACKET,
+  '__module__' : 'message_pb2'
+  # @@protoc_insertion_point(class_scope:appSurveyDataPacket)
+  })
+_sym_db.RegisterMessage(appSurveyDataPacket)
+
+appMetaDataPacket = _reflection.GeneratedProtocolMessageType('appMetaDataPacket', (_message.Message,), {
+  'DESCRIPTOR' : _APPMETADATAPACKET,
+  '__module__' : 'message_pb2'
+  # @@protoc_insertion_point(class_scope:appMetaDataPacket)
+  })
+_sym_db.RegisterMessage(appMetaDataPacket)
+
 SensorPacket = _reflection.GeneratedProtocolMessageType('SensorPacket', (_message.Message,), {
   'DESCRIPTOR' : _SENSORPACKET,
   '__module__' : 'message_pb2'
@@ -346,34 +530,34 @@ _sym_db.RegisterMessage(SensorPacket)
 if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
-  _SENSORPACKETTYPES._serialized_start=3401
-  _SENSORPACKETTYPES._serialized_end=3589
-  _TSL2591GAIN._serialized_start=3591
-  _TSL2591GAIN._serialized_end=3691
-  _TSL2591INTEGRATIONTIME._serialized_start=3694
-  _TSL2591INTEGRATIONTIME._serialized_end=3900
-  _SHT45_PRECISION._serialized_start=3902
-  _SHT45_PRECISION._serialized_end=3995
-  _SHT45_HEATER._serialized_start=3998
-  _SHT45_HEATER._serialized_end=4194
-  _THERMOPILE_LOCATION._serialized_start=4196
-  _THERMOPILE_LOCATION._serialized_end=4302
-  _BME680_ACCURACY._serialized_start=4304
-  _BME680_ACCURACY._serialized_end=4395
-  _BME680_SIGNAL_ID._serialized_start=4398
-  _BME680_SIGNAL_ID._serialized_end=4674
-  _SPEC_GAIN._serialized_start=4677
-  _SPEC_GAIN._serialized_end=4842
-  _IMU_GYRO_CUTOFF._serialized_start=4845
-  _IMU_GYRO_CUTOFF._serialized_end=5105
-  _IMU_GYRO_RANGE._serialized_start=5107
-  _IMU_GYRO_RANGE._serialized_end=5201
-  _IMU_ACCEL_CUTOFF._serialized_start=5204
-  _IMU_ACCEL_CUTOFF._serialized_end=5467
-  _IMU_ACCEL_RANGE._serialized_start=5469
-  _IMU_ACCEL_RANGE._serialized_end=5543
-  _IMU_MAG_CUTOFF._serialized_start=5546
-  _IMU_MAG_CUTOFF._serialized_end=5677
+  _SENSORPACKETTYPES._serialized_start=7025
+  _SENSORPACKETTYPES._serialized_end=7213
+  _TSL2591GAIN._serialized_start=7215
+  _TSL2591GAIN._serialized_end=7315
+  _TSL2591INTEGRATIONTIME._serialized_start=7318
+  _TSL2591INTEGRATIONTIME._serialized_end=7524
+  _SHT45_PRECISION._serialized_start=7526
+  _SHT45_PRECISION._serialized_end=7619
+  _SHT45_HEATER._serialized_start=7622
+  _SHT45_HEATER._serialized_end=7818
+  _THERMOPILE_LOCATION._serialized_start=7820
+  _THERMOPILE_LOCATION._serialized_end=7926
+  _BME680_ACCURACY._serialized_start=7928
+  _BME680_ACCURACY._serialized_end=8019
+  _BME680_SIGNAL_ID._serialized_start=8022
+  _BME680_SIGNAL_ID._serialized_end=8298
+  _SPEC_GAIN._serialized_start=8301
+  _SPEC_GAIN._serialized_end=8466
+  _IMU_GYRO_CUTOFF._serialized_start=8469
+  _IMU_GYRO_CUTOFF._serialized_end=8729
+  _IMU_GYRO_RANGE._serialized_start=8731
+  _IMU_GYRO_RANGE._serialized_end=8825
+  _IMU_ACCEL_CUTOFF._serialized_start=8828
+  _IMU_ACCEL_CUTOFF._serialized_end=9091
+  _IMU_ACCEL_RANGE._serialized_start=9093
+  _IMU_ACCEL_RANGE._serialized_end=9167
+  _IMU_MAG_CUTOFF._serialized_start=9170
+  _IMU_MAG_CUTOFF._serialized_end=9301
   _SENSORPACKETHEADER._serialized_start=17
   _SENSORPACKETHEADER._serialized_end=95
   _LUXPACKET._serialized_start=98
@@ -395,31 +579,77 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _BLINKHIGHRESPAYLOAD._serialized_start=1082
   _BLINKHIGHRESPAYLOAD._serialized_end=1119
   _BLINKPACKET._serialized_start=1122
-  _BLINKPACKET._serialized_end=1336
-  _SHTPACKET._serialized_start=1339
-  _SHTPACKET._serialized_end=1607
-  _SHTPACKET_PAYLOAD._serialized_start=1502
-  _SHTPACKET_PAYLOAD._serialized_end=1607
-  _SPECPACKET._serialized_start=1610
-  _SPECPACKET._serialized_end=2040
-  _SPECPACKET_PAYLOAD._serialized_start=1786
-  _SPECPACKET_PAYLOAD._serialized_end=2040
-  _THERMPACKET._serialized_start=2043
-  _THERMPACKET._serialized_end=2335
-  _THERMPACKET_PAYLOAD._serialized_start=2143
-  _THERMPACKET_PAYLOAD._serialized_end=2335
-  _IMU_ACCEL_SETTINGS._serialized_start=2338
-  _IMU_ACCEL_SETTINGS._serialized_end=2471
-  _IMU_GYRO_SETTINGS._serialized_start=2474
-  _IMU_GYRO_SETTINGS._serialized_end=2604
-  _IMUPACKET._serialized_start=2607
-  _IMUPACKET._serialized_end=2792
-  _IMUPACKET_PAYLOAD._serialized_start=2767
-  _IMUPACKET_PAYLOAD._serialized_end=2792
-  _MICPACKET._serialized_start=2795
-  _MICPACKET._serialized_end=3017
-  _MICPACKET_PAYLOAD._serialized_start=2992
-  _MICPACKET_PAYLOAD._serialized_end=3017
-  _SENSORPACKET._serialized_start=3020
-  _SENSORPACKET._serialized_end=3398
+  _BLINKPACKET._serialized_end=1393
+  _SHTPACKET._serialized_start=1396
+  _SHTPACKET._serialized_end=1664
+  _SHTPACKET_PAYLOAD._serialized_start=1559
+  _SHTPACKET_PAYLOAD._serialized_end=1664
+  _SPECPACKET._serialized_start=1667
+  _SPECPACKET._serialized_end=2154
+  _SPECPACKET_PAYLOAD._serialized_start=1843
+  _SPECPACKET_PAYLOAD._serialized_end=2154
+  _THERMPACKET._serialized_start=2157
+  _THERMPACKET._serialized_end=2449
+  _THERMPACKET_PAYLOAD._serialized_start=2257
+  _THERMPACKET_PAYLOAD._serialized_end=2449
+  _IMU_ACCEL_SETTINGS._serialized_start=2452
+  _IMU_ACCEL_SETTINGS._serialized_end=2585
+  _IMU_GYRO_SETTINGS._serialized_start=2588
+  _IMU_GYRO_SETTINGS._serialized_end=2718
+  _IMUPACKET._serialized_start=2721
+  _IMUPACKET._serialized_end=2991
+  _IMUPACKET_PAYLOAD._serialized_start=2966
+  _IMUPACKET_PAYLOAD._serialized_end=2991
+  _MICPACKET._serialized_start=2994
+  _MICPACKET._serialized_end=3317
+  _MICPACKET_PAYLOAD._serialized_start=3292
+  _MICPACKET_PAYLOAD._serialized_end=3317
+  _AIRSPECCOLORS._serialized_start=3319
+  _AIRSPECCOLORS._serialized_end=3376
+  _AIRSPECCOLORPOSITION._serialized_start=3378
+  _AIRSPECCOLORPOSITION._serialized_end=3491
+  _LIGHTCONTROLPACKET._serialized_start=3493
+  _LIGHTCONTROLPACKET._serialized_end=3588
+  _SENSORCONTROL._serialized_start=3591
+  _SENSORCONTROL._serialized_end=3844
+  _LUXSENSORCONFIG._serialized_start=3846
+  _LUXSENSORCONFIG._serialized_end=3968
+  _SGP_SENSOR_CONFIG._serialized_start=3970
+  _SGP_SENSOR_CONFIG._serialized_end=4015
+  _BME_SENSOR_CONFIG._serialized_start=4017
+  _BME_SENSOR_CONFIG._serialized_end=4062
+  _COLORSENSORCONFIG._serialized_start=4064
+  _COLORSENSORCONFIG._serialized_end=4187
+  _THERMOPILESENSORCONFIG._serialized_start=4190
+  _THERMOPILESENSORCONFIG._serialized_end=4380
+  _BLINKSENSORCONFIG._serialized_start=4383
+  _BLINKSENSORCONFIG._serialized_end=4655
+  _MICSENSORCONFIG._serialized_start=4657
+  _MICSENSORCONFIG._serialized_end=4725
+  _HUMIDITYSENSORCONFIG._serialized_start=4728
+  _HUMIDITYSENSORCONFIG._serialized_end=4857
+  _IMU_SENSORCONFIG._serialized_start=4860
+  _IMU_SENSORCONFIG._serialized_end=5073
+  _SENSORCONFIG._serialized_start=5076
+  _SENSORCONFIG._serialized_end=5406
+  _DFU_MODE._serialized_start=5408
+  _DFU_MODE._serialized_end=5434
+  _BLUEGREENTRANSITION._serialized_start=5437
+  _BLUEGREENTRANSITION._serialized_end=5673
+  _REDFLASHTASK._serialized_start=5676
+  _REDFLASHTASK._serialized_end=5824
+  _AIRSPECCONFIGHEADER._serialized_start=5826
+  _AIRSPECCONFIGHEADER._serialized_end=5871
+  _AIRSPECCONFIGPACKET._serialized_start=5874
+  _AIRSPECCONFIGPACKET._serialized_end=6196
+  _SYSTEMSTATE._serialized_start=6198
+  _SYSTEMSTATE._serialized_end=6301
+  _APPSURVEYDATAPAYLOAD._serialized_start=6303
+  _APPSURVEYDATAPAYLOAD._serialized_end=6407
+  _APPSURVEYDATAPACKET._serialized_start=6409
+  _APPSURVEYDATAPACKET._serialized_end=6470
+  _APPMETADATAPACKET._serialized_start=6472
+  _APPMETADATAPACKET._serialized_end=6546
+  _SENSORPACKET._serialized_start=6549
+  _SENSORPACKET._serialized_end=7022
 # @@protoc_insertion_point(module_scope)
