@@ -87,6 +87,8 @@ void BlinkTask(void *argument) {
 	uint32_t blinkSampleHalfBuffer_ms = BLINK_HALF_BUFFER_SIZE * (1.0/BLINK_SAMPLE_RATE) * 1000.0;
 	uint32_t packetRemainder = BLINK_SAMPLE_RATE % BLINK_PKT_PAYLOAD_SIZE;
 
+
+
 	sensor_packet_t *packet = NULL;
 
 	bool status;
@@ -108,6 +110,8 @@ void BlinkTask(void *argument) {
 //		sensorSettings.window_size_ms = BLINK_SAMPLE_RATE;
 //		sensorSettings.window_period_ms = BLINK_SAMPLE_RATE;
 	}
+
+	float sensorSamplePeriod_ms = 1000.0/sensorSettings.sample_frequency;
 
 	while (1) {
 //		evt = osThreadFlagsWait(0x00000001 | TERMINATE_THREAD_BIT, osFlagsWaitAny, osWaitForever);
@@ -180,6 +184,11 @@ void BlinkTask(void *argument) {
 						packet->payload.blink_packet.sample_rate = sensorSettings.sample_frequency;
 						packet->payload.blink_packet.which_payload = BLINK_PACKET_PAYLOAD_BYTE_TAG;
 
+
+						if(iterator>0){
+							blinkTimestampMs += payloadLength * sensorSamplePeriod_ms;
+							blinkTimestampUnix += payloadLength * sensorSamplePeriod_ms;
+						}
 
 						packet->payload.blink_packet.timestamp_unix = blinkTimestampMs;
 						packet->payload.blink_packet.timestamp_ms_from_start = blinkTimestampUnix;

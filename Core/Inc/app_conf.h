@@ -37,7 +37,8 @@
 /**
  * Define Tx Power
  */
-#define CFG_TX_POWER                      (0x1B) /* 2dBm */
+//#define CFG_TX_POWER                      (0x1B) /* 2dBm */
+#define CFG_TX_POWER					  (0x1F) /* 6dBm */
 
 /**
  * Define Advertising parameters
@@ -322,7 +323,7 @@
 
 #define CFG_BLE_MIN_TX_POWER            (5)
 
-#define CFG_BLE_MAX_TX_POWER            (5)
+#define CFG_BLE_MAX_TX_POWER            (20)
 
 /**
  * BLE Rx model configuration flags to be configured with:

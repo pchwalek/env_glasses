@@ -126,6 +126,8 @@ void ShtTask(void *argument) {
 					packet->payload.sht_packet.precision = static_cast<sht45_precision_t>(sensorSettings.precision_level);
 					packet->payload.sht_packet.heater = static_cast<sht45_heater_t>(sensorSettings.heater_settings);
 
+					packet->payload.sht_packet.sensor_id = 0;
+
 //					sensorPacket.header.packet_id = shtID;
 //					sensorPacket.header.ms_from_start = HAL_GetTick();
 

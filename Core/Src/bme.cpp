@@ -190,6 +190,7 @@ void BME_Task(void *argument) {
 //					packet->payload.header.payload_length = bmeIdx * sizeof(bme_packet_payload_t);
 
 					packet->payload.bme_packet.sample_period = BME_SAMPLE_PERIOD_MS;
+					packet->payload.bme_packet.sensor_id = 0;
 //
 //					packet->header.packetType = BME;
 

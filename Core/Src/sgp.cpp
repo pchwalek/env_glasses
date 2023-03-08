@@ -201,7 +201,7 @@ void SgpTask(void *argument) {
 					packet->payload.sgp_packet.packet_index = sgpID;
 					packet->payload.sgp_packet.sample_period=sensorSettings.sample_period_ms;
 
-
+					packet->payload.sgp_packet.sensor_id = 0;
 
 //					// reset message buffer
 //					memset(&message.payload[0], 0, sizeof(message.payload));

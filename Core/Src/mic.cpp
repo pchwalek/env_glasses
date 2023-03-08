@@ -183,7 +183,7 @@ void Mic_Task(void *argument){
 //					sensorPacket.header.packet_id = micID;
 
 					packet->payload.mic_packet.packet_index = micID;
-					packet->payload.mic_packet.fft_index = i;
+
 
 					packet->payload.mic_packet.timestamp_unix = fft_time_unix;
 					packet->payload.mic_packet.timestamp_ms_from_start = fft_time_ms_from_start;
@@ -196,6 +196,8 @@ void Mic_Task(void *argument){
 
 
 					startIdx = maxMicPayloadSize * i;
+
+					packet->payload.mic_packet.fft_index = startIdx + 1;
 
 					if( (startIdx + maxMicPayloadSize) > totalMicPayloadSize){
 						sample_count = (totalMicPayloadSize - startIdx);

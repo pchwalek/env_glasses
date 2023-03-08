@@ -150,7 +150,7 @@ void Spec_Task(void *argument) {
 					packet->payload.spec_packet.integration_step = 999;
 					packet->payload.spec_packet.gain = static_cast<spec_gain_t>(AS7341_GAIN_256X);
 
-
+					packet->payload.spec_packet.sensor_id = 0;
 
 //					sensorPacket.header.payload_length = MAX_SPEC_SAMPLES_PACKET * sizeof(specSamplePkt);
 //					sensorPacket.spec_packet.sample_period = sensorSettings.sample_period;

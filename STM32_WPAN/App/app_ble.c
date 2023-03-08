@@ -431,106 +431,10 @@ void APP_BLE_Init( void )
 #if(BLE_CFG_OTA_REBOOT_CHAR != 0)
   manuf_data[sizeof(manuf_data)-8] = CFG_FEATURE_OTA_REBOOT;
 #endif
-//  /**
-//   * Initialize DIS Application
-//   */
-//  DISAPP_Init();
 
-//  /**
-//   * Initialize HRS Application
-//   */
-//  HRSAPP_Init();
 
 /* USER CODE BEGIN APP_BLE_Init_3 */
-//  DTS_STM_Init();
-//  DTC_App_Init();
-//  startThreads();
 
-
-//  ledDisconnectNotification();
-
-//#else
-//
-//	SHCI_C2_Ble_Init_Cmd_Packet_t ble_init_cmd_packet = { { { 0, 0, 0 } }, /**< Header unused */
-//	{ 0, /** pBleBufferAddress not used */
-//	0, /** BleBufferSize not used */
-//	CFG_BLE_NUM_GATT_ATTRIBUTES,
-//	CFG_BLE_NUM_GATT_SERVICES,
-//	CFG_BLE_ATT_VALUE_ARRAY_SIZE,
-//	CFG_BLE_NUM_LINK,
-//	CFG_BLE_DATA_LENGTH_EXTENSION,
-//	CFG_BLE_PREPARE_WRITE_LIST_SIZE,
-//	CFG_BLE_MBLOCK_COUNT,
-//	CFG_BLE_MAX_ATT_MTU,
-//	CFG_BLE_SLAVE_SCA,
-//	CFG_BLE_MASTER_SCA,
-//	CFG_BLE_LSE_SOURCE,
-//	CFG_BLE_MAX_CONN_EVENT_LENGTH,
-//	CFG_BLE_HSE_STARTUP_TIME,
-//	CFG_BLE_VITERBI_MODE,
-//	CFG_BLE_OPTIONS, 0,
-//	CFG_BLE_MAX_COC_INITIATOR_NBR,
-//	CFG_BLE_MIN_TX_POWER,
-//	CFG_BLE_MAX_TX_POWER } };
-//
-//	/**
-//	 * Initialize Ble Transport Layer
-//	 */
-//	Ble_Tl_Init();
-//
-//	/**
-//	 * Do not allow standby in the application
-//	 */
-//	UTIL_LPM_SetOffMode(1 << CFG_LPM_APP_BLE, UTIL_LPM_DISABLE);
-//
-//	/**
-//	 * Register the hci transport layer to handle BLE User Asynchronous Events
-//	 */
-//	HciUserEvtProcessId = osThreadNew(HciUserEvtProcess, NULL,
-//			&HciUserEvtProcess_attr);
-//
-//	/**
-//	 * Starts the BLE Stack on CPU2
-//	 */
-//	if (SHCI_C2_BLE_Init(&ble_init_cmd_packet) != SHCI_Success) {
-//		Error_Handler();
-//	}
-//
-//	/**
-//	 * Initialization of HCI & GATT & GAP layer
-//	 */
-//	Ble_Hci_Gap_Gatt_Init();
-//
-//	/**
-//	 * Initialization of the BLE Services
-//	 */
-//	SVCCTL_Init();
-//
-//	/**
-//	 * Initialization of the BLE App Context
-//	 */
-//	BleApplicationContext.Device_Connection_Status = APP_BLE_IDLE;
-//	BleApplicationContext.BleApplicationContext_legacy.connectionHandle = 0xFFFF;
-//	/**
-//	 * From here, all initialization are BLE application specific
-//	 */
-//	AdvUpdateProcessId = osThreadNew(AdvUpdateProcess, NULL,
-//			&AdvUpdateProcess_attr);
-//
-//	/**
-//	 * Initialization of ADV - Ad Manufacturer Element - Support OTA Bit Mask
-//	 */
-//#if(BLE_CFG_OTA_REBOOT_CHAR != 0)
-//  manuf_data[sizeof(manuf_data)-8] = CFG_FEATURE_OTA_REBOOT;
-//#endif
-//
-//	LinkConfigProcessId = osThreadNew(LinkConfiguration, NULL,
-//			&LinkConfigProcess_attr);
-//
-//	DTC_App_Init();
-//#endif
-
-//#ifndef CUSTOM_BT_PARAMETERS
 
 /* USER CODE END APP_BLE_Init_3 */
 
@@ -564,34 +468,7 @@ void APP_BLE_Init( void )
 
 /* USER CODE BEGIN APP_BLE_Init_2 */
   startInitThread();
-//  bluetoothStartAdvertising();
-//#else
-//
-//	/**
-//	 * Create timer to handle the connection state machine
-//	 */
-//
-//	HW_TS_Create(CFG_TIM_PROC_ID_ISR,
-//			&(BleApplicationContext.Advertising_mgr_timer_Id), hw_ts_SingleShot,
-//			Adv_Mgr);
-//
-//	/**
-//	 * Make device discoverable
-//	 */
-//	BleApplicationContext.BleApplicationContext_legacy.advtServUUID[0] = 0; // AD_TYPE_16_BIT_SERV_UUID
-//	BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen = 1;
-//	Add_Advertisment_Service_UUID(HEART_RATE_SERVICE_UUID);
-//	/* Initialize intervals for reconnexion without intervals update */
-//	AdvIntervalMin = CFG_FAST_CONN_ADV_INTERVAL_MIN;
-//	AdvIntervalMax = CFG_FAST_CONN_ADV_INTERVAL_MAX;
-//
-//	/**
-//	 * Start to Advertise to be connected by Collector
-//	 */
-//	Adv_Request(APP_BLE_FAST_ADV);
-//
-////	InitThreads();
-//#endif
+
 /* USER CODE END APP_BLE_Init_2 */
   return;
 }
@@ -637,31 +514,14 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
 //      HAL_Delay(4000);
 //      NVIC_SystemReset();
 
-//#else
-//	switch (event_pckt->evt) {
-//	case HCI_DISCONNECTION_COMPLETE_EVT_CODE: {
-//		hci_disconnection_complete_event_rp0 *disconnection_complete_event;
-//		disconnection_complete_event =
-//				(hci_disconnection_complete_event_rp0*) event_pckt->data;
-//
-//		if (disconnection_complete_event->Connection_Handle
-//				== BleApplicationContext.BleApplicationContext_legacy.connectionHandle) {
-//			BleApplicationContext.BleApplicationContext_legacy.connectionHandle = 0;
-//			BleApplicationContext.Device_Connection_Status = APP_BLE_IDLE;
-//
-//			APP_DBG_MSG("\r\n\r** DISCONNECTION EVENT WITH CLIENT \n");
-//		}
-//
-//
-//#endif
+
 #ifndef DYNAMIC_MODE
   		Adv_Request(APP_BLE_FAST_ADV);
   #else
 		osThreadFlagsSet(AdvUpdateProcessId, 1);
 		//		Adv_Request(APP_BLE_LP_ADV);
 #endif
-//		enableBlueLED_PWM(false, 0);
-//		enableGreenLED_PWM(true, 150);
+
       /* USER CODE END EVT_DISCONN_COMPLETE */
     }
 
@@ -713,7 +573,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
             APP_DBG_MSG("Read conf not succeess \n");
           }
           /* USER CODE BEGIN EVT_LE_PHY_UPDATE_COMPLETE */
-//#ifndef CUSTOM_BT_PARAMETERS
+
           /* USER CODE END EVT_LE_PHY_UPDATE_COMPLETE */
           break;
         case HCI_LE_CONNECTION_COMPLETE_SUBEVT_CODE:
@@ -741,36 +601,8 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
           BleApplicationContext.BleApplicationContext_legacy.connectionHandle = connection_complete_event->Connection_Handle;
           /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE */
           ledConnectNotification();
-//#else
-//			break;
-//		case HCI_LE_CONNECTION_COMPLETE_SUBEVT_CODE: {
-//			hci_le_connection_complete_event_rp0 *connection_complete_event;
-//
-//			/**
-//			 * The connection is done, there is no need anymore to schedule the LP ADV
-//			 */
-//			connection_complete_event =
-//					(hci_le_connection_complete_event_rp0*) meta_evt->data;
-//
-//			HW_TS_Stop(BleApplicationContext.Advertising_mgr_timer_Id);
-//
-//			APP_DBG_MSG("HCI_LE_CONNECTION_COMPLETE_SUBEVT_CODE for connection handle 0x%x\n", connection_complete_event->Connection_Handle);
-//			if (BleApplicationContext.Device_Connection_Status
-//					== APP_BLE_LP_CONNECTING) {
-//				/* Connection as client */
-//				BleApplicationContext.Device_Connection_Status =
-//						APP_BLE_CONNECTED_CLIENT;
-//			} else {
-//				/* Connection as server */
-//				BleApplicationContext.Device_Connection_Status =
-//						APP_BLE_CONNECTED_SERVER;
-//			}
-//			BleApplicationContext.BleApplicationContext_legacy.connectionHandle =
-//					connection_complete_event->Connection_Handle;
-//			//osThreadFlagsSet(LinkConfigProcessId, 1);
-////			enableBlueLED_PWM(true, 150);
-////			enableGreenLED_PWM(false, 0);
-//#endif
+//          mutex = 1;
+          BLE_SVC_L2CAP_Conn_Update_7_5();
           /* USER CODE END HCI_EVT_LE_CONN_COMPLETE */
         }
         break; /* HCI_LE_CONNECTION_COMPLETE_SUBEVT_CODE */
@@ -872,8 +704,8 @@ void BLE_SVC_L2CAP_Conn_Update_7_5(void) {
 	/* USER CODE BEGIN BLE_SVC_L2CAP_Conn_Update_1 */
 
 	/* USER CODE END BLE_SVC_L2CAP_Conn_Update_1 */
-	if (mutex == 1) {
-		mutex = 0;
+//	if (mutex == 1) {
+//		mutex = 0;
 		uint16_t interval_min = CONN_P(7.5);
 		uint16_t interval_max = CONN_P(7.5);
 		uint16_t slave_latency = L2CAP_SLAVE_LATENCY;
@@ -892,7 +724,7 @@ void BLE_SVC_L2CAP_Conn_Update_7_5(void) {
 			APP_DBG_MSG("BLE_SVC_L2CAP_Conn_Update(), Failed \r\n\r");
 #endif
 		}
-	}
+//	}
 	/* USER CODE BEGIN BLE_SVC_L2CAP_Conn_Update_2 */
 
 	/* USER CODE END BLE_SVC_L2CAP_Conn_Update_2 */
@@ -1208,16 +1040,19 @@ static void Adv_Request(APP_BLE_ConnStatus_t New_Status)
   tBleStatus ret = BLE_STATUS_INVALID_PARAMS;
   uint16_t Min_Inter, Max_Inter;
 
-  if (New_Status == APP_BLE_FAST_ADV)
-  {
-    Min_Inter = AdvIntervalMin;
-    Max_Inter = AdvIntervalMax;
-  }
-  else
-  {
-    Min_Inter = CFG_LP_CONN_ADV_INTERVAL_MIN;
-    Max_Inter = CFG_LP_CONN_ADV_INTERVAL_MAX;
-  }
+//  if (New_Status == APP_BLE_FAST_ADV)
+//  {
+//    Min_Inter = AdvIntervalMin;
+//    Max_Inter = AdvIntervalMax;
+//  }
+//  else
+//  {
+//    Min_Inter = CFG_LP_CONN_ADV_INTERVAL_MIN;
+//    Max_Inter = CFG_LP_CONN_ADV_INTERVAL_MAX;
+//  }
+//
+  Min_Inter = AdvIntervalMin;
+  Max_Inter = AdvIntervalMax;
 
   uint32_t UID = LL_FLASH_GetUDN();
 
@@ -1271,6 +1106,9 @@ static void Adv_Request(APP_BLE_ConnStatus_t New_Status)
         0);
 
     /* Update Advertising data */
+    /* the below is left from example code since this could be a place to do something if
+     * a client doesn't connect to the glasses within "INITIAL_ADV_TIMEOUT" time
+     */
     ret = aci_gap_update_adv_data(sizeof(manuf_data), (uint8_t*) manuf_data);
     if (ret == BLE_STATUS_SUCCESS)
     {

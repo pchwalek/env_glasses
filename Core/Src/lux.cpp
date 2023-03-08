@@ -101,6 +101,8 @@ void LuxTask(void *argument) {
 					packet->payload.lux_packet.gain = static_cast<tsl2591_gain_t>(sensorSettings.gain);
 					packet->payload.lux_packet.integration_time = static_cast<tsl2591_integration_time_t>(sensorSettings.integration_time);
 
+					packet->payload.lux_packet.sensor_id = 0;
+
 //					// write lux data
 					memcpy(packet->payload.lux_packet.payload, luxData, luxIdx * sizeof(lux_packet_payload_t));
 					packet->payload.lux_packet.payload_count = luxIdx;

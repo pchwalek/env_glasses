@@ -131,7 +131,7 @@ const osThreadAttr_t micTask_attributes = { .name = "micTask", .attr_bits =
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = { .name = "defaultTask",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
-		.stack_mem = NULL, .stack_size = 128 * 4, .priority =
+		.stack_mem = NULL, .stack_size = 256, .priority =
 				(osPriority_t) osPriorityNormal, .tz_module = 0, .reserved = 0 };
 /* Definitions for frontLightsThre */
 osThreadId_t frontLightsThreHandle;
@@ -150,7 +150,7 @@ const osThreadAttr_t thermopileTask_attributes = { .name = "thermopileTask",
 osThreadId_t senderTaskHandle;
 const osThreadAttr_t senderTask_attributes = { .name = "senderTask",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
-		.stack_mem = NULL, .stack_size = 512 * 4, .priority =
+		.stack_mem = NULL, .stack_size = 512 * 3, .priority =
 				(osPriority_t) osPriorityAboveNormal, .tz_module = 0, .reserved = 0 };
 
 /* Definitions for messageI2C_Lock */
