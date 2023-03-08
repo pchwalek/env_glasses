@@ -134,14 +134,15 @@ CircularBuffer* allocateBackupBuffer(void){
 
 uint8_t getPacketFromFRAM(CircularBuffer* backupBuffer, sensor_packet_t* packet){
 
-	uint32_t packetFRAM_Address = pop_front(backupBuffer);
-
-	if(packetFRAM_Address == 0) return NULL;
-	else{
-		if(!extMemGetData(packetFRAM_Address, (uint8_t*) packet, BUFF_PACKET_SIZE)) return NULL;
-
-		return 1;
-	}
+	return NULL;
+//	uint32_t packetFRAM_Address = pop_front(backupBuffer);
+//
+//	if(packetFRAM_Address == 0) return NULL;
+//	else{
+//		if(!extMemGetData(packetFRAM_Address, (uint8_t*) packet, BUFF_PACKET_SIZE)) return NULL;
+//
+//		return 1;
+//	}
 }
 
 uint8_t pushPacketToFRAM(CircularBuffer* backupBuffer, sensor_packet_t* packet){

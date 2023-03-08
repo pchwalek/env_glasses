@@ -167,9 +167,9 @@ __WEAK void SVCCTL_SvcInit(void)
 
   HIDS_Init();
 
-  HRS_Init();
-
-  HTS_Init();
+//  HRS_Init();
+//
+//  HTS_Init();
 
   IAS_Init();
 

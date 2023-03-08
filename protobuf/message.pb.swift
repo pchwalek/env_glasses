@@ -908,6 +908,8 @@ public struct LuxPacket {
 
   public var integrationTime: Tsl2591IntegrationTime = .tsl2722Integrationtime600Ms
 
+  public var sensorID: UInt32 = 0
+
   public var payload: [LuxPacket.Payload] = []
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -939,6 +941,8 @@ public struct SGPPacket {
   public var packetIndex: UInt32 = 0
 
   public var samplePeriod: UInt32 = 0
+
+  public var sensorID: UInt32 = 0
 
   public var payload: [SGPPacket.Payload] = []
 
@@ -977,6 +981,8 @@ public struct BMEPacket {
   public var packetIndex: UInt32 = 0
 
   public var samplePeriod: UInt32 = 0
+
+  public var sensorID: UInt32 = 0
 
   public var payload: [BMEPacket.Payload] = []
 
@@ -1133,6 +1139,8 @@ public struct SHTPacket {
 
   public var heater: Sht45_heater = .sht4XNoHeater
 
+  public var sensorID: UInt32 = 0
+
   public var payload: [SHTPacket.Payload] = []
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -1172,6 +1180,8 @@ public struct SpecPacket {
   public var integrationStep: UInt32 = 0
 
   public var gain: Spec_gain = .gain05X
+
+  public var sensorID: UInt32 = 0
 
   public var payload: [SpecPacket.Payload] = []
 
@@ -2549,7 +2559,8 @@ extension LuxPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
     2: .standard(proto: "sample_period"),
     3: .same(proto: "gain"),
     4: .standard(proto: "integration_time"),
-    5: .same(proto: "payload"),
+    5: .standard(proto: "sensor_id"),
+    6: .same(proto: "payload"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2562,7 +2573,8 @@ extension LuxPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
       case 2: try { try decoder.decodeSingularUInt32Field(value: &self.samplePeriod) }()
       case 3: try { try decoder.decodeSingularEnumField(value: &self.gain) }()
       case 4: try { try decoder.decodeSingularEnumField(value: &self.integrationTime) }()
-      case 5: try { try decoder.decodeRepeatedMessageField(value: &self.payload) }()
+      case 5: try { try decoder.decodeSingularUInt32Field(value: &self.sensorID) }()
+      case 6: try { try decoder.decodeRepeatedMessageField(value: &self.payload) }()
       default: break
       }
     }
@@ -2581,8 +2593,11 @@ extension LuxPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
     if self.integrationTime != .tsl2722Integrationtime600Ms {
       try visitor.visitSingularEnumField(value: self.integrationTime, fieldNumber: 4)
     }
+    if self.sensorID != 0 {
+      try visitor.visitSingularUInt32Field(value: self.sensorID, fieldNumber: 5)
+    }
     if !self.payload.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.payload, fieldNumber: 5)
+      try visitor.visitRepeatedMessageField(value: self.payload, fieldNumber: 6)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -2592,6 +2607,7 @@ extension LuxPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
     if lhs.samplePeriod != rhs.samplePeriod {return false}
     if lhs.gain != rhs.gain {return false}
     if lhs.integrationTime != rhs.integrationTime {return false}
+    if lhs.sensorID != rhs.sensorID {return false}
     if lhs.payload != rhs.payload {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -2647,7 +2663,8 @@ extension SGPPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "packet_index"),
     2: .standard(proto: "sample_period"),
-    3: .same(proto: "payload"),
+    3: .standard(proto: "sensor_id"),
+    4: .same(proto: "payload"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2658,7 +2675,8 @@ extension SGPPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularUInt32Field(value: &self.packetIndex) }()
       case 2: try { try decoder.decodeSingularUInt32Field(value: &self.samplePeriod) }()
-      case 3: try { try decoder.decodeRepeatedMessageField(value: &self.payload) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.sensorID) }()
+      case 4: try { try decoder.decodeRepeatedMessageField(value: &self.payload) }()
       default: break
       }
     }
@@ -2671,8 +2689,11 @@ extension SGPPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
     if self.samplePeriod != 0 {
       try visitor.visitSingularUInt32Field(value: self.samplePeriod, fieldNumber: 2)
     }
+    if self.sensorID != 0 {
+      try visitor.visitSingularUInt32Field(value: self.sensorID, fieldNumber: 3)
+    }
     if !self.payload.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.payload, fieldNumber: 3)
+      try visitor.visitRepeatedMessageField(value: self.payload, fieldNumber: 4)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -2680,6 +2701,7 @@ extension SGPPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
   public static func ==(lhs: SGPPacket, rhs: SGPPacket) -> Bool {
     if lhs.packetIndex != rhs.packetIndex {return false}
     if lhs.samplePeriod != rhs.samplePeriod {return false}
+    if lhs.sensorID != rhs.sensorID {return false}
     if lhs.payload != rhs.payload {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -2689,12 +2711,12 @@ extension SGPPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
 extension SGPPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = SGPPacket.protoMessageName + ".Payload"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "timestamp_unix"),
-    2: .standard(proto: "timestamp_ms_from_start"),
-    3: .standard(proto: "sraw_voc"),
-    4: .standard(proto: "sraw_nox"),
-    5: .standard(proto: "voc_index_value"),
-    6: .standard(proto: "nox_index_value"),
+    2: .standard(proto: "timestamp_unix"),
+    3: .standard(proto: "timestamp_ms_from_start"),
+    4: .standard(proto: "sraw_voc"),
+    5: .standard(proto: "sraw_nox"),
+    6: .standard(proto: "voc_index_value"),
+    7: .standard(proto: "nox_index_value"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2703,12 +2725,12 @@ extension SGPPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularUInt64Field(value: &self.timestampUnix) }()
-      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.timestampMsFromStart) }()
-      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.srawVoc) }()
-      case 4: try { try decoder.decodeSingularUInt32Field(value: &self.srawNox) }()
-      case 5: try { try decoder.decodeSingularInt32Field(value: &self.vocIndexValue) }()
-      case 6: try { try decoder.decodeSingularInt32Field(value: &self.noxIndexValue) }()
+      case 2: try { try decoder.decodeSingularUInt64Field(value: &self.timestampUnix) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.timestampMsFromStart) }()
+      case 4: try { try decoder.decodeSingularUInt32Field(value: &self.srawVoc) }()
+      case 5: try { try decoder.decodeSingularUInt32Field(value: &self.srawNox) }()
+      case 6: try { try decoder.decodeSingularInt32Field(value: &self.vocIndexValue) }()
+      case 7: try { try decoder.decodeSingularInt32Field(value: &self.noxIndexValue) }()
       default: break
       }
     }
@@ -2716,22 +2738,22 @@ extension SGPPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if self.timestampUnix != 0 {
-      try visitor.visitSingularUInt64Field(value: self.timestampUnix, fieldNumber: 1)
+      try visitor.visitSingularUInt64Field(value: self.timestampUnix, fieldNumber: 2)
     }
     if self.timestampMsFromStart != 0 {
-      try visitor.visitSingularUInt32Field(value: self.timestampMsFromStart, fieldNumber: 2)
+      try visitor.visitSingularUInt32Field(value: self.timestampMsFromStart, fieldNumber: 3)
     }
     if self.srawVoc != 0 {
-      try visitor.visitSingularUInt32Field(value: self.srawVoc, fieldNumber: 3)
+      try visitor.visitSingularUInt32Field(value: self.srawVoc, fieldNumber: 4)
     }
     if self.srawNox != 0 {
-      try visitor.visitSingularUInt32Field(value: self.srawNox, fieldNumber: 4)
+      try visitor.visitSingularUInt32Field(value: self.srawNox, fieldNumber: 5)
     }
     if self.vocIndexValue != 0 {
-      try visitor.visitSingularInt32Field(value: self.vocIndexValue, fieldNumber: 5)
+      try visitor.visitSingularInt32Field(value: self.vocIndexValue, fieldNumber: 6)
     }
     if self.noxIndexValue != 0 {
-      try visitor.visitSingularInt32Field(value: self.noxIndexValue, fieldNumber: 6)
+      try visitor.visitSingularInt32Field(value: self.noxIndexValue, fieldNumber: 7)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -2753,7 +2775,8 @@ extension BMEPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "packet_index"),
     2: .standard(proto: "sample_period"),
-    3: .same(proto: "payload"),
+    3: .standard(proto: "sensor_id"),
+    4: .same(proto: "payload"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2764,7 +2787,8 @@ extension BMEPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularUInt32Field(value: &self.packetIndex) }()
       case 2: try { try decoder.decodeSingularUInt32Field(value: &self.samplePeriod) }()
-      case 3: try { try decoder.decodeRepeatedMessageField(value: &self.payload) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.sensorID) }()
+      case 4: try { try decoder.decodeRepeatedMessageField(value: &self.payload) }()
       default: break
       }
     }
@@ -2777,8 +2801,11 @@ extension BMEPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
     if self.samplePeriod != 0 {
       try visitor.visitSingularUInt32Field(value: self.samplePeriod, fieldNumber: 2)
     }
+    if self.sensorID != 0 {
+      try visitor.visitSingularUInt32Field(value: self.sensorID, fieldNumber: 3)
+    }
     if !self.payload.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.payload, fieldNumber: 3)
+      try visitor.visitRepeatedMessageField(value: self.payload, fieldNumber: 4)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -2786,6 +2813,7 @@ extension BMEPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
   public static func ==(lhs: BMEPacket, rhs: BMEPacket) -> Bool {
     if lhs.packetIndex != rhs.packetIndex {return false}
     if lhs.samplePeriod != rhs.samplePeriod {return false}
+    if lhs.sensorID != rhs.sensorID {return false}
     if lhs.payload != rhs.payload {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -3075,7 +3103,8 @@ extension SHTPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
     2: .standard(proto: "sample_period"),
     3: .same(proto: "precision"),
     4: .same(proto: "heater"),
-    5: .same(proto: "payload"),
+    5: .standard(proto: "sensor_id"),
+    6: .same(proto: "payload"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -3088,7 +3117,8 @@ extension SHTPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
       case 2: try { try decoder.decodeSingularUInt32Field(value: &self.samplePeriod) }()
       case 3: try { try decoder.decodeSingularEnumField(value: &self.precision) }()
       case 4: try { try decoder.decodeSingularEnumField(value: &self.heater) }()
-      case 5: try { try decoder.decodeRepeatedMessageField(value: &self.payload) }()
+      case 5: try { try decoder.decodeSingularUInt32Field(value: &self.sensorID) }()
+      case 6: try { try decoder.decodeRepeatedMessageField(value: &self.payload) }()
       default: break
       }
     }
@@ -3107,8 +3137,11 @@ extension SHTPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
     if self.heater != .sht4XNoHeater {
       try visitor.visitSingularEnumField(value: self.heater, fieldNumber: 4)
     }
+    if self.sensorID != 0 {
+      try visitor.visitSingularUInt32Field(value: self.sensorID, fieldNumber: 5)
+    }
     if !self.payload.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.payload, fieldNumber: 5)
+      try visitor.visitRepeatedMessageField(value: self.payload, fieldNumber: 6)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -3118,6 +3151,7 @@ extension SHTPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
     if lhs.samplePeriod != rhs.samplePeriod {return false}
     if lhs.precision != rhs.precision {return false}
     if lhs.heater != rhs.heater {return false}
+    if lhs.sensorID != rhs.sensorID {return false}
     if lhs.payload != rhs.payload {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -3182,7 +3216,8 @@ extension SpecPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementatio
     3: .standard(proto: "integration_time"),
     4: .standard(proto: "integration_step"),
     5: .same(proto: "gain"),
-    6: .same(proto: "payload"),
+    6: .standard(proto: "sensor_id"),
+    7: .same(proto: "payload"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -3196,7 +3231,8 @@ extension SpecPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementatio
       case 3: try { try decoder.decodeSingularUInt32Field(value: &self.integrationTime) }()
       case 4: try { try decoder.decodeSingularUInt32Field(value: &self.integrationStep) }()
       case 5: try { try decoder.decodeSingularEnumField(value: &self.gain) }()
-      case 6: try { try decoder.decodeRepeatedMessageField(value: &self.payload) }()
+      case 6: try { try decoder.decodeSingularUInt32Field(value: &self.sensorID) }()
+      case 7: try { try decoder.decodeRepeatedMessageField(value: &self.payload) }()
       default: break
       }
     }
@@ -3218,8 +3254,11 @@ extension SpecPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementatio
     if self.gain != .gain05X {
       try visitor.visitSingularEnumField(value: self.gain, fieldNumber: 5)
     }
+    if self.sensorID != 0 {
+      try visitor.visitSingularUInt32Field(value: self.sensorID, fieldNumber: 6)
+    }
     if !self.payload.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.payload, fieldNumber: 6)
+      try visitor.visitRepeatedMessageField(value: self.payload, fieldNumber: 7)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -3230,6 +3269,7 @@ extension SpecPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementatio
     if lhs.integrationTime != rhs.integrationTime {return false}
     if lhs.integrationStep != rhs.integrationStep {return false}
     if lhs.gain != rhs.gain {return false}
+    if lhs.sensorID != rhs.sensorID {return false}
     if lhs.payload != rhs.payload {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true

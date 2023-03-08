@@ -121,7 +121,7 @@ async def main(queue: asyncio.Queue):
     device = await BleakScanner.find_device_by_filter(
         #lambda d, ad: ad.local_name == "AirSpec_008a65fb",
         # lambda d, ad: ad.local_name == "AirSpec_01ad7510",
-        lambda d, ad: ad.local_name == "AirSpec_01ad6d72",
+        lambda d, ad: ad.local_name == "AirSpec_01ad743c",
 
         timeout=60
     )
@@ -168,7 +168,7 @@ async def main(queue: asyncio.Queue):
 
         sensorPacket.ParseFromString(bytes(data))
         # print(sensorPacket.WhichOneof("payload"))
-        sensorPrintHelperFunc(sensorPacket)
+        sensorPrintHelperFunc(sensorPacket, False)
 
         # if(sensorPacket.header.packet_type == MIC):
         #     print("MIC")

@@ -70,13 +70,13 @@ const osMessageQueueAttr_t lightsComplexQueue_attributes = { .name =
 osThreadId_t blueGreenTranTaskHandle;
 const osThreadAttr_t blueGreenTask_attributes = { .name = "bgTranTask",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
-		.stack_mem = NULL, .stack_size = 1024, .priority =
+		.stack_mem = NULL, .stack_size = 512 * 2, .priority =
 				(osPriority_t) osPriorityNormal, .tz_module = 0, .reserved = 0 };
 
 osThreadId_t redFlashTaskHandle;
 const osThreadAttr_t redFlashTask_attributes = { .name = "redFlashTask",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
-		.stack_mem = NULL, .stack_size = 1024, .priority =
+		.stack_mem = NULL, .stack_size = 512 * 2, .priority =
 				(osPriority_t) osPriorityAboveNormal, .tz_module = 0, .reserved = 0 };
 
 osThreadId_t specTaskHandle;
@@ -88,7 +88,7 @@ const osThreadAttr_t specTask_attributes = { .name = "spectrometerTask",
 osThreadId_t luxTaskHandle;
 const osThreadAttr_t luxTask_attributes = { .name = "luxTask", .attr_bits =
 		osThreadDetached, .cb_mem = NULL, .cb_size = 0, .stack_mem = NULL,
-		.stack_size = 512 * 3, .priority = (osPriority_t) osPriorityNormal,
+		.stack_size = 512 * 2, .priority = (osPriority_t) osPriorityNormal,
 		.tz_module = 0, .reserved = 0 };
 
 osThreadId_t shtTaskHandle;
@@ -124,7 +124,7 @@ const osThreadAttr_t blinkTask_attributes = { .name = "blinkTask", .attr_bits =
 osThreadId_t micTaskHandle;
 const osThreadAttr_t micTask_attributes = { .name = "micTask", .attr_bits =
 		osThreadDetached, .cb_mem = NULL, .cb_size = 0, .stack_mem = NULL,
-		.stack_size = 512, .priority = (osPriority_t) osPriorityBelowNormal,
+		.stack_size = 512 * 4, .priority = (osPriority_t) osPriorityBelowNormal,
 		.tz_module = 0, .reserved = 0 };
 
 /* Definitions for defaultTask */
@@ -314,7 +314,7 @@ void StartDefaultTask(void *argument) {
 //	MX_FREERTOS_Init();
 	ledDisconnectNotification();
 //	osDelay(200);
-	bluetoothStartAdvertising();
+//	bluetoothStartAdvertising();
 
 	startThreads();
 	vTaskDelete( NULL );

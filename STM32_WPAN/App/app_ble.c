@@ -445,7 +445,7 @@ void APP_BLE_Init( void )
 //  DTS_STM_Init();
 //  DTC_App_Init();
 //  startThreads();
-  startInitThread();
+
 
 //  ledDisconnectNotification();
 
@@ -563,6 +563,8 @@ void APP_BLE_Init( void )
    Adv_Request(APP_BLE_FAST_ADV);
 
 /* USER CODE BEGIN APP_BLE_Init_2 */
+  startInitThread();
+//  bluetoothStartAdvertising();
 //#else
 //
 //	/**
@@ -631,6 +633,9 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
       /* USER CODE BEGIN EVT_DISCONN_COMPLETE */
   		/* restart advertising */
       ledDisconnectNotification();
+
+//      HAL_Delay(4000);
+//      NVIC_SystemReset();
 
 //#else
 //	switch (event_pckt->evt) {
@@ -1271,13 +1276,14 @@ static void Adv_Request(APP_BLE_ConnStatus_t New_Status)
     {
       if (New_Status == APP_BLE_FAST_ADV)
       {
-        APP_DBG_MSG("Successfully Start Fast Advertising \n" );
+//        APP_DBG_MSG("Successfully Start Fast Advertising \n" );
         /* Start Timer to STOP ADV - TIMEOUT */
         HW_TS_Start(BleApplicationContext.Advertising_mgr_timer_Id, INITIAL_ADV_TIMEOUT);
       }
       else
       {
-        APP_DBG_MSG("Successfully Start Low Power Advertising \n");
+//        APP_DBG_MSG("Successfully Start Low Power Advertising \n");
+        HW_TS_Start(BleApplicationContext.Advertising_mgr_timer_Id, INITIAL_ADV_TIMEOUT);
       }
     }
     else
@@ -1285,10 +1291,13 @@ static void Adv_Request(APP_BLE_ConnStatus_t New_Status)
       if (New_Status == APP_BLE_FAST_ADV)
       {
         APP_DBG_MSG("Start Fast Advertising Failed , result: %d \n", ret);
+//        NVIC_SystemReset();
+
       }
       else
       {
         APP_DBG_MSG("Start Low Power Advertising Failed , result: %d \n", ret);
+//        NVIC_SystemReset();
       }
     }
 
