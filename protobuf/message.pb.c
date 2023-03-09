@@ -123,6 +123,9 @@ PB_BIND(DFU_MODE, dfu_mode_t, AUTO)
 PB_BIND(BLUE_GREEN_TRANSITION, blue_green_transition_t, AUTO)
 
 
+PB_BIND(BLINK_CALIBRATION, blink_calibration_t, AUTO)
+
+
 PB_BIND(RED_FLASH_TASK, red_flash_task_t, AUTO)
 
 

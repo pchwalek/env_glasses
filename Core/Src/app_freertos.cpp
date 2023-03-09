@@ -73,6 +73,12 @@ const osThreadAttr_t blueGreenTask_attributes = { .name = "bgTranTask",
 		.stack_mem = NULL, .stack_size = 512 * 2, .priority =
 				(osPriority_t) osPriorityNormal, .tz_module = 0, .reserved = 0 };
 
+osThreadId_t blinkCalTaskHandle;
+const osThreadAttr_t blinkCalTask_attributes = { .name = "blinkCalTask",
+		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
+		.stack_mem = NULL, .stack_size = 512 * 2, .priority =
+				(osPriority_t) osPriorityNormal, .tz_module = 0, .reserved = 0 };
+
 osThreadId_t redFlashTaskHandle;
 const osThreadAttr_t redFlashTask_attributes = { .name = "redFlashTask",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,

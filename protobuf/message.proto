@@ -462,6 +462,11 @@ message BlueGreenTransition{
     uint32 transition_delay_seconds = 8; 
 }
 
+message BlinkCalibration{
+    bool enable = 1;
+    uint32 duration_ms = 2;
+}
+
 message RedFlashTask{
     bool enable = 1;
     uint32 red_max_intensity = 2;
@@ -485,6 +490,7 @@ message AirSpecConfigPacket {
         DFU_Mode    dfu_mode = 5;
         BlueGreenTransition blueGreenTransition = 6;
         RedFlashTask redFlashTask = 7;
+	BlinkCalibration blinkCalibration = 8;
     }
 }
 

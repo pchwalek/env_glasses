@@ -1865,6 +1865,20 @@ public struct BlueGreenTransition {
   public init() {}
 }
 
+public struct BlinkCalibration {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var enable: Bool = false
+
+  public var durationMs: UInt32 = 0
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
 public struct RedFlashTask {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -1963,6 +1977,14 @@ public struct AirSpecConfigPacket {
     set {payload = .redFlashTask(newValue)}
   }
 
+  public var blinkCalibration: BlinkCalibration {
+    get {
+      if case .blinkCalibration(let v)? = payload {return v}
+      return BlinkCalibration()
+    }
+    set {payload = .blinkCalibration(newValue)}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public enum OneOf_Payload: Equatable {
@@ -1972,6 +1994,7 @@ public struct AirSpecConfigPacket {
     case dfuMode(DFU_Mode)
     case blueGreenTransition(BlueGreenTransition)
     case redFlashTask(RedFlashTask)
+    case blinkCalibration(BlinkCalibration)
 
   #if !swift(>=4.1)
     public static func ==(lhs: AirSpecConfigPacket.OneOf_Payload, rhs: AirSpecConfigPacket.OneOf_Payload) -> Bool {
@@ -2001,6 +2024,10 @@ public struct AirSpecConfigPacket {
       }()
       case (.redFlashTask, .redFlashTask): return {
         guard case .redFlashTask(let l) = lhs, case .redFlashTask(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.blinkCalibration, .blinkCalibration): return {
+        guard case .blinkCalibration(let l) = lhs, case .blinkCalibration(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       default: return false
@@ -2328,6 +2355,7 @@ extension IMU_SensorConfig: @unchecked Sendable {}
 extension SensorConfig: @unchecked Sendable {}
 extension DFU_Mode: @unchecked Sendable {}
 extension BlueGreenTransition: @unchecked Sendable {}
+extension BlinkCalibration: @unchecked Sendable {}
 extension RedFlashTask: @unchecked Sendable {}
 extension AirSpecConfigHeader: @unchecked Sendable {}
 extension AirSpecConfigPacket: @unchecked Sendable {}
@@ -4784,6 +4812,44 @@ extension BlueGreenTransition: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
   }
 }
 
+extension BlinkCalibration: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = "BlinkCalibration"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "enable"),
+    2: .standard(proto: "duration_ms"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBoolField(value: &self.enable) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.durationMs) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.enable != false {
+      try visitor.visitSingularBoolField(value: self.enable, fieldNumber: 1)
+    }
+    if self.durationMs != 0 {
+      try visitor.visitSingularUInt32Field(value: self.durationMs, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: BlinkCalibration, rhs: BlinkCalibration) -> Bool {
+    if lhs.enable != rhs.enable {return false}
+    if lhs.durationMs != rhs.durationMs {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
 extension RedFlashTask: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = "RedFlashTask"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
@@ -4888,6 +4954,7 @@ extension AirSpecConfigPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     5: .standard(proto: "dfu_mode"),
     6: .same(proto: "blueGreenTransition"),
     7: .same(proto: "redFlashTask"),
+    8: .same(proto: "blinkCalibration"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -4975,6 +5042,19 @@ extension AirSpecConfigPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
           self.payload = .redFlashTask(v)
         }
       }()
+      case 8: try {
+        var v: BlinkCalibration?
+        var hadOneofValue = false
+        if let current = self.payload {
+          hadOneofValue = true
+          if case .blinkCalibration(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .blinkCalibration(v)
+        }
+      }()
       default: break
       }
     }
@@ -5012,6 +5092,10 @@ extension AirSpecConfigPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     case .redFlashTask?: try {
       guard case .redFlashTask(let v)? = self.payload else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
+    }()
+    case .blinkCalibration?: try {
+      guard case .blinkCalibration(let v)? = self.payload else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
     }()
     case nil: break
     }

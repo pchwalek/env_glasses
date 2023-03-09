@@ -370,3 +370,42 @@ void ingestSensorConfig(system_state_t *config){
 
 
 
+void BlinkCalTask(void *argument){
+//	union BlueGreenTransition blueGreenTran;
+
+	blink_calibration_t blinkCalRX;
+
+	uint32_t timeTracker = 0;
+
+	memcpy(&blinkCalRX,argument,sizeof(blink_calibration_t));
+
+
+	uint8_t step_duration_seconds;
+		uint8_t green_hold_length_seconds;
+		uint8_t transition_delay_seconds;
+
+	/* start sensor subsystems */
+//	controlBlink(false);
+//	controlIMU(false);
+
+	controlBlinkNoWindow(sysState.control.blink);
+	controlIMUNoWindow(sysState.control.imu);
+
+	/* delay sequence */
+	osDelay(blinkCalRX.duration_ms);
+
+	/* stop sensor subsystems and re-enable windowing, if active previously */
+	BlinkCalTaskExit();
+
+	vTaskDelete( NULL );
+}
+
+void BlinkCalTaskExit(void){
+	controlBlinkNoWindow(false);
+	controlIMUNoWindow(false);
+
+	controlBlink(sysState.control.blink);
+	controlIMU(sysState.control.imu);
+}
+
+

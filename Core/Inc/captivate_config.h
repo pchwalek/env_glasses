@@ -179,6 +179,9 @@ extern osThreadId_t masterTaskHandle;
 extern osThreadId_t blueGreenTranTaskHandle;
 extern const osThreadAttr_t blueGreenTask_attributes;
 
+extern osThreadId_t blinkCalTaskHandle;
+extern const osThreadAttr_t blinkCalTask_attributes;
+
 extern osThreadId_t redFlashTaskHandle;
 extern const osThreadAttr_t redFlashTask_attributes;
 
@@ -360,6 +363,8 @@ void controlBlink(bool state);
 void controlIMUNoWindow(bool state);
 void controlIMU(bool state);
 void ingestSensorConfig(system_state_t *config);
+void BlinkCalTask(void *argument);
+void BlinkCalTaskExit(void);
 
 //typedef struct PacketHeaders{
 //  uint16_t packetType;

@@ -145,6 +145,9 @@ extern uint16_t Att_Mtu_Exchanged;
 //light_control_packet_t receivedColor;
 //static union ColorComplex receivedColor;
 blue_green_transition_t blueGreenTranRX;
+
+blink_calibration_t blinkCalRX;
+
 red_flash_task_t redFlashRX;
 system_state_t tempState;
 #else
@@ -164,6 +167,7 @@ time_t receivedEpoch;
  * @param  Event: Address of the buffer holding the Event
  * @retval Ack: Return whether the Event has been managed or not
  */
+static osThreadState_t threadState;
 static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 	SVCCTL_EvtAckStatus_t return_value;
 	hci_event_pckt *event_pckt;
@@ -314,7 +318,7 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 
 				   case AIR_SPEC_CONFIG_PACKET_BLUE_GREEN_TRANSITION_TAG  :
 						memcpy(&blueGreenTranRX, &rxConfigPacket.payload.blue_green_transition, sizeof(blue_green_transition_t));
-						osThreadState_t threadState = osThreadGetState(blueGreenTranTaskHandle);
+						threadState = osThreadGetState(blueGreenTranTaskHandle);
 						if((threadState != osThreadTerminated) &&(threadState != osThreadInactive)  && (threadState != osThreadError)){
 							osThreadTerminate(blueGreenTranTaskHandle); // terminate any existing running thread
 							BlueGreenTransitionTaskExit();
@@ -324,6 +328,19 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 							blueGreenTranTaskHandle = osThreadNew(BlueGreenTransitionTask, &blueGreenTranRX, &blueGreenTask_attributes);
 						}
 					  break; /* optional */
+
+				   case AIR_SPEC_CONFIG_PACKET_BLINK_CALIBRATION_TAG:
+					   memcpy(&blinkCalRX, &rxConfigPacket.payload.blink_calibration, sizeof(blink_calibration_t));
+
+						threadState = osThreadGetState(blinkCalTaskHandle);
+						if((threadState != osThreadTerminated) &&(threadState != osThreadInactive)  && (threadState != osThreadError)){
+							osThreadTerminate(blinkCalTaskHandle); // terminate any existing running thread
+							BlinkCalTaskExit();
+						}
+						if(blinkCalRX.enable == 1){
+							blinkCalTaskHandle = osThreadNew(BlinkCalTask, &blinkCalRX, &blinkCalTask_attributes);
+						}
+					  break;
 
 				   case AIR_SPEC_CONFIG_PACKET_RED_FLASH_TASK_TAG  :
 						memcpy(&redFlashRX, &rxConfigPacket.payload.red_flash_task, sizeof(red_flash_task_t));

@@ -84,14 +84,12 @@ void BlinkTask(void *argument) {
 	uint16_t blinkDataTracker = 0;
 	uint32_t payload_ID = 0;
 //	uint32_t tickCnt;
-	uint32_t blinkSampleHalfBuffer_ms = BLINK_HALF_BUFFER_SIZE * (1.0/BLINK_SAMPLE_RATE) * 1000.0;
-	uint32_t packetRemainder = BLINK_SAMPLE_RATE % BLINK_PKT_PAYLOAD_SIZE;
-
+//	uint32_t blinkSampleHalfBuffer_ms = BLINK_HALF_BUFFER_SIZE * (1.0/BLINK_SAMPLE_RATE) * 1000.0;
+//	uint32_t packetRemainder = BLINK_SAMPLE_RATE % BLINK_PKT_PAYLOAD_SIZE;
 
 
 	sensor_packet_t *packet = NULL;
 
-	bool status;
 
 	osDelay(500);
 
@@ -214,7 +212,7 @@ void BlinkTask(void *argument) {
 
 					// BLINK_SAMPLE_RATE == size of blink_ptr array
 					if(sensorSettings.enable_daylight_compensation){
-						diodeSaturatedFlag = externalInfraredDetect(blink_ptr_copy, BLINK_SAMPLE_RATE, &rolling_avg,
+						diodeSaturatedFlag = externalInfraredDetect((uint8_t *) blink_ptr_copy, BLINK_SAMPLE_RATE, &rolling_avg,
 								sensorSettings.daylight_compensation_upper_thresh,
 								sensorSettings.daylight_compensation_lower_thresh );
 
@@ -386,21 +384,21 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
 //		low_adc_sample = 0;
 //		return;
 //	}
-	blink_ptr = &blink_buffer[BLINK_HALF_BUFFER_SIZE];
-	osThreadFlagsSet(blinkTaskHandle, 0x00000004U);
 
 	blinkTimestampMs = HAL_GetTick();
 	blinkTimestampUnix = getEpoch();
 
+
+	blink_ptr = &blink_buffer[BLINK_HALF_BUFFER_SIZE];
+	osThreadFlagsSet(blinkTaskHandle, 0x00000004U);
 }
 
 void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc) {
-	blink_ptr = blink_buffer;
-	osThreadFlagsSet(blinkTaskHandle, 0x00000004U);
-
 	blinkTimestampMs = HAL_GetTick();
 	blinkTimestampUnix = getEpoch();
 
+	blink_ptr = blink_buffer;
+	osThreadFlagsSet(blinkTaskHandle, 0x00000004U);
 }
 
 void BlinkSyncTrigger(void) {

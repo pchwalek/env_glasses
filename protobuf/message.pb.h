@@ -576,6 +576,13 @@ typedef struct blue_green_transition {
 PB_PACKED_STRUCT_END
 
 PB_PACKED_STRUCT_START
+typedef struct blink_calibration {
+    bool enable;
+    uint32_t duration_ms;
+} pb_packed blink_calibration_t;
+PB_PACKED_STRUCT_END
+
+PB_PACKED_STRUCT_START
 typedef struct red_flash_task {
     bool enable;
     uint32_t red_max_intensity;
@@ -604,6 +611,7 @@ typedef struct air_spec_config_packet {
         dfu_mode_t dfu_mode;
         blue_green_transition_t blue_green_transition;
         red_flash_task_t red_flash_task;
+        blink_calibration_t blink_calibration;
     } payload;
 } pb_packed air_spec_config_packet_t;
 PB_PACKED_STRUCT_END
@@ -789,6 +797,7 @@ extern "C" {
 
 
 
+
 /* Initializer values for message structs */
 #define SENSOR_PACKET_HEADER_INIT_DEFAULT        {0, 0, 0}
 #define LUX_PACKET_INIT_DEFAULT                  {0, 0, _TSL2591_GAIN_MIN, _TSL2591_INTEGRATION_TIME_MIN, 0, 0, {LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT}}
@@ -829,6 +838,7 @@ extern "C" {
 #define SENSOR_CONFIG_INIT_DEFAULT               {false, LUX_SENSOR_CONFIG_INIT_DEFAULT, false, SGP_SENSOR_CONFIG_INIT_DEFAULT, false, BME_SENSOR_CONFIG_INIT_DEFAULT, false, COLOR_SENSOR_CONFIG_INIT_DEFAULT, false, THERMOPILE_SENSOR_CONFIG_INIT_DEFAULT, false, BLINK_SENSOR_CONFIG_INIT_DEFAULT, false, MIC_SENSOR_CONFIG_INIT_DEFAULT, false, HUMIDITY_SENSOR_CONFIG_INIT_DEFAULT, false, IMU_SENSOR_CONFIG_INIT_DEFAULT}
 #define DFU_MODE_INIT_DEFAULT                    {0}
 #define BLUE_GREEN_TRANSITION_INIT_DEFAULT       {0, 0, 0, 0, 0, 0, 0, 0}
+#define BLINK_CALIBRATION_INIT_DEFAULT           {0, 0}
 #define RED_FLASH_TASK_INIT_DEFAULT              {0, 0, 0, 0, 0, 0}
 #define AIR_SPEC_CONFIG_HEADER_INIT_DEFAULT      {0}
 #define AIR_SPEC_CONFIG_PACKET_INIT_DEFAULT      {false, AIR_SPEC_CONFIG_HEADER_INIT_DEFAULT, 0, {LIGHT_CONTROL_PACKET_INIT_DEFAULT}}
@@ -876,6 +886,7 @@ extern "C" {
 #define SENSOR_CONFIG_INIT_ZERO                  {false, LUX_SENSOR_CONFIG_INIT_ZERO, false, SGP_SENSOR_CONFIG_INIT_ZERO, false, BME_SENSOR_CONFIG_INIT_ZERO, false, COLOR_SENSOR_CONFIG_INIT_ZERO, false, THERMOPILE_SENSOR_CONFIG_INIT_ZERO, false, BLINK_SENSOR_CONFIG_INIT_ZERO, false, MIC_SENSOR_CONFIG_INIT_ZERO, false, HUMIDITY_SENSOR_CONFIG_INIT_ZERO, false, IMU_SENSOR_CONFIG_INIT_ZERO}
 #define DFU_MODE_INIT_ZERO                       {0}
 #define BLUE_GREEN_TRANSITION_INIT_ZERO          {0, 0, 0, 0, 0, 0, 0, 0}
+#define BLINK_CALIBRATION_INIT_ZERO              {0, 0}
 #define RED_FLASH_TASK_INIT_ZERO                 {0, 0, 0, 0, 0, 0}
 #define AIR_SPEC_CONFIG_HEADER_INIT_ZERO         {0}
 #define AIR_SPEC_CONFIG_PACKET_INIT_ZERO         {false, AIR_SPEC_CONFIG_HEADER_INIT_ZERO, 0, {LIGHT_CONTROL_PACKET_INIT_ZERO}}
@@ -1072,6 +1083,8 @@ extern "C" {
 #define BLUE_GREEN_TRANSITION_STEP_DURATION_MS_TAG 6
 #define BLUE_GREEN_TRANSITION_GREEN_HOLD_LENGTH_SECONDS_TAG 7
 #define BLUE_GREEN_TRANSITION_TRANSITION_DELAY_SECONDS_TAG 8
+#define BLINK_CALIBRATION_ENABLE_TAG             1
+#define BLINK_CALIBRATION_DURATION_MS_TAG        2
 #define RED_FLASH_TASK_ENABLE_TAG                1
 #define RED_FLASH_TASK_RED_MAX_INTENSITY_TAG     2
 #define RED_FLASH_TASK_RED_MIN_INTENSITY_TAG     3
@@ -1086,6 +1099,7 @@ extern "C" {
 #define AIR_SPEC_CONFIG_PACKET_DFU_MODE_TAG      5
 #define AIR_SPEC_CONFIG_PACKET_BLUE_GREEN_TRANSITION_TAG 6
 #define AIR_SPEC_CONFIG_PACKET_RED_FLASH_TASK_TAG 7
+#define AIR_SPEC_CONFIG_PACKET_BLINK_CALIBRATION_TAG 8
 #define SYSTEM_STATE_FIRMWARE_VERSION_TAG        1
 #define SYSTEM_STATE_CONTROL_TAG                 2
 #define SYSTEM_STATE_CONFIG_TAG                  3
@@ -1482,6 +1496,12 @@ X(a, STATIC,   SINGULAR, UINT32,   transition_delay_seconds,   8)
 #define BLUE_GREEN_TRANSITION_CALLBACK NULL
 #define BLUE_GREEN_TRANSITION_DEFAULT NULL
 
+#define BLINK_CALIBRATION_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, BOOL,     enable,            1) \
+X(a, STATIC,   SINGULAR, UINT32,   duration_ms,       2)
+#define BLINK_CALIBRATION_CALLBACK NULL
+#define BLINK_CALIBRATION_DEFAULT NULL
+
 #define RED_FLASH_TASK_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, BOOL,     enable,            1) \
 X(a, STATIC,   SINGULAR, UINT32,   red_max_intensity,   2) \
@@ -1504,7 +1524,8 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (payload,sensor_control,payload.sensor_contro
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload,sensor_config,payload.sensor_config),   4) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload,dfu_mode,payload.dfu_mode),   5) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload,blue_green_transition,payload.blue_green_transition),   6) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (payload,red_flash_task,payload.red_flash_task),   7)
+X(a, STATIC,   ONEOF,    MESSAGE,  (payload,red_flash_task,payload.red_flash_task),   7) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (payload,blink_calibration,payload.blink_calibration),   8)
 #define AIR_SPEC_CONFIG_PACKET_CALLBACK NULL
 #define AIR_SPEC_CONFIG_PACKET_DEFAULT NULL
 #define air_spec_config_packet_t_header_MSGTYPE air_spec_config_header_t
@@ -1514,6 +1535,7 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (payload,red_flash_task,payload.red_flash_tas
 #define air_spec_config_packet_t_payload_dfu_mode_MSGTYPE dfu_mode_t
 #define air_spec_config_packet_t_payload_blue_green_transition_MSGTYPE blue_green_transition_t
 #define air_spec_config_packet_t_payload_red_flash_task_MSGTYPE red_flash_task_t
+#define air_spec_config_packet_t_payload_blink_calibration_MSGTYPE blink_calibration_t
 
 #define SYSTEM_STATE_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   firmware_version,   1) \
@@ -1612,6 +1634,7 @@ extern const pb_msgdesc_t imu_sensor_config_t_msg;
 extern const pb_msgdesc_t sensor_config_t_msg;
 extern const pb_msgdesc_t dfu_mode_t_msg;
 extern const pb_msgdesc_t blue_green_transition_t_msg;
+extern const pb_msgdesc_t blink_calibration_t_msg;
 extern const pb_msgdesc_t red_flash_task_t_msg;
 extern const pb_msgdesc_t air_spec_config_header_t_msg;
 extern const pb_msgdesc_t air_spec_config_packet_t_msg;
@@ -1661,6 +1684,7 @@ extern const pb_msgdesc_t sensor_packet_t_msg;
 #define SENSOR_CONFIG_FIELDS &sensor_config_t_msg
 #define DFU_MODE_FIELDS &dfu_mode_t_msg
 #define BLUE_GREEN_TRANSITION_FIELDS &blue_green_transition_t_msg
+#define BLINK_CALIBRATION_FIELDS &blink_calibration_t_msg
 #define RED_FLASH_TASK_FIELDS &red_flash_task_t_msg
 #define AIR_SPEC_CONFIG_HEADER_FIELDS &air_spec_config_header_t_msg
 #define AIR_SPEC_CONFIG_PACKET_FIELDS &air_spec_config_packet_t_msg
@@ -1680,6 +1704,7 @@ extern const pb_msgdesc_t sensor_packet_t_msg;
 #define AIR_SPEC_CONFIG_HEADER_SIZE              11
 #define AIR_SPEC_CONFIG_PACKET_SIZE              207
 #define BLINK_BYTE_PAYLOAD_SIZE                  453
+#define BLINK_CALIBRATION_SIZE                   8
 #define BLINK_HIGH_RES_PAYLOAD_SIZE              353
 #define BLINK_PACKET_SIZE                        501
 #define BLINK_SATURATION_SETTINGS_SIZE           14
