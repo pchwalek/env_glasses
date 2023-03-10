@@ -48,6 +48,8 @@ volatile uint8_t start_logging = 0;
 volatile uint8_t secondMicSample = 0;
 volatile uint8_t micLowPowerMode = 0;
 
+static mic_sensor_config_t sensorSettings;
+
 typedef struct micSamples {
 	uint32_t lux;
 	uint32_t timestamp;
@@ -70,7 +72,7 @@ void Mic_Task(void *argument){
 
 	float startFreq;
 
-	mic_sensor_config_t sensorSettings;
+
 
 //	arm_rfft_init_q31(&fft_instance, MIC_HALF_DATA_SIZE, 0, 0);
 	arm_rfft_fast_init_f32(&fft_instance, MIC_DATA_SIZE);

@@ -32,6 +32,9 @@ static sensor_packet_t packets[MAX_PACKET_QUEUE_SIZE];
 
 sensor_packet_t *packetPtr[MAX_PACKET_QUEUE_SIZE];
 
+static uint32_t backup_buff_addresses[BACKUP_BUFF_SIZE];
+static uint32_t buffer_index = 0;
+
 sensor_packet_t* grabPacket(void) {
 	sensor_packet_t *packet;
 	// grab available memory for packet creation
@@ -48,7 +51,8 @@ void queueUpPacket(sensor_packet_t *packet) {
 
 sensor_packet_t *packetToSend;
 sensor_packet_t backupPacket;
-CircularBuffer* backupBuffer;
+//CircularBuffer* backupBuffer;
+FRAM_Packets FRAM_packet, FRAM_old_sample;
 
 sensor_packet_t sensorPacket = SENSOR_PACKET_INIT_ZERO;
 
@@ -115,14 +119,18 @@ pb_ostream_t stream;
 void senderThread(void *argument) {
 	uint8_t retry;
 
-	backupBuffer = allocateBackupBuffer();
+//	backupBuffer = allocateBackupBuffer();
 	uint8_t backupPkt = 0;
 
 	uint32_t pktLength;
 
 	bool status;
 
-
+	uint32_t start_addr = BACKUP_START_ADDR;
+	for (uint32_t i=0; i<BACKUP_BUFF_SIZE; i++) {
+		   backup_buff_addresses[i] = start_addr;
+		   start_addr += BUFF_PACKET_SIZE;
+	}
 
 //	for (int i = 0; i < MAX_PACKET_QUEUE_SIZE; i++) {
 //		packetToSend = &packets[i];
@@ -159,46 +167,50 @@ void senderThread(void *argument) {
 //		}
 
 		if(isBluetoothConnected()){
+			/* first check if any real-time packets are ready to be sent (with no timeout) */
 			if(osOK == osMessageQueueGet(packet_QueueHandle, &packetToSend, 0U, 0)){
-
+				packetToSend->header.epoch = getEpoch();
+				packetToSend->header.ms_from_start = HAL_GetTick();
 			}
-			else if(!getPacketFromFRAM(backupBuffer, &backupPacket)){
-				osMessageQueueGet(packet_QueueHandle, &packetToSend, 0U, osWaitForever);
+			/* else check if any old packets exist in FRAM */
+//			else if(!getPacketFromFRAM(backupBuffer, &backupPacket)){
+			else if(osMessageQueueGetCount(FRAM_QueueHandle) > 0){
+				if(osOK == osMessageQueueGet (FRAM_QueueHandle, &FRAM_packet, 0, 0)){
+					extMemGetData(FRAM_packet.memory_addr, (uint8_t*) &encoded_payload, FRAM_packet.size);
+					pktLength = FRAM_packet.size;
+					backupPkt = 1;
+				}
 			}
+			/* else just wait for a real-time packet to come in*/
 			else{
-				backupPkt = 1;
-				packetToSend = &backupPacket;
-				osDelay(5);
+				if(osOK == osMessageQueueGet(packet_QueueHandle, &packetToSend, 0U, osWaitForever)){
+					packetToSend->header.epoch = getEpoch();
+					packetToSend->header.ms_from_start = HAL_GetTick();
+				}
 			}
 		}else{
-			osMessageQueueGet(packet_QueueHandle, &packetToSend, 0U, osWaitForever);
+			if(osOK == osMessageQueueGet(packet_QueueHandle, &packetToSend, 0U, osWaitForever)){
+				packetToSend->header.epoch = getEpoch();
+				packetToSend->header.ms_from_start = HAL_GetTick();
+			}else{
+				continue;
+			}
 		}
 
-		if(packetToSend == NULL){
-			continue;
-		}
+//		if(packetToSend == NULL){
+//			continue;
+//		}
 
 		retry = 0;
 
-		packetToSend->header.epoch = getEpoch();
-		packetToSend->header.ms_from_start = HAL_GetTick();
-
-
-//		uint8_t buffer[128];
-//		volatile size_t message_length;HAL_GetTick();
-//		bool status;
-//		size_t lenOfBuff;
-
-		if(backupPkt != 1){
-			//todo: pb refactor
-//			packetToSend->header.systemID = LL_FLASH_GetUDN();
-//			packetToSend->header.epoch = getEpoch();
-		}
 		if(isBluetoothConnected()){
-
-			stream = pb_ostream_from_buffer(encoded_payload, MAX_PAYLOAD_SIZE);
-			status = pb_encode(&stream, SENSOR_PACKET_FIELDS, packetToSend);
-			pktLength = stream.bytes_written;
+			if(backupPkt != 1){
+				stream = pb_ostream_from_buffer(encoded_payload, MAX_PAYLOAD_SIZE);
+				status = pb_encode(&stream, SENSOR_PACKET_FIELDS, packetToSend);
+				pktLength = stream.bytes_written;
+			}else{
+				backupPkt = 0;
+			}
 
 			while (PACKET_SEND_SUCCESS != sendProtobufPacket_BLE(encoded_payload,pktLength)) {
 				if (retry >= MAX_BLE_RETRIES) {
@@ -207,12 +219,35 @@ void senderThread(void *argument) {
 				retry++;
 	//			osDelay(5);
 			};
-//		}else{
-//			/* add packet to FRAM if its not IMU or Blink */
+
+			/* artificial delay in case the data rate of client device is bottlenecked */
+//			osDelay(25);
+		}else{
+			/* add packet to FRAM if its not IMU or Blink */
 //			if( (packetToSend->header.packetType != IMU) &&
 //					(packetToSend->header.packetType != BLINK)){
 //				pushPacketToFRAM(backupBuffer, packetToSend);
 //			}
+			stream = pb_ostream_from_buffer(encoded_payload, MAX_PAYLOAD_SIZE);
+			status = pb_encode(&stream, SENSOR_PACKET_FIELDS, packetToSend);
+			pktLength = stream.bytes_written;
+
+			FRAM_packet.memory_addr = backup_buff_addresses[buffer_index];
+			FRAM_packet.size = stream.bytes_written;
+
+			if(extMemWriteData(FRAM_packet.memory_addr, encoded_payload, FRAM_packet.size)){
+
+				// if queue is full, pop off oldest entry
+				if(osMessageQueueGetCount(FRAM_QueueHandle) == BACKUP_BUFF_SIZE){
+					osMessageQueueGet (FRAM_QueueHandle, &FRAM_old_sample, 0, 0);
+				}
+
+				if( osOK == osMessageQueuePut (FRAM_QueueHandle, &FRAM_packet, 0, 0)){
+					buffer_index += 1;
+					buffer_index %= BACKUP_BUFF_SIZE;
+				}
+			}
+
 		}
 
 		// return memory back to pool

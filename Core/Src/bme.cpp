@@ -269,6 +269,6 @@ void recoverBME_StateConfig(){
 
 }
 
-static void triggerBMESample(void *argument) {
-	osThreadFlagsSet(bmeTaskHandle, GRAB_SAMPLE_BIT);
-}
+//static void triggerBMESample(void *argument) {
+//	osThreadFlagsSet(bmeTaskHandle, GRAB_SAMPLE_BIT);
+//}

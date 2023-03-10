@@ -64,8 +64,8 @@ float tick_ms_diff = 0;
 uint8_t diodeState = 0;
 uint8_t diodeSaturatedFlag = 0;
 
-volatile uint32_t blinkTimestampMs;
-volatile uint64_t blinkTimestampUnix;
+volatile uint32_t blinkTimestampMs = 0;
+volatile uint64_t blinkTimestampUnix = 0;
 
 
 osTimerId_t blinkSingleShotTimer_id;
@@ -188,10 +188,10 @@ void BlinkTask(void *argument) {
 							blinkTimestampUnix += payloadLength * sensorSamplePeriod_ms;
 						}
 
-						packet->payload.blink_packet.timestamp_unix = blinkTimestampMs;
-						packet->payload.blink_packet.timestamp_ms_from_start = blinkTimestampUnix;
+						packet->payload.blink_packet.timestamp_unix = blinkTimestampUnix;
+						packet->payload.blink_packet.timestamp_ms_from_start = blinkTimestampMs;
 
-						// write lux data
+						// write blink data
 						memcpy(packet->payload.blink_packet.payload.payload_byte.sample.bytes, &(blink_ptr_copy[iterator * BLINK_PKT_PAYLOAD_SIZE]), payloadLength);
 
 						packet->payload.blink_packet.payload.payload_byte.sample.size = payloadLength;

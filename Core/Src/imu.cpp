@@ -25,7 +25,7 @@
 
 static void triggerIMUSample(void *argument);
 
-static imu_sample imuData[MAX_IMU_SAMPLES_PACKET];
+//static imu_sample imuData[MAX_IMU_SAMPLES_PACKET];
 
 //static PacketHeader header;
 osTimerId_t periodicIMUTimer_id;
@@ -299,9 +299,9 @@ void IMU_Task(void *argument){
 
 }
 
-static void triggerIMUSample(void *argument) {
-	osThreadFlagsSet(imuTaskHandle, GRAB_SAMPLE_BIT);
-}
+//static void triggerIMUSample(void *argument) {
+//	osThreadFlagsSet(imuTaskHandle, GRAB_SAMPLE_BIT);
+//}
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 //	if(GPIO_Pin == IMU_INT_Pin) triggerIMUSample(NULL);

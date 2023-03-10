@@ -59,7 +59,7 @@ typedef struct
  * START of Section BLE_APP_CONTEXT
  */
 
-PLACE_IN_SECTION("BLE_APP_CONTEXT") static HRSAPP_Context_t HRSAPP_Context;
+//PLACE_IN_SECTION("BLE_APP_CONTEXT") static HRSAPP_Context_t HRSAPP_Context;
 
 /**
  * END of Section BLE_APP_CONTEXT
@@ -169,26 +169,26 @@ static void HRSAPP_Measurement(void)
   return;
 }
 
-static void HrMeas( void )
-{
-  /**
-   * The code shall be executed in the background as aci command may be sent
-   * The background is the only place where the application can make sure a new aci command
-   * is not sent if there is a pending one
-   */
-  osThreadFlagsSet( HrsProcessId, 1 );
-
-/* USER CODE BEGIN HrMeas */
-
-/* USER CODE END HrMeas */
-
-  return;
-}
-
-static uint32_t HRSAPP_Read_RTC_SSR_SS ( void )
-{
-  return ((uint32_t)(READ_BIT(RTC->SSR, RTC_SSR_SS)));
-}
+//static void HrMeas( void )
+//{
+//  /**
+//   * The code shall be executed in the background as aci command may be sent
+//   * The background is the only place where the application can make sure a new aci command
+//   * is not sent if there is a pending one
+//   */
+//  osThreadFlagsSet( HrsProcessId, 1 );
+//
+///* USER CODE BEGIN HrMeas */
+//
+///* USER CODE END HrMeas */
+//
+//  return;
+//}
+//
+//static uint32_t HRSAPP_Read_RTC_SSR_SS ( void )
+//{
+//  return ((uint32_t)(READ_BIT(RTC->SSR, RTC_SSR_SS)));
+//}
 
 /* USER CODE BEGIN FD */
 

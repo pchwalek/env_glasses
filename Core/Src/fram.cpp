@@ -13,6 +13,7 @@
 
 uint8_t header[4];
 
+
 void extMemChipSelectPin(bool state){
 	if(state){
 		HAL_GPIO_WritePin(MEM_CS_GPIO_Port, MEM_CS_Pin, GPIO_PIN_RESET);
@@ -38,6 +39,7 @@ bool extMemWriteEnableLatch(bool state){
 
 bool extMemInit(){
 	extMemWriteEnableLatch(true);
+
 	return true;
 }
 
@@ -126,15 +128,16 @@ bool extMemWriteProtectPin(bool state){
 	}else{
 		HAL_GPIO_WritePin(MEM_WP_GPIO_Port, MEM_WP_Pin, GPIO_PIN_RESET);
 	}
+	return true;
 }
 
 CircularBuffer* allocateBackupBuffer(void){
 	return create_circular_buffer(BACKUP_BUFF_SIZE, BACKUP_START_ADDR, BUFF_PACKET_SIZE);
 }
 
-uint8_t getPacketFromFRAM(CircularBuffer* backupBuffer, sensor_packet_t* packet){
-
-	return NULL;
+//uint8_t getPacketFromFRAM(CircularBuffer* backupBuffer, sensor_packet_t* packet){
+//
+//	return NULL;
 //	uint32_t packetFRAM_Address = pop_front(backupBuffer);
 //
 //	if(packetFRAM_Address == 0) return NULL;
@@ -143,7 +146,21 @@ uint8_t getPacketFromFRAM(CircularBuffer* backupBuffer, sensor_packet_t* packet)
 //
 //		return 1;
 //	}
+//}
+
+uint8_t getPacketFromFRAM(CircularBuffer* backupBuffer, sensor_packet_t* packet){
+
+	return NULL;
+	uint32_t packetFRAM_Address = pop_front(backupBuffer);
+
+	if(packetFRAM_Address == 0) return NULL;
+	else{
+		if(!extMemGetData(packetFRAM_Address, (uint8_t*) packet, BUFF_PACKET_SIZE)) return NULL;
+
+		return 1;
+	}
 }
+
 
 uint8_t pushPacketToFRAM(CircularBuffer* backupBuffer, sensor_packet_t* packet){
 
@@ -160,5 +177,6 @@ uint8_t pushPacketToFRAM(CircularBuffer* backupBuffer, sensor_packet_t* packet){
 //			return 1;
 //		}
 	}
+	return 1;
 }
 

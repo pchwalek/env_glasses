@@ -156,7 +156,7 @@ const osThreadAttr_t thermopileTask_attributes = { .name = "thermopileTask",
 osThreadId_t senderTaskHandle;
 const osThreadAttr_t senderTask_attributes = { .name = "senderTask",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
-		.stack_mem = NULL, .stack_size = 512 * 3, .priority =
+		.stack_mem = NULL, .stack_size = 512 * 5, .priority =
 				(osPriority_t) osPriorityAboveNormal, .tz_module = 0, .reserved = 0 };
 
 /* Definitions for messageI2C_Lock */
@@ -168,6 +168,9 @@ const osMutexAttr_t messageI2C3_Lock_attributes = { .name = "messageI2C3_Lock" }
 
 osMessageQueueId_t packet_QueueHandle;
 const osMessageQueueAttr_t packetQueue_attributes = { .name = "packetQueue" };
+
+osMessageQueueId_t FRAM_QueueHandle;
+const osMessageQueueAttr_t FRAMQueue_attributes = { .name = "FRAMQueue" };
 
 osMessageQueueId_t packetAvail_QueueHandle;
 const osMessageQueueAttr_t packetAvailQueue_attributes =
@@ -264,6 +267,9 @@ void MX_FREERTOS_Init(void) {
 //  bmeTaskHandle = osThreadNew(BME_Task, NULL, &bmeTask_attributes);
 //  imuTaskHandle = osThreadNew(IMU_Task, NULL, &imuTask_attributes);
 //  blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
+
+	FRAM_QueueHandle = osMessageQueueNew(BACKUP_BUFF_SIZE,
+			sizeof(FRAM_Packet), &FRAMQueue_attributes);;
 
 	packet_QueueHandle = osMessageQueueNew(MAX_PACKET_QUEUE_SIZE,
 			sizeof(uint8_t*), &packetQueue_attributes);

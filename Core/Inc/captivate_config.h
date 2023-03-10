@@ -154,7 +154,7 @@ extern "C" {
 #define PACKET_LENGTH_EXCEEDED	1
 #define PACKET_UNDEFINED_ERR	10
 //#define MAX_PACKET_LEN		DATA_NOTIFICATION_MAX_PACKET_SIZE
-#define MAX_PACKET_QUEUE_SIZE	20
+#define MAX_PACKET_QUEUE_SIZE	15
 /* macros ------------------------------------------------------------*/
 
 /* function prototypes -----------------------------------------------*/
@@ -243,6 +243,7 @@ extern osSemaphoreId_t lightingLabDemoEndHandle;
 
 extern osMessageQueueId_t packet_QueueHandle;
 extern osMessageQueueId_t packetAvail_QueueHandle;
+extern osMessageQueueId_t FRAM_QueueHandle;
 
 extern osThreadId_t senderTaskHandle;
 

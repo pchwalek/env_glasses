@@ -383,32 +383,32 @@ static SVCCTL_EvtAckStatus_t DTC_Event_Handler(void *Event) {
  * LOCAL FUNCTIONS
  *
  *************************************************************/
-static void DataThroughput_Calculation(void) {
-	uint32_t MoyData;
-
-	if (Nbr_packet < 600) {
-		Nbr_packet++;
-		TotalDataReceived += DataThroughputValue;
-	}
-	if (Nbr_packet == 600) {
-		MoyData = TotalDataReceived / 600;
-		APP_DBG_MSG("Moy = %ld bytes/s \n",MoyData);
-		TotalDataReceived = 0;
-		Nbr_packet = 0;
-	}
-
-	APP_DBG_MSG("DT = %ld bytes/s lost = %ld \n",DataThroughputValue, packet_lost_local);
-}
-
-static void DataThroughputTimer(void) {
-	DataThroughputValue = (uint32_t) (DataTransfered / TIMEUNIT);
-	packet_lost_local = (uint32_t) (packet_lost / TIMEUNIT);
-	DataTransfered = 0;
-	packet_lost = 0;
-
-//    UTIL_SEQ_SetTask(1 << CFG_TASK_APP_DATA_THROUGHPUT_ID, CFG_SCH_PRIO_0);
-	return;
-}
+//static void DataThroughput_Calculation(void) {
+//	uint32_t MoyData;
+//
+//	if (Nbr_packet < 600) {
+//		Nbr_packet++;
+//		TotalDataReceived += DataThroughputValue;
+//	}
+//	if (Nbr_packet == 600) {
+//		MoyData = TotalDataReceived / 600;
+//		APP_DBG_MSG("Moy = %ld bytes/s \n",MoyData);
+//		TotalDataReceived = 0;
+//		Nbr_packet = 0;
+//	}
+//
+//	APP_DBG_MSG("DT = %ld bytes/s lost = %ld \n",DataThroughputValue, packet_lost_local);
+//}
+//
+//static void DataThroughputTimer(void) {
+//	DataThroughputValue = (uint32_t) (DataTransfered / TIMEUNIT);
+//	packet_lost_local = (uint32_t) (packet_lost / TIMEUNIT);
+//	DataTransfered = 0;
+//	packet_lost = 0;
+//
+////    UTIL_SEQ_SetTask(1 << CFG_TASK_APP_DATA_THROUGHPUT_ID, CFG_SCH_PRIO_0);
+//	return;
+//}
 
 static void GattProcReq(GattProcId_t GattProcId) {
 	tBleStatus status;

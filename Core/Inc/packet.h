@@ -70,7 +70,10 @@ typedef struct RX_PacketHeaders {
 	uint32_t epoch;
 } RX_PacketHeader;
 
-
+typedef struct __attribute__((packed)) FRAM_Packets{
+	uint32_t memory_addr;
+	uint16_t size;
+} FRAM_Packet;
 
 //typedef struct SensorPackets {
 //	PacketHeader header;
