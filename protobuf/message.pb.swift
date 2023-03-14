@@ -998,14 +998,7 @@ public struct MicLevelPacket {
 
   public var weighting: mic_weighting = .noWeight
 
-  public var payload: MicLevelPacket.Payload {
-    get {return _payload ?? MicLevelPacket.Payload()}
-    set {_payload = newValue}
-  }
-  /// Returns true if `payload` has been explicitly set.
-  public var hasPayload: Bool {return self._payload != nil}
-  /// Clears the value of `payload`. Subsequent reads from it will return its default value.
-  public mutating func clearPayload() {self._payload = nil}
+  public var payload: [MicLevelPacket.Payload] = []
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -1028,8 +1021,6 @@ public struct MicLevelPacket {
   }
 
   public init() {}
-
-  fileprivate var _payload: MicLevelPacket.Payload? = nil
 }
 
 public struct SGPPacket {
@@ -2834,17 +2825,13 @@ extension MicLevelPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplement
       case 4: try { try decoder.decodeSingularUInt32Field(value: &self.sampleLength) }()
       case 5: try { try decoder.decodeSingularUInt32Field(value: &self.numOfSamplesUsed) }()
       case 6: try { try decoder.decodeSingularEnumField(value: &self.weighting) }()
-      case 7: try { try decoder.decodeSingularMessageField(value: &self._payload) }()
+      case 7: try { try decoder.decodeRepeatedMessageField(value: &self.payload) }()
       default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every if/case branch local when no optimizations
-    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-    // https://github.com/apple/swift-protobuf/issues/1182
     if self.packetIndex != 0 {
       try visitor.visitSingularUInt32Field(value: self.packetIndex, fieldNumber: 1)
     }
@@ -2863,9 +2850,9 @@ extension MicLevelPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplement
     if self.weighting != .noWeight {
       try visitor.visitSingularEnumField(value: self.weighting, fieldNumber: 6)
     }
-    try { if let v = self._payload {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
-    } }()
+    if !self.payload.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.payload, fieldNumber: 7)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -2876,7 +2863,7 @@ extension MicLevelPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplement
     if lhs.sampleLength != rhs.sampleLength {return false}
     if lhs.numOfSamplesUsed != rhs.numOfSamplesUsed {return false}
     if lhs.weighting != rhs.weighting {return false}
-    if lhs._payload != rhs._payload {return false}
+    if lhs.payload != rhs.payload {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

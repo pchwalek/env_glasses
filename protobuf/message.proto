@@ -184,9 +184,9 @@ message MicLevelPacket{
     uint32 packet_index = 1;
     uint32 sample_period = 2;
     uint32 mic_sample_freq = 3;
-    uint32 sample_length = 4;
-    uint32 num_of_samples_used = 5;
-    mic_weighting weighting = 6;
+    uint32 sample_length = 4; //e.g., 8192 samples
+    uint32 num_of_samples_used = 5; //e.g., if multiple sample windows are averaged
+    mic_weighting weighting = 6; //e.g., A-weighting
 
     message Payload {
         float  sound_spl_db = 1;
@@ -194,7 +194,7 @@ message MicLevelPacket{
         uint64 timestamp_unix = 3;
         uint32 timestamp_ms_from_start = 4;
     }
-    Payload payload = 7;
+    repeated Payload payload = 7;
 } 
 
 message SGPPacket{
