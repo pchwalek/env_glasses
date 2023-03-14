@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-//import "nanopb.proto";
-//option (nanopb_fileopt).packed_struct = true;
+import "nanopb.proto";
+option (nanopb_fileopt).packed_struct = true;
 
 enum SensorPacketTypes {
     UNKNOWN_PACKET_TYPE = 0;
@@ -558,7 +558,7 @@ message SensorPacket {
         ThermPacket therm_packet = 8;
         IMUPacket imu_packet = 9;
         MicPacket mic_packet = 10;
-	MicLevelPacket mic_level_packet = 11;
+	    MicLevelPacket mic_level_packet = 11;
         appSurveyDataPacket survey_packet = 12;
         appMetaDataPacket meta_data_packet = 13;
 	

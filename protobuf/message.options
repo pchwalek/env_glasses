@@ -17,3 +17,4 @@ ThermPacket.payload             max_count:50
 IMUPacket.Payload.sample        max_size:440
 
 MicPacket.Payload.sample        max_count:130
+MicLevelPacket.payload          max_count:50

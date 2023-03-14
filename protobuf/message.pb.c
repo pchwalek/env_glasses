@@ -15,7 +15,7 @@ PB_BIND(LUX_PACKET, lux_packet_t, 2)
 PB_BIND(LUX_PACKET_PAYLOAD, lux_packet_payload_t, AUTO)
 
 
-PB_BIND(MIC_LEVEL_PACKET, mic_level_packet_t, AUTO)
+PB_BIND(MIC_LEVEL_PACKET, mic_level_packet_t, 2)
 
 
 PB_BIND(MIC_LEVEL_PACKET_PAYLOAD, mic_level_packet_payload_t, AUTO)

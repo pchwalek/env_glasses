@@ -992,10 +992,13 @@ public struct MicLevelPacket {
 
   public var micSampleFreq: UInt32 = 0
 
+  ///e.g., 8192 samples
   public var sampleLength: UInt32 = 0
 
+  ///e.g., if multiple sample windows are averaged
   public var numOfSamplesUsed: UInt32 = 0
 
+  ///e.g., A-weighting
   public var weighting: mic_weighting = .noWeight
 
   public var payload: [MicLevelPacket.Payload] = []
