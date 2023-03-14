@@ -36,6 +36,7 @@ public enum SensorPacketTypes: SwiftProtobuf.Enum {
   case sht // = 11
   case sgp // = 12
   case blink // = 13
+  case micLevel // = 14
   case UNRECOGNIZED(Int)
 
   public init() {
@@ -58,6 +59,7 @@ public enum SensorPacketTypes: SwiftProtobuf.Enum {
     case 11: self = .sht
     case 12: self = .sgp
     case 13: self = .blink
+    case 14: self = .micLevel
     default: self = .UNRECOGNIZED(rawValue)
     }
   }
@@ -78,6 +80,7 @@ public enum SensorPacketTypes: SwiftProtobuf.Enum {
     case .sht: return 11
     case .sgp: return 12
     case .blink: return 13
+    case .micLevel: return 14
     case .UNRECOGNIZED(let i): return i
     }
   }
@@ -103,6 +106,7 @@ extension SensorPacketTypes: CaseIterable {
     .sht,
     .sgp,
     .blink,
+    .micLevel,
   ]
 }
 
@@ -879,6 +883,50 @@ extension IMU_mag_cutoff: CaseIterable {
 
 #endif  // swift(>=4.2)
 
+public enum mic_weighting: SwiftProtobuf.Enum {
+  public typealias RawValue = Int
+  case noWeight // = 0
+  case aWeight // = 1
+  case cWeight // = 2
+  case UNRECOGNIZED(Int)
+
+  public init() {
+    self = .noWeight
+  }
+
+  public init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .noWeight
+    case 1: self = .aWeight
+    case 2: self = .cWeight
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  public var rawValue: Int {
+    switch self {
+    case .noWeight: return 0
+    case .aWeight: return 1
+    case .cWeight: return 2
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+}
+
+#if swift(>=4.2)
+
+extension mic_weighting: CaseIterable {
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static var allCases: [mic_weighting] = [
+    .noWeight,
+    .aWeight,
+    .cWeight,
+  ]
+}
+
+#endif  // swift(>=4.2)
+
 public struct SensorPacketHeader {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -931,6 +979,57 @@ public struct LuxPacket {
   }
 
   public init() {}
+}
+
+public struct MicLevelPacket {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var packetIndex: UInt32 = 0
+
+  public var samplePeriod: UInt32 = 0
+
+  public var micSampleFreq: UInt32 = 0
+
+  public var sampleLength: UInt32 = 0
+
+  public var numOfSamplesUsed: UInt32 = 0
+
+  public var weighting: mic_weighting = .noWeight
+
+  public var payload: MicLevelPacket.Payload {
+    get {return _payload ?? MicLevelPacket.Payload()}
+    set {_payload = newValue}
+  }
+  /// Returns true if `payload` has been explicitly set.
+  public var hasPayload: Bool {return self._payload != nil}
+  /// Clears the value of `payload`. Subsequent reads from it will return its default value.
+  public mutating func clearPayload() {self._payload = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public struct Payload {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    public var soundSplDb: Float = 0
+
+    public var soundRms: Float = 0
+
+    public var timestampUnix: UInt64 = 0
+
+    public var timestampMsFromStart: UInt32 = 0
+
+    public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    public init() {}
+  }
+
+  public init() {}
+
+  fileprivate var _payload: MicLevelPacket.Payload? = nil
 }
 
 public struct SGPPacket {
@@ -2208,6 +2307,14 @@ public struct SensorPacket {
     set {payload = .micPacket(newValue)}
   }
 
+  public var micLevelPacket: MicLevelPacket {
+    get {
+      if case .micLevelPacket(let v)? = payload {return v}
+      return MicLevelPacket()
+    }
+    set {payload = .micLevelPacket(newValue)}
+  }
+
   public var surveyPacket: appSurveyDataPacket {
     get {
       if case .surveyPacket(let v)? = payload {return v}
@@ -2236,6 +2343,7 @@ public struct SensorPacket {
     case thermPacket(ThermPacket)
     case imuPacket(IMUPacket)
     case micPacket(MicPacket)
+    case micLevelPacket(MicLevelPacket)
     case surveyPacket(appSurveyDataPacket)
     case metaDataPacket(appMetaDataPacket)
 
@@ -2281,6 +2389,10 @@ public struct SensorPacket {
         guard case .micPacket(let l) = lhs, case .micPacket(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
+      case (.micLevelPacket, .micLevelPacket): return {
+        guard case .micLevelPacket(let l) = lhs, case .micLevelPacket(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
       case (.surveyPacket, .surveyPacket): return {
         guard case .surveyPacket(let l) = lhs, case .surveyPacket(let r) = rhs else { preconditionFailure() }
         return l == r
@@ -2315,9 +2427,12 @@ extension IMU_gyro_range: @unchecked Sendable {}
 extension IMU_accel_cutoff: @unchecked Sendable {}
 extension IMU_accel_range: @unchecked Sendable {}
 extension IMU_mag_cutoff: @unchecked Sendable {}
+extension mic_weighting: @unchecked Sendable {}
 extension SensorPacketHeader: @unchecked Sendable {}
 extension LuxPacket: @unchecked Sendable {}
 extension LuxPacket.Payload: @unchecked Sendable {}
+extension MicLevelPacket: @unchecked Sendable {}
+extension MicLevelPacket.Payload: @unchecked Sendable {}
 extension SGPPacket: @unchecked Sendable {}
 extension SGPPacket.Payload: @unchecked Sendable {}
 extension BMEPacket: @unchecked Sendable {}
@@ -2386,6 +2501,7 @@ extension SensorPacketTypes: SwiftProtobuf._ProtoNameProviding {
     11: .same(proto: "SHT"),
     12: .same(proto: "SGP"),
     13: .same(proto: "BLINK"),
+    14: .same(proto: "MIC_LEVEL"),
   ]
 }
 
@@ -2536,6 +2652,14 @@ extension IMU_mag_cutoff: SwiftProtobuf._ProtoNameProviding {
   ]
 }
 
+extension mic_weighting: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "no_weight"),
+    1: .same(proto: "A_weight"),
+    2: .same(proto: "C_weight"),
+  ]
+}
+
 extension SensorPacketHeader: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = "SensorPacketHeader"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
@@ -2679,6 +2803,128 @@ extension LuxPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
 
   public static func ==(lhs: LuxPacket.Payload, rhs: LuxPacket.Payload) -> Bool {
     if lhs.lux != rhs.lux {return false}
+    if lhs.timestampUnix != rhs.timestampUnix {return false}
+    if lhs.timestampMsFromStart != rhs.timestampMsFromStart {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension MicLevelPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = "MicLevelPacket"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .standard(proto: "packet_index"),
+    2: .standard(proto: "sample_period"),
+    3: .standard(proto: "mic_sample_freq"),
+    4: .standard(proto: "sample_length"),
+    5: .standard(proto: "num_of_samples_used"),
+    6: .same(proto: "weighting"),
+    7: .same(proto: "payload"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.packetIndex) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.samplePeriod) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.micSampleFreq) }()
+      case 4: try { try decoder.decodeSingularUInt32Field(value: &self.sampleLength) }()
+      case 5: try { try decoder.decodeSingularUInt32Field(value: &self.numOfSamplesUsed) }()
+      case 6: try { try decoder.decodeSingularEnumField(value: &self.weighting) }()
+      case 7: try { try decoder.decodeSingularMessageField(value: &self._payload) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if self.packetIndex != 0 {
+      try visitor.visitSingularUInt32Field(value: self.packetIndex, fieldNumber: 1)
+    }
+    if self.samplePeriod != 0 {
+      try visitor.visitSingularUInt32Field(value: self.samplePeriod, fieldNumber: 2)
+    }
+    if self.micSampleFreq != 0 {
+      try visitor.visitSingularUInt32Field(value: self.micSampleFreq, fieldNumber: 3)
+    }
+    if self.sampleLength != 0 {
+      try visitor.visitSingularUInt32Field(value: self.sampleLength, fieldNumber: 4)
+    }
+    if self.numOfSamplesUsed != 0 {
+      try visitor.visitSingularUInt32Field(value: self.numOfSamplesUsed, fieldNumber: 5)
+    }
+    if self.weighting != .noWeight {
+      try visitor.visitSingularEnumField(value: self.weighting, fieldNumber: 6)
+    }
+    try { if let v = self._payload {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: MicLevelPacket, rhs: MicLevelPacket) -> Bool {
+    if lhs.packetIndex != rhs.packetIndex {return false}
+    if lhs.samplePeriod != rhs.samplePeriod {return false}
+    if lhs.micSampleFreq != rhs.micSampleFreq {return false}
+    if lhs.sampleLength != rhs.sampleLength {return false}
+    if lhs.numOfSamplesUsed != rhs.numOfSamplesUsed {return false}
+    if lhs.weighting != rhs.weighting {return false}
+    if lhs._payload != rhs._payload {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension MicLevelPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = MicLevelPacket.protoMessageName + ".Payload"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .standard(proto: "sound_spl_db"),
+    2: .standard(proto: "sound_rms"),
+    3: .standard(proto: "timestamp_unix"),
+    4: .standard(proto: "timestamp_ms_from_start"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularFloatField(value: &self.soundSplDb) }()
+      case 2: try { try decoder.decodeSingularFloatField(value: &self.soundRms) }()
+      case 3: try { try decoder.decodeSingularUInt64Field(value: &self.timestampUnix) }()
+      case 4: try { try decoder.decodeSingularUInt32Field(value: &self.timestampMsFromStart) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.soundSplDb != 0 {
+      try visitor.visitSingularFloatField(value: self.soundSplDb, fieldNumber: 1)
+    }
+    if self.soundRms != 0 {
+      try visitor.visitSingularFloatField(value: self.soundRms, fieldNumber: 2)
+    }
+    if self.timestampUnix != 0 {
+      try visitor.visitSingularUInt64Field(value: self.timestampUnix, fieldNumber: 3)
+    }
+    if self.timestampMsFromStart != 0 {
+      try visitor.visitSingularUInt32Field(value: self.timestampMsFromStart, fieldNumber: 4)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: MicLevelPacket.Payload, rhs: MicLevelPacket.Payload) -> Bool {
+    if lhs.soundSplDb != rhs.soundSplDb {return false}
+    if lhs.soundRms != rhs.soundRms {return false}
     if lhs.timestampUnix != rhs.timestampUnix {return false}
     if lhs.timestampMsFromStart != rhs.timestampMsFromStart {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -5297,8 +5543,9 @@ extension SensorPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
     8: .standard(proto: "therm_packet"),
     9: .standard(proto: "imu_packet"),
     10: .standard(proto: "mic_packet"),
-    11: .standard(proto: "survey_packet"),
-    12: .standard(proto: "meta_data_packet"),
+    11: .standard(proto: "mic_level_packet"),
+    12: .standard(proto: "survey_packet"),
+    13: .standard(proto: "meta_data_packet"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -5426,6 +5673,19 @@ extension SensorPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
         }
       }()
       case 11: try {
+        var v: MicLevelPacket?
+        var hadOneofValue = false
+        if let current = self.payload {
+          hadOneofValue = true
+          if case .micLevelPacket(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .micLevelPacket(v)
+        }
+      }()
+      case 12: try {
         var v: appSurveyDataPacket?
         var hadOneofValue = false
         if let current = self.payload {
@@ -5438,7 +5698,7 @@ extension SensorPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
           self.payload = .surveyPacket(v)
         }
       }()
-      case 12: try {
+      case 13: try {
         var v: appMetaDataPacket?
         var hadOneofValue = false
         if let current = self.payload {
@@ -5501,13 +5761,17 @@ extension SensorPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
       guard case .micPacket(let v)? = self.payload else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
     }()
+    case .micLevelPacket?: try {
+      guard case .micLevelPacket(let v)? = self.payload else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 11)
+    }()
     case .surveyPacket?: try {
       guard case .surveyPacket(let v)? = self.payload else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 11)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 12)
     }()
     case .metaDataPacket?: try {
       guard case .metaDataPacket(let v)? = self.payload else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 12)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 13)
     }()
     case nil: break
     }

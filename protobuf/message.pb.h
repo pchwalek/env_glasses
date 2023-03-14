@@ -24,7 +24,8 @@ typedef enum sensor_packet_types {
     SENSOR_PACKET_TYPES_MIC = 10,
     SENSOR_PACKET_TYPES_SHT = 11,
     SENSOR_PACKET_TYPES_SGP = 12,
-    SENSOR_PACKET_TYPES_BLINK = 13
+    SENSOR_PACKET_TYPES_BLINK = 13,
+    SENSOR_PACKET_TYPES_MIC_LEVEL = 14
 } sensor_packet_types_t;
 
 typedef enum tsl2591_gain {
@@ -157,6 +158,12 @@ typedef enum imu_mag_cutoff {
     IMU_MAG_CUTOFF_ICM20_X_MAG_100_HZ = 8
 } imu_mag_cutoff_t;
 
+typedef enum mic_weighting {
+    MIC_WEIGHTING_NO_WEIGHT = 0,
+    MIC_WEIGHTING_A_WEIGHT = 1,
+    MIC_WEIGHTING_C_WEIGHT = 2
+} mic_weighting_t;
+
 /* Struct definitions */
 PB_PACKED_STRUCT_START
 typedef struct sensor_packet_header {
@@ -184,6 +191,28 @@ typedef struct lux_packet {
     pb_size_t payload_count;
     lux_packet_payload_t payload[30];
 } pb_packed lux_packet_t;
+PB_PACKED_STRUCT_END
+
+PB_PACKED_STRUCT_START
+typedef struct mic_level_packet_payload {
+    float sound_spl_db;
+    float sound_rms;
+    uint64_t timestamp_unix;
+    uint32_t timestamp_ms_from_start;
+} pb_packed mic_level_packet_payload_t;
+PB_PACKED_STRUCT_END
+
+PB_PACKED_STRUCT_START
+typedef struct mic_level_packet {
+    uint32_t packet_index;
+    uint32_t sample_period;
+    uint32_t mic_sample_freq;
+    uint32_t sample_length;
+    uint32_t num_of_samples_used;
+    mic_weighting_t weighting;
+    bool has_payload;
+    mic_level_packet_payload_t payload;
+} pb_packed mic_level_packet_t;
 PB_PACKED_STRUCT_END
 
 PB_PACKED_STRUCT_START
@@ -664,6 +693,7 @@ typedef struct sensor_packet {
         therm_packet_t therm_packet;
         imu_packet_t imu_packet;
         mic_packet_t mic_packet;
+        mic_level_packet_t mic_level_packet;
         app_survey_data_packet_t survey_packet;
         app_meta_data_packet_t meta_data_packet;
     } payload;
@@ -677,8 +707,8 @@ extern "C" {
 
 /* Helper constants for enums */
 #define _SENSOR_PACKET_TYPES_MIN SENSOR_PACKET_TYPES_UNKNOWN_PACKET_TYPE
-#define _SENSOR_PACKET_TYPES_MAX SENSOR_PACKET_TYPES_BLINK
-#define _SENSOR_PACKET_TYPES_ARRAYSIZE ((sensor_packet_types_t)(SENSOR_PACKET_TYPES_BLINK+1))
+#define _SENSOR_PACKET_TYPES_MAX SENSOR_PACKET_TYPES_MIC_LEVEL
+#define _SENSOR_PACKET_TYPES_ARRAYSIZE ((sensor_packet_types_t)(SENSOR_PACKET_TYPES_MIC_LEVEL+1))
 
 #define _TSL2591_GAIN_MIN TSL2591_GAIN_TSL2722_GAIN_1_X
 #define _TSL2591_GAIN_MAX TSL2591_GAIN_TSL2722_GAIN_120_X
@@ -732,9 +762,16 @@ extern "C" {
 #define _IMU_MAG_CUTOFF_MAX IMU_MAG_CUTOFF_ICM20_X_MAG_100_HZ
 #define _IMU_MAG_CUTOFF_ARRAYSIZE ((imu_mag_cutoff_t)(IMU_MAG_CUTOFF_ICM20_X_MAG_100_HZ+1))
 
+#define _MIC_WEIGHTING_MIN MIC_WEIGHTING_NO_WEIGHT
+#define _MIC_WEIGHTING_MAX MIC_WEIGHTING_C_WEIGHT
+#define _MIC_WEIGHTING_ARRAYSIZE ((mic_weighting_t)(MIC_WEIGHTING_C_WEIGHT+1))
+
 
 #define lux_packet_t_gain_ENUMTYPE tsl2591_gain_t
 #define lux_packet_t_integration_time_ENUMTYPE tsl2591_integration_time_t
+
+
+#define mic_level_packet_t_weighting_ENUMTYPE mic_weighting_t
 
 
 
@@ -802,6 +839,8 @@ extern "C" {
 #define SENSOR_PACKET_HEADER_INIT_DEFAULT        {0, 0, 0}
 #define LUX_PACKET_INIT_DEFAULT                  {0, 0, _TSL2591_GAIN_MIN, _TSL2591_INTEGRATION_TIME_MIN, 0, 0, {LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT}}
 #define LUX_PACKET_PAYLOAD_INIT_DEFAULT          {0, 0, 0}
+#define MIC_LEVEL_PACKET_INIT_DEFAULT            {0, 0, 0, 0, 0, _MIC_WEIGHTING_MIN, false, MIC_LEVEL_PACKET_PAYLOAD_INIT_DEFAULT}
+#define MIC_LEVEL_PACKET_PAYLOAD_INIT_DEFAULT    {0, 0, 0, 0}
 #define SGP_PACKET_INIT_DEFAULT                  {0, 0, 0, 0, {SGP_PACKET_PAYLOAD_INIT_DEFAULT, SGP_PACKET_PAYLOAD_INIT_DEFAULT, SGP_PACKET_PAYLOAD_INIT_DEFAULT, SGP_PACKET_PAYLOAD_INIT_DEFAULT, SGP_PACKET_PAYLOAD_INIT_DEFAULT, SGP_PACKET_PAYLOAD_INIT_DEFAULT, SGP_PACKET_PAYLOAD_INIT_DEFAULT, SGP_PACKET_PAYLOAD_INIT_DEFAULT, SGP_PACKET_PAYLOAD_INIT_DEFAULT, SGP_PACKET_PAYLOAD_INIT_DEFAULT, SGP_PACKET_PAYLOAD_INIT_DEFAULT, SGP_PACKET_PAYLOAD_INIT_DEFAULT, SGP_PACKET_PAYLOAD_INIT_DEFAULT, SGP_PACKET_PAYLOAD_INIT_DEFAULT, SGP_PACKET_PAYLOAD_INIT_DEFAULT, SGP_PACKET_PAYLOAD_INIT_DEFAULT, SGP_PACKET_PAYLOAD_INIT_DEFAULT, SGP_PACKET_PAYLOAD_INIT_DEFAULT, SGP_PACKET_PAYLOAD_INIT_DEFAULT, SGP_PACKET_PAYLOAD_INIT_DEFAULT}}
 #define SGP_PACKET_PAYLOAD_INIT_DEFAULT          {0, 0, 0, 0, 0, 0}
 #define BME_PACKET_INIT_DEFAULT                  {0, 0, 0, 0, {BME_PACKET_PAYLOAD_INIT_DEFAULT, BME_PACKET_PAYLOAD_INIT_DEFAULT, BME_PACKET_PAYLOAD_INIT_DEFAULT, BME_PACKET_PAYLOAD_INIT_DEFAULT, BME_PACKET_PAYLOAD_INIT_DEFAULT, BME_PACKET_PAYLOAD_INIT_DEFAULT, BME_PACKET_PAYLOAD_INIT_DEFAULT, BME_PACKET_PAYLOAD_INIT_DEFAULT, BME_PACKET_PAYLOAD_INIT_DEFAULT, BME_PACKET_PAYLOAD_INIT_DEFAULT, BME_PACKET_PAYLOAD_INIT_DEFAULT, BME_PACKET_PAYLOAD_INIT_DEFAULT}}
@@ -850,6 +889,8 @@ extern "C" {
 #define SENSOR_PACKET_HEADER_INIT_ZERO           {0, 0, 0}
 #define LUX_PACKET_INIT_ZERO                     {0, 0, _TSL2591_GAIN_MIN, _TSL2591_INTEGRATION_TIME_MIN, 0, 0, {LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO}}
 #define LUX_PACKET_PAYLOAD_INIT_ZERO             {0, 0, 0}
+#define MIC_LEVEL_PACKET_INIT_ZERO               {0, 0, 0, 0, 0, _MIC_WEIGHTING_MIN, false, MIC_LEVEL_PACKET_PAYLOAD_INIT_ZERO}
+#define MIC_LEVEL_PACKET_PAYLOAD_INIT_ZERO       {0, 0, 0, 0}
 #define SGP_PACKET_INIT_ZERO                     {0, 0, 0, 0, {SGP_PACKET_PAYLOAD_INIT_ZERO, SGP_PACKET_PAYLOAD_INIT_ZERO, SGP_PACKET_PAYLOAD_INIT_ZERO, SGP_PACKET_PAYLOAD_INIT_ZERO, SGP_PACKET_PAYLOAD_INIT_ZERO, SGP_PACKET_PAYLOAD_INIT_ZERO, SGP_PACKET_PAYLOAD_INIT_ZERO, SGP_PACKET_PAYLOAD_INIT_ZERO, SGP_PACKET_PAYLOAD_INIT_ZERO, SGP_PACKET_PAYLOAD_INIT_ZERO, SGP_PACKET_PAYLOAD_INIT_ZERO, SGP_PACKET_PAYLOAD_INIT_ZERO, SGP_PACKET_PAYLOAD_INIT_ZERO, SGP_PACKET_PAYLOAD_INIT_ZERO, SGP_PACKET_PAYLOAD_INIT_ZERO, SGP_PACKET_PAYLOAD_INIT_ZERO, SGP_PACKET_PAYLOAD_INIT_ZERO, SGP_PACKET_PAYLOAD_INIT_ZERO, SGP_PACKET_PAYLOAD_INIT_ZERO, SGP_PACKET_PAYLOAD_INIT_ZERO}}
 #define SGP_PACKET_PAYLOAD_INIT_ZERO             {0, 0, 0, 0, 0, 0}
 #define BME_PACKET_INIT_ZERO                     {0, 0, 0, 0, {BME_PACKET_PAYLOAD_INIT_ZERO, BME_PACKET_PAYLOAD_INIT_ZERO, BME_PACKET_PAYLOAD_INIT_ZERO, BME_PACKET_PAYLOAD_INIT_ZERO, BME_PACKET_PAYLOAD_INIT_ZERO, BME_PACKET_PAYLOAD_INIT_ZERO, BME_PACKET_PAYLOAD_INIT_ZERO, BME_PACKET_PAYLOAD_INIT_ZERO, BME_PACKET_PAYLOAD_INIT_ZERO, BME_PACKET_PAYLOAD_INIT_ZERO, BME_PACKET_PAYLOAD_INIT_ZERO, BME_PACKET_PAYLOAD_INIT_ZERO}}
@@ -909,6 +950,17 @@ extern "C" {
 #define LUX_PACKET_INTEGRATION_TIME_TAG          4
 #define LUX_PACKET_SENSOR_ID_TAG                 5
 #define LUX_PACKET_PAYLOAD_TAG                   6
+#define MIC_LEVEL_PACKET_PAYLOAD_SOUND_SPL_DB_TAG 1
+#define MIC_LEVEL_PACKET_PAYLOAD_SOUND_RMS_TAG   2
+#define MIC_LEVEL_PACKET_PAYLOAD_TIMESTAMP_UNIX_TAG 3
+#define MIC_LEVEL_PACKET_PAYLOAD_TIMESTAMP_MS_FROM_START_TAG 4
+#define MIC_LEVEL_PACKET_PACKET_INDEX_TAG        1
+#define MIC_LEVEL_PACKET_SAMPLE_PERIOD_TAG       2
+#define MIC_LEVEL_PACKET_MIC_SAMPLE_FREQ_TAG     3
+#define MIC_LEVEL_PACKET_SAMPLE_LENGTH_TAG       4
+#define MIC_LEVEL_PACKET_NUM_OF_SAMPLES_USED_TAG 5
+#define MIC_LEVEL_PACKET_WEIGHTING_TAG           6
+#define MIC_LEVEL_PACKET_PAYLOAD_TAG             7
 #define SGP_PACKET_PAYLOAD_TIMESTAMP_UNIX_TAG    2
 #define SGP_PACKET_PAYLOAD_TIMESTAMP_MS_FROM_START_TAG 3
 #define SGP_PACKET_PAYLOAD_SRAW_VOC_TAG          4
@@ -1121,8 +1173,9 @@ extern "C" {
 #define SENSOR_PACKET_THERM_PACKET_TAG           8
 #define SENSOR_PACKET_IMU_PACKET_TAG             9
 #define SENSOR_PACKET_MIC_PACKET_TAG             10
-#define SENSOR_PACKET_SURVEY_PACKET_TAG          11
-#define SENSOR_PACKET_META_DATA_PACKET_TAG       12
+#define SENSOR_PACKET_MIC_LEVEL_PACKET_TAG       11
+#define SENSOR_PACKET_SURVEY_PACKET_TAG          12
+#define SENSOR_PACKET_META_DATA_PACKET_TAG       13
 
 /* Struct field encoding specification for nanopb */
 #define SENSOR_PACKET_HEADER_FIELDLIST(X, a) \
@@ -1149,6 +1202,26 @@ X(a, STATIC,   SINGULAR, UINT64,   timestamp_unix,    2) \
 X(a, STATIC,   SINGULAR, UINT32,   timestamp_ms_from_start,   3)
 #define LUX_PACKET_PAYLOAD_CALLBACK NULL
 #define LUX_PACKET_PAYLOAD_DEFAULT NULL
+
+#define MIC_LEVEL_PACKET_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT32,   packet_index,      1) \
+X(a, STATIC,   SINGULAR, UINT32,   sample_period,     2) \
+X(a, STATIC,   SINGULAR, UINT32,   mic_sample_freq,   3) \
+X(a, STATIC,   SINGULAR, UINT32,   sample_length,     4) \
+X(a, STATIC,   SINGULAR, UINT32,   num_of_samples_used,   5) \
+X(a, STATIC,   SINGULAR, UENUM,    weighting,         6) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  payload,           7)
+#define MIC_LEVEL_PACKET_CALLBACK NULL
+#define MIC_LEVEL_PACKET_DEFAULT NULL
+#define mic_level_packet_t_payload_MSGTYPE mic_level_packet_payload_t
+
+#define MIC_LEVEL_PACKET_PAYLOAD_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, FLOAT,    sound_spl_db,      1) \
+X(a, STATIC,   SINGULAR, FLOAT,    sound_rms,         2) \
+X(a, STATIC,   SINGULAR, UINT64,   timestamp_unix,    3) \
+X(a, STATIC,   SINGULAR, UINT32,   timestamp_ms_from_start,   4)
+#define MIC_LEVEL_PACKET_PAYLOAD_CALLBACK NULL
+#define MIC_LEVEL_PACKET_PAYLOAD_DEFAULT NULL
 
 #define SGP_PACKET_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   packet_index,      1) \
@@ -1578,8 +1651,9 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (payload,spec_packet,payload.spec_packet),   
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload,therm_packet,payload.therm_packet),   8) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload,imu_packet,payload.imu_packet),   9) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload,mic_packet,payload.mic_packet),  10) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (payload,survey_packet,payload.survey_packet),  11) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (payload,meta_data_packet,payload.meta_data_packet),  12)
+X(a, STATIC,   ONEOF,    MESSAGE,  (payload,mic_level_packet,payload.mic_level_packet),  11) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (payload,survey_packet,payload.survey_packet),  12) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (payload,meta_data_packet,payload.meta_data_packet),  13)
 #define SENSOR_PACKET_CALLBACK NULL
 #define SENSOR_PACKET_DEFAULT NULL
 #define sensor_packet_t_header_MSGTYPE sensor_packet_header_t
@@ -1592,12 +1666,15 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (payload,meta_data_packet,payload.meta_data_p
 #define sensor_packet_t_payload_therm_packet_MSGTYPE therm_packet_t
 #define sensor_packet_t_payload_imu_packet_MSGTYPE imu_packet_t
 #define sensor_packet_t_payload_mic_packet_MSGTYPE mic_packet_t
+#define sensor_packet_t_payload_mic_level_packet_MSGTYPE mic_level_packet_t
 #define sensor_packet_t_payload_survey_packet_MSGTYPE app_survey_data_packet_t
 #define sensor_packet_t_payload_meta_data_packet_MSGTYPE app_meta_data_packet_t
 
 extern const pb_msgdesc_t sensor_packet_header_t_msg;
 extern const pb_msgdesc_t lux_packet_t_msg;
 extern const pb_msgdesc_t lux_packet_payload_t_msg;
+extern const pb_msgdesc_t mic_level_packet_t_msg;
+extern const pb_msgdesc_t mic_level_packet_payload_t_msg;
 extern const pb_msgdesc_t sgp_packet_t_msg;
 extern const pb_msgdesc_t sgp_packet_payload_t_msg;
 extern const pb_msgdesc_t bme_packet_t_msg;
@@ -1648,6 +1725,8 @@ extern const pb_msgdesc_t sensor_packet_t_msg;
 #define SENSOR_PACKET_HEADER_FIELDS &sensor_packet_header_t_msg
 #define LUX_PACKET_FIELDS &lux_packet_t_msg
 #define LUX_PACKET_PAYLOAD_FIELDS &lux_packet_payload_t_msg
+#define MIC_LEVEL_PACKET_FIELDS &mic_level_packet_t_msg
+#define MIC_LEVEL_PACKET_PAYLOAD_FIELDS &mic_level_packet_payload_t_msg
 #define SGP_PACKET_FIELDS &sgp_packet_t_msg
 #define SGP_PACKET_PAYLOAD_FIELDS &sgp_packet_payload_t_msg
 #define BME_PACKET_FIELDS &bme_packet_t_msg
@@ -1725,6 +1804,8 @@ extern const pb_msgdesc_t sensor_packet_t_msg;
 #define LUX_PACKET_PAYLOAD_SIZE                  23
 #define LUX_PACKET_SIZE                          773
 #define LUX_SENSOR_CONFIG_SIZE                   11
+#define MIC_LEVEL_PACKET_PAYLOAD_SIZE            27
+#define MIC_LEVEL_PACKET_SIZE                    61
 #define MIC_PACKET_PAYLOAD_SIZE                  650
 #define MIC_PACKET_SIZE                          716
 #define MIC_SENSOR_CONFIG_SIZE                   12

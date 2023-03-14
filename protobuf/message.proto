@@ -18,6 +18,7 @@ enum SensorPacketTypes {
 	SHT             = 11;
 	SGP             = 12;
 	BLINK           = 13;
+	MIC_LEVEL	= 14;
 } 
 
 enum Tsl2591Gain{
@@ -171,6 +172,29 @@ message LuxPacket{
         uint32 timestamp_ms_from_start = 3;
     }
     repeated Payload payload = 6;
+} 
+
+enum mic_weighting {
+    no_weight = 0;
+	A_weight = 1;
+	C_weight = 2;
+} 
+
+message MicLevelPacket{
+    uint32 packet_index = 1;
+    uint32 sample_period = 2;
+    uint32 mic_sample_freq = 3;
+    uint32 sample_length = 4;
+    uint32 num_of_samples_used = 5;
+    mic_weighting weighting = 6;
+
+    message Payload {
+        float  sound_spl_db = 1;
+        float  sound_rms = 2;
+        uint64 timestamp_unix = 3;
+        uint32 timestamp_ms_from_start = 4;
+    }
+    Payload payload = 7;
 } 
 
 message SGPPacket{
@@ -534,8 +558,10 @@ message SensorPacket {
         ThermPacket therm_packet = 8;
         IMUPacket imu_packet = 9;
         MicPacket mic_packet = 10;
-        appSurveyDataPacket survey_packet = 11;
-        appMetaDataPacket meta_data_packet = 12;
+	MicLevelPacket mic_level_packet = 11;
+        appSurveyDataPacket survey_packet = 12;
+        appMetaDataPacket meta_data_packet = 13;
+	
     }
 
 }

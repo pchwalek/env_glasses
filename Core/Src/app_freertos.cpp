@@ -76,13 +76,13 @@ const osThreadAttr_t blueGreenTask_attributes = { .name = "bgTranTask",
 osThreadId_t blinkCalTaskHandle;
 const osThreadAttr_t blinkCalTask_attributes = { .name = "blinkCalTask",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
-		.stack_mem = NULL, .stack_size = 512 * 2, .priority =
+		.stack_mem = NULL, .stack_size = 512 * 1, .priority =
 				(osPriority_t) osPriorityNormal, .tz_module = 0, .reserved = 0 };
 
 osThreadId_t redFlashTaskHandle;
 const osThreadAttr_t redFlashTask_attributes = { .name = "redFlashTask",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
-		.stack_mem = NULL, .stack_size = 512 * 2, .priority =
+		.stack_mem = NULL, .stack_size = 512 * 1, .priority =
 				(osPriority_t) osPriorityAboveNormal, .tz_module = 0, .reserved = 0 };
 
 osThreadId_t specTaskHandle;
@@ -94,13 +94,13 @@ const osThreadAttr_t specTask_attributes = { .name = "spectrometerTask",
 osThreadId_t luxTaskHandle;
 const osThreadAttr_t luxTask_attributes = { .name = "luxTask", .attr_bits =
 		osThreadDetached, .cb_mem = NULL, .cb_size = 0, .stack_mem = NULL,
-		.stack_size = 512 * 2, .priority = (osPriority_t) osPriorityNormal,
+		.stack_size = 512 * 1, .priority = (osPriority_t) osPriorityNormal,
 		.tz_module = 0, .reserved = 0 };
 
 osThreadId_t shtTaskHandle;
 const osThreadAttr_t shtTask_attributes = { .name = "shtTask", .attr_bits =
 		osThreadDetached, .cb_mem = NULL, .cb_size = 0, .stack_mem = NULL,
-		.stack_size = 512 * 2, .priority = (osPriority_t) osPriorityNormal,
+		.stack_size = 512 * 1, .priority = (osPriority_t) osPriorityNormal,
 		.tz_module = 0, .reserved = 0 };
 
 osThreadId_t bmeTaskHandle;
@@ -156,7 +156,7 @@ const osThreadAttr_t thermopileTask_attributes = { .name = "thermopileTask",
 osThreadId_t senderTaskHandle;
 const osThreadAttr_t senderTask_attributes = { .name = "senderTask",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
-		.stack_mem = NULL, .stack_size = 512 * 5, .priority =
+		.stack_mem = NULL, .stack_size = 512 * 3, .priority =
 				(osPriority_t) osPriorityAboveNormal, .tz_module = 0, .reserved = 0 };
 
 /* Definitions for messageI2C_Lock */

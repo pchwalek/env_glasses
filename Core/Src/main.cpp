@@ -96,6 +96,7 @@ system_state_t sysState;
  * @brief  The application entry point.
  * @retval int
  */
+
 int main(void) {
 	/* USER CODE BEGIN 1 */
 	reset_DFU_trigger();
@@ -275,7 +276,7 @@ int main(void) {
 		}
 
 		sysState.config.mic.mic_sample_freq = SAI_AUDIO_FREQUENCY_48K;
-		sysState.config.mic.sample_period_ms = 30000; // 30 seconds
+		sysState.config.mic.sample_period_ms = 60000; // 60 seconds
 
 		sysState.config.humidity.precision_level = SHT45_PRECISION_SHT4_X_HIGH_PRECISION;
 		sysState.config.humidity.heater_settings = SHT45_HEATER_SHT4_X_LOW_HEATER_100_MS;

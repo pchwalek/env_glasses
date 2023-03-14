@@ -47,12 +47,13 @@ MIC = 10
 SHT = 11
 SGP = 12
 BLINK = 13
+MIC_LVL = 14
 
 sensorPacketTracker = np.zeros(14)
-def sensorPrintHelperFunc(packet, show_payload=True):
+def sensorPrintHelperFunc(packet, show_payload=False):
     # sensorPacketTracker[pktIdxRx] += 1
 
-    print(packet.WhichOneof("payload"))
+    # print(packet.WhichOneof("payload"))
     if(packet.WhichOneof("payload") == "lux_packet"):
         sensorPacketTracker[LUX] += 1
         if show_payload:
@@ -89,7 +90,10 @@ def sensorPrintHelperFunc(packet, show_payload=True):
         sensorPacketTracker[MIC] += 1
         if show_payload:
             print(packet.mic_packet)
-
+    elif (packet.WhichOneof("payload") == "mic_level_packet"):
+        sensorPacketTracker[MIC_LVL] += 1
+        if show_payload:
+            print(packet.mic_level_packet)
 
 
     print("UNK: " + str(sensorPacketTracker[UNKNOWN_PACKET_TYPE]) , end ="\t")
@@ -99,6 +103,7 @@ def sensorPrintHelperFunc(packet, show_payload=True):
     print("THERM: " + str(sensorPacketTracker[THERMOPILE]), end="\t")
     print("LUX: " + str(sensorPacketTracker[LUX]), end="\t")
     print("MIC: " + str(sensorPacketTracker[MIC]), end="\t")
+    print("MIC_LVL: " + str(sensorPacketTracker[MIC_LVL]), end="\t")
     print("SHT: " + str(sensorPacketTracker[SHT]), end="\t")
     print("SGP: " + str(sensorPacketTracker[SGP]), end="\t")
     print("Blink: " + str(sensorPacketTracker[BLINK]))
@@ -106,7 +111,7 @@ def sensorPrintHelperFunc(packet, show_payload=True):
 async def main(queue: asyncio.Queue):
     global sensorPacketTracker
 
-    sensorPacketTracker = np.zeros(14)
+    sensorPacketTracker = np.zeros(15)
 
     logger.info("starting scan...")
     print("starting main")

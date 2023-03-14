@@ -95,6 +95,10 @@ void setPacketType(sensor_packet_t* packetPtr,sensor_packet_types_t type){
 			packetPtr->which_payload = SENSOR_PACKET_MIC_PACKET_TAG;
 			break;
 
+		case SENSOR_PACKET_TYPES_MIC_LEVEL :
+			packetPtr->which_payload = SENSOR_PACKET_MIC_LEVEL_PACKET_TAG;
+			break;
+
 		case SENSOR_PACKET_TYPES_SHT :
 			packetPtr->which_payload = SENSOR_PACKET_SHT_PACKET_TAG;
 			break;
@@ -224,28 +228,28 @@ void senderThread(void *argument) {
 //			osDelay(25);
 		}else{
 			/* add packet to FRAM if its not IMU or Blink */
-//			if( (packetToSend->header.packetType != IMU) &&
-//					(packetToSend->header.packetType != BLINK)){
-//				pushPacketToFRAM(backupBuffer, packetToSend);
-//			}
-			stream = pb_ostream_from_buffer(encoded_payload, MAX_PAYLOAD_SIZE);
-			status = pb_encode(&stream, SENSOR_PACKET_FIELDS, packetToSend);
-			pktLength = stream.bytes_written;
+			if( packetToSend->which_payload != SENSOR_PACKET_IMU_PACKET_TAG ){
 
-			FRAM_packet.memory_addr = backup_buff_addresses[buffer_index];
-			FRAM_packet.size = stream.bytes_written;
+				stream = pb_ostream_from_buffer(encoded_payload, MAX_PAYLOAD_SIZE);
+				status = pb_encode(&stream, SENSOR_PACKET_FIELDS, packetToSend);
+				pktLength = stream.bytes_written;
 
-			if(extMemWriteData(FRAM_packet.memory_addr, encoded_payload, FRAM_packet.size)){
+				FRAM_packet.memory_addr = backup_buff_addresses[buffer_index];
+				FRAM_packet.size = stream.bytes_written;
 
-				// if queue is full, pop off oldest entry
-				if(osMessageQueueGetCount(FRAM_QueueHandle) == BACKUP_BUFF_SIZE){
-					osMessageQueueGet (FRAM_QueueHandle, &FRAM_old_sample, 0, 0);
+				if(extMemWriteData(FRAM_packet.memory_addr, encoded_payload, FRAM_packet.size)){
+
+					// if queue is full, pop off oldest entry
+					if(osMessageQueueGetCount(FRAM_QueueHandle) == BACKUP_BUFF_SIZE){
+						osMessageQueueGet (FRAM_QueueHandle, &FRAM_old_sample, 0, 0);
+					}
+
+					if( osOK == osMessageQueuePut (FRAM_QueueHandle, &FRAM_packet, 0, 0)){
+						buffer_index += 1;
+						buffer_index %= BACKUP_BUFF_SIZE;
+					}
 				}
 
-				if( osOK == osMessageQueuePut (FRAM_QueueHandle, &FRAM_packet, 0, 0)){
-					buffer_index += 1;
-					buffer_index %= BACKUP_BUFF_SIZE;
-				}
 			}
 
 		}

@@ -15,6 +15,12 @@ PB_BIND(LUX_PACKET, lux_packet_t, 2)
 PB_BIND(LUX_PACKET_PAYLOAD, lux_packet_payload_t, AUTO)
 
 
+PB_BIND(MIC_LEVEL_PACKET, mic_level_packet_t, AUTO)
+
+
+PB_BIND(MIC_LEVEL_PACKET_PAYLOAD, mic_level_packet_payload_t, AUTO)
+
+
 PB_BIND(SGP_PACKET, sgp_packet_t, 2)
 
 
@@ -148,6 +154,7 @@ PB_BIND(APP_META_DATA_PACKET, app_meta_data_packet_t, AUTO)
 
 
 PB_BIND(SENSOR_PACKET, sensor_packet_t, 2)
+
 
 
 
