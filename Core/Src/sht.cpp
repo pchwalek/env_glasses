@@ -36,6 +36,10 @@ static sht_packet_payload_t shtData[MAX_SHT_SAMPLES_PACKET];
 osTimerId_t periodicShtTimer_id;
 
 Adafruit_SHT4x sht4 = Adafruit_SHT4x();
+#ifdef SECONDARY_ENV_SENSOR_EXPANSION
+Adafruit_SHT4x sht4_secondary = Adafruit_SHT4x();
+static sht_packet_payload_t shtData_secondary[MAX_SHT_SAMPLES_PACKET];
+#endif
 
 float shtTemp, shtHum;
 
@@ -45,6 +49,8 @@ void ShtTask(void *argument) {
 	uint32_t timeLeftForSample = 0;
 
 	bool status;
+
+	uint8_t errorCnt;
 
 	shtTemp = -1;
 	shtHum = -1;
@@ -59,9 +65,14 @@ void ShtTask(void *argument) {
 		sensorSettings.sample_period_ms = SHT_SAMPLE_SYS_PERIOD_MS;
 	}
 
+	errorCnt = 0;
 	osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 	while (!sht4.begin(&hi2c1)) {
 		osSemaphoreRelease(messageI2C1_LockHandle);
+		errorCnt++;
+		if(errorCnt > 10){
+			break;
+		}
 		osDelay(100);
 		osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 	}
@@ -71,12 +82,28 @@ void ShtTask(void *argument) {
 
 	osSemaphoreRelease(messageI2C1_LockHandle);
 
+#ifdef SECONDARY_ENV_SENSOR_EXPANSION
+	errorCnt = 0;
+	osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
+	while (!sht4_secondary.begin(&hi2c3)) {
+		osSemaphoreRelease(messageI2C3_LockHandle);
+		errorCnt++;
+		if(errorCnt > 10){
+			break;
+		}
+		osDelay(100);
+		osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
+	}
+
+	sht4_secondary.setPrecision( (sht4x_precision_t) sensorSettings.precision_level);
+	sht4_secondary.setHeater( (sht4x_heater_t) sensorSettings.heater_settings);
+
+	osSemaphoreRelease(messageI2C3_LockHandle);
+
+#endif
 
 	uint16_t shtIdx = 0;
 	uint32_t shtID = 0;
-
-
-	uint32_t shtSample;
 
 	periodicShtTimer_id = osTimerNew(triggerShtSample, osTimerPeriodic,
 			NULL, NULL);
@@ -109,6 +136,24 @@ void ShtTask(void *argument) {
 			}
 
 			osSemaphoreRelease(messageI2C1_LockHandle);
+
+#ifdef SECONDARY_ENV_SENSOR_EXPANSION
+			osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
+			if(sht4_secondary.getEvent()){
+//			if(1){
+				shtData_secondary[shtIdx].temperature = sht4_secondary._temperature;
+				shtData_secondary[shtIdx].humidity = sht4_secondary._humidity;
+				shtData_secondary[shtIdx].timestamp_ms_from_start = HAL_GetTick();
+				shtData_secondary[shtIdx].timestamp_unix = getEpoch();
+				shtTemp = shtData_secondary[shtIdx].temperature;
+				shtHum = shtData_secondary[shtIdx].humidity;
+			}else{
+				osSemaphoreRelease(messageI2C3_LockHandle);
+				continue;
+			}
+
+			osSemaphoreRelease(messageI2C3_LockHandle);
+#endif
 
 			shtIdx++;
 
@@ -153,6 +198,48 @@ void ShtTask(void *argument) {
 
 
 				}
+
+#ifdef SECONDARY_ENV_SENSOR_EXPANSION
+				packet = grabPacket();
+				if (packet != NULL) {
+
+//					portENTER_CRITICAL();
+
+					setPacketType(packet, SENSOR_PACKET_TYPES_SHT);
+
+//					sensorPacket.header.payload_length = MAX_SHT_SAMPLES_PACKET * sizeof(shtSample);
+					packet->payload.sht_packet.precision = static_cast<sht45_precision_t>(sensorSettings.precision_level);
+					packet->payload.sht_packet.heater = static_cast<sht45_heater_t>(sensorSettings.heater_settings);
+
+					packet->payload.sht_packet.sensor_id = 1;
+
+//					sensorPacket.header.packet_id = shtID;
+//					sensorPacket.header.ms_from_start = HAL_GetTick();
+
+//					packet->header.packetType = SHT;
+
+//					// reset message buffer
+//					memset(&sensorPacket.sht_packet.payload[0], 0, sizeof(sensorPacket.sht_packet.payload));
+
+					// write data
+					memcpy(packet->payload.sht_packet.payload, shtData_secondary, shtIdx * sizeof(sht_packet_payload_t));
+					packet->payload.sht_packet.payload_count = shtIdx;
+
+//					// encode
+//					pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
+//					status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
+//
+//					packet->header.payloadLength = stream.bytes_written;
+
+					// send to BT packetizer
+					queueUpPacket(packet);
+
+//					portEXIT_CRITICAL();
+
+
+				}
+#endif
+
 				shtID++;
 				shtIdx = 0;
 			}
@@ -163,6 +250,9 @@ void ShtTask(void *argument) {
 		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
 			osTimerDelete(periodicShtTimer_id);
 			sht4.reset();
+#ifdef SECONDARY_ENV_SENSOR_EXPANSION
+			sht4_secondary.reset();
+#endif
 			osThreadExit();
 			break;
 		}

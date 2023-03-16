@@ -26,6 +26,8 @@ extern "C" {
 //#define NETWORK_TEST_PERIOD		1000
 
 // uncomment if programming the STM32 USB dongle
+#define SECONDARY_ENV_SENSOR_EXPANSION 1
+
 #define CUSTOM_NETWORK_STACK	1
 #define DYNAMIC_MODE	1
 //#define DONGLE_CODE					1

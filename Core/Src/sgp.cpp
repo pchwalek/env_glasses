@@ -41,6 +41,14 @@ SensirionI2CSgp41 sgp41;
 GasIndexAlgorithmParams paramsNox;
 GasIndexAlgorithmParams paramsVoc;
 
+#ifdef SECONDARY_ENV_SENSOR_EXPANSION
+SensirionI2CSgp41 sgp41_secondary;
+GasIndexAlgorithmParams paramsNox_secondary;
+GasIndexAlgorithmParams paramsVoc_secondary;
+static sgp_packet_payload_t sgpData_secondary[20];
+
+#endif
+
 
 void SgpTask(void *argument) {
 	sensor_packet_t *packet = NULL;
@@ -67,10 +75,19 @@ void SgpTask(void *argument) {
 
 	int32_t voc_index_value, nox_index_value;
 
+#ifdef SECONDARY_ENV_SENSOR_EXPANSION
+	int32_t voc_index_value_secondary, nox_index_value_secondary;
+#endif
+
 	osDelay(1000);
 
     GasIndexAlgorithm_init(&paramsVoc, (int32_t) GasIndexAlgorithm_ALGORITHM_TYPE_VOC);
     GasIndexAlgorithm_init(&paramsNox, (int32_t) GasIndexAlgorithm_ALGORITHM_TYPE_NOX);
+
+#ifdef SECONDARY_ENV_SENSOR_EXPANSION
+    GasIndexAlgorithm_init(&paramsVoc_secondary, (int32_t) GasIndexAlgorithm_ALGORITHM_TYPE_VOC);
+	GasIndexAlgorithm_init(&paramsNox_secondary, (int32_t) GasIndexAlgorithm_ALGORITHM_TYPE_NOX);
+#endif
 
 	osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 	if (!sgp41.begin(&hi2c1)) {
@@ -103,10 +120,43 @@ void SgpTask(void *argument) {
 //    	osSemaphoreRelease(messageI2C1_LockHandle);
     	while(1){
     		osDelay(10000); // TODO: terminate thread instead
+//			osThreadExit();
     	}
     }
 
+#ifdef SECONDARY_ENV_SENSOR_EXPANSION
+    osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
+    	if (!sgp41_secondary.begin(&hi2c3)) {
+        	osSemaphoreRelease(messageI2C3_LockHandle);
+    		osDelay(100);
+    		osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
+    	}
 
+        error = sgp41_secondary.getSerialNumber(serialNumber, serialNumberSize);
+        while (error) {
+        	osSemaphoreRelease(messageI2C3_LockHandle);
+    		osDelay(10);
+    		osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
+    		error = sgp41_secondary.getSerialNumber(serialNumber, serialNumberSize);
+        }
+
+        error = sgp41_secondary.executeSelfTest(testResult);
+        while(error) {
+        	osSemaphoreRelease(messageI2C3_LockHandle);
+          	osDelay(10);
+    		osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
+            error = sgp41_secondary.executeSelfTest(testResult);
+          }
+    	osSemaphoreRelease(messageI2C3_LockHandle);
+
+        if(testResult != 0xD400){
+    //    	osSemaphoreRelease(messageI2C1_LockHandle);
+        	while(1){
+        		osDelay(10000); // TODO: terminate thread instead
+//    			osThreadExit();
+        	}
+        }
+#endif
 
 //	header.payloadLength = MAX_SGP_SAMPLES_PACKET * sizeof(sgpSample);
 
@@ -114,6 +164,10 @@ void SgpTask(void *argument) {
 	uint32_t sgpID = 0;
 
 	uint16_t srawVOC, srawNOX;
+
+#ifdef SECONDARY_ENV_SENSOR_EXPANSION
+	uint16_t srawVOC_secondary, srawNOX_secondary;
+#endif
 
 //	uint32_t sgpSample;
 
@@ -137,7 +191,6 @@ void SgpTask(void *argument) {
 //			}
 
 			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
-
 
 			if (conditioning_s > 0) {
 				// During NOx conditioning (10s) SRAW NOx will remain 0
@@ -181,20 +234,59 @@ void SgpTask(void *argument) {
 			sgpData[sgpIdx].timestamp_unix = getEpoch();
 			sgpData[sgpIdx].timestamp_ms_from_start = HAL_GetTick();
 
+#ifdef SECONDARY_ENV_SENSOR_EXPANSION
+			osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
+
+			if (conditioning_s > 0) {
+				// During NOx conditioning (10s) SRAW NOx will remain 0
+				if(shtTemp != -1 && shtHum != -1){
+					_Rh = (65535.0 / 100) * shtHum;
+					_T = (65535.0 / 175) * (shtTemp+45);
+					error = sgp41_secondary.executeConditioning(_Rh, _T,  srawVOC_secondary);
+				}else{
+					error = sgp41_secondary.executeConditioning(defaultRh, defaultT, srawVOC_secondary);
+				}
+				sgpData_secondary[sgpIdx].sraw_nox = 0;
+			} else {
+				// Read Measurement
+				if(shtTemp != -1 && shtHum != -1){
+					_Rh = (65535.0 / 100) * shtHum;
+					_T = (65535.0 / 175) * (shtTemp+45);
+					error = sgp41_secondary.measureRawSignals(_Rh, _T, srawVOC_secondary, srawNOX_secondary);
+				}else{
+					error = sgp41_secondary.measureRawSignals(defaultRh, defaultT, srawVOC_secondary, srawNOX_secondary);
+				}
+			}
+			osSemaphoreRelease(messageI2C3_LockHandle);
+
+			sgpData_secondary[sgpIdx].sraw_voc = srawVOC_secondary;
+			sgpData_secondary[sgpIdx].sraw_nox = srawNOX_secondary;
+
+			sgpData_secondary[sgpIdx].timestamp_unix = sgpData[sgpIdx].timestamp_unix;
+			sgpData_secondary[sgpIdx].timestamp_ms_from_start = sgpData[sgpIdx].timestamp_ms_from_start;
+
+			if(error){
+				continue;
+			}
+
+			if (conditioning_s > 0)	{
+		        conditioning_s--;
+			}else{
+				GasIndexAlgorithm_process(&paramsNox_secondary, sgpData_secondary[sgpIdx].sraw_nox, &sgpData_secondary[sgpIdx].nox_index_value);
+				GasIndexAlgorithm_process(&paramsVoc_secondary, sgpData_secondary[sgpIdx].sraw_voc, &sgpData_secondary[sgpIdx].voc_index_value);
+			}
+
+			sgpData_secondary[sgpIdx].timestamp_unix = getEpoch();
+			sgpData_secondary[sgpIdx].timestamp_ms_from_start = HAL_GetTick();
+
+#endif
+
 			sgpIdx++;
 
 			if (sgpIdx >= MAX_SGP_SAMPLES_PACKET) {
 
-			//	message.header.payload_length = MAX_LUX_SAMPLES_PACKET * sizeof(luxSample);
-
-//				header.packetType = SGP;
-//				header.packetID = sgpID;
-//				header.msFromStart = HAL_GetTick();
 				packet = grabPacket();
 				if (packet != NULL) {
-
-//					portENTER_CRITICAL();
-
 
 					setPacketType(packet, SENSOR_PACKET_TYPES_SGP);
 
@@ -203,27 +295,36 @@ void SgpTask(void *argument) {
 
 					packet->payload.sgp_packet.sensor_id = 0;
 
-//					// reset message buffer
-//					memset(&message.payload[0], 0, sizeof(message.payload));
 
 					// write data
 					memcpy(packet->payload.sgp_packet.payload, sgpData, sgpIdx * sizeof(sgp_packet_payload_t));
 					packet->payload.sgp_packet.payload_count = sgpIdx;
 
-					// encode
-//					pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
-//					status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
-//
-//					packet->header.payloadLength = stream.bytes_written;
+					// send to BT packetizer
+					queueUpPacket(packet);
+				}
+
+#ifdef SECONDARY_ENV_SENSOR_EXPANSION
+				packet = grabPacket();
+				if (packet != NULL) {
+
+					setPacketType(packet, SENSOR_PACKET_TYPES_SGP);
+
+					packet->payload.sgp_packet.packet_index = sgpID;
+					packet->payload.sgp_packet.sample_period=sensorSettings.sample_period_ms;
+
+					packet->payload.sgp_packet.sensor_id = 1;
+
+
+					// write data
+					memcpy(packet->payload.sgp_packet.payload, sgpData_secondary, sgpIdx * sizeof(sgp_packet_payload_t));
+					packet->payload.sgp_packet.payload_count = sgpIdx;
 
 					// send to BT packetizer
 					queueUpPacket(packet);
-//					portEXIT_CRITICAL();
-
-//					memcpy(&(packet->header), &header, sizeof(PacketHeader));
-//					memcpy(packet->payload, sgpData, header.payloadLength);
-//					queueUpPacket(packet);
 				}
+
+#endif
 				sgpID++;
 				sgpIdx = 0;
 			}
