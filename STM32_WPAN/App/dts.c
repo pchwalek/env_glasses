@@ -334,7 +334,6 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 
 						threadState = osThreadGetState(blinkCalTaskHandle);
 						if((threadState != osThreadTerminated) &&(threadState != osThreadInactive)  && (threadState != osThreadError)){
-							osThreadTerminate(blinkCalTaskHandle); // terminate any existing running thread
 							BlinkCalTaskExit();
 						}
 						if(blinkCalRX.enable == 1){

@@ -53,7 +53,7 @@ osTimerId_t resetTimer;
  *
  *************************************************************/
 
-#define MAX_BRIGHTNESS 255 //up to 255
+#define MAX_BRIGHTNESS 50 //up to 255
 
 uint8_t led_left_PWM[9] = { 0 };
 uint8_t led_right_PWM[9] = { 0 };
@@ -301,7 +301,7 @@ void ThreadFrontLightsTask(void *argument) {
 	uint32_t lightsSimpleMessageReceived;
 
 
-	ledDisconnectNotification();
+	//ledDisconnectNotification();
 
 #ifdef LED_TEST
 	uint8_t led_test = 1;

@@ -112,7 +112,7 @@ const osThreadAttr_t bmeTask_attributes = { .name = "bmeTask", .attr_bits =
 osThreadId_t sgpTaskHandle;
 const osThreadAttr_t sgpTask_attributes = { .name = "sgpTask", .attr_bits =
 		osThreadDetached, .cb_mem = NULL, .cb_size = 0, .stack_mem = NULL,
-		.stack_size = 512 * 2, .priority = (osPriority_t) osPriorityNormal,
+		.stack_size = 512, .priority = (osPriority_t) osPriorityNormal,
 		.tz_module = 0, .reserved = 0 };
 
 osThreadId_t imuTaskHandle;
@@ -143,14 +143,14 @@ const osThreadAttr_t defaultTask_attributes = { .name = "defaultTask",
 osThreadId_t frontLightsThreHandle;
 const osThreadAttr_t frontLightsThre_attributes = { .name = "frontLightsTask",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
-		.stack_mem = NULL, .stack_size = 512 * 2, .priority =
+		.stack_mem = NULL, .stack_size = 512 + 256, .priority =
 				(osPriority_t) osPriorityBelowNormal, .tz_module = 0,
 		.reserved = 0 };
 /* Definitions for thermopileTask */
 osThreadId_t thermopileTaskHandle;
 const osThreadAttr_t thermopileTask_attributes = { .name = "thermopileTask",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
-		.stack_mem = NULL, .stack_size = 512 * 2, .priority =
+		.stack_mem = NULL, .stack_size = 512, .priority =
 				(osPriority_t) osPriorityNormal, .tz_module = 0, .reserved = 0 };
 
 osThreadId_t senderTaskHandle;
@@ -300,8 +300,7 @@ void MX_FREERTOS_Init(void) {
 //
 //	redFlashTaskHandle = osThreadNew(RedFlashTask, &redFlashTest, &redFlashTask_attributes);
 
-//	osThreadNew(ledCheck, NULL, &defaultTask_attributes);
-
+	//osThreadNew(ledCheck, NULL, &defaultTask_attributes);
 
 
 	/* USER CODE END RTOS_THREADS */
@@ -324,20 +323,26 @@ void StartDefaultTask(void *argument) {
 	/* Infinite loop */
 	osDelay(500);
 //	MX_FREERTOS_Init();
+
+
 	ledDisconnectNotification();
+
+
 //	osDelay(200);
 //	bluetoothStartAdvertising();
 
 	startThreads();
+
+
 	vTaskDelete( NULL );
 //  for(;;)
 //  {
 ////	osDelay(1000);
-//	while(1){
-////		ledStartupSequence();
-////		osDelay(5000);
-//		osDelay(1);
-//	}
+	while(1){
+//		ledStartupSequence();
+//		osDelay(5000);
+		osDelay(1);
+	}
 //  }
 	/* USER CODE END StartDefaultTask */
 }

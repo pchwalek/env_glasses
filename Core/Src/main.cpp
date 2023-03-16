@@ -216,7 +216,7 @@ int main(void) {
 		sysState.control.sht = 1;
 		sysState.control.synchronize_windows = 1;
 		sysState.control.window_size_ms = ONE_SECOND_MS * 60;
-		sysState.control.window_period_ms = ONE_MINUTE_MS * 180;
+		sysState.control.window_period_ms = ONE_SECOND_MS * 180;
 
 
 		sysState.config.lux.gain = TSL2591_GAIN_TSL2722_GAIN_8_X;

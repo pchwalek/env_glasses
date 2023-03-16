@@ -223,11 +223,11 @@ void Mic_Task(void *argument){
 				packet->payload.mic_level_packet.weighting = MIC_WEIGHTING_A_WEIGHT;
 
 				// write data
-				packet->payload.mic_level_packet.payload.sound_rms = soundLevel_RMS_accumulator;
-				packet->payload.mic_level_packet.payload.sound_spl_db = soundLevel_dB_accumulator;
-				packet->payload.mic_level_packet.payload.timestamp_ms_from_start = HAL_GetTick();
-				packet->payload.mic_level_packet.payload.timestamp_unix = getEpoch();
-				packet->payload.mic_level_packet.has_payload = true;
+				packet->payload.mic_level_packet.payload[0].sound_rms = soundLevel_RMS_accumulator;
+				packet->payload.mic_level_packet.payload[0].sound_spl_db = soundLevel_dB_accumulator;
+				packet->payload.mic_level_packet.payload[0].timestamp_ms_from_start = HAL_GetTick();
+				packet->payload.mic_level_packet.payload[0].timestamp_unix = getEpoch();
+				packet->payload.mic_level_packet.payload_count = 1;
 
 				packet->payload.mic_packet.payload.sample_count = sample_count;
 

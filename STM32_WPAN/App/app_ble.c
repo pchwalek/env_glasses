@@ -509,6 +509,8 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
 
       /* USER CODE BEGIN EVT_DISCONN_COMPLETE */
   		/* restart advertising */
+		osThreadTerminate(blueGreenTranTaskHandle); // terminate any existing running thread
+		osThreadTerminate(redFlashTaskHandle); // terminate any existing running thread
       ledDisconnectNotification();
 
 //      HAL_Delay(4000);
