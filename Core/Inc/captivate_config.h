@@ -26,7 +26,7 @@ extern "C" {
 //#define NETWORK_TEST_PERIOD		1000
 
 // uncomment if programming the STM32 USB dongle
-//#define SECONDARY_ENV_SENSOR_EXPANSION 1
+#define SECONDARY_ENV_SENSOR_EXPANSION 1
 
 #define CUSTOM_NETWORK_STACK	1
 #define DYNAMIC_MODE	1
@@ -177,6 +177,9 @@ extern osTimerId_t sensorSyncTimer_id;
 
 extern osMessageQueueId_t togLoggingQueueHandle;
 extern osThreadId_t masterTaskHandle;
+
+extern osThreadId_t ledDisconnectTaskHandle;
+extern const osThreadAttr_t ledDisconnectTask_attributes;
 
 extern osThreadId_t blueGreenTranTaskHandle;
 extern const osThreadAttr_t blueGreenTask_attributes;

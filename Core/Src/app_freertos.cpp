@@ -67,6 +67,12 @@ osMessageQueueId_t lightsComplexQueueHandle;
 const osMessageQueueAttr_t lightsComplexQueue_attributes = { .name =
 		"lightsComplexQueue" };
 
+osThreadId_t ledDisconnectTaskHandle;
+const osThreadAttr_t ledDisconnectTask_attributes = { .name = "ledDisconnectTask", .attr_bits =
+		osThreadDetached, .cb_mem = NULL, .cb_size = 0, .stack_mem = NULL,
+		.stack_size = 512, .priority = (osPriority_t) osPriorityNormal,
+		.tz_module = 0, .reserved = 0 };
+
 osThreadId_t blueGreenTranTaskHandle;
 const osThreadAttr_t blueGreenTask_attributes = { .name = "bgTranTask",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
@@ -315,6 +321,8 @@ void MX_FREERTOS_Init(void) {
 	bleRX_TaskHandle = osThreadNew(bleRX_Task, NULL,
 			&bleRX_Task_attributes);
 
+    ledDisconnectTaskHandle = osThreadNew(ledDisconnectNotification, NULL, &ledDisconnectTask_attributes);
+
 
 	sensorThreadsRunning = 1;
 
@@ -348,15 +356,15 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument) {
 	/* USER CODE BEGIN StartDefaultTask */
 	/* Infinite loop */
-	osDelay(1000
-			);
+	osDelay(1000);
 //	MX_FREERTOS_Init();
 
 
 	while(sensorThreadsRunning != 1){
 		osDelay(10);
 	}
-	ledDisconnectNotification();
+//	ledDisconnectNotification(NULL);
+    osThreadFlagsSet(ledDisconnectTaskHandle, DISCONNECT_BLE_BIT);
 
 
 //	osDelay(200);

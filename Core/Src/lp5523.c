@@ -980,16 +980,56 @@ void ledEnterDFUNotification(void){
 }
 
 
-void ledDisconnectNotification(void){
-	if(sensorThreadsRunning){
-		resetColor(&receivedColor);
+void ledDisconnectNotification(void *argument){
 
-		receivedColor.colors_indiv.left_side_r = 50;
-		receivedColor.colors_indiv.left_side_b = 50;
+	uint32_t evt;
+
+	while(1){
+		evt = osThreadFlagsWait(DISCONNECT_BLE_BIT | CONNECT_BLE_BIT, osFlagsWaitAny,
+								osWaitForever);
+		if((evt & DISCONNECT_BLE_BIT) == DISCONNECT_BLE_BIT){
+			osThreadState_t threadState = osThreadGetState(blueGreenTranTaskHandle);
+			if((threadState == osThreadReady) || (threadState == osThreadRunning) || (threadState == osThreadBlocked)){
+				osThreadTerminate(blueGreenTranTaskHandle); // terminate any existing running thread
+				BlueGreenTransitionTaskExit(NULL);
+			}
+
+			if(sensorThreadsRunning){
+				resetColor(&receivedColor);
+
+				receivedColor.colors_indiv.left_side_r = 50;
+				receivedColor.colors_indiv.left_side_b = 50;
+
+				osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+			}
+		}
+
+		if((evt & CONNECT_BLE_BIT) == CONNECT_BLE_BIT){
+			resetColor(&receivedColor);
 
 
-		osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+			receivedColor.colors_indiv.left_side_r = 120;
+			receivedColor.colors_indiv.left_side_b = 120;
+
+	//		receivedColor.colors_indiv.left_side_b = 0;
+	//		receivedColor.colors_indiv.right_side_b = 0;
+	//		receivedColor.colors_indiv.left_side_g = 80;
+	//		receivedColor.colors_indiv.right_side_g = 80;
+			osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+		//	FrontLightsSet(&receivedColor);
+	//		osDelay(1000);
+	//		receivedColor.colors_indiv.left_side_g = 0;
+	//		receivedColor.colors_indiv.right_side_g = 0;
+
+			osTimerStart(resetTimer, 1000);
+	//		osTimerDelete(resetTimer);
+	//		osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+		//	FrontLightsSet(&receivedColor);
+		}
+
 	}
+
+	vTaskDelete( NULL );
 
 }
 
@@ -1103,30 +1143,30 @@ void resetLED(void){
 ////	FrontLightsSet(&receivedColor);
 //}
 
-void ledConnectNotification(void){
-	if(sensorThreadsRunning){
-		resetColor(&receivedColor);
-
-
-		receivedColor.colors_indiv.left_side_r = 120;
-		receivedColor.colors_indiv.left_side_b = 120;
-
-//		receivedColor.colors_indiv.left_side_b = 0;
-//		receivedColor.colors_indiv.right_side_b = 0;
-//		receivedColor.colors_indiv.left_side_g = 80;
-//		receivedColor.colors_indiv.right_side_g = 80;
-		osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
-	//	FrontLightsSet(&receivedColor);
-//		osDelay(1000);
-//		receivedColor.colors_indiv.left_side_g = 0;
-//		receivedColor.colors_indiv.right_side_g = 0;
-
-		osTimerStart(resetTimer, 1000);
-//		osTimerDelete(resetTimer);
+//void ledConnectNotification(void){
+//	if(sensorThreadsRunning){
+//		resetColor(&receivedColor);
+//
+//
+//		receivedColor.colors_indiv.left_side_r = 120;
+//		receivedColor.colors_indiv.left_side_b = 120;
+//
+////		receivedColor.colors_indiv.left_side_b = 0;
+////		receivedColor.colors_indiv.right_side_b = 0;
+////		receivedColor.colors_indiv.left_side_g = 80;
+////		receivedColor.colors_indiv.right_side_g = 80;
 //		osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
-	//	FrontLightsSet(&receivedColor);
-	}
-}
+//	//	FrontLightsSet(&receivedColor);
+////		osDelay(1000);
+////		receivedColor.colors_indiv.left_side_g = 0;
+////		receivedColor.colors_indiv.right_side_g = 0;
+//
+//		osTimerStart(resetTimer, 1000);
+////		osTimerDelete(resetTimer);
+////		osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+//	//	FrontLightsSet(&receivedColor);
+//	}
+//}
 
 
 

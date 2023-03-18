@@ -525,7 +525,8 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
 
 
 //      osThreadTerminate(redFlashTaskHandle); // terminate any existing running thread
-      ledDisconnectNotification();
+
+      osThreadFlagsSet(ledDisconnectTaskHandle, DISCONNECT_BLE_BIT);
 
 //      HAL_Delay(4000);
 //      NVIC_SystemReset();
@@ -616,7 +617,9 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
           }
           BleApplicationContext.BleApplicationContext_legacy.connectionHandle = connection_complete_event->Connection_Handle;
           /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE */
-          ledConnectNotification();
+//          ledConnectNotification();
+          osThreadFlagsSet(ledDisconnectTaskHandle, CONNECT_BLE_BIT);
+
 //          mutex = 1;
           BLE_SVC_L2CAP_Conn_Update_7_5();
           /* USER CODE END HCI_EVT_LE_CONN_COMPLETE */

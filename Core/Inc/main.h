@@ -97,6 +97,8 @@ void startInitThread(void);
 #define TERMINATE_THREAD_BIT					0x0200
 #define IMU_DATA_RDY_BIT						0x0400
 #define MIC_DATA_RDY_BIT						0x0800
+#define DISCONNECT_BLE_BIT						0x0001
+#define CONNECT_BLE_BIT							0x0002
 #define WINDOW_SYNC_RDY_BIT						0x2000
 #define DFU_MODE_ENABLE							0xDEADBEEF
 

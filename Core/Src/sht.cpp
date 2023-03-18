@@ -52,6 +52,9 @@ void ShtTask(void *argument) {
 
 	uint8_t errorCnt;
 
+	uint8_t primarySHT_disable = 0;
+	uint8_t secondarySHT_disable = 0;
+
 	shtTemp = -1;
 	shtHum = -1;
 
@@ -71,6 +74,7 @@ void ShtTask(void *argument) {
 		osSemaphoreRelease(messageI2C1_LockHandle);
 		errorCnt++;
 		if(errorCnt > 10){
+			primarySHT_disable = 1;
 			break;
 		}
 		osDelay(100);
@@ -89,6 +93,7 @@ void ShtTask(void *argument) {
 		osSemaphoreRelease(messageI2C3_LockHandle);
 		errorCnt++;
 		if(errorCnt > 10){
+			secondarySHT_disable = 1;
 			break;
 		}
 		osDelay(100);
@@ -101,6 +106,11 @@ void ShtTask(void *argument) {
 	osSemaphoreRelease(messageI2C3_LockHandle);
 
 #endif
+
+	// if both sensors failed to initialize
+	if((primarySHT_disable) & (secondarySHT_disable)){
+		osThreadExit();
+	}
 
 	uint16_t shtIdx = 0;
 	uint32_t shtID = 0;
@@ -120,7 +130,7 @@ void ShtTask(void *argument) {
 //			if(timeLeftForSample < SHT_SAMPLE_SYS_PERIOD_MS){
 //				osDelay(timeLeftForSample);
 //			}
-
+			if(!primarySHT_disable){
 			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			if(sht4.getEvent()){
 //			if(1){
@@ -136,8 +146,9 @@ void ShtTask(void *argument) {
 			}
 
 			osSemaphoreRelease(messageI2C1_LockHandle);
-
+			}
 #ifdef SECONDARY_ENV_SENSOR_EXPANSION
+		if(!secondarySHT_disable){
 			osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
 			if(sht4_secondary.getEvent()){
 //			if(1){
@@ -153,13 +164,14 @@ void ShtTask(void *argument) {
 			}
 
 			osSemaphoreRelease(messageI2C3_LockHandle);
+		}
 #endif
 
 			shtIdx++;
 
 			if (shtIdx >= MAX_SHT_SAMPLES_PACKET) {
 //				header.packetType = SHT;
-
+			if(!primarySHT_disable){
 				packet = grabPacket();
 				if (packet != NULL) {
 
@@ -198,8 +210,10 @@ void ShtTask(void *argument) {
 
 
 				}
+			}
 
 #ifdef SECONDARY_ENV_SENSOR_EXPANSION
+			if(!secondarySHT_disable){
 				packet = grabPacket();
 				if (packet != NULL) {
 
@@ -238,6 +252,7 @@ void ShtTask(void *argument) {
 
 
 				}
+			}
 #endif
 
 				shtID++;

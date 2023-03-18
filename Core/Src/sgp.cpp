@@ -56,6 +56,9 @@ void SgpTask(void *argument) {
 	uint32_t timeLeftForSample = 0;
 	uint16_t error;
 
+	uint8_t primarySGP_disable = 0;
+	uint8_t secondarySGP_disable = 0;
+
 	bool status;
 
 	sgp_sensor_config_t sensorSettings;
@@ -120,6 +123,7 @@ void SgpTask(void *argument) {
 //    	osSemaphoreRelease(messageI2C1_LockHandle);
     	while(1){
     		osDelay(10000); // TODO: terminate thread instead
+    		primarySGP_disable = 1;
 //			osThreadExit();
     	}
     }
@@ -153,10 +157,16 @@ void SgpTask(void *argument) {
     //    	osSemaphoreRelease(messageI2C1_LockHandle);
         	while(1){
         		osDelay(10000); // TODO: terminate thread instead
+        		secondarySGP_disable = 1;
 //    			osThreadExit();
         	}
         }
 #endif
+
+    	// if both sensors failed to initialize
+    	if((primarySGP_disable) & (secondarySGP_disable)){
+    		osThreadExit();
+    	}
 
 //	header.payloadLength = MAX_SGP_SAMPLES_PACKET * sizeof(sgpSample);
 
@@ -190,6 +200,7 @@ void SgpTask(void *argument) {
 //				osDelay(timeLeftForSample);
 //			}
 
+			if(!(primarySGP_disable)){
 			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 
 			if (conditioning_s > 0) {
@@ -233,8 +244,10 @@ void SgpTask(void *argument) {
 
 			sgpData[sgpIdx].timestamp_unix = getEpoch();
 			sgpData[sgpIdx].timestamp_ms_from_start = HAL_GetTick();
+			}
 
 #ifdef SECONDARY_ENV_SENSOR_EXPANSION
+			if(!(primarySGP_disable)){
 			osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
 
 			if (conditioning_s > 0) {
@@ -278,33 +291,36 @@ void SgpTask(void *argument) {
 
 			sgpData_secondary[sgpIdx].timestamp_unix = getEpoch();
 			sgpData_secondary[sgpIdx].timestamp_ms_from_start = HAL_GetTick();
-
+			}
 #endif
 
 			sgpIdx++;
 
 			if (sgpIdx >= MAX_SGP_SAMPLES_PACKET) {
 
-				packet = grabPacket();
-				if (packet != NULL) {
+				if(!(primarySGP_disable)){
+					packet = grabPacket();
+					if (packet != NULL) {
 
-					setPacketType(packet, SENSOR_PACKET_TYPES_SGP);
+						setPacketType(packet, SENSOR_PACKET_TYPES_SGP);
 
-					packet->payload.sgp_packet.packet_index = sgpID;
-					packet->payload.sgp_packet.sample_period=sensorSettings.sample_period_ms;
+						packet->payload.sgp_packet.packet_index = sgpID;
+						packet->payload.sgp_packet.sample_period=sensorSettings.sample_period_ms;
 
-					packet->payload.sgp_packet.sensor_id = 0;
+						packet->payload.sgp_packet.sensor_id = 0;
 
 
-					// write data
-					memcpy(packet->payload.sgp_packet.payload, sgpData, sgpIdx * sizeof(sgp_packet_payload_t));
-					packet->payload.sgp_packet.payload_count = sgpIdx;
+						// write data
+						memcpy(packet->payload.sgp_packet.payload, sgpData, sgpIdx * sizeof(sgp_packet_payload_t));
+						packet->payload.sgp_packet.payload_count = sgpIdx;
 
-					// send to BT packetizer
-					queueUpPacket(packet);
-				}
+						// send to BT packetizer
+						queueUpPacket(packet);
+					}
+					}
 
 #ifdef SECONDARY_ENV_SENSOR_EXPANSION
+				if(!(secondarySGP_disable)){
 				packet = grabPacket();
 				if (packet != NULL) {
 
@@ -323,7 +339,7 @@ void SgpTask(void *argument) {
 					// send to BT packetizer
 					queueUpPacket(packet);
 				}
-
+				}
 #endif
 				sgpID++;
 				sgpIdx = 0;

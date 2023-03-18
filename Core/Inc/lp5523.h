@@ -225,8 +225,9 @@ void setup_LP5523(uint8_t ADDR);
 
 void FrontLightsSet(union ColorComplex *setColors);
 
-void ledDisconnectNotification(void);
-void ledConnectNotification(void);
+//void ledDisconnectNotification(void);
+void ledDisconnectNotification(void *argument);
+//void ledConnectNotification(void);
 void ledStartupSequence(void);
 void ledAllRed(void);
 void resetColor(union ColorComplex * colorComplex);
