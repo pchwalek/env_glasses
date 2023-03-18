@@ -26,7 +26,7 @@ extern "C" {
 //#define NETWORK_TEST_PERIOD		1000
 
 // uncomment if programming the STM32 USB dongle
-#define SECONDARY_ENV_SENSOR_EXPANSION 1
+//#define SECONDARY_ENV_SENSOR_EXPANSION 1
 
 #define CUSTOM_NETWORK_STACK	1
 #define DYNAMIC_MODE	1
@@ -181,7 +181,11 @@ extern osThreadId_t masterTaskHandle;
 extern osThreadId_t blueGreenTranTaskHandle;
 extern const osThreadAttr_t blueGreenTask_attributes;
 
+extern osThreadId_t bleRX_TaskHandle;
+extern const osThreadAttr_t bleRX_Task_attributes;
+
 extern osThreadId_t blinkCalTaskHandle;
+extern osThreadId_t blinkCalTaskExitHandle;
 extern const osThreadAttr_t blinkCalTask_attributes;
 
 extern osThreadId_t redFlashTaskHandle;
@@ -204,6 +208,9 @@ extern const osThreadAttr_t shtTask_attributes;
 
 extern osThreadId_t sgpTaskHandle;
 extern const osThreadAttr_t sgpTask_attributes;
+
+extern osThreadId_t blueGreenExitTaskHandle;
+extern const osThreadAttr_t blueGreenExitTask_attributes;
 
 extern osThreadId_t imuTaskHandle;
 extern const osThreadAttr_t imuTask_attributes;
@@ -236,6 +243,9 @@ extern osThreadId_t pulseTaskHandle;
 extern osTimerId_t viveTimerHandle;
 
 extern osMessageQueueId_t statusQueueHandle;
+
+extern osMessageQueueId_t bleRX_QueueHandle;
+
 
 extern osSemaphoreId_t locNotifyHandle;
 
@@ -367,7 +377,8 @@ void controlIMUNoWindow(bool state);
 void controlIMU(bool state);
 void ingestSensorConfig(system_state_t *config);
 void BlinkCalTask(void *argument);
-void BlinkCalTaskExit(void);
+void BlinkCalTaskExit(void *argument);
+void bleRX_Task(void *argument);
 
 //typedef struct PacketHeaders{
 //  uint16_t packetType;

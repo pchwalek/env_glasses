@@ -65,24 +65,31 @@ void controlIMU(bool state){
 
 imu_sensor_config_t imuConfigNoWindow;
 void controlIMUNoWindow(bool state){
-	osThreadFlagsSet(blinkTaskHandle, TERMINATE_THREAD_BIT);
+//	osThreadFlagsSet(imuTaskHandle, TERMINATE_THREAD_BIT);
+//
+//	osDelay(100);
 
-	memcpy(&imuConfigNoWindow,&sysState.config.imu,sizeof(imu_sensor_config_t));
-	imuConfigNoWindow.enable_windowing = 0;
-	imuConfigNoWindow.enable_windowing_sync = 0;
+
 
 	if(state){
-		osThreadState_t threadState = osThreadGetState(imuTaskHandle);
-		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
-			imuTaskHandle = osThreadNew(IMU_Task,&imuConfigNoWindow, &imuTask_attributes);
+		memcpy(&imuConfigNoWindow,&sysState.config.imu,sizeof(imu_sensor_config_t));
+		imuConfigNoWindow.enable_windowing = 0;
+		imuConfigNoWindow.enable_windowing_sync = 0;
+
+		volatile osThreadState_t threadState = osThreadGetState(imuTaskHandle);
+
+		while( (threadState != osThreadTerminated) && (threadState != osThreadError)){
+			osDelay(100);
+			osThreadFlagsSet(imuTaskHandle, TERMINATE_THREAD_BIT);
+			threadState = osThreadGetState(imuTaskHandle);
 		}
-	}else{
-		osThreadFlagsSet(imuTaskHandle, TERMINATE_THREAD_BIT);
+
+		imuTaskHandle = osThreadNew(IMU_Task,&imuConfigNoWindow, &imuTask_attributes);
 	}
 }
 void controlThermopile(bool state){
 	if(state){
-		osThreadState_t threadState = osThreadGetState(sgpTaskHandle);
+		osThreadState_t threadState = osThreadGetState(thermopileTaskHandle);
 		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
 			thermopileTaskHandle = osThreadNew(Thermopile_Task, &sysState.config.thermopile, &thermopileTask_attributes);
 		}
@@ -122,7 +129,7 @@ void controlSHT(bool state){
 }
 void controlSGP(bool state){
 	if(state){
-		osThreadState_t threadState = osThreadGetState(blinkTaskHandle);
+		osThreadState_t threadState = osThreadGetState(sgpTaskHandle);
 		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
 			sgpTaskHandle = osThreadNew(SgpTask, &sysState.config.sgp, &sgpTask_attributes);
 		}
@@ -133,7 +140,6 @@ void controlSGP(bool state){
 }
 
 void controlBlink(bool state){
-
 	if(state){
 		osThreadState_t threadState = osThreadGetState(blinkTaskHandle);
 		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
@@ -147,22 +153,28 @@ void controlBlink(bool state){
 blink_sensor_config_t blinkConfigNoWindow;
 void controlBlinkNoWindow(bool state){
 
-	osThreadFlagsSet(blinkTaskHandle, TERMINATE_THREAD_BIT);
+//	osThreadFlagsSet(blinkTaskHandle, TERMINATE_THREAD_BIT);
+//
+//	osDelay(100);
 
-	memcpy(&blinkConfigNoWindow,&sysState.config.blink,sizeof(blink_sensor_config_t));
-	blinkConfigNoWindow.enable_windowing = 0;
-	blinkConfigNoWindow.enable_windowing_sync = 0;
 
 
 	if(state){
-		osThreadState_t threadState = osThreadGetState(blinkTaskHandle);
-		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
-			blinkTaskHandle = osThreadNew(BlinkTask, &blinkConfigNoWindow, &blinkTask_attributes);
-		}
-	}else{
-		osThreadFlagsSet(blinkTaskHandle, TERMINATE_THREAD_BIT);
+		memcpy(&blinkConfigNoWindow,&sysState.config.blink,sizeof(blink_sensor_config_t));
+		blinkConfigNoWindow.enable_windowing = 0;
+		blinkConfigNoWindow.enable_windowing_sync = 0;
 
+		volatile osThreadState_t threadState = osThreadGetState(blinkTaskHandle);
+
+		while( (threadState != osThreadTerminated) && (threadState != osThreadError)){
+			osDelay(100);
+			osThreadFlagsSet(blinkTaskHandle, TERMINATE_THREAD_BIT);
+			threadState = osThreadGetState(blinkTaskHandle);
+		}
+
+		blinkTaskHandle = osThreadNew(BlinkTask,&blinkConfigNoWindow, &blinkTask_attributes);
 	}
+
 }
 
 //blink_sensor_config_t blinkConfigNoWindow;
@@ -395,17 +407,194 @@ void BlinkCalTask(void *argument){
 	osDelay(blinkCalRX.duration_ms);
 
 	/* stop sensor subsystems and re-enable windowing, if active previously */
-	BlinkCalTaskExit();
+	BlinkCalTaskExit(NULL);
 
 	vTaskDelete( NULL );
 }
 
-void BlinkCalTaskExit(void){
-	controlBlinkNoWindow(false);
-	controlIMUNoWindow(false);
+void BlinkCalTaskExit(void *argument){
+	blink_calibration_t blinkCalRX;
 
+	if(argument != NULL){
+		memcpy(&blinkCalRX,argument,sizeof(blink_calibration_t));
+	}
+	// disable threads
+	osThreadFlagsSet(blinkTaskHandle, TERMINATE_THREAD_BIT);
+	osThreadFlagsSet(imuTaskHandle, TERMINATE_THREAD_BIT);
+
+	osDelay(100); // give time for threads to exit
+	uint16_t iter;
+
+	volatile osThreadState_t threadStateBlink = osThreadGetState(blinkTaskHandle);
+	volatile osThreadState_t threadStateIMU = osThreadGetState(imuTaskHandle);
+	while( (threadStateBlink != osThreadTerminated) && (threadStateBlink != osThreadError) ){
+		osDelay(50);
+		iter++;
+		if(iter > 40){
+//			vTaskDelete( NULL );
+			break; // shouldnt get here
+		}
+		threadStateBlink = osThreadGetState(blinkTaskHandle);
+	}
+	while( (threadStateIMU != osThreadTerminated) && (threadStateIMU != osThreadError) ){
+		osDelay(50);
+		iter++;
+		if(iter > 40){
+//			vTaskDelete( NULL );
+			break; // shouldnt get here
+		}
+		threadStateIMU = osThreadGetState(imuTaskHandle);
+	}
+
+	// enable
 	controlBlink(sysState.control.blink);
 	controlIMU(sysState.control.imu);
+
+	if((argument != NULL) && blinkCalRX.enable == 1){
+		blinkCalTaskHandle = osThreadNew(BlinkCalTask, &blinkCalRX, &blinkCalTask_attributes);
+	}
+
+	vTaskDelete( NULL );
 }
 
+air_spec_config_packet_t rxConfigPacket;
+blue_green_transition_t blueGreenTranRX;
+blink_calibration_t blinkCalRX;
+red_flash_task_t redFlashRX;
+union ColorComplex airspecColors;
+
+void bleRX_Task(void *argument){
+	while(1){
+		osMessageQueueGet(bleRX_QueueHandle, &rxConfigPacket, 0, osWaitForever);
+		volatile osThreadState_t threadState;
+
+		if(rxConfigPacket.has_header == true){
+							updateRTC_MS(rxConfigPacket.header.timestamp_unix);
+						}
+
+		switch(rxConfigPacket.which_payload) {
+
+		   case AIR_SPEC_CONFIG_PACKET_CTRL_INDIV_LED_TAG  :
+			   if(rxConfigPacket.payload.ctrl_indiv_led.has_left){
+				   airspecColors.colors_indiv.left_front_b = rxConfigPacket.payload.ctrl_indiv_led.left.forward.blue;
+				   airspecColors.colors_indiv.left_front_g = rxConfigPacket.payload.ctrl_indiv_led.left.forward.green;
+				   airspecColors.colors_indiv.left_front_r = rxConfigPacket.payload.ctrl_indiv_led.left.forward.red;
+
+				   airspecColors.colors_indiv.left_side_b = rxConfigPacket.payload.ctrl_indiv_led.left.eye.blue;
+				   airspecColors.colors_indiv.left_side_g = rxConfigPacket.payload.ctrl_indiv_led.left.eye.green;
+				   airspecColors.colors_indiv.left_side_r = rxConfigPacket.payload.ctrl_indiv_led.left.eye.red;
+
+				   airspecColors.colors_indiv.left_top_b = rxConfigPacket.payload.ctrl_indiv_led.left.top.blue;
+				   airspecColors.colors_indiv.left_top_g = rxConfigPacket.payload.ctrl_indiv_led.left.top.green;
+				   airspecColors.colors_indiv.left_top_r = rxConfigPacket.payload.ctrl_indiv_led.left.top.red;
+			   }
+			   if(rxConfigPacket.payload.ctrl_indiv_led.has_right){
+				   airspecColors.colors_indiv.right_front_b = rxConfigPacket.payload.ctrl_indiv_led.right.forward.blue;
+				   airspecColors.colors_indiv.right_front_g = rxConfigPacket.payload.ctrl_indiv_led.right.forward.green;
+				   airspecColors.colors_indiv.right_front_r = rxConfigPacket.payload.ctrl_indiv_led.right.forward.red;
+
+				   airspecColors.colors_indiv.right_side_b = rxConfigPacket.payload.ctrl_indiv_led.right.eye.blue;
+				   airspecColors.colors_indiv.right_side_g = rxConfigPacket.payload.ctrl_indiv_led.right.eye.green;
+				   airspecColors.colors_indiv.right_side_r = rxConfigPacket.payload.ctrl_indiv_led.right.eye.red;
+
+				   airspecColors.colors_indiv.right_top_b = rxConfigPacket.payload.ctrl_indiv_led.right.top.blue;
+				   airspecColors.colors_indiv.right_top_g = rxConfigPacket.payload.ctrl_indiv_led.right.top.green;
+				   airspecColors.colors_indiv.right_top_r = rxConfigPacket.payload.ctrl_indiv_led.right.top.red;
+			   }
+			   osMessageQueuePut(lightsComplexQueueHandle, &airspecColors, 0, 0);
+			  break; /* optional */
+
+		   case AIR_SPEC_CONFIG_PACKET_SENSOR_CONTROL_TAG  :
+				memcpy(&sysState.control,  &rxConfigPacket.payload.sensor_control, sizeof(sensor_control_t));
+	//						controlSensors(&sensorCtrl[0], rxPacketHeader.payloadSize / 2);
+				if(sysState.control.synchronize_windows){
+					sysState.config.imu.enable_windowing_sync = 1;
+					sysState.config.imu.window_size_ms = sysState.control.window_size_ms;
+					sysState.config.imu.window_period_ms = sysState.control.window_period_ms;
+
+					sysState.config.blink.enable_windowing_sync = 1;
+					sysState.config.blink.window_size_ms = sysState.control.window_size_ms;
+					sysState.config.blink.window_period_ms = sysState.control.window_period_ms;
+				}else{
+					sysState.config.imu.enable_windowing_sync = 0;
+					sysState.config.blink.enable_windowing_sync = 0;
+				}
+			  break; /* optional */
+
+		   case AIR_SPEC_CONFIG_PACKET_SENSOR_CONFIG_TAG  :
+			   memcpy(&sysState.config,  &rxConfigPacket.payload.sensor_config, sizeof(sensor_config_t));
+	//					   memcpy(&sensorCtrl[0], attribute_modified->Attr_Data + sizeof(RX_PacketHeader), rxPacketHeader.payloadSize);
+	//						controlSensors(&sensorCtrl[0], rxPacketHeader.payloadSize / 2);
+				if(sysState.control.synchronize_windows){
+					sysState.config.imu.enable_windowing_sync = 1;
+					sysState.config.imu.window_size_ms = sysState.control.window_size_ms;
+					sysState.config.imu.window_period_ms = sysState.control.window_period_ms;
+
+					sysState.config.blink.enable_windowing_sync = 1;
+					sysState.config.blink.window_size_ms = sysState.control.window_size_ms;
+					sysState.config.blink.window_period_ms = sysState.control.window_period_ms;
+				}else{
+					sysState.config.imu.enable_windowing_sync = 0;
+
+					sysState.config.blink.enable_windowing_sync = 0;
+				}
+				  break; /* optional */
+
+		   case AIR_SPEC_CONFIG_PACKET_DFU_MODE_TAG  :
+				ledEnterDFUNotification();
+				enterDFUMode();
+							  break; /* optional */
+
+		   case AIR_SPEC_CONFIG_PACKET_BLUE_GREEN_TRANSITION_TAG  :
+				memcpy(&blueGreenTranRX, &rxConfigPacket.payload.blue_green_transition, sizeof(blue_green_transition_t));
+				threadState = osThreadGetState(blueGreenTranTaskHandle);
+
+				// if thread is currently running, restart it
+				if((threadState == osThreadReady) || (threadState == osThreadRunning) || (threadState == osThreadBlocked)){
+					threadState = osThreadTerminate(blueGreenTranTaskHandle); // terminate any existing running thread
+
+					BlueGreenTransitionTaskExit(&blueGreenTranRX);
+				}else{ // if thread is not running and needs to be started
+
+					// check if task is still exiting (this would happen if an enable is called rapidly after a disable)
+					threadState = osThreadGetState(blueGreenExitTaskHandle);
+					if((threadState == osThreadReady) || (threadState == osThreadRunning) || (threadState == osThreadBlocked)){
+						break;
+					}
+					if(blueGreenTranRX.enable == 1){
+						blueGreenTranTaskHandle = osThreadNew(BlueGreenTransitionTask, &blueGreenTranRX, &blueGreenTask_attributes);
+					}
+				}
+			  break; /* optional */
+
+		   case AIR_SPEC_CONFIG_PACKET_BLINK_CALIBRATION_TAG:
+			   memcpy(&blinkCalRX, &rxConfigPacket.payload.blink_calibration, sizeof(blink_calibration_t));
+
+				threadState = osThreadGetState(blinkCalTaskHandle);
+				if((threadState != osThreadTerminated) &&(threadState != osThreadInactive)  && (threadState != osThreadError)){
+					osThreadTerminate(blinkCalTaskHandle);
+//					blinkCalTaskExitHandle = osThreadNew(BlinkCalTaskExit, &blinkCalRX, &blinkCalTask_attributes);
+					BlinkCalTaskExit(&blinkCalRX);
+				}
+
+				else if(blinkCalRX.enable == 1){
+					blinkCalTaskHandle = osThreadNew(BlinkCalTask, &blinkCalRX, &blinkCalTask_attributes);
+				}
+			  break;
+
+		   case AIR_SPEC_CONFIG_PACKET_RED_FLASH_TASK_TAG  :
+				memcpy(&redFlashRX, &rxConfigPacket.payload.red_flash_task, sizeof(red_flash_task_t));
+				osThreadTerminate(redFlashTaskHandle); // terminate any existing running thread
+				resetLED();
+				if(redFlashRX.enable == 1){
+					redFlashTaskHandle = osThreadNew(RedFlashTask, &redFlashRX, &redFlashTask_attributes);
+				}
+							  break; /* optional */
+
+		   /* you can have any number of case statements */
+		   default : /* Optional */
+			  break;
+		}
+	}
+}
 

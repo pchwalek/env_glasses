@@ -109,10 +109,10 @@ int main(void) {
 	/* Config code for STM32_WPAN (HSE Tuning must be done before system clock configuration) */
 	MX_APPE_Config();
 
-	HAL_Delay(200);
+
 
 	/* USER CODE BEGIN Init */
-
+	HAL_Delay(500);
 	/* USER CODE END Init */
 
 	/* Configure the system clock */
@@ -298,6 +298,7 @@ int main(void) {
 	/* Init scheduler */
 	osKernelInitialize(); /* Call init function for freertos objects (in freertos.c) */
 	MX_FREERTOS_Init();
+//	HAL_Delay(500);
 	/* Start scheduler */
 	MX_APPE_Init();
 	osKernelStart();

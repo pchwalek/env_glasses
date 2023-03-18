@@ -73,7 +73,14 @@ const osThreadAttr_t blueGreenTask_attributes = { .name = "bgTranTask",
 		.stack_mem = NULL, .stack_size = 512 * 2, .priority =
 				(osPriority_t) osPriorityNormal, .tz_module = 0, .reserved = 0 };
 
+osThreadId_t bleRX_TaskHandle;
+const osThreadAttr_t bleRX_Task_attributes = { .name = "bleRX_Task",
+		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
+		.stack_mem = NULL, .stack_size = 512 * 1, .priority =
+				(osPriority_t) osPriorityNormal, .tz_module = 0, .reserved = 0 };
+
 osThreadId_t blinkCalTaskHandle;
+osThreadId_t blinkCalTaskExitHandle;
 const osThreadAttr_t blinkCalTask_attributes = { .name = "blinkCalTask",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
 		.stack_mem = NULL, .stack_size = 512 * 1, .priority =
@@ -102,6 +109,13 @@ const osThreadAttr_t shtTask_attributes = { .name = "shtTask", .attr_bits =
 		osThreadDetached, .cb_mem = NULL, .cb_size = 0, .stack_mem = NULL,
 		.stack_size = 512 * 1, .priority = (osPriority_t) osPriorityNormal,
 		.tz_module = 0, .reserved = 0 };
+
+osThreadId_t blueGreenExitTaskHandle;
+const osThreadAttr_t blueGreenExitTask_attributes = { .name = "blueGreenExitTask", .attr_bits =
+		osThreadDetached, .cb_mem = NULL, .cb_size = 0, .stack_mem = NULL,
+		.stack_size = 512 * 2, .priority = (osPriority_t) osPriorityNormal,
+		.tz_module = 0, .reserved = 0 };
+
 
 osThreadId_t bmeTaskHandle;
 const osThreadAttr_t bmeTask_attributes = { .name = "bmeTask", .attr_bits =
@@ -165,6 +179,11 @@ const osMutexAttr_t messageI2C1_Lock_attributes = { .name = "messageI2C1_Lock" }
 
 osMutexId_t messageI2C3_LockHandle;
 const osMutexAttr_t messageI2C3_Lock_attributes = { .name = "messageI2C3_Lock" };
+
+
+osMessageQueueId_t bleRX_QueueHandle;
+const osMessageQueueAttr_t bleRX_attributes = { .name = "packetQueue" };
+
 
 osMessageQueueId_t packet_QueueHandle;
 const osMessageQueueAttr_t packetQueue_attributes = { .name = "packetQueue" };
@@ -268,6 +287,10 @@ void MX_FREERTOS_Init(void) {
 //  imuTaskHandle = osThreadNew(IMU_Task, NULL, &imuTask_attributes);
 //  blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
 
+
+	bleRX_QueueHandle = osMessageQueueNew(5,
+				sizeof(air_spec_config_packet_t), &bleRX_attributes);
+
 	FRAM_QueueHandle = osMessageQueueNew(BACKUP_BUFF_SIZE,
 			sizeof(FRAM_Packet), &FRAMQueue_attributes);;
 
@@ -289,6 +312,10 @@ void MX_FREERTOS_Init(void) {
 	frontLightsThreHandle = osThreadNew(ThreadFrontLightsComplexTask, NULL,
 			&frontLightsThre_attributes);
 
+	bleRX_TaskHandle = osThreadNew(bleRX_Task, NULL,
+			&bleRX_Task_attributes);
+
+
 	sensorThreadsRunning = 1;
 
 //	redFlashTest.duration_ms = 0;
@@ -300,7 +327,7 @@ void MX_FREERTOS_Init(void) {
 //
 //	redFlashTaskHandle = osThreadNew(RedFlashTask, &redFlashTest, &redFlashTask_attributes);
 
-	//osThreadNew(ledCheck, NULL, &defaultTask_attributes);
+//	osThreadNew(ledCheck, NULL, &defaultTask_attributes);
 
 
 	/* USER CODE END RTOS_THREADS */
@@ -321,10 +348,14 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument) {
 	/* USER CODE BEGIN StartDefaultTask */
 	/* Infinite loop */
-	osDelay(500);
+	osDelay(1000
+			);
 //	MX_FREERTOS_Init();
 
 
+	while(sensorThreadsRunning != 1){
+		osDelay(10);
+	}
 	ledDisconnectNotification();
 
 
@@ -334,7 +365,7 @@ void StartDefaultTask(void *argument) {
 	startThreads();
 
 
-	vTaskDelete( NULL );
+//	vTaskDelete( NULL );
 //  for(;;)
 //  {
 ////	osDelay(1000);
@@ -416,7 +447,7 @@ void startThreads() {
 //		osDelay(1000);
 //	}
 
-	osDelay(2000);
+//	osDelay(2000);
 	ingestSensorConfig(&sysState);
 
 

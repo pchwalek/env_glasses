@@ -509,8 +509,20 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
 
       /* USER CODE BEGIN EVT_DISCONN_COMPLETE */
   		/* restart advertising */
-		osThreadTerminate(blueGreenTranTaskHandle); // terminate any existing running thread
-		osThreadTerminate(redFlashTaskHandle); // terminate any existing running thread
+//		osThreadTerminate(blueGreenTranTaskHandle); // terminate any existing running thread
+
+      osThreadState_t threadState = osThreadGetState(blueGreenTranTaskHandle);
+		if((threadState == osThreadReady) || (threadState == osThreadRunning) || (threadState == osThreadBlocked)){
+			osThreadTerminate(blueGreenTranTaskHandle); // terminate any existing running thread
+
+	//							osThreadId_t blueGreenExitTaskHandle;
+	//							const osThreadAttr_t blueGreenExitTask_attributes
+			blueGreenExitTaskHandle = osThreadNew(BlueGreenTransitionTaskExit, NULL, &blueGreenExitTask_attributes);
+
+	//							BlueGreenTransitionTaskExit();
+		}
+
+//      osThreadTerminate(redFlashTaskHandle); // terminate any existing running thread
       ledDisconnectNotification();
 
 //      HAL_Delay(4000);

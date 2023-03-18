@@ -53,7 +53,7 @@ osTimerId_t resetTimer;
  *
  *************************************************************/
 
-#define MAX_BRIGHTNESS 50 //up to 255
+#define MAX_BRIGHTNESS 150 //up to 255
 
 uint8_t led_left_PWM[9] = { 0 };
 uint8_t led_right_PWM[9] = { 0 };
@@ -209,7 +209,7 @@ void ThreadFrontLightsComplexTask(void *argument){
 	resetTimer = osTimerNew(resetLED, osTimerOnce, NULL, NULL);
 
 
-	HAL_StatusTypeDef state = 0;
+	volatile HAL_StatusTypeDef state = 0;
 
 	uint16_t timeTracker;
 
@@ -226,7 +226,7 @@ void ThreadFrontLightsComplexTask(void *argument){
 //		HAL_I2C_Mem_Write_DMA(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1,
 //				LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9);
 		state = HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1,
-				LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9, 5);
+				LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9, 10);
 
 
 //		counter = 0;
@@ -243,7 +243,7 @@ void ThreadFrontLightsComplexTask(void *argument){
 //		}
 
 		state = HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1,
-				LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9, 5);
+				LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9, 10);
 
 //		timeTracker = HAL_GetTick() - timeTracker;
 
@@ -636,6 +636,8 @@ void ledStartupSequence(void){
 
 
 union ColorComplex blueGreenTranColor;
+blue_green_transition_t blueGreenTran;
+
 void BlueGreenTransitionTask(void *argument){
 //	union BlueGreenTransition blueGreenTran;
 
@@ -655,8 +657,42 @@ void BlueGreenTransitionTask(void *argument){
 //	controlBlink(false);
 //	controlIMU(false);
 
+	// disable threads
+	if(blinkTaskHandle != 0){
+		osThreadFlagsSet(blinkTaskHandle, TERMINATE_THREAD_BIT);
+	}
+	if(imuTaskHandle != 0){
+		osThreadFlagsSet(imuTaskHandle, TERMINATE_THREAD_BIT);
+	}
+	osDelay(100); // give time for threads to exit
+
+	volatile osThreadState_t threadStateBlink = osThreadGetState(blinkTaskHandle);
+	volatile osThreadState_t threadStateIMU = osThreadGetState(imuTaskHandle);
+
+	uint16_t iter;
+	while( (threadStateBlink != osThreadTerminated) && (threadStateBlink != osThreadError) ){
+		osDelay(50);
+		iter++;
+		if(iter > 40){
+//			vTaskDelete( NULL );
+			break; // shouldnt get here
+		}
+		threadStateBlink = osThreadGetState(blinkTaskHandle);
+	}
+
+	while( (threadStateIMU != osThreadTerminated) && (threadStateIMU != osThreadError) ){
+		osDelay(50);
+		iter++;
+		if(iter > 40){
+//			vTaskDelete( NULL );
+			break; // shouldnt get here
+		}
+		threadStateIMU = osThreadGetState(imuTaskHandle);
+	}
+
 	controlBlinkNoWindow(sysState.control.blink);
 	controlIMUNoWindow(sysState.control.imu);
+
 
 	/* delay sequence */
 	osDelay(blueGreenTran.transition_delay_seconds*1000);
@@ -761,18 +797,62 @@ void BlueGreenTransitionTask(void *argument){
 
 
 
+
 	/* stop sensor subsystems and re-enable windowing, if active previously */
-	BlueGreenTransitionTaskExit();
+	blueGreenTran.enable = 0;
+	BlueGreenTransitionTaskExit(&blueGreenTran);
 
 	vTaskDelete( NULL );
 }
 
-void BlueGreenTransitionTaskExit(void){
-	controlBlinkNoWindow(false);
-	controlIMUNoWindow(false);
 
+void BlueGreenTransitionTaskExit(void *argument){
+	if(argument != NULL){
+		memcpy(&blueGreenTran,argument,sizeof(blue_green_transition_t));
+	}
+
+	// disable threads
+	osThreadFlagsSet(blinkTaskHandle, TERMINATE_THREAD_BIT);
+	osThreadFlagsSet(imuTaskHandle, TERMINATE_THREAD_BIT);
+
+	osDelay(100); // give time for threads to exit
+	uint16_t iter;
+
+	volatile osThreadState_t threadStateBlink = osThreadGetState(blinkTaskHandle);
+	volatile osThreadState_t threadStateIMU = osThreadGetState(imuTaskHandle);
+	while( (threadStateBlink != osThreadTerminated) && (threadStateBlink != osThreadError) ){
+		osDelay(50);
+		iter++;
+		if(iter > 40){
+//			vTaskDelete( NULL );
+			break; // shouldnt get here
+		}
+		threadStateBlink = osThreadGetState(blinkTaskHandle);
+	}
+	while( (threadStateIMU != osThreadTerminated) && (threadStateIMU != osThreadError) ){
+		osDelay(50);
+		iter++;
+		if(iter > 40){
+//			vTaskDelete( NULL );
+			break; // shouldnt get here
+		}
+		threadStateIMU = osThreadGetState(imuTaskHandle);
+	}
+
+	// enable
 	controlBlink(sysState.control.blink);
 	controlIMU(sysState.control.imu);
+
+	// call blueGreenTran again if asked to reinit
+	if( (argument != NULL) && (blueGreenTran.enable == 1)){
+
+//		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
+		blueGreenTranTaskHandle = osThreadNew(BlueGreenTransitionTask, &blueGreenTran, &blueGreenTask_attributes);
+//		}
+
+	}
+
+//	vTaskDelete( NULL );
 }
 
 union ColorComplex redFlashColor;

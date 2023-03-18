@@ -262,8 +262,8 @@ void SgpTask(void *argument) {
 			sgpData_secondary[sgpIdx].sraw_voc = srawVOC_secondary;
 			sgpData_secondary[sgpIdx].sraw_nox = srawNOX_secondary;
 
-			sgpData_secondary[sgpIdx].timestamp_unix = sgpData[sgpIdx].timestamp_unix;
-			sgpData_secondary[sgpIdx].timestamp_ms_from_start = sgpData[sgpIdx].timestamp_ms_from_start;
+			sgpData_secondary[sgpIdx].timestamp_unix = sgpData_secondary[sgpIdx].timestamp_unix;
+			sgpData_secondary[sgpIdx].timestamp_ms_from_start = sgpData_secondary[sgpIdx].timestamp_ms_from_start;
 
 			if(error){
 				continue;
