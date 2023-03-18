@@ -551,7 +551,7 @@ void bleRX_Task(void *argument){
 
 				// if thread is currently running, restart it
 				if((threadState == osThreadReady) || (threadState == osThreadRunning) || (threadState == osThreadBlocked)){
-					threadState = osThreadTerminate(blueGreenTranTaskHandle); // terminate any existing running thread
+					osThreadTerminate(blueGreenTranTaskHandle); // terminate any existing running thread
 
 					BlueGreenTransitionTaskExit(&blueGreenTranRX);
 				}else{ // if thread is not running and needs to be started
