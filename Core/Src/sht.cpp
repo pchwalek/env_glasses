@@ -55,6 +55,8 @@ void ShtTask(void *argument) {
 	uint8_t primarySHT_disable = 0;
 	uint8_t secondarySHT_disable = 0;
 
+	uint8_t skipPrimaryPacket = 1;
+	uint8_t skipSecondaryPacket = 1;
 	shtTemp = -1;
 	shtHum = -1;
 
@@ -122,144 +124,148 @@ void ShtTask(void *argument) {
 
 	while (1) {
 		flags = osThreadFlagsWait(GRAB_SAMPLE_BIT | TERMINATE_THREAD_BIT,
-		osFlagsWaitAny, osWaitForever);
+				osFlagsWaitAny, osWaitForever);
 
 		if ((flags & GRAB_SAMPLE_BIT) == GRAB_SAMPLE_BIT) {
 
-//			timeLeftForSample = HAL_GetTick() - timeLeftForSample;
-//			if(timeLeftForSample < SHT_SAMPLE_SYS_PERIOD_MS){
-//				osDelay(timeLeftForSample);
-//			}
+			//			timeLeftForSample = HAL_GetTick() - timeLeftForSample;
+			//			if(timeLeftForSample < SHT_SAMPLE_SYS_PERIOD_MS){
+			//				osDelay(timeLeftForSample);
+			//			}
 			if(!primarySHT_disable){
-			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
-			if(sht4.getEvent()){
-//			if(1){
-				shtData[shtIdx].temperature = sht4._temperature;
-				shtData[shtIdx].humidity = sht4._humidity;
-				shtData[shtIdx].timestamp_ms_from_start = HAL_GetTick();
-				shtData[shtIdx].timestamp_unix = getEpoch();
-				shtTemp = shtData[shtIdx].temperature;
-				shtHum = shtData[shtIdx].humidity;
-			}else{
-				osSemaphoreRelease(messageI2C1_LockHandle);
-				continue;
-			}
+				osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
+				if(sht4.getEvent()){
+					//			if(1){
+					shtData[shtIdx].temperature = sht4._temperature;
+					shtData[shtIdx].humidity = sht4._humidity;
+					shtData[shtIdx].timestamp_ms_from_start = HAL_GetTick();
+					shtData[shtIdx].timestamp_unix = getEpoch();
+					shtTemp = shtData[shtIdx].temperature;
+					shtHum = shtData[shtIdx].humidity;
+				}else{
+					osSemaphoreRelease(messageI2C1_LockHandle);
+					skipPrimaryPacket = 1;
+//					continue;
+				}
 
-			osSemaphoreRelease(messageI2C1_LockHandle);
+				osSemaphoreRelease(messageI2C1_LockHandle);
 			}
 #ifdef SECONDARY_ENV_SENSOR_EXPANSION
-		if(!secondarySHT_disable){
-			osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
-			if(sht4_secondary.getEvent()){
-//			if(1){
-				shtData_secondary[shtIdx].temperature = sht4_secondary._temperature;
-				shtData_secondary[shtIdx].humidity = sht4_secondary._humidity;
-				shtData_secondary[shtIdx].timestamp_ms_from_start = HAL_GetTick();
-				shtData_secondary[shtIdx].timestamp_unix = getEpoch();
-				shtTemp = shtData_secondary[shtIdx].temperature;
-				shtHum = shtData_secondary[shtIdx].humidity;
-			}else{
-				osSemaphoreRelease(messageI2C3_LockHandle);
-				continue;
-			}
+			if(!secondarySHT_disable){
+				osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
+				if(sht4_secondary.getEvent()){
+					//			if(1){
+					shtData_secondary[shtIdx].temperature = sht4_secondary._temperature;
+					shtData_secondary[shtIdx].humidity = sht4_secondary._humidity;
+					shtData_secondary[shtIdx].timestamp_ms_from_start = HAL_GetTick();
+					shtData_secondary[shtIdx].timestamp_unix = getEpoch();
+					shtTemp = shtData_secondary[shtIdx].temperature;
+					shtHum = shtData_secondary[shtIdx].humidity;
+				}else{
+					osSemaphoreRelease(messageI2C3_LockHandle);
+					skipSecondaryPacket = 1;
+//					continue;
+				}
 
-			osSemaphoreRelease(messageI2C3_LockHandle);
-		}
+				osSemaphoreRelease(messageI2C3_LockHandle);
+			}
 #endif
 
 			shtIdx++;
 
 			if (shtIdx >= MAX_SHT_SAMPLES_PACKET) {
-//				header.packetType = SHT;
-			if(!primarySHT_disable){
-				packet = grabPacket();
-				if (packet != NULL) {
+				//				header.packetType = SHT;
+				if(!primarySHT_disable && !skipPrimaryPacket){
+					packet = grabPacket();
+					if (packet != NULL) {
 
-//					portENTER_CRITICAL();
+						//					portENTER_CRITICAL();
 
-					setPacketType(packet, SENSOR_PACKET_TYPES_SHT);
+						setPacketType(packet, SENSOR_PACKET_TYPES_SHT);
 
-//					sensorPacket.header.payload_length = MAX_SHT_SAMPLES_PACKET * sizeof(shtSample);
-					packet->payload.sht_packet.precision = static_cast<sht45_precision_t>(sensorSettings.precision_level);
-					packet->payload.sht_packet.heater = static_cast<sht45_heater_t>(sensorSettings.heater_settings);
+						//					sensorPacket.header.payload_length = MAX_SHT_SAMPLES_PACKET * sizeof(shtSample);
+						packet->payload.sht_packet.precision = static_cast<sht45_precision_t>(sensorSettings.precision_level);
+						packet->payload.sht_packet.heater = static_cast<sht45_heater_t>(sensorSettings.heater_settings);
 
-					packet->payload.sht_packet.sensor_id = 0;
+						packet->payload.sht_packet.sensor_id = 0;
 
-//					sensorPacket.header.packet_id = shtID;
-//					sensorPacket.header.ms_from_start = HAL_GetTick();
+						//					sensorPacket.header.packet_id = shtID;
+						//					sensorPacket.header.ms_from_start = HAL_GetTick();
 
-//					packet->header.packetType = SHT;
+						//					packet->header.packetType = SHT;
 
-//					// reset message buffer
-//					memset(&sensorPacket.sht_packet.payload[0], 0, sizeof(sensorPacket.sht_packet.payload));
+						//					// reset message buffer
+						//					memset(&sensorPacket.sht_packet.payload[0], 0, sizeof(sensorPacket.sht_packet.payload));
 
-					// write data
-					memcpy(packet->payload.sht_packet.payload, shtData, shtIdx * sizeof(sht_packet_payload_t));
-					packet->payload.sht_packet.payload_count = shtIdx;
+						// write data
+						memcpy(packet->payload.sht_packet.payload, shtData, shtIdx * sizeof(sht_packet_payload_t));
+						packet->payload.sht_packet.payload_count = shtIdx;
 
-//					// encode
-//					pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
-//					status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
-//
-//					packet->header.payloadLength = stream.bytes_written;
+						//					// encode
+						//					pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
+						//					status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
+						//
+						//					packet->header.payloadLength = stream.bytes_written;
 
-					// send to BT packetizer
-					queueUpPacket(packet);
+						// send to BT packetizer
+						queueUpPacket(packet);
 
-//					portEXIT_CRITICAL();
+						//					portEXIT_CRITICAL();
 
 
+					}
 				}
-			}
 
 #ifdef SECONDARY_ENV_SENSOR_EXPANSION
-			if(!secondarySHT_disable){
-				packet = grabPacket();
-				if (packet != NULL) {
+				if(!secondarySHT_disable && !skipSecondaryPacket){
+					packet = grabPacket();
+					if (packet != NULL) {
 
-//					portENTER_CRITICAL();
+						//					portENTER_CRITICAL();
 
-					setPacketType(packet, SENSOR_PACKET_TYPES_SHT);
+						setPacketType(packet, SENSOR_PACKET_TYPES_SHT);
 
-//					sensorPacket.header.payload_length = MAX_SHT_SAMPLES_PACKET * sizeof(shtSample);
-					packet->payload.sht_packet.precision = static_cast<sht45_precision_t>(sensorSettings.precision_level);
-					packet->payload.sht_packet.heater = static_cast<sht45_heater_t>(sensorSettings.heater_settings);
+						//					sensorPacket.header.payload_length = MAX_SHT_SAMPLES_PACKET * sizeof(shtSample);
+						packet->payload.sht_packet.precision = static_cast<sht45_precision_t>(sensorSettings.precision_level);
+						packet->payload.sht_packet.heater = static_cast<sht45_heater_t>(sensorSettings.heater_settings);
 
-					packet->payload.sht_packet.sensor_id = 1;
+						packet->payload.sht_packet.sensor_id = 1;
 
-//					sensorPacket.header.packet_id = shtID;
-//					sensorPacket.header.ms_from_start = HAL_GetTick();
+						//					sensorPacket.header.packet_id = shtID;
+						//					sensorPacket.header.ms_from_start = HAL_GetTick();
 
-//					packet->header.packetType = SHT;
+						//					packet->header.packetType = SHT;
 
-//					// reset message buffer
-//					memset(&sensorPacket.sht_packet.payload[0], 0, sizeof(sensorPacket.sht_packet.payload));
+						//					// reset message buffer
+						//					memset(&sensorPacket.sht_packet.payload[0], 0, sizeof(sensorPacket.sht_packet.payload));
 
-					// write data
-					memcpy(packet->payload.sht_packet.payload, shtData_secondary, shtIdx * sizeof(sht_packet_payload_t));
-					packet->payload.sht_packet.payload_count = shtIdx;
+						// write data
+						memcpy(packet->payload.sht_packet.payload, shtData_secondary, shtIdx * sizeof(sht_packet_payload_t));
+						packet->payload.sht_packet.payload_count = shtIdx;
 
-//					// encode
-//					pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
-//					status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
-//
-//					packet->header.payloadLength = stream.bytes_written;
+						//					// encode
+						//					pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
+						//					status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
+						//
+						//					packet->header.payloadLength = stream.bytes_written;
 
-					// send to BT packetizer
-					queueUpPacket(packet);
+						// send to BT packetizer
+						queueUpPacket(packet);
 
-//					portEXIT_CRITICAL();
+						//					portEXIT_CRITICAL();
 
 
+					}
 				}
-			}
 #endif
 
+				skipPrimaryPacket = 0;
+				skipSecondaryPacket = 0;
 				shtID++;
 				shtIdx = 0;
 			}
 
-//			timeLeftForSample = HAL_GetTick();
+			//			timeLeftForSample = HAL_GetTick();
 		}
 
 		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {

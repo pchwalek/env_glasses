@@ -44,8 +44,8 @@ void initBlink();
 void deinitBlink();
 
 /* GLOBAL DEFINES */
-struct blinkData blinkMsgBuffer_1 = { { 0 }, 0, 0 };
-uint8_t blink_buffer[2000] = { 0 };
+//struct blinkData blinkMsgBuffer_1 = { { 0 }, 0, 0 };
+uint8_t blink_buffer[1000] = { 0 };
 
 //uint32_t blink_float_buffer[2000] = { 0 };
 //uint8_t blink_buffer_neg[2000] = { 0 };
@@ -138,10 +138,10 @@ void BlinkTask(void *argument) {
 
 				if ((evt & 0x00000004U) == 0x00000004U) {
 
-					// interpolate timestamps for blink packets
-					if (previousTick_ms == 0) {
-						previousTick_ms = HAL_GetTick();
-					}
+//					// interpolate timestamps for blink packets
+//					if (previousTick_ms == 0) {
+//						previousTick_ms = HAL_GetTick();
+//					}
 
 
 
@@ -199,8 +199,8 @@ void BlinkTask(void *argument) {
 					    // send to BT packetizer
 						queueUpPacket(packet);
 
-						// add tick cnt
-						previousTick_ms = blinkMsgBuffer_1.tick_ms;
+//						// add tick cnt
+//						previousTick_ms = blinkMsgBuffer_1.tick_ms;
 
 						payload_ID++;
 
@@ -281,10 +281,11 @@ void initBlink(){
 	HAL_TIM_Base_Start(&htim2);
 
 	/* using PWM */
-	HAL_TIM_Base_Start(&htim16); // modulation frequency is at 1kHz
-	if(HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1) == HAL_OK){
-		diodeState = 1;
-	}
+//	HAL_TIM_Base_Start(&htim16); // modulation frequency is at 1kHz
+//	if(HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1) == HAL_OK){
+//		diodeState = 1;
+//	}
+	turnOnDiode();
 
 	// reset external infrared detection flag
 	diodeSaturatedFlag = 0;
@@ -303,11 +304,15 @@ void turnOffDiode(){
 //			GPIO_PIN_RESET);
 //	diodeState = 0;
 
-	if(HAL_TIM_PWM_Stop(&htim16, TIM_CHANNEL_1) == HAL_OK){
-		diodeState = 0;
-	}
+	HAL_GPIO_WritePin(BLINK_PWM_GPIO_Port, BLINK_PWM_Pin,
+			GPIO_PIN_RESET);
+	diodeState = 0;
 
-	HAL_TIM_Base_Stop(&htim16); // modulation frequency is at 1kHz
+//	if(HAL_TIM_PWM_Stop(&htim16, TIM_CHANNEL_1) == HAL_OK){
+//		diodeState = 0;
+//	}
+
+//	HAL_TIM_Base_Stop(&htim16); // modulation frequency is at 1kHz
 
 
 }
@@ -317,10 +322,14 @@ void turnOnDiode(){
 //			GPIO_PIN_SET);
 //	diodeState = 1;
 
-	HAL_TIM_Base_Start(&htim16); // modulation frequency is at 1kHz
-	if(HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1) == HAL_OK){
-		diodeState = 1;
-	}
+	HAL_GPIO_WritePin(BLINK_PWM_GPIO_Port, BLINK_PWM_Pin,
+			GPIO_PIN_SET);
+	diodeState = 1;
+
+//	HAL_TIM_Base_Start(&htim16); // modulation frequency is at 1kHz
+//	if(HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1) == HAL_OK){
+//		diodeState = 1;
+//	}
 }
 
 #define INFRARED_DETECT 	1

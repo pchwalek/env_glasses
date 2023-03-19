@@ -529,97 +529,6 @@ void BSP_LED_Toggle(Led_TypeDef Led)
 }
 #endif
 
-//void ledStartupSequence(void){
-//	resetColor(&receivedColor);
-//
-//	receivedColor.colors_indiv.left_front_b = 255;
-//	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
-////	FrontLightsSet(&receivedColor););
-//	osDelay(LED_START_SEQ_INTERVAL);
-//
-//	receivedColor.colors_indiv.left_front_b = 0;
-//	receivedColor.colors_indiv.left_front_g = 255;
-//
-//	receivedColor.colors_indiv.left_top_b = 255;
-//	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
-////	FrontLightsSet(&receivedColor);
-//	osDelay(LED_START_SEQ_INTERVAL);
-//
-//	receivedColor.colors_indiv.left_front_g = 0;
-//	receivedColor.colors_indiv.left_front_r = 255;
-//
-//	receivedColor.colors_indiv.left_top_b = 0;
-//	receivedColor.colors_indiv.left_top_g = 255;
-//
-//	receivedColor.colors_indiv.left_side_b = 255;
-//	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
-////	FrontLightsSet(&receivedColor);
-//	osDelay(LED_START_SEQ_INTERVAL);
-//
-//	receivedColor.colors_indiv.left_front_r = 0;
-//
-//	receivedColor.colors_indiv.left_top_g = 0;
-//	receivedColor.colors_indiv.left_top_r = 255;
-//
-//	receivedColor.colors_indiv.left_side_b = 0;
-//	receivedColor.colors_indiv.left_side_g = 255;
-//
-//	receivedColor.colors_indiv.right_side_b = 255;
-//	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
-////	FrontLightsSet(&receivedColor);
-//	osDelay(LED_START_SEQ_INTERVAL);
-//
-//	receivedColor.colors_indiv.left_top_r = 0;
-//
-//	receivedColor.colors_indiv.left_side_g = 0;
-//	receivedColor.colors_indiv.left_side_r = 255;
-//
-//	receivedColor.colors_indiv.right_side_b = 0;
-//	receivedColor.colors_indiv.right_side_g = 255;
-//
-//	receivedColor.colors_indiv.right_top_b = 255;
-//	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
-////	FrontLightsSet(&receivedColor);
-//	osDelay(LED_START_SEQ_INTERVAL);
-//
-//	receivedColor.colors_indiv.left_side_r = 0;
-//
-//	receivedColor.colors_indiv.right_side_g = 0;
-//	receivedColor.colors_indiv.right_side_r = 255;
-//
-//	receivedColor.colors_indiv.right_top_b = 0;
-//	receivedColor.colors_indiv.right_top_g = 255;
-//
-//	receivedColor.colors_indiv.right_front_b = 255;
-//	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
-////	FrontLightsSet(&receivedColor);
-//	osDelay(LED_START_SEQ_INTERVAL);
-//
-//	receivedColor.colors_indiv.right_side_r = 0;
-//
-//	receivedColor.colors_indiv.right_top_g = 0;
-//	receivedColor.colors_indiv.right_top_r = 255;
-//
-//	receivedColor.colors_indiv.right_front_b = 0;
-//	receivedColor.colors_indiv.right_front_g = 255;
-//	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
-////	FrontLightsSet(&receivedColor);
-//	osDelay(LED_START_SEQ_INTERVAL);
-//
-//	receivedColor.colors_indiv.right_top_r = 0;
-//
-//	receivedColor.colors_indiv.right_front_g = 0;
-//	receivedColor.colors_indiv.right_front_r = 255;
-//	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
-////	FrontLightsSet(&receivedColor);
-//	osDelay(LED_START_SEQ_INTERVAL);
-//
-//	receivedColor.colors_indiv.right_front_r = 0;
-//	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
-////	FrontLightsSet(&receivedColor);
-//
-//	ledDisconnectNotification();
-//}
 
 void ledStartupSequence(void){
 
@@ -654,44 +563,41 @@ void BlueGreenTransitionTask(void *argument){
 		uint8_t transition_delay_seconds;
 
 	/* start sensor subsystems */
-//	controlBlink(false);
-//	controlIMU(false);
-
-	// disable threads
-	if(blinkTaskHandle != 0){
-		osThreadFlagsSet(blinkTaskHandle, TERMINATE_THREAD_BIT);
-	}
-	if(imuTaskHandle != 0){
-		osThreadFlagsSet(imuTaskHandle, TERMINATE_THREAD_BIT);
-	}
-	osDelay(100); // give time for threads to exit
-
-	volatile osThreadState_t threadStateBlink = osThreadGetState(blinkTaskHandle);
-	volatile osThreadState_t threadStateIMU = osThreadGetState(imuTaskHandle);
-
-	uint16_t iter;
-	while( (threadStateBlink != osThreadTerminated) && (threadStateBlink != osThreadError) ){
-		osDelay(50);
-		iter++;
-		if(iter > 40){
-//			vTaskDelete( NULL );
-			break; // shouldnt get here
-		}
-		threadStateBlink = osThreadGetState(blinkTaskHandle);
-	}
-
-	while( (threadStateIMU != osThreadTerminated) && (threadStateIMU != osThreadError) ){
-		osDelay(50);
-		iter++;
-		if(iter > 40){
-//			vTaskDelete( NULL );
-			break; // shouldnt get here
-		}
-		threadStateIMU = osThreadGetState(imuTaskHandle);
-	}
-
-	controlBlinkNoWindow(sysState.control.blink);
-	controlIMUNoWindow(sysState.control.imu);
+//	// disable threads
+//	if(blinkTaskHandle != 0){
+//		osThreadFlagsSet(blinkTaskHandle, TERMINATE_THREAD_BIT);
+//	}
+//	if(imuTaskHandle != 0){
+//		osThreadFlagsSet(imuTaskHandle, TERMINATE_THREAD_BIT);
+//	}
+//	osDelay(100); // give time for threads to exit
+//
+//	volatile osThreadState_t threadStateBlink = osThreadGetState(blinkTaskHandle);
+//	volatile osThreadState_t threadStateIMU = osThreadGetState(imuTaskHandle);
+//
+//	uint16_t iter;
+//	while( (threadStateBlink != osThreadTerminated) && (threadStateBlink != osThreadError) ){
+//		osDelay(50);
+//		iter++;
+//		if(iter > 40){
+////			vTaskDelete( NULL );
+//			break; // shouldnt get here
+//		}
+//		threadStateBlink = osThreadGetState(blinkTaskHandle);
+//	}
+//
+//	while( (threadStateIMU != osThreadTerminated) && (threadStateIMU != osThreadError) ){
+//		osDelay(50);
+//		iter++;
+//		if(iter > 40){
+////			vTaskDelete( NULL );
+//			break; // shouldnt get here
+//		}
+//		threadStateIMU = osThreadGetState(imuTaskHandle);
+//	}
+//
+//	controlBlinkNoWindow(sysState.control.blink);
+//	controlIMUNoWindow(sysState.control.imu);
 
 
 	/* delay sequence */
@@ -811,37 +717,37 @@ void BlueGreenTransitionTaskExit(void *argument){
 		memcpy(&blueGreenTran,argument,sizeof(blue_green_transition_t));
 	}
 
-	// disable threads
-	osThreadFlagsSet(blinkTaskHandle, TERMINATE_THREAD_BIT);
-	osThreadFlagsSet(imuTaskHandle, TERMINATE_THREAD_BIT);
-
-	osDelay(100); // give time for threads to exit
-	uint16_t iter;
-
-	volatile osThreadState_t threadStateBlink = osThreadGetState(blinkTaskHandle);
-	volatile osThreadState_t threadStateIMU = osThreadGetState(imuTaskHandle);
-	while( (threadStateBlink != osThreadTerminated) && (threadStateBlink != osThreadError) ){
-		osDelay(50);
-		iter++;
-		if(iter > 40){
-//			vTaskDelete( NULL );
-			break; // shouldnt get here
-		}
-		threadStateBlink = osThreadGetState(blinkTaskHandle);
-	}
-	while( (threadStateIMU != osThreadTerminated) && (threadStateIMU != osThreadError) ){
-		osDelay(50);
-		iter++;
-		if(iter > 40){
-//			vTaskDelete( NULL );
-			break; // shouldnt get here
-		}
-		threadStateIMU = osThreadGetState(imuTaskHandle);
-	}
-
-	// enable
-	controlBlink(sysState.control.blink);
-	controlIMU(sysState.control.imu);
+//	// disable threads
+//	osThreadFlagsSet(blinkTaskHandle, TERMINATE_THREAD_BIT);
+//	osThreadFlagsSet(imuTaskHandle, TERMINATE_THREAD_BIT);
+//
+//	osDelay(100); // give time for threads to exit
+//	uint16_t iter;
+//
+//	volatile osThreadState_t threadStateBlink = osThreadGetState(blinkTaskHandle);
+//	volatile osThreadState_t threadStateIMU = osThreadGetState(imuTaskHandle);
+//	while( (threadStateBlink != osThreadTerminated) && (threadStateBlink != osThreadError) ){
+//		osDelay(50);
+//		iter++;
+//		if(iter > 40){
+////			vTaskDelete( NULL );
+//			break; // shouldnt get here
+//		}
+//		threadStateBlink = osThreadGetState(blinkTaskHandle);
+//	}
+//	while( (threadStateIMU != osThreadTerminated) && (threadStateIMU != osThreadError) ){
+//		osDelay(50);
+//		iter++;
+//		if(iter > 40){
+////			vTaskDelete( NULL );
+//			break; // shouldnt get here
+//		}
+//		threadStateIMU = osThreadGetState(imuTaskHandle);
+//	}
+//
+//	// enable
+//	controlBlink(sysState.control.blink);
+//	controlIMU(sysState.control.imu);
 
 	// call blueGreenTran again if asked to reinit
 	if( (argument != NULL) && (blueGreenTran.enable == 1)){

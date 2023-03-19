@@ -41,7 +41,7 @@ union MicSample micData;
 //float micData[MIC_DATA_SIZE];
 //float micDataFloat[MIC_DATA_SIZE];
 
-static void triggerMicSample(void *argument);
+void triggerMicSample(void *argument);
 void calculateSoundLevel(float *data, uint32_t size, double *dB, double *RMS);
 
 //#define MAX_LIDAR_SAMPLES_PACKET	(int)(512-sizeof(PacketHeader))/sizeof(lidar_sample)
@@ -457,7 +457,7 @@ void calculateSoundLevel(float *data, uint32_t size, double *dB, double *RMS){
 //    }
 }
 
-static void triggerMicSample(void *argument){
+void triggerMicSample(void *argument){
 	HAL_SAI_Receive_IT(&hsai_BlockA1, (uint8_t *) micData.uint_val, MIC_DATA_SIZE);
 }
 

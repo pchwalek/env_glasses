@@ -64,8 +64,8 @@ osTimerId_t periodicBMETimer_id;
 
 Adafruit_BME680 bme;
 
-uint8_t bmeConfig[BSEC_MAX_PROPERTY_BLOB_SIZE];
-uint8_t bmeState[BSEC_MAX_STATE_BLOB_SIZE];
+static uint8_t bmeConfig[BSEC_MAX_PROPERTY_BLOB_SIZE];
+static uint8_t bmeState[BSEC_MAX_STATE_BLOB_SIZE];
 
 
 void BME_Task(void *argument) {

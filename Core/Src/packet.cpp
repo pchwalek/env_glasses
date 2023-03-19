@@ -46,7 +46,7 @@ sensor_packet_t* grabPacket(void) {
 
 void queueUpPacket(sensor_packet_t *packet) {
 	// put into queue
-	osMessageQueuePut(packet_QueueHandle, &packet, 0U, 0);
+	osMessageQueuePut(packet_QueueHandle, &packet, 0U, 10);
 }
 
 sensor_packet_t *packetToSend;

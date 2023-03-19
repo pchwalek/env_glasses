@@ -107,13 +107,13 @@ const osThreadAttr_t specTask_attributes = { .name = "spectrometerTask",
 osThreadId_t luxTaskHandle;
 const osThreadAttr_t luxTask_attributes = { .name = "luxTask", .attr_bits =
 		osThreadDetached, .cb_mem = NULL, .cb_size = 0, .stack_mem = NULL,
-		.stack_size = 512 * 1, .priority = (osPriority_t) osPriorityNormal,
+		.stack_size = 512+256, .priority = (osPriority_t) osPriorityNormal,
 		.tz_module = 0, .reserved = 0 };
 
 osThreadId_t shtTaskHandle;
 const osThreadAttr_t shtTask_attributes = { .name = "shtTask", .attr_bits =
 		osThreadDetached, .cb_mem = NULL, .cb_size = 0, .stack_mem = NULL,
-		.stack_size = 512 * 1, .priority = (osPriority_t) osPriorityNormal,
+		.stack_size = 512, .priority = (osPriority_t) osPriorityNormal,
 		.tz_module = 0, .reserved = 0 };
 
 osThreadId_t blueGreenExitTaskHandle;
@@ -132,7 +132,7 @@ const osThreadAttr_t bmeTask_attributes = { .name = "bmeTask", .attr_bits =
 osThreadId_t sgpTaskHandle;
 const osThreadAttr_t sgpTask_attributes = { .name = "sgpTask", .attr_bits =
 		osThreadDetached, .cb_mem = NULL, .cb_size = 0, .stack_mem = NULL,
-		.stack_size = 512, .priority = (osPriority_t) osPriorityNormal,
+		.stack_size = 512*2, .priority = (osPriority_t) osPriorityNormal,
 		.tz_module = 0, .reserved = 0 };
 
 osThreadId_t imuTaskHandle;
@@ -170,7 +170,7 @@ const osThreadAttr_t frontLightsThre_attributes = { .name = "frontLightsTask",
 osThreadId_t thermopileTaskHandle;
 const osThreadAttr_t thermopileTask_attributes = { .name = "thermopileTask",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
-		.stack_mem = NULL, .stack_size = 512, .priority =
+		.stack_mem = NULL, .stack_size = 512*2, .priority =
 				(osPriority_t) osPriorityNormal, .tz_module = 0, .reserved = 0 };
 
 osThreadId_t senderTaskHandle;

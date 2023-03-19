@@ -263,7 +263,7 @@ int main(void) {
 		sysState.config.blink.enable_daylight_compensation = 1;
 		sysState.config.blink.daylight_compensation_upper_thresh = 7;
 		sysState.config.blink.daylight_compensation_lower_thresh = 235;
-		sysState.config.blink.sample_frequency = 1000;
+		sysState.config.blink.sample_frequency = 500;
 		sysState.config.blink.enable_windowing = 1;
 		if(sysState.control.synchronize_windows){
 			sysState.config.blink.enable_windowing_sync = 1;
