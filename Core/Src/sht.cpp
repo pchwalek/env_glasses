@@ -136,6 +136,8 @@ void ShtTask(void *argument) {
 				osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 				if(sht4.getEvent()){
 					//			if(1){
+					osSemaphoreRelease(messageI2C1_LockHandle);
+
 					shtData[shtIdx].temperature = sht4._temperature;
 					shtData[shtIdx].humidity = sht4._humidity;
 					shtData[shtIdx].timestamp_ms_from_start = HAL_GetTick();
@@ -148,12 +150,13 @@ void ShtTask(void *argument) {
 //					continue;
 				}
 
-				osSemaphoreRelease(messageI2C1_LockHandle);
 			}
 #ifdef SECONDARY_ENV_SENSOR_EXPANSION
 			if(!secondarySHT_disable){
 				osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
 				if(sht4_secondary.getEvent()){
+					osSemaphoreRelease(messageI2C3_LockHandle);
+
 					//			if(1){
 					shtData_secondary[shtIdx].temperature = sht4_secondary._temperature;
 					shtData_secondary[shtIdx].humidity = sht4_secondary._humidity;
@@ -167,7 +170,6 @@ void ShtTask(void *argument) {
 //					continue;
 				}
 
-				osSemaphoreRelease(messageI2C3_LockHandle);
 			}
 #endif
 
