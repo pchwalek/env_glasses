@@ -82,7 +82,7 @@ const osThreadAttr_t blueGreenTask_attributes = { .name = "bgTranTask",
 osThreadId_t bleRX_TaskHandle;
 const osThreadAttr_t bleRX_Task_attributes = { .name = "bleRX_Task",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
-		.stack_mem = NULL, .stack_size = 512 * 1, .priority =
+		.stack_mem = NULL, .stack_size = 512 * 2, .priority =
 				(osPriority_t) osPriorityNormal, .tz_module = 0, .reserved = 0 };
 
 osThreadId_t blinkCalTaskHandle;
@@ -356,30 +356,20 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument) {
 	/* USER CODE BEGIN StartDefaultTask */
 	/* Infinite loop */
-	osDelay(1000);
+	osDelay(2000);
 //	MX_FREERTOS_Init();
 
 
 	while(sensorThreadsRunning != 1){
 		osDelay(10);
 	}
-//	ledDisconnectNotification(NULL);
     osThreadFlagsSet(ledDisconnectTaskHandle, DISCONNECT_BLE_BIT);
-
-
-//	osDelay(200);
-//	bluetoothStartAdvertising();
 
 	startThreads();
 
 
-//	vTaskDelete( NULL );
-//  for(;;)
-//  {
-////	osDelay(1000);
+
 	while(1){
-//		ledStartupSequence();
-//		osDelay(5000);
 		osDelay(1);
 	}
 //  }
@@ -455,7 +445,7 @@ void startThreads() {
 //		osDelay(1000);
 //	}
 
-//	osDelay(2000);
+	osDelay(5000);
 	ingestSensorConfig(&sysState);
 
 

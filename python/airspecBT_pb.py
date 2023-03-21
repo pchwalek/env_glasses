@@ -129,7 +129,11 @@ async def main(queue: asyncio.Queue):
         # lambda d, ad: ad.local_name == "AirSpec_01ad743c",
         # lambda d, ad: ad.local_name == "AirSpec_01ad6d7d",
         # lambda d, ad: ad.local_name == "AirSpec_01ad6fa1",
-        lambda d, ad: ad.local_name == "AirSpec_01ad6cff",
+        # lambda d, ad: ad.local_name == "AirSpec_01ad6cff",
+        # lambda d, ad: ad.local_name == "AirSpec_01ad72c2",
+        # lambda d, ad: ad.local_name == "AirSpec_01ad7855",
+        # lambda d, ad: ad.local_name == "AirSpec_01ad71de",
+        lambda d, ad: ad.local_name == "AirSpec_01ad72c2",
 
         timeout=60
     )
