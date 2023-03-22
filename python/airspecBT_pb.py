@@ -133,7 +133,17 @@ async def main(queue: asyncio.Queue):
         # lambda d, ad: ad.local_name == "AirSpec_01ad72c2",
         # lambda d, ad: ad.local_name == "AirSpec_01ad7855",
         # lambda d, ad: ad.local_name == "AirSpec_01ad71de",
-        lambda d, ad: ad.local_name == "AirSpec_01ad72c2",
+        # lambda d, ad: ad.local_name == "AirSpec_01ad72c2",
+        # lambda d, ad: ad.local_name == "AirSpec_01ad7ae6",
+        # lambda d, ad: ad.local_name == "AirSpec_01ad6e53",
+        # lambda d, ad: ad.local_name == "AirSpec_01ad6ce3",
+        # lambda d, ad: ad.local_name == "AirSpec_01ad6d72",
+        # lambda d, ad: ad.local_name == "AirSpec_01ad7677",
+        # lambda d, ad: ad.local_name == "AirSpec_01ad7040",
+        lambda d, ad: ad.local_name == "AirSpec_01ad7052",
+        # lambda d, ad: ad.local_name == "AirSpec_01ad71bf",
+        # lambda d, ad: ad.local_name == "AirSpec_01ad6f6b",
+        # lambda d, ad: ad.local_name == "AirSpec_01ad7ae6",
 
         timeout=60
     )

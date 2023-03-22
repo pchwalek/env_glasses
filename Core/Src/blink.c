@@ -66,6 +66,7 @@ uint8_t diodeSaturatedFlag = 0;
 
 volatile uint32_t blinkTimestampMs = 0;
 volatile uint64_t blinkTimestampUnix = 0;
+volatile uint8_t firstInit = 0;
 
 
 osTimerId_t blinkSingleShotTimer_id;
@@ -87,9 +88,12 @@ void BlinkTask(void *argument) {
 //	uint32_t blinkSampleHalfBuffer_ms = BLINK_HALF_BUFFER_SIZE * (1.0/BLINK_SAMPLE_RATE) * 1000.0;
 //	uint32_t packetRemainder = BLINK_SAMPLE_RATE % BLINK_PKT_PAYLOAD_SIZE;
 
+	firstInit = 1;
 
 	sensor_packet_t *packet = NULL;
 
+	uint32_t threadBlinkTimestampMs = 0;
+	uint64_t threadBlinkTimestampUnix = 0;
 
 	osDelay(500);
 
@@ -137,13 +141,19 @@ void BlinkTask(void *argument) {
 //				}
 
 				if ((evt & 0x00000004U) == 0x00000004U) {
-
-//					// interpolate timestamps for blink packets
-//					if (previousTick_ms == 0) {
-//						previousTick_ms = HAL_GetTick();
+//
+//					if(firstInit = 1){
+//						blinkTimestampMs = HAL_GetTick();
+//						blinkTimestampUnix = getEpoch();
+//						firstInit = 0;
 //					}
 
+					if(firstInit == 1){
+						threadBlinkTimestampMs = HAL_GetTick();
+						threadBlinkTimestampUnix = getEpoch();
 
+						firstInit = 0;
+					}
 
 					blinkDataTracker = BLINK_HALF_BUFFER_SIZE;
 
@@ -182,14 +192,11 @@ void BlinkTask(void *argument) {
 						packet->payload.blink_packet.sample_rate = sensorSettings.sample_frequency;
 						packet->payload.blink_packet.which_payload = BLINK_PACKET_PAYLOAD_BYTE_TAG;
 
+						packet->payload.blink_packet.timestamp_unix = threadBlinkTimestampUnix;
+						packet->payload.blink_packet.timestamp_ms_from_start = threadBlinkTimestampMs;
 
-						if(iterator>0){
-							blinkTimestampMs += payloadLength * sensorSamplePeriod_ms;
-							blinkTimestampUnix += payloadLength * sensorSamplePeriod_ms;
-						}
-
-						packet->payload.blink_packet.timestamp_unix = blinkTimestampUnix;
-						packet->payload.blink_packet.timestamp_ms_from_start = blinkTimestampMs;
+						threadBlinkTimestampMs += payloadLength * (uint64_t)sensorSamplePeriod_ms;
+						threadBlinkTimestampUnix += payloadLength * (uint64_t)sensorSamplePeriod_ms;
 
 						// write blink data
 						memcpy(packet->payload.blink_packet.payload.payload_byte.sample.bytes, &(blink_ptr_copy[iterator * BLINK_PKT_PAYLOAD_SIZE]), payloadLength);
@@ -249,6 +256,8 @@ void BlinkTask(void *argument) {
 								osTimerStart(blinkSingleShotTimer_id, waitTime);
 							}
 
+							firstInit = 1;
+
 						}
 					}
 				}
@@ -300,9 +309,7 @@ void deinitBlink(){
 }
 
 void turnOffDiode(){
-//	HAL_GPIO_WritePin(BLINK_PWM_GPIO_Port, BLINK_PWM_Pin,
-//			GPIO_PIN_RESET);
-//	diodeState = 0;
+
 
 	HAL_GPIO_WritePin(BLINK_PWM_GPIO_Port, BLINK_PWM_Pin,
 			GPIO_PIN_RESET);
@@ -394,8 +401,6 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
 //		return;
 //	}
 
-	blinkTimestampMs = HAL_GetTick();
-	blinkTimestampUnix = getEpoch();
 
 
 	blink_ptr = &blink_buffer[BLINK_HALF_BUFFER_SIZE];
@@ -403,8 +408,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
 }
 
 void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc) {
-	blinkTimestampMs = HAL_GetTick();
-	blinkTimestampUnix = getEpoch();
+
 
 	blink_ptr = blink_buffer;
 	osThreadFlagsSet(blinkTaskHandle, 0x00000004U);

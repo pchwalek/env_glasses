@@ -138,16 +138,14 @@ void BME_Task(void *argument) {
 //			taskENTER_CRITICAL();
 			while(!bme.bsecRun()){
 //				taskEXIT_CRITICAL();
-
+				osSemaphoreRelease(messageI2C1_LockHandle);
 				timeRemaining = floor((bme.bmeConf.next_call/1000000.0) - HAL_GetTick());
 				if(timeRemaining > BME_WAIT_TOL){
-					osSemaphoreRelease(messageI2C1_LockHandle);
 					osDelay( (timeRemaining-BME_WAIT_TOL) );
-					osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 				}else if(timeRemaining > 1){
 					osDelay(1);
 				}
-
+				osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 //				taskENTER_CRITICAL();
 			}
 			osSemaphoreRelease(messageI2C1_LockHandle);
