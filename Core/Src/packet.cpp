@@ -391,8 +391,8 @@ void updateRTC_MS(uint64_t receivedTime){
 	receivedTime = receivedTime / 1000;
 
 	// (1) convert received UNIX time to time struct
-	RTC_TimeTypeDef time;
-	RTC_DateTypeDef date;
+	RTC_TimeTypeDef time = {0};
+	RTC_DateTypeDef date = {0};
 	RTC_FromEpoch(receivedTime, &time, &date);
 
 	// (2) set time
@@ -406,8 +406,8 @@ void updateRTC_MS(uint64_t receivedTime){
 uint64_t getEpoch(void){
 
 	// (1) convert received UNIX time to time struct
-	RTC_TimeTypeDef time;
-	RTC_DateTypeDef date;
+	RTC_TimeTypeDef time = {0};
+	RTC_DateTypeDef date = {0};
 
 	HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);
 	HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN);
@@ -470,6 +470,12 @@ void RTC_FromEpoch(time_t epoch, RTC_TimeTypeDef *time, RTC_DateTypeDef *date) {
 
 
 	 time_tm = *(localtime(&epoch));
+
+	 time->TimeFormat = 0;
+	 time->SubSeconds = 0;
+	 time->SecondFraction = 0;
+	 time->DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+	 time->StoreOperation = RTC_STOREOPERATION_SET;
 
 	 time->Hours = (uint8_t)time_tm.tm_hour;
 	 time->Minutes = (uint8_t)time_tm.tm_min;
