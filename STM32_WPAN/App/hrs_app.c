@@ -82,10 +82,10 @@ const osThreadAttr_t HrsProcess_attr = {
 /* USER CODE END PV */
 
 /* Private functions prototypes-----------------------------------------------*/
-static void HrMeas( void );
+//static void HrMeas( void );
 static void HrsProcess(void *argument);
 static void HRSAPP_Measurement(void);
-static uint32_t HRSAPP_Read_RTC_SSR_SS ( void );
+//static uint32_t HRSAPP_Read_RTC_SSR_SS ( void );
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */

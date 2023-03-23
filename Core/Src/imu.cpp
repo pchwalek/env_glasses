@@ -23,7 +23,7 @@
 #define MAX_IMU_SAMPLES_PACKET	1
 #define MAX_IMU_PKT_SIZE	408
 
-static void triggerIMUSample(void *argument);
+//static void triggerIMUSample(void *argument);
 
 //static imu_sample imuData[MAX_IMU_SAMPLES_PACKET];
 
@@ -49,7 +49,7 @@ void IMU_Task(void *argument){
 	uint32_t flags = 0;
 	uint32_t flag_rdy = 0;
 
-	bool status;
+//	bool status;
 
 	osDelay(1000);
 

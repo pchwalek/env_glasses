@@ -81,7 +81,7 @@ void Mic_Task(void *argument){
 	uint32_t flags = 0;
 	float32_t maxvalue;
 	uint32_t maxindex;
-	volatile float32_t dominantFrequency;
+	float32_t dominantFrequency;
 	uint16_t startIdx;
 	uint32_t fft_index = 0;
 	uint64_t fft_time_unix = 0;

@@ -76,7 +76,7 @@ const osThreadAttr_t ledDisconnectTask_attributes = { .name = "ledDisconnectTask
 osThreadId_t blueGreenTranTaskHandle;
 const osThreadAttr_t blueGreenTask_attributes = { .name = "bgTranTask",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
-		.stack_mem = NULL, .stack_size = 512 * 2, .priority =
+		.stack_mem = NULL, .stack_size = 512 * 2 + 256, .priority =
 				(osPriority_t) osPriorityNormal, .tz_module = 0, .reserved = 0 };
 
 osThreadId_t bleRX_TaskHandle;

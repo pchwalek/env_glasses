@@ -27,10 +27,12 @@
 #include "stdbool.h"
 #include "fram.h"
 
+#include "dts.h"
+
 #define ALL_SENSORS	1
 
 void syncTimerActive(bool state, uint32_t period);
-void syncTimerTask(void);
+static void syncTimerTask(void);
 
 void controlSpectrometer(bool state){
 	if(state){
@@ -242,7 +244,7 @@ void syncTimerActive(bool state, uint32_t period){
 	}
 }
 
-void syncTimerTask(void){
+static void syncTimerTask(void){
 	BlinkSyncTrigger();
 	IMUSyncTrigger();
 }
@@ -387,14 +389,14 @@ void BlinkCalTask(void *argument){
 
 	blink_calibration_t blinkCalRX;
 
-	uint32_t timeTracker = 0;
+//	uint32_t timeTracker = 0;
 
 	memcpy(&blinkCalRX,argument,sizeof(blink_calibration_t));
 
 
-	uint8_t step_duration_seconds;
-	uint8_t green_hold_length_seconds;
-	uint8_t transition_delay_seconds;
+//	uint8_t step_duration_seconds;
+//	uint8_t green_hold_length_seconds;
+//	uint8_t transition_delay_seconds;
 
 	/* start sensor subsystems */
 	//	controlBlink(false);

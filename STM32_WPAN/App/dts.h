@@ -28,6 +28,7 @@ extern "C" {
 #include "ble_types.h"
 #include "ble_conf.h"
 
+
 /* Includes ------------------------------------------------------------------*/
 /* Exported types ------------------------------------------------------------*/
 /* Exported types LBR Client Implementation-----------------------------------*/
@@ -67,6 +68,8 @@ void BLE_SVC_GAP_Change_PHY(void);
 void BLE_SVC_GAP_Security_Req(void);
 void BLE_SVC_GAP_Clear_DataBase(void);
 void Resume_Notification(void);
+void enterDFUMode(void);
+
 tBleStatus DTS_STM_UpdateCharThroughput(DTS_STM_Payload_t *pDataValue);
 
 extern uint8_t DT_REQ_CHAR_UUID[2];

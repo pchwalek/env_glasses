@@ -61,9 +61,9 @@ Adafruit_AS7341 specSensor;
 void Spec_Task(void *argument) {
 	sensor_packet_t *packet = NULL;
 	uint32_t flags;
-	uint32_t timeLeftForSample = 0;
+//	uint32_t timeLeftForSample = 0;
 
-	bool status;
+//	bool status;
 
 	osDelay(500);
 

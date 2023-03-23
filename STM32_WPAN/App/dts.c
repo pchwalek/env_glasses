@@ -137,7 +137,6 @@ typedef struct {
 static tBleStatus TX_Update_Char(DTS_STM_Payload_t *pDataValue);
 static tBleStatus SensorConfig_Update_Char(DTS_STM_Payload_t *pDataValue);
 static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *pckt);
-void enterDFUMode(void);
 static DataTransferSvcContext_t aDataTransferContext;
 extern uint16_t Att_Mtu_Exchanged;
 

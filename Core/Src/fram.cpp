@@ -6,7 +6,7 @@
  */
 
 #include "fram.h"
-#include "circular_buffer.h"
+//#include "circular_buffer.h"
 
 
 #define SPI_HAN &hspi1
@@ -87,7 +87,7 @@ bool extMemGetData(uint32_t addr, uint8_t* data, uint16_t size){
 }
 
 bool extMemWriteData(uint32_t addr, uint8_t* data, uint16_t size){
-	HAL_StatusTypeDef state;
+//	HAL_StatusTypeDef state;
 
 	extMemWriteEnableLatch(true);
 
@@ -131,9 +131,9 @@ bool extMemWriteProtectPin(bool state){
 	return true;
 }
 
-CircularBuffer* allocateBackupBuffer(void){
-	return create_circular_buffer(BACKUP_BUFF_SIZE, BACKUP_START_ADDR, BUFF_PACKET_SIZE);
-}
+//CircularBuffer* allocateBackupBuffer(void){
+//	return create_circular_buffer(BACKUP_BUFF_SIZE, BACKUP_START_ADDR, BUFF_PACKET_SIZE);
+//}
 
 //uint8_t getPacketFromFRAM(CircularBuffer* backupBuffer, sensor_packet_t* packet){
 //
@@ -148,35 +148,35 @@ CircularBuffer* allocateBackupBuffer(void){
 //	}
 //}
 
-uint8_t getPacketFromFRAM(CircularBuffer* backupBuffer, sensor_packet_t* packet){
-
-	return NULL;
-	uint32_t packetFRAM_Address = pop_front(backupBuffer);
-
-	if(packetFRAM_Address == 0) return NULL;
-	else{
-		if(!extMemGetData(packetFRAM_Address, (uint8_t*) packet, BUFF_PACKET_SIZE)) return NULL;
-
-		return 1;
-	}
-}
-
-
-uint8_t pushPacketToFRAM(CircularBuffer* backupBuffer, sensor_packet_t* packet){
-
-	/* (1) get address to push to */
-	uint32_t packetFRAM_Address = push_back(backupBuffer);
-
-	/* (2) push to FRAM via SPI */
-	if(packetFRAM_Address == 0) return NULL;
-	else{
-		if(!extMemWriteData(packetFRAM_Address, (uint8_t*) packet, BUFF_PACKET_SIZE)) return NULL;
-//		else{
-//			/* (3) add FRAM address of pushed packet to circular buffer */
-//			append_back(backupBuffer, packetFRAM_Address);
-//			return 1;
-//		}
-	}
-	return 1;
-}
+//uint8_t getPacketFromFRAM(CircularBuffer* backupBuffer, sensor_packet_t* packet){
+//
+//	return NULL;
+//	uint32_t packetFRAM_Address = pop_front(backupBuffer);
+//
+//	if(packetFRAM_Address == 0) return NULL;
+//	else{
+//		if(!extMemGetData(packetFRAM_Address, (uint8_t*) packet, BUFF_PACKET_SIZE)) return NULL;
+//
+//		return 1;
+//	}
+//}
+//
+//
+//uint8_t pushPacketToFRAM(CircularBuffer* backupBuffer, sensor_packet_t* packet){
+//
+//	/* (1) get address to push to */
+//	uint32_t packetFRAM_Address = push_back(backupBuffer);
+//
+//	/* (2) push to FRAM via SPI */
+//	if(packetFRAM_Address == 0) return NULL;
+//	else{
+//		if(!extMemWriteData(packetFRAM_Address, (uint8_t*) packet, BUFF_PACKET_SIZE)) return NULL;
+////		else{
+////			/* (3) add FRAM address of pushed packet to circular buffer */
+////			append_back(backupBuffer, packetFRAM_Address);
+////			return 1;
+////		}
+//	}
+//	return 1;
+//}
 

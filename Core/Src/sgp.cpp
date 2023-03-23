@@ -53,13 +53,13 @@ static sgp_packet_payload_t sgpData_secondary[20];
 void SgpTask(void *argument) {
 	sensor_packet_t *packet = NULL;
 	uint32_t flags;
-	uint32_t timeLeftForSample = 0;
+//	uint32_t timeLeftForSample = 0;
 	uint16_t error;
 
 	uint8_t primarySGP_disable = 0;
 	uint8_t secondarySGP_disable = 0;
 
-	bool status;
+//	bool status;
 
 	sgp_sensor_config_t sensorSettings;
 
@@ -78,11 +78,11 @@ void SgpTask(void *argument) {
 
 	uint16_t totalError = 0;
 
-	int32_t voc_index_value, nox_index_value;
-
-#ifdef SECONDARY_ENV_SENSOR_EXPANSION
-	int32_t voc_index_value_secondary, nox_index_value_secondary;
-#endif
+//	int32_t voc_index_value, nox_index_value;
+//
+//#ifdef SECONDARY_ENV_SENSOR_EXPANSION
+//	int32_t voc_index_value_secondary, nox_index_value_secondary;
+//#endif
 
 	osDelay(1000);
 
@@ -96,11 +96,6 @@ void SgpTask(void *argument) {
 
 	osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 	sgp41.begin(&hi2c1);
-//	if (!sgp41.begin(&hi2c1)) {
-//		osSemaphoreRelease(messageI2C1_LockHandle);
-//		osDelay(100);
-//		osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
-//	}
 
 	uint16_t serialNumber[3];
 	uint8_t serialNumberSize = 3;
@@ -133,30 +128,19 @@ void SgpTask(void *argument) {
 			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			error = sgp41.executeSelfTest(testResult);
 		}
-		osSemaphoreRelease(messageI2C1_LockHandle);
 
 		if(testResult != 0xD400){
-			//    	osSemaphoreRelease(messageI2C1_LockHandle);
-			//    	while(1){
-			//    		osDelay(10000); // TODO: terminate thread instead
 			primarySGP_disable = 1;
-			//			osThreadExit();
-			//    	}
 		}
 	}
 
-
+	osSemaphoreRelease(messageI2C1_LockHandle);
 
 #ifdef SECONDARY_ENV_SENSOR_EXPANSION
 	totalError = 0;
 
 	osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
 	sgp41_secondary.begin(&hi2c3);
-//	if (!sgp41_secondary.begin(&hi2c3)) {
-//		osSemaphoreRelease(messageI2C3_LockHandle);
-//		osDelay(100);
-//		osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
-//	}
 
 	error = sgp41_secondary.getSerialNumber(serialNumber, serialNumberSize);
 	while (error) {
@@ -185,17 +169,14 @@ void SgpTask(void *argument) {
 			osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
 			error = sgp41_secondary.executeSelfTest(testResult);
 		}
-		osSemaphoreRelease(messageI2C3_LockHandle);
 
 		if(testResult != 0xD400){
-			//    	osSemaphoreRelease(messageI2C1_LockHandle);
-			//        	while(1){
-				//        		osDelay(10000); // TODO: terminate thread instead
 			secondarySGP_disable = 1;
-			//    			osThreadExit();
-			//        	}
 		}
 	}
+
+	osSemaphoreRelease(messageI2C3_LockHandle);
+
 #endif
 
 	// if both sensors failed to initialize

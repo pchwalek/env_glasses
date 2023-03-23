@@ -68,16 +68,18 @@ uint8_t wakeupFlag = 0;
 void queueThermopilePkt(therm_packet_payload_t *sample, uint16_t packetCnt);
 void initThermopiles(CALIPILE *tp, uint8_t address, I2C_HandleTypeDef* i2c_handle, uint8_t descriptor);
 void grabThermopileSamples(therm_packet_payload_t *data, CALIPILE *tp);
+static void triggerThermopileSample(void *argument);
+
 
 volatile uint16_t thermIdx;
 uint32_t thermID;
 
 thermopile_sensor_config_t sensorSettings;
 void Thermopile_Task(void *argument) {
-	sensor_packet_t *packet = NULL;
+//	sensor_packet_t *packet = NULL;
 	uint32_t flags;
 
-	bool status;
+//	bool status;
 
 
 	if(argument != NULL){
@@ -154,7 +156,7 @@ void Thermopile_Task(void *argument) {
 void initThermopiles(CALIPILE *tp, uint8_t address, I2C_HandleTypeDef* i2c_handle, uint8_t descriptor){
 
 	uint16_t Tcounts = 0x83; // set threshold for over temperature interrupt, 0x83 == 67072 counts
-	uint32_t flags = 0;
+//	uint32_t flags = 0;
 	//	uint8_t intStatus;
 
 
@@ -177,7 +179,7 @@ void queueThermopilePkt(therm_packet_payload_t *sample, uint16_t packetCnt){
 	sensor_packet_t *packet = NULL;
 	thermIdx+=packetCnt;
 
-	bool status;
+//	bool status;
 
 
 //	if (thermIdx >= MAX_THERMOPILE_SAMPLES_PACKET) {

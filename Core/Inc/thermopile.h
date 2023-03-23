@@ -32,7 +32,7 @@ extern osTimerId_t periodicThermopileTimer_id;
 //  };
 
 void Thermopile_Task(void *argument);
-static void triggerThermopileSample (void *argument);
+//static void triggerThermopileSample (void *argument);
 
 #ifdef __cplusplus
 }

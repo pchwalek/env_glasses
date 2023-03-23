@@ -19,7 +19,7 @@ extern "C" {
 #include "captivate_config.h"
 #include "bsec_datatypes.h"
 #include "spi.h"
-#include "circular_buffer.h"
+//#include "circular_buffer.h"
 #include "packet.h"
 
 #include "stdbool.h"
@@ -73,9 +73,9 @@ bool extMemWriteData(uint32_t addr, uint8_t* data, uint16_t size);
 void extMemChipSelectPin(bool state);
 bool extMemWriteProtectPin(bool state);
 
-CircularBuffer* allocateBackupBuffer(void);
-uint8_t getPacketFromFRAM(CircularBuffer* backupBuffer, sensor_packet_t* packet);
-uint8_t pushPacketToFRAM(CircularBuffer* backupBuffer, sensor_packet_t* packet);
+//CircularBuffer* allocateBackupBuffer(void);
+//uint8_t getPacketFromFRAM(CircularBuffer* backupBuffer, sensor_packet_t* packet);
+//uint8_t pushPacketToFRAM(CircularBuffer* backupBuffer, sensor_packet_t* packet);
 
 #ifdef __cplusplus
 }

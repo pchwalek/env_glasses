@@ -331,7 +331,7 @@ volatile temp_var = 0;
 //	return;
 //}
 
-#define MAX_BLE_RETRIES	4
+//#define MAX_BLE_RETRIES	4
 //SystemPacket *sensorPacket;
 
 //void senderThread(void *argument){
@@ -420,24 +420,24 @@ void DT_App_Button2_Trigger_Received(void *argument) {
 	}
 }
 
-static void Appli_UpdateButtonState(int isPressed) {
-	uint32_t t0 = 0, t1 = 1;
-
-	t0 = Clock_Time(); /* SW3 press timing */
-
-//  while(BSP_PB_GetState(BUTTON_SW3) == BUTTON_PRESSED);
-	t1 = Clock_Time(); /* SW3 release timing */
-
-	if ((t1 - t0) > LONG_PRESS_THRESHOLD) {
-		/* Button 3 long press action */
-		APP_DBG_MSG("clear database \n");
-		BLE_SVC_GAP_Clear_DataBase();
-	} else if ((t1 - t0) > BOUNCE_THRESHOLD) {
-		/* Button 3 short press action */
-		APP_DBG_MSG("slave security request \n");
-		BLE_SVC_GAP_Security_Req();
-	}
-}
+//static void Appli_UpdateButtonState(int isPressed) {
+//	uint32_t t0 = 0, t1 = 1;
+//
+//	t0 = Clock_Time(); /* SW3 press timing */
+//
+////  while(BSP_PB_GetState(BUTTON_SW3) == BUTTON_PRESSED);
+//	t1 = Clock_Time(); /* SW3 release timing */
+//
+//	if ((t1 - t0) > LONG_PRESS_THRESHOLD) {
+//		/* Button 3 long press action */
+//		APP_DBG_MSG("clear database \n");
+//		BLE_SVC_GAP_Clear_DataBase();
+//	} else if ((t1 - t0) > BOUNCE_THRESHOLD) {
+//		/* Button 3 short press action */
+//		APP_DBG_MSG("slave security request \n");
+//		BLE_SVC_GAP_Security_Req();
+//	}
+//}
 
 void DT_App_Button3_Trigger_Received(void *argument) {
 	UNUSED(argument);

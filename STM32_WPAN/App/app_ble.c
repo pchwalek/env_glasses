@@ -327,7 +327,7 @@ static void Ble_Hci_Gap_Gatt_Init(void);
 static const uint8_t* BleGetBdAddress( void );
 static void Adv_Request( APP_BLE_ConnStatus_t New_Status );
 static void Add_Advertisment_Service_UUID( uint16_t servUUID );
-static void Add_Advertisment_Service_UUID_128( uint8_t* servUUID );
+//static void Add_Advertisment_Service_UUID_128( uint8_t* servUUID );
 static void Adv_Mgr( void );
 static void AdvUpdateProcess(void *argument);
 static void Adv_Update( void );
@@ -979,8 +979,8 @@ static void Ble_Hci_Gap_Gatt_Init(void){
 	strcpy(name,nameTemp);
 	name[16] = 0;
 	name[17] = 0;
-	tBleStatus state;
-    state = aci_gap_init(role,
+//	tBleStatus state;
+    aci_gap_init(role,
 #if ((CFG_BLE_ADDRESS_TYPE == RESOLVABLE_PRIVATE_ADDR) || (CFG_BLE_ADDRESS_TYPE == NON_RESOLVABLE_PRIVATE_ADDR))
                  2,
 #else
@@ -1218,19 +1218,19 @@ const uint8_t* BleGetBdAddress( void )
  *SPECIFIC FUNCTIONS
  *
  *************************************************************/
-static void Add_Advertisment_Service_UUID_128( uint8_t* servUUID )
-{
-  memcpy(BleApplicationContext.BleApplicationContext_legacy.advtServUUID+1, servUUID, 16);
-//  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen] =
-//      (uint8_t) (servUUID & 0xFF);
-//  BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen++;
-//  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen] =
-//      (uint8_t) (servUUID >> 8) & 0xFF;
-//  BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen++;
-  BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen+=16;
-
-  return;
-}
+//static void Add_Advertisment_Service_UUID_128( uint8_t* servUUID )
+//{
+//  memcpy(BleApplicationContext.BleApplicationContext_legacy.advtServUUID+1, servUUID, 16);
+////  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen] =
+////      (uint8_t) (servUUID & 0xFF);
+////  BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen++;
+////  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen] =
+////      (uint8_t) (servUUID >> 8) & 0xFF;
+////  BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen++;
+//  BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen+=16;
+//
+//  return;
+//}
 
 static void Add_Advertisment_Service_UUID( uint16_t servUUID )
 {

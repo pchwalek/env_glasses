@@ -85,10 +85,10 @@ typedef struct {
 /* Private variables ---------------------------------------------------------*/
 DataTransferContext_t DataTransferClientContext;
 static uint16_t packet_lost;
-static uint32_t DataThroughputValue;
-static uint32_t packet_lost_local;
-static uint32_t TotalDataReceived = 0;
-static uint32_t Nbr_packet = 0;
+//static uint32_t DataThroughputValue;
+//static uint32_t packet_lost_local;
+//static uint32_t TotalDataReceived = 0;
+//static uint32_t Nbr_packet = 0;
 static DTS_STM_App_Notification_evt_t NotificationData;
 static uint8_t TimerDataThroughput_Id;
 uint32_t N = 0;
@@ -99,8 +99,8 @@ uint16_t Att_Mtu_Exchanged;
 /* Global variables ----------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 static SVCCTL_EvtAckStatus_t DTC_Event_Handler(void *Event);
-static void DataThroughputTimer(void);
-static void DataThroughput_Calculation(void);
+//static void DataThroughputTimer(void);
+//static void DataThroughput_Calculation(void);
 static void GattProcReq(GattProcId_t GattProcId);
 
 /* Functions Definition ------------------------------------------------------*/

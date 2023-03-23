@@ -209,9 +209,9 @@ void ThreadFrontLightsComplexTask(void *argument){
 	resetTimer = osTimerNew(resetLED, osTimerOnce, NULL, NULL);
 
 
-	volatile HAL_StatusTypeDef state = 0;
+//	volatile HAL_StatusTypeDef state = 0;
 
-	uint16_t timeTracker;
+//	uint16_t timeTracker;
 
 
 	while (1) {
@@ -225,7 +225,7 @@ void ThreadFrontLightsComplexTask(void *argument){
 //		timeTracker = HAL_GetTick();
 //		HAL_I2C_Mem_Write_DMA(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1,
 //				LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9);
-		state = HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1,
+		HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1,
 				LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9, 10);
 
 
@@ -242,7 +242,7 @@ void ThreadFrontLightsComplexTask(void *argument){
 ////			}
 //		}
 
-		state = HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1,
+		HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1,
 				LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9, 10);
 
 //		timeTracker = HAL_GetTick() - timeTracker;
@@ -553,14 +553,14 @@ void BlueGreenTransitionTask(void *argument){
 	blue_green_transition_t blueGreenTran;
 
 
-	uint32_t timeTracker = 0;
+//	uint32_t timeTracker = 0;
 
 	memcpy(&blueGreenTran,argument,sizeof(blue_green_transition_t));
 
 
-	uint8_t step_duration_seconds;
-		uint8_t green_hold_length_seconds;
-		uint8_t transition_delay_seconds;
+//	uint8_t step_duration_seconds;
+//		uint8_t green_hold_length_seconds;
+//		uint8_t transition_delay_seconds;
 
 	/* start sensor subsystems */
 //	// disable threads

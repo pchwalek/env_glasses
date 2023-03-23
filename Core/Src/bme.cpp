@@ -44,7 +44,7 @@
 ////	uint8_t nOutputs;
 //} bme_packet;
 
-static void triggerBMESample(void *argument);
+//static void triggerBMESample(void *argument);
 
 //static bme_packet bmeData[MAX_BME_SAMPLES_PACKET];
 //typedef struct __attribute__((packed)) BsecDataAirSpec
@@ -72,7 +72,7 @@ void BME_Task(void *argument) {
 	sensor_packet_t *packet = NULL;
 	uint32_t flags = 0;
 
-	bool status;
+//	bool status;
 
 	bme_sensor_config_t sensorSettings;
 

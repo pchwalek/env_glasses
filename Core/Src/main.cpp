@@ -35,7 +35,7 @@
 /* USER CODE BEGIN Includes */
 #include "lp5523.h"
 #include "fram.h"
-#include "circular_buffer.h"
+//#include "circular_buffer.h"
 #include "captivate_config.h"
 
 #include "arm_math.h"

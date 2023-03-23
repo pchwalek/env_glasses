@@ -39,11 +39,11 @@
 #include "../../Sensirion_Core/src/SensirionI2CRxFrame.h"
 #include "../../Sensirion_Core/src/SensirionI2CTxFrame.h"
 
-static void clearRxBuffer(I2C_HandleTypeDef *i2c_handle) {
-//    while (i2cBus.available()) {
-//        (void)i2cBus.read();
-//    }
-}
+//static void clearRxBuffer(I2C_HandleTypeDef *i2c_handle) {
+////    while (i2cBus.available()) {
+////        (void)i2cBus.read();
+////    }
+//}
 
 uint16_t SensirionI2CCommunication::sendFrame(uint8_t address,
                                               SensirionI2CTxFrame& frame,

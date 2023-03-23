@@ -46,9 +46,9 @@ float shtTemp, shtHum;
 void ShtTask(void *argument) {
 	sensor_packet_t *packet = NULL;
 	uint32_t flags;
-	uint32_t timeLeftForSample = 0;
+//	uint32_t timeLeftForSample = 0;
 
-	bool status;
+//	bool status;
 
 	uint8_t errorCnt;
 
@@ -116,6 +116,7 @@ void ShtTask(void *argument) {
 
 	uint16_t shtIdx = 0;
 	uint32_t shtID = 0;
+	uint32_t shtID_secondary = 0;
 
 	periodicShtTimer_id = osTimerNew(triggerShtSample, osTimerPeriodic,
 			NULL, NULL);
@@ -188,7 +189,7 @@ void ShtTask(void *argument) {
 						//					sensorPacket.header.payload_length = MAX_SHT_SAMPLES_PACKET * sizeof(shtSample);
 						packet->payload.sht_packet.precision = static_cast<sht45_precision_t>(sensorSettings.precision_level);
 						packet->payload.sht_packet.heater = static_cast<sht45_heater_t>(sensorSettings.heater_settings);
-
+						packet->payload.sht_packet.packet_index = shtID;
 						packet->payload.sht_packet.sensor_id = 0;
 
 						//					sensorPacket.header.packet_id = shtID;
@@ -214,6 +215,7 @@ void ShtTask(void *argument) {
 
 						//					portEXIT_CRITICAL();
 
+						shtID++;
 
 					}
 				}
@@ -230,7 +232,7 @@ void ShtTask(void *argument) {
 						//					sensorPacket.header.payload_length = MAX_SHT_SAMPLES_PACKET * sizeof(shtSample);
 						packet->payload.sht_packet.precision = static_cast<sht45_precision_t>(sensorSettings.precision_level);
 						packet->payload.sht_packet.heater = static_cast<sht45_heater_t>(sensorSettings.heater_settings);
-
+						packet->payload.sht_packet.packet_index = shtID_secondary;
 						packet->payload.sht_packet.sensor_id = 1;
 
 						//					sensorPacket.header.packet_id = shtID;
@@ -256,14 +258,13 @@ void ShtTask(void *argument) {
 
 						//					portEXIT_CRITICAL();
 
-
+						shtID_secondary++;
 					}
 				}
 #endif
 
 				skipPrimaryPacket = 0;
 				skipSecondaryPacket = 0;
-				shtID++;
 				shtIdx = 0;
 			}
 

@@ -199,7 +199,7 @@ void BlinkTask(void *argument) {
 						threadBlinkTimestampUnix += payloadLength * (uint64_t)sensorSamplePeriod_ms;
 
 						// write blink data
-						memcpy(packet->payload.blink_packet.payload.payload_byte.sample.bytes, &(blink_ptr_copy[iterator * BLINK_PKT_PAYLOAD_SIZE]), payloadLength);
+						memcpy(packet->payload.blink_packet.payload.payload_byte.sample.bytes, (uint8_t *) &(blink_ptr_copy[iterator * BLINK_PKT_PAYLOAD_SIZE]), payloadLength);
 
 						packet->payload.blink_packet.payload.payload_byte.sample.size = payloadLength;
 
