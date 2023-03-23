@@ -165,23 +165,18 @@ typedef enum mic_weighting {
 } mic_weighting_t;
 
 /* Struct definitions */
-PB_PACKED_STRUCT_START
 typedef struct sensor_packet_header {
     uint32_t system_uid;
     uint32_t ms_from_start;
     uint64_t epoch;
-} pb_packed sensor_packet_header_t;
-PB_PACKED_STRUCT_END
+} sensor_packet_header_t;
 
-PB_PACKED_STRUCT_START
 typedef struct lux_packet_payload {
     uint32_t lux;
     uint64_t timestamp_unix;
     uint32_t timestamp_ms_from_start;
-} pb_packed lux_packet_payload_t;
-PB_PACKED_STRUCT_END
+} lux_packet_payload_t;
 
-PB_PACKED_STRUCT_START
 typedef struct lux_packet {
     uint32_t packet_index;
     uint32_t sample_period;
@@ -190,19 +185,15 @@ typedef struct lux_packet {
     uint32_t sensor_id;
     pb_size_t payload_count;
     lux_packet_payload_t payload[30];
-} pb_packed lux_packet_t;
-PB_PACKED_STRUCT_END
+} lux_packet_t;
 
-PB_PACKED_STRUCT_START
 typedef struct mic_level_packet_payload {
     float sound_spl_db;
     float sound_rms;
     uint64_t timestamp_unix;
     uint32_t timestamp_ms_from_start;
-} pb_packed mic_level_packet_payload_t;
-PB_PACKED_STRUCT_END
+} mic_level_packet_payload_t;
 
-PB_PACKED_STRUCT_START
 typedef struct mic_level_packet {
     uint32_t packet_index;
     uint32_t sample_period;
@@ -212,10 +203,8 @@ typedef struct mic_level_packet {
     mic_weighting_t weighting; /* e.g., A-weighting */
     pb_size_t payload_count;
     mic_level_packet_payload_t payload[50];
-} pb_packed mic_level_packet_t;
-PB_PACKED_STRUCT_END
+} mic_level_packet_t;
 
-PB_PACKED_STRUCT_START
 typedef struct sgp_packet_payload {
     uint64_t timestamp_unix;
     uint32_t timestamp_ms_from_start;
@@ -223,20 +212,16 @@ typedef struct sgp_packet_payload {
     uint32_t sraw_nox;
     int32_t voc_index_value;
     int32_t nox_index_value;
-} pb_packed sgp_packet_payload_t;
-PB_PACKED_STRUCT_END
+} sgp_packet_payload_t;
 
-PB_PACKED_STRUCT_START
 typedef struct sgp_packet {
     uint32_t packet_index;
     uint32_t sample_period;
     uint32_t sensor_id;
     pb_size_t payload_count;
     sgp_packet_payload_t payload[20];
-} pb_packed sgp_packet_t;
-PB_PACKED_STRUCT_END
+} sgp_packet_t;
 
-PB_PACKED_STRUCT_START
 typedef struct bme_packet_payload {
     uint64_t timestamp_sensor;
     uint64_t timestamp_unix;
@@ -245,42 +230,32 @@ typedef struct bme_packet_payload {
     uint32_t signal_dimensions;
     bme680_signal_id_t sensor_id;
     bme680_accuracy_t accuracy;
-} pb_packed bme_packet_payload_t;
-PB_PACKED_STRUCT_END
+} bme_packet_payload_t;
 
-PB_PACKED_STRUCT_START
 typedef struct bme_packet {
     uint32_t packet_index;
     uint32_t sample_period;
     uint32_t sensor_id;
     pb_size_t payload_count;
     bme_packet_payload_t payload[12];
-} pb_packed bme_packet_t;
-PB_PACKED_STRUCT_END
+} bme_packet_t;
 
-PB_PACKED_STRUCT_START
 typedef struct blink_saturation_settings {
     bool diode_turned_off;
     uint32_t diode_saturation_lower_thresh;
     uint32_t diode_saturation_upper_thresh;
-} pb_packed blink_saturation_settings_t;
-PB_PACKED_STRUCT_END
+} blink_saturation_settings_t;
 
 typedef PB_BYTES_ARRAY_T(450) blink_byte_payload_sample_t;
-PB_PACKED_STRUCT_START
 typedef struct blink_byte_payload {
     blink_byte_payload_sample_t sample;
-} pb_packed blink_byte_payload_t;
-PB_PACKED_STRUCT_END
+} blink_byte_payload_t;
 
 typedef PB_BYTES_ARRAY_T(350) blink_high_res_payload_sample_t;
-PB_PACKED_STRUCT_START
 typedef struct blink_high_res_payload {
     blink_high_res_payload_sample_t sample;
-} pb_packed blink_high_res_payload_t;
-PB_PACKED_STRUCT_END
+} blink_high_res_payload_t;
 
-PB_PACKED_STRUCT_START
 typedef struct blink_packet {
     uint32_t packet_index;
     uint64_t timestamp_unix;
@@ -293,19 +268,15 @@ typedef struct blink_packet {
         blink_byte_payload_t payload_byte;
         blink_high_res_payload_t payload_high_res;
     } payload;
-} pb_packed blink_packet_t;
-PB_PACKED_STRUCT_END
+} blink_packet_t;
 
-PB_PACKED_STRUCT_START
 typedef struct sht_packet_payload {
     uint64_t timestamp_unix;
     uint32_t timestamp_ms_from_start;
     float temperature;
     float humidity;
-} pb_packed sht_packet_payload_t;
-PB_PACKED_STRUCT_END
+} sht_packet_payload_t;
 
-PB_PACKED_STRUCT_START
 typedef struct sht_packet {
     uint32_t packet_index;
     uint32_t sample_period;
@@ -314,10 +285,8 @@ typedef struct sht_packet {
     uint32_t sensor_id;
     pb_size_t payload_count;
     sht_packet_payload_t payload[200];
-} pb_packed sht_packet_t;
-PB_PACKED_STRUCT_END
+} sht_packet_t;
 
-PB_PACKED_STRUCT_START
 typedef struct spec_packet_payload {
     uint32_t band_415;
     uint32_t band_445;
@@ -334,10 +303,8 @@ typedef struct spec_packet_payload {
     uint32_t flicker;
     uint64_t timestamp_unix;
     uint32_t timestamp_ms_from_start;
-} pb_packed spec_packet_payload_t;
-PB_PACKED_STRUCT_END
+} spec_packet_payload_t;
 
-PB_PACKED_STRUCT_START
 typedef struct spec_packet {
     uint32_t packet_index;
     uint32_t sample_period;
@@ -347,10 +314,8 @@ typedef struct spec_packet {
     uint32_t sensor_id;
     pb_size_t payload_count;
     spec_packet_payload_t payload[30];
-} pb_packed spec_packet_t;
-PB_PACKED_STRUCT_END
+} spec_packet_t;
 
-PB_PACKED_STRUCT_START
 typedef struct therm_packet_payload {
     thermopile_location_t descriptor;
     uint64_t timestamp_unix;
@@ -359,44 +324,34 @@ typedef struct therm_packet_payload {
     uint32_t object_raw;
     float ambient_temp;
     float object_temp;
-} pb_packed therm_packet_payload_t;
-PB_PACKED_STRUCT_END
+} therm_packet_payload_t;
 
-PB_PACKED_STRUCT_START
 typedef struct therm_packet {
     uint32_t packet_index;
     uint32_t sample_period;
     pb_size_t payload_count;
     therm_packet_payload_t payload[50];
-} pb_packed therm_packet_t;
-PB_PACKED_STRUCT_END
+} therm_packet_t;
 
-PB_PACKED_STRUCT_START
 typedef struct imu_accel_settings {
     bool has_cutoff;
     imu_accel_cutoff_t cutoff;
     imu_accel_range_t range;
     uint32_t sample_rate_divisor;
-} pb_packed imu_accel_settings_t;
-PB_PACKED_STRUCT_END
+} imu_accel_settings_t;
 
-PB_PACKED_STRUCT_START
 typedef struct imu_gyro_settings {
     bool has_cutoff;
     imu_gyro_cutoff_t cutoff;
     imu_gyro_range_t range;
     uint32_t sample_rate_divisor;
-} pb_packed imu_gyro_settings_t;
-PB_PACKED_STRUCT_END
+} imu_gyro_settings_t;
 
 typedef PB_BYTES_ARRAY_T(440) imu_packet_payload_sample_t;
-PB_PACKED_STRUCT_START
 typedef struct imu_packet_payload {
     imu_packet_payload_sample_t sample;
-} pb_packed imu_packet_payload_t;
-PB_PACKED_STRUCT_END
+} imu_packet_payload_t;
 
-PB_PACKED_STRUCT_START
 typedef struct imu_packet {
     uint32_t packet_index;
     uint64_t timestamp_unix;
@@ -408,17 +363,13 @@ typedef struct imu_packet {
     imu_gyro_settings_t gyro_settings;
     bool has_payload;
     imu_packet_payload_t payload;
-} pb_packed imu_packet_t;
-PB_PACKED_STRUCT_END
+} imu_packet_t;
 
-PB_PACKED_STRUCT_START
 typedef struct mic_packet_payload {
     pb_size_t sample_count;
     float sample[130];
-} pb_packed mic_packet_payload_t;
-PB_PACKED_STRUCT_END
+} mic_packet_payload_t;
 
-PB_PACKED_STRUCT_START
 typedef struct mic_packet {
     uint32_t packet_index;
     uint32_t fft_index;
@@ -432,18 +383,14 @@ typedef struct mic_packet {
     float frequency_spacing;
     bool has_payload;
     mic_packet_payload_t payload;
-} pb_packed mic_packet_t;
-PB_PACKED_STRUCT_END
+} mic_packet_t;
 
-PB_PACKED_STRUCT_START
 typedef struct air_spec_colors {
     uint32_t red;
     uint32_t green;
     uint32_t blue;
-} pb_packed air_spec_colors_t;
-PB_PACKED_STRUCT_END
+} air_spec_colors_t;
 
-PB_PACKED_STRUCT_START
 typedef struct air_spec_color_position {
     bool has_forward;
     air_spec_colors_t forward;
@@ -451,19 +398,15 @@ typedef struct air_spec_color_position {
     air_spec_colors_t eye;
     bool has_top;
     air_spec_colors_t top;
-} pb_packed air_spec_color_position_t;
-PB_PACKED_STRUCT_END
+} air_spec_color_position_t;
 
-PB_PACKED_STRUCT_START
 typedef struct light_control_packet {
     bool has_left;
     air_spec_color_position_t left;
     bool has_right;
     air_spec_color_position_t right;
-} pb_packed light_control_packet_t;
-PB_PACKED_STRUCT_END
+} light_control_packet_t;
 
-PB_PACKED_STRUCT_START
 typedef struct sensor_control {
     bool enable_all;
     bool spectrometer;
@@ -478,39 +421,29 @@ typedef struct sensor_control {
     bool synchronize_windows;
     uint32_t window_size_ms;
     uint32_t window_period_ms;
-} pb_packed sensor_control_t;
-PB_PACKED_STRUCT_END
+} sensor_control_t;
 
-PB_PACKED_STRUCT_START
 typedef struct lux_sensor_config {
     uint32_t sample_period_ms;
     tsl2591_gain_t gain;
     tsl2591_integration_time_t integration_time;
-} pb_packed lux_sensor_config_t;
-PB_PACKED_STRUCT_END
+} lux_sensor_config_t;
 
-PB_PACKED_STRUCT_START
 typedef struct sgp_sensor_config {
     uint32_t sample_period_ms;
-} pb_packed sgp_sensor_config_t;
-PB_PACKED_STRUCT_END
+} sgp_sensor_config_t;
 
-PB_PACKED_STRUCT_START
 typedef struct bme_sensor_config {
     uint32_t sample_period_ms;
-} pb_packed bme_sensor_config_t;
-PB_PACKED_STRUCT_END
+} bme_sensor_config_t;
 
-PB_PACKED_STRUCT_START
 typedef struct color_sensor_config {
     uint32_t sample_period_ms;
     uint32_t integration_time;
     uint32_t integration_step;
     spec_gain_t gain;
-} pb_packed color_sensor_config_t;
-PB_PACKED_STRUCT_END
+} color_sensor_config_t;
 
-PB_PACKED_STRUCT_START
 typedef struct thermopile_sensor_config {
     uint32_t sample_period_ms;
     bool enable_top_of_nose;
@@ -518,10 +451,8 @@ typedef struct thermopile_sensor_config {
     bool enable_front_temple;
     bool enable_mid_temple;
     bool enable_rear_temple;
-} pb_packed thermopile_sensor_config_t;
-PB_PACKED_STRUCT_END
+} thermopile_sensor_config_t;
 
-PB_PACKED_STRUCT_START
 typedef struct blink_sensor_config {
     uint32_t sample_frequency;
     bool enable_daylight_compensation;
@@ -531,25 +462,19 @@ typedef struct blink_sensor_config {
     uint32_t enable_windowing_sync;
     uint32_t window_size_ms;
     uint32_t window_period_ms;
-} pb_packed blink_sensor_config_t;
-PB_PACKED_STRUCT_END
+} blink_sensor_config_t;
 
-PB_PACKED_STRUCT_START
 typedef struct mic_sensor_config {
     uint32_t sample_period_ms;
     uint32_t mic_sample_freq;
-} pb_packed mic_sensor_config_t;
-PB_PACKED_STRUCT_END
+} mic_sensor_config_t;
 
-PB_PACKED_STRUCT_START
 typedef struct humidity_sensor_config {
     uint32_t sample_period_ms;
     sht45_precision_t precision_level;
     sht45_heater_t heater_settings;
-} pb_packed humidity_sensor_config_t;
-PB_PACKED_STRUCT_END
+} humidity_sensor_config_t;
 
-PB_PACKED_STRUCT_START
 typedef struct imu_sensor_config {
     bool has_accel_settings;
     imu_accel_settings_t accel_settings;
@@ -559,10 +484,8 @@ typedef struct imu_sensor_config {
     uint32_t enable_windowing_sync;
     uint32_t window_size_ms;
     uint32_t window_period_ms;
-} pb_packed imu_sensor_config_t;
-PB_PACKED_STRUCT_END
+} imu_sensor_config_t;
 
-PB_PACKED_STRUCT_START
 typedef struct sensor_config {
     bool has_lux;
     lux_sensor_config_t lux;
@@ -582,16 +505,12 @@ typedef struct sensor_config {
     humidity_sensor_config_t humidity;
     bool has_imu;
     imu_sensor_config_t imu;
-} pb_packed sensor_config_t;
-PB_PACKED_STRUCT_END
+} sensor_config_t;
 
-PB_PACKED_STRUCT_START
 typedef struct dfu_mode {
     bool enable;
-} pb_packed dfu_mode_t;
-PB_PACKED_STRUCT_END
+} dfu_mode_t;
 
-PB_PACKED_STRUCT_START
 typedef struct blue_green_transition {
     bool enable;
     uint32_t blue_min_intensity;
@@ -601,17 +520,13 @@ typedef struct blue_green_transition {
     uint32_t step_duration_ms;
     uint32_t green_hold_length_seconds;
     uint32_t transition_delay_seconds;
-} pb_packed blue_green_transition_t;
-PB_PACKED_STRUCT_END
+} blue_green_transition_t;
 
-PB_PACKED_STRUCT_START
 typedef struct blink_calibration {
     bool enable;
     uint32_t duration_ms;
-} pb_packed blink_calibration_t;
-PB_PACKED_STRUCT_END
+} blink_calibration_t;
 
-PB_PACKED_STRUCT_START
 typedef struct red_flash_task {
     bool enable;
     uint32_t red_max_intensity;
@@ -619,16 +534,12 @@ typedef struct red_flash_task {
     uint32_t frequency;
     uint32_t duration_ms;
     uint32_t enable_speaker;
-} pb_packed red_flash_task_t;
-PB_PACKED_STRUCT_END
+} red_flash_task_t;
 
-PB_PACKED_STRUCT_START
 typedef struct air_spec_config_header {
     uint64_t timestamp_unix;
-} pb_packed air_spec_config_header_t;
-PB_PACKED_STRUCT_END
+} air_spec_config_header_t;
 
-PB_PACKED_STRUCT_START
 typedef struct air_spec_config_packet {
     bool has_header;
     air_spec_config_header_t header;
@@ -642,43 +553,33 @@ typedef struct air_spec_config_packet {
         red_flash_task_t red_flash_task;
         blink_calibration_t blink_calibration;
     } payload;
-} pb_packed air_spec_config_packet_t;
-PB_PACKED_STRUCT_END
+} air_spec_config_packet_t;
 
-PB_PACKED_STRUCT_START
 typedef struct system_state {
     uint32_t firmware_version;
     bool has_control;
     sensor_control_t control;
     bool has_config;
     sensor_config_t config;
-} pb_packed system_state_t;
-PB_PACKED_STRUCT_END
+} system_state_t;
 
-PB_PACKED_STRUCT_START
 typedef struct app_survey_data_payload {
     int32_t q_index;
     pb_callback_t q_choice;
     uint32_t q_group_index;
     uint64_t timestamp_unix;
-} pb_packed app_survey_data_payload_t;
-PB_PACKED_STRUCT_END
+} app_survey_data_payload_t;
 
-PB_PACKED_STRUCT_START
 typedef struct app_survey_data_packet {
     pb_callback_t payload;
-} pb_packed app_survey_data_packet_t;
-PB_PACKED_STRUCT_END
+} app_survey_data_packet_t;
 
-PB_PACKED_STRUCT_START
 typedef struct app_meta_data_packet {
     pb_callback_t payload;
     uint32_t type;
     uint64_t timestamp_unix;
-} pb_packed app_meta_data_packet_t;
-PB_PACKED_STRUCT_END
+} app_meta_data_packet_t;
 
-PB_PACKED_STRUCT_START
 typedef struct sensor_packet {
     bool has_header;
     sensor_packet_header_t header;
@@ -697,8 +598,7 @@ typedef struct sensor_packet {
         app_survey_data_packet_t survey_packet;
         app_meta_data_packet_t meta_data_packet;
     } payload;
-} pb_packed sensor_packet_t;
-PB_PACKED_STRUCT_END
+} sensor_packet_t;
 
 
 #ifdef __cplusplus
