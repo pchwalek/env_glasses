@@ -148,7 +148,6 @@ void ShtTask(void *argument) {
 				}else{
 					osSemaphoreRelease(messageI2C1_LockHandle);
 					skipPrimaryPacket = 1;
-//					continue;
 				}
 
 			}
@@ -168,7 +167,6 @@ void ShtTask(void *argument) {
 				}else{
 					osSemaphoreRelease(messageI2C3_LockHandle);
 					skipSecondaryPacket = 1;
-//					continue;
 				}
 
 			}
@@ -182,38 +180,20 @@ void ShtTask(void *argument) {
 					packet = grabPacket();
 					if (packet != NULL) {
 
-						//					portENTER_CRITICAL();
-
 						setPacketType(packet, SENSOR_PACKET_TYPES_SHT);
 
-						//					sensorPacket.header.payload_length = MAX_SHT_SAMPLES_PACKET * sizeof(shtSample);
 						packet->payload.sht_packet.precision = static_cast<sht45_precision_t>(sensorSettings.precision_level);
 						packet->payload.sht_packet.heater = static_cast<sht45_heater_t>(sensorSettings.heater_settings);
 						packet->payload.sht_packet.packet_index = shtID;
 						packet->payload.sht_packet.sensor_id = 0;
 
-						//					sensorPacket.header.packet_id = shtID;
-						//					sensorPacket.header.ms_from_start = HAL_GetTick();
-
-						//					packet->header.packetType = SHT;
-
-						//					// reset message buffer
-						//					memset(&sensorPacket.sht_packet.payload[0], 0, sizeof(sensorPacket.sht_packet.payload));
-
 						// write data
 						memcpy(packet->payload.sht_packet.payload, shtData, shtIdx * sizeof(sht_packet_payload_t));
 						packet->payload.sht_packet.payload_count = shtIdx;
 
-						//					// encode
-						//					pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
-						//					status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
-						//
-						//					packet->header.payloadLength = stream.bytes_written;
-
 						// send to BT packetizer
 						queueUpPacket(packet);
 
-						//					portEXIT_CRITICAL();
 
 						shtID++;
 
@@ -225,38 +205,19 @@ void ShtTask(void *argument) {
 					packet = grabPacket();
 					if (packet != NULL) {
 
-						//					portENTER_CRITICAL();
-
 						setPacketType(packet, SENSOR_PACKET_TYPES_SHT);
 
-						//					sensorPacket.header.payload_length = MAX_SHT_SAMPLES_PACKET * sizeof(shtSample);
 						packet->payload.sht_packet.precision = static_cast<sht45_precision_t>(sensorSettings.precision_level);
 						packet->payload.sht_packet.heater = static_cast<sht45_heater_t>(sensorSettings.heater_settings);
 						packet->payload.sht_packet.packet_index = shtID_secondary;
 						packet->payload.sht_packet.sensor_id = 1;
 
-						//					sensorPacket.header.packet_id = shtID;
-						//					sensorPacket.header.ms_from_start = HAL_GetTick();
-
-						//					packet->header.packetType = SHT;
-
-						//					// reset message buffer
-						//					memset(&sensorPacket.sht_packet.payload[0], 0, sizeof(sensorPacket.sht_packet.payload));
-
 						// write data
 						memcpy(packet->payload.sht_packet.payload, shtData_secondary, shtIdx * sizeof(sht_packet_payload_t));
 						packet->payload.sht_packet.payload_count = shtIdx;
 
-						//					// encode
-						//					pb_ostream_t stream = pb_ostream_from_buffer(packet->payload, MAX_PAYLOAD_SIZE);
-						//					status = pb_encode(&stream, SENSOR_PACKET_FIELDS, &sensorPacket);
-						//
-						//					packet->header.payloadLength = stream.bytes_written;
-
 						// send to BT packetizer
 						queueUpPacket(packet);
-
-						//					portEXIT_CRITICAL();
 
 						shtID_secondary++;
 					}
@@ -268,7 +229,6 @@ void ShtTask(void *argument) {
 				shtIdx = 0;
 			}
 
-			//			timeLeftForSample = HAL_GetTick();
 		}
 
 		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {

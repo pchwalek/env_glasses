@@ -408,10 +408,6 @@ void calculateSoundLevel(float *data, uint32_t size, double *dB, double *RMS){
 	arm_biquad_cascade_df2T_init_f32(&weightingIIR, 3,
 				weightingCoef, weightingIIR_state );
 
-
-
-
-
 	/* equalize */
 	arm_biquad_cascade_df2T_f32(&equalizerIIR, data, data, size);
 	arm_scale_f32 (data, equalizerGain, data, size);
