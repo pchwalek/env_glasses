@@ -192,7 +192,7 @@ void ShtTask(void *argument) {
 						packet->payload.sht_packet.payload_count = shtIdx;
 
 						// send to BT packetizer
-						queueUpPacket(packet);
+						queueUpPacket(packet, sensorSettings.sample_period_ms >> 1);
 
 
 						shtID++;
@@ -217,7 +217,7 @@ void ShtTask(void *argument) {
 						packet->payload.sht_packet.payload_count = shtIdx;
 
 						// send to BT packetizer
-						queueUpPacket(packet);
+						queueUpPacket(packet, sensorSettings.sample_period_ms >> 1);
 
 						shtID_secondary++;
 					}

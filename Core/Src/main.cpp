@@ -48,7 +48,6 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -205,12 +204,12 @@ int main(void) {
 		sysState.firmware_version = 1;
 
 		sysState.control.lux = 1;
-		sysState.control.bme688 = 1;
-		sysState.control.sgp = 1;
+		sysState.control.bme688 = 0;
+		sysState.control.sgp = 0;
 
 		sysState.control.imu = 1;
-		sysState.control.spectrometer = 1;
-		sysState.control.thermopiles = 1;
+		sysState.control.spectrometer = 0;
+		sysState.control.thermopiles = 0;
 		sysState.control.blink = 1;
 		sysState.control.mic = 1;
 		sysState.control.sht = 1;

@@ -36,7 +36,7 @@ union MicSample{
   int32_t  int_val[MIC_DATA_SIZE];
 };
 
-union MicSample micData;
+static union MicSample micData;
 
 //float micData[MIC_DATA_SIZE];
 //float micDataFloat[MIC_DATA_SIZE];
@@ -231,7 +231,7 @@ void Mic_Task(void *argument){
 
 				packet->payload.mic_packet.payload.sample_count = sample_count;
 
-				queueUpPacket(packet);
+				queueUpPacket(packet, 100);
 				micLevelIdx++;
 
 
@@ -282,7 +282,7 @@ void Mic_Task(void *argument){
 
 
 						// send to BT packetizer
-						queueUpPacket(packet);
+						queueUpPacket(packet, 20);
 
 
 					micID++;

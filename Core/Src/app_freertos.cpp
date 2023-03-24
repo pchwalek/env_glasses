@@ -70,7 +70,7 @@ const osMessageQueueAttr_t lightsComplexQueue_attributes = { .name =
 osThreadId_t ledDisconnectTaskHandle;
 const osThreadAttr_t ledDisconnectTask_attributes = { .name = "ledDisconnectTask", .attr_bits =
 		osThreadDetached, .cb_mem = NULL, .cb_size = 0, .stack_mem = NULL,
-		.stack_size = 512, .priority = (osPriority_t) osPriorityNormal,
+		.stack_size = 512 * 2, .priority = (osPriority_t) osPriorityNormal,
 		.tz_module = 0, .reserved = 0 };
 
 osThreadId_t blueGreenTranTaskHandle;
@@ -82,20 +82,20 @@ const osThreadAttr_t blueGreenTask_attributes = { .name = "bgTranTask",
 osThreadId_t bleRX_TaskHandle;
 const osThreadAttr_t bleRX_Task_attributes = { .name = "bleRX_Task",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
-		.stack_mem = NULL, .stack_size = 512 * 2, .priority =
+		.stack_mem = NULL, .stack_size = 512 * 4, .priority =
 				(osPriority_t) osPriorityNormal, .tz_module = 0, .reserved = 0 };
 
 osThreadId_t blinkCalTaskHandle;
 osThreadId_t blinkCalTaskExitHandle;
 const osThreadAttr_t blinkCalTask_attributes = { .name = "blinkCalTask",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
-		.stack_mem = NULL, .stack_size = 512 * 1, .priority =
+		.stack_mem = NULL, .stack_size = 512 * 2, .priority =
 				(osPriority_t) osPriorityNormal, .tz_module = 0, .reserved = 0 };
 
 osThreadId_t redFlashTaskHandle;
 const osThreadAttr_t redFlashTask_attributes = { .name = "redFlashTask",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
-		.stack_mem = NULL, .stack_size = 512 * 1, .priority =
+		.stack_mem = NULL, .stack_size = 512 * 2, .priority =
 				(osPriority_t) osPriorityAboveNormal, .tz_module = 0, .reserved = 0 };
 
 osThreadId_t specTaskHandle;
@@ -113,7 +113,7 @@ const osThreadAttr_t luxTask_attributes = { .name = "luxTask", .attr_bits =
 osThreadId_t shtTaskHandle;
 const osThreadAttr_t shtTask_attributes = { .name = "shtTask", .attr_bits =
 		osThreadDetached, .cb_mem = NULL, .cb_size = 0, .stack_mem = NULL,
-		.stack_size = 512, .priority = (osPriority_t) osPriorityNormal,
+		.stack_size = 512 * 2, .priority = (osPriority_t) osPriorityNormal,
 		.tz_module = 0, .reserved = 0 };
 
 osThreadId_t blueGreenExitTaskHandle;
@@ -138,7 +138,7 @@ const osThreadAttr_t sgpTask_attributes = { .name = "sgpTask", .attr_bits =
 osThreadId_t imuTaskHandle;
 const osThreadAttr_t imuTask_attributes = { .name = "imuTask", .attr_bits =
 		osThreadDetached, .cb_mem = NULL, .cb_size = 0, .stack_mem = NULL,
-		.stack_size = 512 * 4, .priority = (osPriority_t) osPriorityNormal,
+		.stack_size = 512 * 6, .priority = (osPriority_t) osPriorityNormal,
 		.tz_module = 0, .reserved = 0 };
 
 osThreadId_t blinkTaskHandle;
@@ -150,20 +150,20 @@ const osThreadAttr_t blinkTask_attributes = { .name = "blinkTask", .attr_bits =
 osThreadId_t micTaskHandle;
 const osThreadAttr_t micTask_attributes = { .name = "micTask", .attr_bits =
 		osThreadDetached, .cb_mem = NULL, .cb_size = 0, .stack_mem = NULL,
-		.stack_size = 512 * 4, .priority = (osPriority_t) osPriorityBelowNormal,
+		.stack_size = 512 * 6, .priority = (osPriority_t) osPriorityBelowNormal,
 		.tz_module = 0, .reserved = 0 };
 
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = { .name = "defaultTask",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
-		.stack_mem = NULL, .stack_size = 256, .priority =
-				(osPriority_t) osPriorityNormal, .tz_module = 0, .reserved = 0 };
+		.stack_mem = NULL, .stack_size = 512, .priority =
+				(osPriority_t) osPriorityLow, .tz_module = 0, .reserved = 0 };
 /* Definitions for frontLightsThre */
 osThreadId_t frontLightsThreHandle;
 const osThreadAttr_t frontLightsThre_attributes = { .name = "frontLightsTask",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
-		.stack_mem = NULL, .stack_size = 512 + 256, .priority =
+		.stack_mem = NULL, .stack_size = 512 * 2, .priority =
 				(osPriority_t) osPriorityBelowNormal, .tz_module = 0,
 		.reserved = 0 };
 /* Definitions for thermopileTask */
@@ -176,7 +176,7 @@ const osThreadAttr_t thermopileTask_attributes = { .name = "thermopileTask",
 osThreadId_t senderTaskHandle;
 const osThreadAttr_t senderTask_attributes = { .name = "senderTask",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
-		.stack_mem = NULL, .stack_size = 512 * 3, .priority =
+		.stack_mem = NULL, .stack_size = 512 * 4, .priority =
 				(osPriority_t) osPriorityAboveNormal, .tz_module = 0, .reserved = 0 };
 
 /* Definitions for messageI2C_Lock */

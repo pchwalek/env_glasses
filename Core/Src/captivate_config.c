@@ -269,13 +269,13 @@ void ingestSensorConfig(system_state_t *config){
 	if(config->control.enable_all){
 		controlSpectrometer(1);
 		controlBME(1);
-		controlIMU(1);
 		controlThermopile(1);
 		controlLux(1);
-		controlMic(1);
 		controlSHT(1);
 		controlSGP(1);
 		controlBlink(1);
+		controlMic(1);
+		controlIMU(1);
 
 		if(config->control.synchronize_windows){
 			syncTimerActive(1, config->control.window_period_ms);
@@ -285,13 +285,13 @@ void ingestSensorConfig(system_state_t *config){
 	}else{
 		controlSpectrometer(config->control.spectrometer);
 		controlBME(config->control.bme688);
-		controlIMU(config->control.imu);
 		controlThermopile(config->control.thermopiles);
 		controlLux(config->control.lux);
-		controlMic(config->control.mic);
 		controlSHT(config->control.sht);
 		controlSGP(config->control.sgp);
 		controlBlink(config->control.blink);
+		controlMic(config->control.mic);
+		controlIMU(config->control.imu);
 
 		if(config->control.synchronize_windows){
 			syncTimerActive(config->control.imu | config->control.blink, config->control.window_period_ms);

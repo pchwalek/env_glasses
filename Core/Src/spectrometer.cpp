@@ -171,7 +171,7 @@ void Spec_Task(void *argument) {
 //					packet->header.payloadLength = stream.bytes_written;
 
 					// send to BT packetizer
-					queueUpPacket(packet);
+					queueUpPacket(packet, sensorSettings.sample_period_ms);
 
 //					portEXIT_CRITICAL();
 

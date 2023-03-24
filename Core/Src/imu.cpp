@@ -49,7 +49,7 @@ void IMU_Task(void *argument){
 	uint32_t flags = 0;
 	uint32_t flag_rdy = 0;
 
-//	bool status;
+	//	bool status;
 
 	osDelay(1000);
 
@@ -69,8 +69,8 @@ void IMU_Task(void *argument){
 
 		sensorSettings.enable_windowing = false;
 		sensorSettings.enable_windowing_sync = false;
-//		sensorSettings.window_size_ms;
-//		sensorSettings.window_period_ms;
+		//		sensorSettings.window_size_ms;
+		//		sensorSettings.window_period_ms;
 	}
 
 	imu.updateGyroSettings(sensorSettings.gyro_settings.has_cutoff,
@@ -89,82 +89,80 @@ void IMU_Task(void *argument){
 
 	osDelay(1);
 
-//  uint16_t imuIdx = 0;
-  uint32_t imuID = 0;
+	//  uint16_t imuIdx = 0;
+	uint32_t imuID = 0;
 
-  imu.spiDataReady = HAL_SPI_IMU_WAIT;
+	imu.spiDataReady = HAL_SPI_IMU_WAIT;
 
-//  uint8_t intStatus[4] = {0};
+	//  uint8_t intStatus[4] = {0};
 
-  uint16_t fifo_cnt;
+	uint16_t fifo_cnt;
 
-  // sample frequency calculation
-  float sampleFrequency = 1125.0 / (1+sensorSettings.accel_settings.sample_rate_divisor);
-  if(sampleFrequency < (1100.0 / (1+sensorSettings.gyro_settings.sample_rate_divisor))){
-	  sampleFrequency = 1100.0 / (1+sensorSettings.gyro_settings.sample_rate_divisor);
-  }
-  float sample_time_offset_ms = 1000.0/sampleFrequency;
+	// sample frequency calculation
+	float sampleFrequency = 1125.0 / (1+sensorSettings.accel_settings.sample_rate_divisor);
+	if(sampleFrequency < (1100.0 / (1+sensorSettings.gyro_settings.sample_rate_divisor))){
+		sampleFrequency = 1100.0 / (1+sensorSettings.gyro_settings.sample_rate_divisor);
+	}
+	float sample_time_offset_ms = 1000.0/sampleFrequency;
 
-  uint16_t sampleTracker = 0;
-  uint16_t start_idx = 0;
-//  uint16_t end_idx = 0;
-  uint32_t packetTracker = 0;
+	uint16_t sampleTracker = 0;
+	uint16_t start_idx = 0;
+	//  uint16_t end_idx = 0;
+	uint32_t packetTracker = 0;
 
-//  uint32_t lastTick = HAL_GetTick();
-//  float sampleRate = 0;
+	//  uint32_t lastTick = HAL_GetTick();
+	//  float sampleRate = 0;
 
-  startTime = HAL_GetTick();
-  sampleStartTime_Ms = startTime;
-  sampleStartTime_Unix = getEpoch();
+	startTime = HAL_GetTick();
+	sampleStartTime_Ms = startTime;
+	sampleStartTime_Unix = getEpoch();
 
-  uint16_t failed_read_attempt = 0;
+	uint16_t failed_read_attempt = 0;
 
-  while(1){
-//  	flags = osThreadFlagsWait(GRAB_SAMPLE_BIT | TERMINATE_THREAD_BIT,
-//  					osFlagsWaitAny, osWaitForever);
-	  if(1){
-		osDelay(IMU_SAMPLE_PERIOD_MS);
+	while(1){
+		//  	flags = osThreadFlagsWait(GRAB_SAMPLE_BIT | TERMINATE_THREAD_BIT,
+		//  					osFlagsWaitAny, osWaitForever);
+		if(1){
+			osDelay(IMU_SAMPLE_PERIOD_MS);
 
-		flags = osThreadFlagsGet();
-
-
-
-		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
-			  imu.reset();
-			  vTaskDelete( NULL );
-		}
-
-  		imu.getFIFOcnt(&fifo_cnt);
+			flags = osThreadFlagsGet();
 
 
-  		if(fifo_cnt != 0){
-			fifo_cnt = fifo_cnt - (fifo_cnt % IMU_PKT_SIZE); // ensure reading only complete packets
 
-			flag_int_enable = 1;
-			osDelay(1);
-			if(imu.readFIFO(data, fifo_cnt) != false){
+			if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
+				imu.reset();
+				vTaskDelete( NULL );
+			}
 
-				sampleTracker += fifo_cnt;
+			imu.getFIFOcnt(&fifo_cnt);
 
-//				lastTick = HAL_GetTick();
-				start_idx = 0;
 
-				while(sampleTracker != 0){
+			if(fifo_cnt != 0){
+				fifo_cnt = fifo_cnt - (fifo_cnt % IMU_PKT_SIZE); // ensure reading only complete packets
 
-					if(sampleTracker >= MAX_IMU_PKT_SIZE){
-						packetTracker = MAX_IMU_PKT_SIZE;
-					}else{
-						packetTracker = sampleTracker;
-					}
+				flag_int_enable = 1;
+				osDelay(1);
+				if(imu.readFIFO(data, fifo_cnt) != false){
 
-					packet = grabPacket();
-					while(packet == NULL){
-						osDelay(2);
+					sampleTracker += fifo_cnt;
+
+					//				lastTick = HAL_GetTick();
+					start_idx = 0;
+
+					while(sampleTracker != 0){
+
+						if(sampleTracker >= MAX_IMU_PKT_SIZE){
+							packetTracker = MAX_IMU_PKT_SIZE;
+						}else{
+							packetTracker = sampleTracker;
+						}
+
 						packet = grabPacket();
+						while(packet == NULL){
+							osDelay(2);
+							packet = grabPacket();
 
-					}
-
-
+						}
 
 						setPacketType(packet, SENSOR_PACKET_TYPES_IMU);
 
@@ -196,104 +194,103 @@ void IMU_Task(void *argument){
 						packet->payload.imu_packet.payload.sample.size = packetTracker;
 						counterTest += packetTracker;
 						// send to BT packetizer
-						queueUpPacket(packet);
+						queueUpPacket(packet, 10);
 
 
-					sampleTracker -= packetTracker;
-					start_idx += packetTracker;
-					imuID++;
-					osDelay(15);
-				}
-
-		  	}
-			flag_int_enable = 0;
-  		}else{
-  	  		failed_read_attempt+=1;
-  	  		if(failed_read_attempt >= 10){
-  	  			imu._init(); // reinit imu
-  	  			failed_read_attempt = 0;
-  	  		}
-  	  		sampleStartTime_Unix = getEpoch();
-			sampleStartTime_Ms = HAL_GetTick();
-  	  	}
-
-  	}
-
-	  if(sensorSettings.enable_windowing){
-
-		if(sensorSettings.window_size_ms < (HAL_GetTick() - startTime)){
-
-//			endTestTick = HAL_GetTick() - startTestTick;
-//			sampleRateTest = (counterTest / 12.0) / (endTestTick / 1000.0);
-
-			imu.reset();
-
-
-			if(sensorSettings.enable_windowing_sync){
-				flags = osThreadFlagsWait(TERMINATE_THREAD_BIT | WINDOW_SYNC_RDY_BIT,
-									  					osFlagsWaitAny, osWaitForever);
-			}else{
-				int32_t waitTime = sensorSettings.window_period_ms - sensorSettings.window_size_ms;
-				if(waitTime < 0) waitTime = 0;
-
-				flags = osThreadFlagsWait(TERMINATE_THREAD_BIT | WINDOW_SYNC_RDY_BIT,
-									  					osFlagsWaitAny, waitTime);
-			}
-
-
-			if((flags != osFlagsErrorTimeout) && ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT)) {
-						  vTaskDelete( NULL );
+						sampleTracker -= packetTracker;
+						start_idx += packetTracker;
+						imuID++;
 					}
 
-			if((flags & WINDOW_SYNC_RDY_BIT) == WINDOW_SYNC_RDY_BIT){
-				// this check is unnessary but leaving it in in case we want to expand further
+				}
+				flag_int_enable = 0;
+			}else{
+				failed_read_attempt+=1;
+				if(failed_read_attempt >= 10){
+					imu._init(); // reinit imu
+					failed_read_attempt = 0;
+				}
+				sampleStartTime_Unix = getEpoch();
+				sampleStartTime_Ms = HAL_GetTick();
 			}
 
-
-
-			imu.updateGyroSettings(sensorSettings.gyro_settings.has_cutoff,
-					sensorSettings.gyro_settings.cutoff,
-					sensorSettings.gyro_settings.range,
-					sensorSettings.gyro_settings.sample_rate_divisor);
-			imu.updateAccelSettings(sensorSettings.accel_settings.has_cutoff,
-					sensorSettings.accel_settings.cutoff,
-					sensorSettings.accel_settings.range,
-					sensorSettings.accel_settings.sample_rate_divisor);
-
-
-
-
-			while(!imu.begin_SPI(&hspi2,IMU_CS_GPIO_Port,IMU_CS_Pin)){
-				osDelay(100);
-			}
-
-			osDelay(1);
-
-			fifo_cnt = 0;
-			imu.spiDataReady = HAL_SPI_IMU_WAIT;
-//			startTestTick = HAL_GetTick();
-//			counterTest = 0;
-
-			startTime = HAL_GetTick();
-			sampleStartTime_Ms = startTime;
-			sampleStartTime_Unix = getEpoch();
 		}
 
+		if(sensorSettings.enable_windowing){
 
-	}
+			if(sensorSettings.window_size_ms < (HAL_GetTick() - startTime)){
 
-//	  else{
-//  		failed_read_attempt+=1;
-//  		if(failed_read_attempt >= 10){
-//  			imu._init(); // reinit imu
-//  			failed_read_attempt = 0;
-//  		}
-//
-//  	}
+				//			endTestTick = HAL_GetTick() - startTestTick;
+				//			sampleRateTest = (counterTest / 12.0) / (endTestTick / 1000.0);
 
-//		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
-//			osTimerDelete(periodicIMUTimer_id);
-//		}
+				imu.reset();
+
+
+				if(sensorSettings.enable_windowing_sync){
+					flags = osThreadFlagsWait(TERMINATE_THREAD_BIT | WINDOW_SYNC_RDY_BIT,
+							osFlagsWaitAny, osWaitForever);
+				}else{
+					int32_t waitTime = sensorSettings.window_period_ms - sensorSettings.window_size_ms;
+					if(waitTime < 0) waitTime = 0;
+
+					flags = osThreadFlagsWait(TERMINATE_THREAD_BIT | WINDOW_SYNC_RDY_BIT,
+							osFlagsWaitAny, waitTime);
+				}
+
+
+				if((flags != osFlagsErrorTimeout) && ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT)) {
+					vTaskDelete( NULL );
+				}
+
+				if((flags & WINDOW_SYNC_RDY_BIT) == WINDOW_SYNC_RDY_BIT){
+					// this check is unnessary but leaving it in in case we want to expand further
+				}
+
+
+
+				imu.updateGyroSettings(sensorSettings.gyro_settings.has_cutoff,
+						sensorSettings.gyro_settings.cutoff,
+						sensorSettings.gyro_settings.range,
+						sensorSettings.gyro_settings.sample_rate_divisor);
+				imu.updateAccelSettings(sensorSettings.accel_settings.has_cutoff,
+						sensorSettings.accel_settings.cutoff,
+						sensorSettings.accel_settings.range,
+						sensorSettings.accel_settings.sample_rate_divisor);
+
+
+
+
+				while(!imu.begin_SPI(&hspi2,IMU_CS_GPIO_Port,IMU_CS_Pin)){
+					osDelay(100);
+				}
+
+				osDelay(1);
+
+				fifo_cnt = 0;
+				imu.spiDataReady = HAL_SPI_IMU_WAIT;
+				//			startTestTick = HAL_GetTick();
+				//			counterTest = 0;
+
+				startTime = HAL_GetTick();
+				sampleStartTime_Ms = startTime;
+				sampleStartTime_Unix = getEpoch();
+			}
+
+
+		}
+
+		//	  else{
+		//  		failed_read_attempt+=1;
+		//  		if(failed_read_attempt >= 10){
+		//  			imu._init(); // reinit imu
+		//  			failed_read_attempt = 0;
+		//  		}
+		//
+		//  	}
+
+		//		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
+		//			osTimerDelete(periodicIMUTimer_id);
+		//		}
 	}
 
 
@@ -304,14 +301,14 @@ void IMU_Task(void *argument){
 //}
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-//	if(GPIO_Pin == IMU_INT_Pin) triggerIMUSample(NULL);
+	//	if(GPIO_Pin == IMU_INT_Pin) triggerIMUSample(NULL);
 }
 
 void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi){
 	// send flag to IMU
 	if(flag_int_enable){
-	osThreadFlagsSet(imuTaskHandle, IMU_DATA_RDY_BIT);
-	flag_int_enable = 0;
+		osThreadFlagsSet(imuTaskHandle, IMU_DATA_RDY_BIT);
+		flag_int_enable = 0;
 	}
 
 }
@@ -322,7 +319,7 @@ void IMUSyncTrigger(void) {
 
 void HAL_SPI_IMU_WAIT(uint8_t *state){
 	uint32_t flag = osThreadFlagsWait(IMU_DATA_RDY_BIT,
-	  					osFlagsWaitAny, 100);
+			osFlagsWaitAny, 100);
 
 	if(flag == osFlagsErrorTimeout){
 		*state = 0;

@@ -331,7 +331,7 @@ void SgpTask(void *argument) {
 						packet->payload.sgp_packet.payload_count = sgpIdx;
 
 						// send to BT packetizer
-						queueUpPacket(packet);
+						queueUpPacket(packet, sensorSettings.sample_period_ms >> 1);
 					}
 				}
 
@@ -353,7 +353,7 @@ void SgpTask(void *argument) {
 						packet->payload.sgp_packet.payload_count = sgpIdx;
 
 						// send to BT packetizer
-						queueUpPacket(packet);
+						queueUpPacket(packet, sensorSettings.sample_period_ms >> 1);
 					}
 				}
 #endif

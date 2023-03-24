@@ -123,7 +123,7 @@ void BME_Task(void *argument) {
 					packet->payload.bme_packet.payload_count = bmeIdx;
 
 					// send to BT packetizer
-					queueUpPacket(packet);
+					queueUpPacket(packet, 2000);
 
 				}
 				bmeID++;

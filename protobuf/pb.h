@@ -23,7 +23,7 @@
 /* #define PB_MAX_REQUIRED_FIELDS 256 */
 
 /* Add support for tag numbers > 65536 and fields larger than 65536 bytes. */
-/* #define PB_FIELD_32BIT 1 */
+//#define PB_FIELD_32BIT 1
 
 /* Disable support for error messages in order to save some code space. */
 /* #define PB_NO_ERRMSG 1 */
@@ -55,7 +55,7 @@
 /* Configure static assert mechanism. Instead of changing these, set your
  * compiler to C11 standard mode if possible. */
 /* #define PB_C99_STATIC_ASSERT 1 */
-/* #define PB_NO_STATIC_ASSERT 1 */
+#define PB_NO_STATIC_ASSERT 1
 
 /******************************************************************
  * You usually don't need to change anything below this line.     *

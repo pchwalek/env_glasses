@@ -205,7 +205,7 @@ void queueThermopilePkt(therm_packet_payload_t *sample, uint16_t packetCnt){
 
 
 			// send to BT packetizer
-			queueUpPacket(packet);
+			queueUpPacket(packet, 200);
 
 		}
 		thermID++;

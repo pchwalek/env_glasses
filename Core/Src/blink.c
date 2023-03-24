@@ -204,7 +204,7 @@ void BlinkTask(void *argument) {
 						packet->payload.blink_packet.payload.payload_byte.sample.size = payloadLength;
 
 					    // send to BT packetizer
-						queueUpPacket(packet);
+						queueUpPacket(packet,20);
 
 //						// add tick cnt
 //						previousTick_ms = blinkMsgBuffer_1.tick_ms;

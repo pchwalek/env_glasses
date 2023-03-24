@@ -143,7 +143,7 @@ void HRS_Notification(HRS_App_Notification_evt_t *pNotification)
 
 void HRSAPP_Init(void)
 {
-  HrsProcessId = osThreadNew(HrsProcess, NULL, &HrsProcess_attr);
+//  HrsProcessId = osThreadNew(HrsProcess, NULL, &HrsProcess_attr);
 /* USER CODE BEGIN HRSAPP_Init */
 
 /* USER CODE END HRSAPP_Init */
