@@ -445,7 +445,7 @@ void startThreads() {
 //		osDelay(1000);
 //	}
 
-	osDelay(5000);
+//	osDelay(5000);
 	ingestSensorConfig(&sysState);
 
 

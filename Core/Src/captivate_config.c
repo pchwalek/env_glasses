@@ -283,15 +283,30 @@ void ingestSensorConfig(system_state_t *config){
 			syncTimerActive(false, 0);
 		}
 	}else{
-		controlSpectrometer(config->control.spectrometer);
-		controlBME(config->control.bme688);
-		controlThermopile(config->control.thermopiles);
-		controlLux(config->control.lux);
-		controlSHT(config->control.sht);
-		controlSGP(config->control.sgp);
-		controlBlink(config->control.blink);
-		controlMic(config->control.mic);
-		controlIMU(config->control.imu);
+		if(config->control.thermopiles){
+			controlThermopile(config->control.thermopiles);
+			osDelay(500);
+		}
+		if(config->control.spectrometer){
+			controlSpectrometer(config->control.spectrometer);
+			osDelay(500);
+		}
+		if(config->control.bme688){
+			controlBME(config->control.bme688);
+			osDelay(500);
+		}
+		if(config->control.lux){
+			controlLux(config->control.lux);
+			osDelay(500);
+		}
+		if(config->control.sht){
+			controlSHT(config->control.sht);
+			osDelay(500);
+		}
+		//		controlSGP(config->control.sgp);
+		//		controlBlink(config->control.blink);
+		//		controlMic(config->control.mic);
+		//		controlIMU(config->control.imu);
 
 		if(config->control.synchronize_windows){
 			syncTimerActive(config->control.imu | config->control.blink, config->control.window_period_ms);
