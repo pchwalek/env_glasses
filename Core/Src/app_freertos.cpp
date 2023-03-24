@@ -138,7 +138,7 @@ const osThreadAttr_t sgpTask_attributes = { .name = "sgpTask", .attr_bits =
 osThreadId_t imuTaskHandle;
 const osThreadAttr_t imuTask_attributes = { .name = "imuTask", .attr_bits =
 		osThreadDetached, .cb_mem = NULL, .cb_size = 0, .stack_mem = NULL,
-		.stack_size = 512 * 6, .priority = (osPriority_t) osPriorityNormal,
+		.stack_size = 512 * 10, .priority = (osPriority_t) osPriorityNormal,
 		.tz_module = 0, .reserved = 0 };
 
 osThreadId_t blinkTaskHandle;

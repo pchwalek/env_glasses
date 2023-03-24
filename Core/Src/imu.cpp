@@ -159,7 +159,7 @@ void IMU_Task(void *argument){
 
 						packet = grabPacket();
 						while(packet == NULL){
-							osDelay(2);
+							osDelay(10);
 							packet = grabPacket();
 
 						}
@@ -185,8 +185,8 @@ void IMU_Task(void *argument){
 						packet->payload.imu_packet.timestamp_unix = sampleStartTime_Unix;
 						packet->payload.imu_packet.timestamp_ms_from_start = startTime;
 
-						sampleStartTime_Unix += sample_time_offset_ms * (packetTracker/12.0);
-						sampleStartTime_Ms += sample_time_offset_ms * (packetTracker/12.0);
+						sampleStartTime_Unix += sample_time_offset_ms * ((float) packetTracker)/12.0;
+						sampleStartTime_Ms += sample_time_offset_ms * ((float) packetTracker)/12.0;
 
 						// write data
 						memcpy(packet->payload.imu_packet.payload.sample.bytes, &data[start_idx], packetTracker);
@@ -195,7 +195,6 @@ void IMU_Task(void *argument){
 						counterTest += packetTracker;
 						// send to BT packetizer
 						queueUpPacket(packet, 10);
-
 
 						sampleTracker -= packetTracker;
 						start_idx += packetTracker;

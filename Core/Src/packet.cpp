@@ -40,7 +40,7 @@ static uint32_t buffer_index = 0;
 sensor_packet_t* grabPacket(void) {
 	sensor_packet_t *packet;
 	// grab available memory for packet creation
-	if (osOK != osMessageQueueGet(packetAvail_QueueHandle, &packet, 0U, 0)) {
+	if (osOK != osMessageQueueGet(packetAvail_QueueHandle, &packet, 0U, 5)) {
 		return NULL;
 	}
 	return packet;
@@ -229,11 +229,11 @@ void senderThread(void *argument) {
 					break;
 				}
 				retry++;
-	//			osDelay(5);
+				osDelay(5);
 			};
 
 			/* artificial delay in case the data rate of client device is bottlenecked */
-//			osDelay(25);
+			osDelay(10);
 		}else{
 			/* add packet to FRAM if its not IMU or Blink */
 			if( packetToSend->which_payload != SENSOR_PACKET_IMU_PACKET_TAG ){
