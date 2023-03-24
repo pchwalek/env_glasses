@@ -356,7 +356,7 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument) {
 	/* USER CODE BEGIN StartDefaultTask */
 	/* Infinite loop */
-	osDelay(2000);
+//	osDelay(2000);
 //	MX_FREERTOS_Init();
 
 
@@ -451,7 +451,7 @@ void startThreads() {
 
 	// seems like I need to keep this thread active for the system to work...
 	while(1){
-		osDelay(100);
+		osDelay(1);
 	}
 
 

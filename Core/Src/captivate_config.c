@@ -30,6 +30,7 @@
 #include "dts.h"
 
 #define ALL_SENSORS	1
+#define CONTROL_DELAY 500
 
 void syncTimerActive(bool state, uint32_t period);
 static void syncTimerTask(void);
@@ -43,6 +44,7 @@ void controlSpectrometer(bool state){
 	}else{
 		osThreadFlagsSet(specTaskHandle, TERMINATE_THREAD_BIT);
 	}
+	osDelay(CONTROL_DELAY);
 }
 void controlBME(bool state){
 	if(state){
@@ -53,6 +55,7 @@ void controlBME(bool state){
 	}else{
 		osThreadFlagsSet(bmeTaskHandle, TERMINATE_THREAD_BIT);
 	}
+	osDelay(CONTROL_DELAY);
 }
 void controlIMU(bool state){
 	if(state){
@@ -63,6 +66,7 @@ void controlIMU(bool state){
 	}else{
 		osThreadFlagsSet(imuTaskHandle, TERMINATE_THREAD_BIT);
 	}
+	osDelay(CONTROL_DELAY);
 }
 
 imu_sensor_config_t imuConfigNoWindow;
@@ -98,6 +102,7 @@ void controlThermopile(bool state){
 	}else{
 		osThreadFlagsSet(thermopileTaskHandle, TERMINATE_THREAD_BIT);
 	}
+	osDelay(CONTROL_DELAY);
 }
 void controlLux(bool state){
 	if(state){
@@ -108,6 +113,7 @@ void controlLux(bool state){
 	}else{
 		osThreadFlagsSet(luxTaskHandle, TERMINATE_THREAD_BIT);
 	}
+	osDelay(CONTROL_DELAY);
 }
 void controlMic(bool state){
 	if(state){
@@ -118,6 +124,7 @@ void controlMic(bool state){
 	}else{
 		osThreadFlagsSet(micTaskHandle, TERMINATE_THREAD_BIT);
 	}
+	osDelay(CONTROL_DELAY);
 }
 void controlSHT(bool state){
 	if(state){
@@ -128,6 +135,7 @@ void controlSHT(bool state){
 	}else{
 		osThreadFlagsSet(shtTaskHandle, TERMINATE_THREAD_BIT);
 	}
+	osDelay(CONTROL_DELAY);
 }
 void controlSGP(bool state){
 	if(state){
@@ -137,8 +145,8 @@ void controlSGP(bool state){
 		}
 	}else{
 		osThreadFlagsSet(sgpTaskHandle, TERMINATE_THREAD_BIT);
-
 	}
+	osDelay(CONTROL_DELAY);
 }
 
 void controlBlink(bool state){
@@ -150,6 +158,7 @@ void controlBlink(bool state){
 	}else{
 		osThreadFlagsSet(blinkTaskHandle, TERMINATE_THREAD_BIT);
 	}
+	osDelay(CONTROL_DELAY);
 }
 
 blink_sensor_config_t blinkConfigNoWindow;
@@ -283,30 +292,18 @@ void ingestSensorConfig(system_state_t *config){
 			syncTimerActive(false, 0);
 		}
 	}else{
-		if(config->control.thermopiles){
-			controlThermopile(config->control.thermopiles);
-			osDelay(500);
-		}
-		if(config->control.spectrometer){
-			controlSpectrometer(config->control.spectrometer);
-			osDelay(500);
-		}
-		if(config->control.bme688){
-			controlBME(config->control.bme688);
-			osDelay(500);
-		}
-		if(config->control.lux){
-			controlLux(config->control.lux);
-			osDelay(500);
-		}
-		if(config->control.sht){
-			controlSHT(config->control.sht);
-			osDelay(500);
-		}
-		//		controlSGP(config->control.sgp);
-		//		controlBlink(config->control.blink);
-		//		controlMic(config->control.mic);
-		//		controlIMU(config->control.imu);
+		controlThermopile(config->control.thermopiles);
+//		osDelay(1000);
+		controlSpectrometer(config->control.spectrometer);
+//		osDelay(1000);
+		controlBME(config->control.bme688);
+//		osDelay(1000);
+		controlLux(config->control.lux);
+		controlSHT(config->control.sht);
+		controlSGP(config->control.sgp);
+		controlBlink(config->control.blink);
+		controlMic(config->control.mic);
+		controlIMU(config->control.imu);
 
 		if(config->control.synchronize_windows){
 			syncTimerActive(config->control.imu | config->control.blink, config->control.window_period_ms);
