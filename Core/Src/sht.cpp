@@ -18,7 +18,7 @@
 //#define MAX_SHT_SAMPLES_PACKET	int((SEND_SHT_EVERY_X_S*1000)/SHT_SAMPLE_SYS_PERIOD_MS)
 
 #define SHT_SAMPLE_SYS_PERIOD_MS		500 //how often do we want the system to sample
-#define MAX_SHT_SAMPLES_PACKET	1
+#define MAX_SHT_SAMPLES_PACKET	2
 
 //typedef struct shtSamples {
 //	float temp;

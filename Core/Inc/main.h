@@ -64,6 +64,7 @@ extern SPI_HandleTypeDef hspi2;
 
 void startThreads(void);
 void startInitThread(void);
+void resetSystem(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/

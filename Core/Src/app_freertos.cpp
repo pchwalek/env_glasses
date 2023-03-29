@@ -83,7 +83,7 @@ osThreadId_t bleRX_TaskHandle;
 const osThreadAttr_t bleRX_Task_attributes = { .name = "bleRX_Task",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
 		.stack_mem = NULL, .stack_size = 512 * 4, .priority =
-				(osPriority_t) osPriorityNormal, .tz_module = 0, .reserved = 0 };
+				(osPriority_t) osPriorityAboveNormal, .tz_module = 0, .reserved = 0 };
 
 osThreadId_t blinkCalTaskHandle;
 osThreadId_t blinkCalTaskExitHandle;
@@ -138,7 +138,7 @@ const osThreadAttr_t sgpTask_attributes = { .name = "sgpTask", .attr_bits =
 osThreadId_t imuTaskHandle;
 const osThreadAttr_t imuTask_attributes = { .name = "imuTask", .attr_bits =
 		osThreadDetached, .cb_mem = NULL, .cb_size = 0, .stack_mem = NULL,
-		.stack_size = 512 * 10, .priority = (osPriority_t) osPriorityNormal,
+		.stack_size = 512 * 14, .priority = (osPriority_t) osPriorityBelowNormal,
 		.tz_module = 0, .reserved = 0 };
 
 osThreadId_t blinkTaskHandle;
@@ -359,6 +359,7 @@ void StartDefaultTask(void *argument) {
 //	osDelay(2000);
 //	MX_FREERTOS_Init();
 
+	uint32_t timeDelta = HAL_GetTick();
 
 	while(sensorThreadsRunning != 1){
 		osDelay(10);

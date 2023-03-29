@@ -16,8 +16,8 @@
 #define THERMOPILE_SAMPLE_PERIOD_MS		500
 #define THERMOPILE_CNT								2
 #define THERMOPILE_CHANNELS				5
-#define MAX_THERMOPILE_SAMPLES_PACKET	(int)(512-sizeof(PacketHeader))/sizeof(thermopile_packet)
-
+//#define MAX_THERMOPILE_SAMPLES_PACKET	(int)(512-sizeof(PacketHeader))/sizeof(thermopile_packet)
+#define MAX_THERMOPILE_SAMPLES_PACKET  (2*THERMOPILE_CHANNELS)
 //typedef struct __attribute__((packed)) thermopile_packets {
 //	uint32_t descriptor;
 //	uint32_t timestamp_ms_from_start;
@@ -37,7 +37,7 @@ void grabThermopileSamples(therm_packet_payload_t *data, CALIPILE *tp);
 
 //static wristAirThermopile thermopileData[MAX_THERMOPILE_SAMPLES_PACKET];
 //static thermopile_packet thermopileData[MAX_THERMOPILE_SAMPLES_PACKET];
-static therm_packet_payload_t thermopileData[THERMOPILE_CHANNELS];
+static therm_packet_payload_t thermopileData[MAX_THERMOPILE_SAMPLES_PACKET];
 
 
 //static PacketHeader header;
@@ -140,7 +140,11 @@ void Thermopile_Task(void *argument) {
 			grabThermopileSamples(&thermopileData[thermIdx++], &tp_temple_back);
 			osSemaphoreRelease(messageI2C3_LockHandle);
 
-			queueThermopilePkt(&thermopileData[0], 5);
+			if(thermIdx >= MAX_THERMOPILE_SAMPLES_PACKET){
+				queueThermopilePkt(&thermopileData[0], thermIdx);
+				thermID++;
+				thermIdx = 0;
+			}
 
 		}
 
@@ -177,7 +181,7 @@ void initThermopiles(CALIPILE *tp, uint8_t address, I2C_HandleTypeDef* i2c_handl
 
 void queueThermopilePkt(therm_packet_payload_t *sample, uint16_t packetCnt){
 	sensor_packet_t *packet = NULL;
-	thermIdx+=packetCnt;
+//	thermIdx+=packetCnt;
 
 //	bool status;
 
@@ -194,7 +198,7 @@ void queueThermopilePkt(therm_packet_payload_t *sample, uint16_t packetCnt){
 //			memset(&sensorPacket.therm_packet.payload[0], 0, sizeof(sensorPacket.therm_packet.payload));
 
 			// write data
-			memcpy(packet->payload.therm_packet.payload, sample, thermIdx * sizeof(therm_packet_payload_t));
+			memcpy(packet->payload.therm_packet.payload, sample, packetCnt * sizeof(therm_packet_payload_t));
 			packet->payload.therm_packet.payload_count = packetCnt;
 
 //			// encode
@@ -208,8 +212,8 @@ void queueThermopilePkt(therm_packet_payload_t *sample, uint16_t packetCnt){
 			queueUpPacket(packet, 200);
 
 		}
-		thermID++;
-		thermIdx = 0;
+//		thermID++;
+//		thermIdx = 0;
 //	}
 }
 

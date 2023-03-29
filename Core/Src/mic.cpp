@@ -145,8 +145,8 @@ void Mic_Task(void *argument){
 		flags = osThreadFlagsWait(GRAB_SAMPLE_BIT | TERMINATE_THREAD_BIT,
 				osFlagsWaitAny, osWaitForever);
 
-		fft_time_unix = getEpoch();
-		fft_time_ms_from_start = HAL_GetTick();
+//		fft_time_unix = getEpoch();
+//		fft_time_ms_from_start = HAL_GetTick();
 
 
 		if ((flags & GRAB_SAMPLE_BIT) == GRAB_SAMPLE_BIT) {
@@ -250,8 +250,8 @@ void Mic_Task(void *argument){
 						packet->payload.mic_packet.packet_index = micID;
 
 
-						packet->payload.mic_packet.timestamp_unix = fft_time_unix;
-						packet->payload.mic_packet.timestamp_ms_from_start = fft_time_ms_from_start;
+						packet->payload.mic_packet.timestamp_unix = getEpoch();
+						packet->payload.mic_packet.timestamp_ms_from_start = HAL_GetTick();
 
 						packet->payload.mic_packet.frequency_spacing = fft_spacing;
 						packet->payload.mic_packet.mic_sample_freq = sensorSettings.mic_sample_freq;

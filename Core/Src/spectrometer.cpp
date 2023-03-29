@@ -20,7 +20,7 @@
 #define SPEC_SAMPLE_SYS_PERIOD_MS		2000 //how often do we want the system to sample
 #define SEND_SPEC_EVERY_X_S				5
 //#define MAX_SPEC_SAMPLES_PACKET	int((SEND_SPEC_EVERY_X_S*1000)/SPEC_SAMPLE_SYS_PERIOD_MS)
-#define MAX_SPEC_SAMPLES_PACKET	int(1)
+#define MAX_SPEC_SAMPLES_PACKET	int(3)
 #define SPEC_FLICKER_DELAY				510
 
 //typedef struct specSamples {

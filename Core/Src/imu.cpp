@@ -117,6 +117,10 @@ void IMU_Task(void *argument){
 	sampleStartTime_Ms = startTime;
 	sampleStartTime_Unix = getEpoch();
 
+	volatile float sampleRateTracker = 0;
+	volatile uint32_t tempTimeTracker = HAL_GetTick();
+	volatile uint64_t sampleCounter = 0 ;
+
 	uint16_t failed_read_attempt = 0;
 
 	while(1){
@@ -128,23 +132,33 @@ void IMU_Task(void *argument){
 			flags = osThreadFlagsGet();
 
 
-
 			if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
 				imu.reset();
 				vTaskDelete( NULL );
 			}
 
+
+
+
 			imu.getFIFOcnt(&fifo_cnt);
 
 
 			if(fifo_cnt != 0){
+
+
+
+
+
 				fifo_cnt = fifo_cnt - (fifo_cnt % IMU_PKT_SIZE); // ensure reading only complete packets
 
 				flag_int_enable = 1;
 				osDelay(1);
-				if(imu.readFIFO(data, fifo_cnt) != false){
+				if( (imu.readFIFO(data, fifo_cnt) != false) && (fifo_cnt > 0)){
 
 					sampleTracker += fifo_cnt;
+
+					sampleCounter = sampleCounter + fifo_cnt / 12.0;
+
 
 					//				lastTick = HAL_GetTick();
 					start_idx = 0;
@@ -219,6 +233,7 @@ void IMU_Task(void *argument){
 
 			if(sensorSettings.window_size_ms < (HAL_GetTick() - startTime)){
 
+				sampleRateTracker = ((double) sampleCounter) / (HAL_GetTick() - tempTimeTracker);
 				//			endTestTick = HAL_GetTick() - startTestTick;
 				//			sampleRateTest = (counterTest / 12.0) / (endTestTick / 1000.0);
 
@@ -273,6 +288,11 @@ void IMU_Task(void *argument){
 				startTime = HAL_GetTick();
 				sampleStartTime_Ms = startTime;
 				sampleStartTime_Unix = getEpoch();
+
+				tempTimeTracker = HAL_GetTick();
+				sampleRateTracker = 0;
+				sampleCounter = 0;
+
 			}
 
 

@@ -26,7 +26,7 @@
 
 #define BME_SAMPLE_PERIOD_MS		3000
 //#define MAX_BME_SAMPLES_PACKET	(int)(512-sizeof(PacketHeader))/sizeof(bsecData)
-#define MAX_BME_SAMPLES_PACKET		20
+#define MAX_BME_SAMPLES_PACKET		5
 #define BME_WAIT_TOL			10
 #define BME_SAVE_STATE_PERIOD_MS	7200000 // every 2 hours
 
@@ -106,7 +106,7 @@ void BME_Task(void *argument) {
 				bmeData[bmeIdx++].accuracy = static_cast<bme680_accuracy_t>(bme.outputs.output[i].accuracy);
 			}
 
-			if (bmeIdx > 0) {
+			if (bmeIdx > MAX_BME_SAMPLES_PACKET) {
 
 				packet = grabPacket();
 				if (packet != NULL) {

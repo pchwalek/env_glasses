@@ -121,6 +121,7 @@ void setPacketType(sensor_packet_t* packetPtr,sensor_packet_types_t type){
 
 static uint8_t encoded_payload[MAX_PAYLOAD_SIZE];
 pb_ostream_t stream;
+volatile uint64_t failedTracker = 0;
 
 void senderThread(void *argument) {
 	uint8_t retry;
@@ -214,11 +215,13 @@ void senderThread(void *argument) {
 //		}
 
 		retry = 0;
-
 		if(isBluetoothConnected()){
 			if(backupPkt != 1){
 				stream = pb_ostream_from_buffer(encoded_payload, MAX_PAYLOAD_SIZE);
 				status = pb_encode(&stream, SENSOR_PACKET_FIELDS, packetToSend);
+				if(status != true){
+					failedTracker += 1;
+				}
 				pktLength = stream.bytes_written;
 			}else{
 				backupPkt = 0;
@@ -235,7 +238,7 @@ void senderThread(void *argument) {
 			/* artificial delay in case the data rate of client device is bottlenecked */
 			osDelay(10);
 		}else{
-			/* add packet to FRAM if its not IMU or Blink */
+			/* add packet to FRAM if its not IMU  */
 			if( packetToSend->which_payload != SENSOR_PACKET_IMU_PACKET_TAG ){
 
 				stream = pb_ostream_from_buffer(encoded_payload, MAX_PAYLOAD_SIZE);

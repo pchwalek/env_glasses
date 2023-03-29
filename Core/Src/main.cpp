@@ -207,7 +207,7 @@ int main(void) {
 		sysState.control.bme688 = 1;
 		sysState.control.sgp = 1;
 
-		sysState.control.imu = 1;
+		sysState.control.imu = 0;
 		sysState.control.spectrometer = 1;
 		sysState.control.thermopiles = 1;
 		sysState.control.blink = 1;
@@ -252,7 +252,7 @@ int main(void) {
 		sysState.config.color.gain = SPEC_GAIN_GAIN_256_X;
 		sysState.config.color.sample_period_ms = 5000;
 
-		sysState.config.thermopile.sample_period_ms = 1000;
+		sysState.config.thermopile.sample_period_ms = 1000; // thermopile
 		sysState.config.thermopile.enable_top_of_nose = true;
 		sysState.config.thermopile.enable_nose_bridge = true;
 		sysState.config.thermopile.enable_front_temple = true;
@@ -278,7 +278,7 @@ int main(void) {
 		sysState.config.mic.sample_period_ms = 60000; // 60 seconds
 
 		sysState.config.humidity.precision_level = SHT45_PRECISION_SHT4_X_HIGH_PRECISION;
-		sysState.config.humidity.heater_settings = SHT45_HEATER_SHT4_X_LOW_HEATER_100_MS;
+		sysState.config.humidity.heater_settings = SHT45_HEATER_SHT4_X_NO_HEATER;
 		sysState.config.humidity.sample_period_ms = 5000;
 
 
@@ -509,6 +509,11 @@ void Error_Handler(void) {
 	while (1) {
 	}
 	/* USER CODE END Error_Handler_Debug */
+}
+
+void resetSystem(void){
+	__disable_irq();
+	NVIC_SystemReset();
 }
 
 #ifdef  USE_FULL_ASSERT

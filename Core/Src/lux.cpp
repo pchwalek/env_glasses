@@ -17,7 +17,7 @@
 #define LUX_SAMPLE_SYS_PERIOD_MS		500 //how often do we want the system to sample
 #define SEND_LUX_EVERY_X_S				5
 //#define MAX_LUX_SAMPLES_PACKET	(SEND_LUX_EVERY_X_S*1000)/LUX_SAMPLE_SYS_PERIOD_MS
-#define MAX_LUX_SAMPLES_PACKET	1
+#define MAX_LUX_SAMPLES_PACKET	10
 
 //typedef struct luxSamples {
 //	uint32_t lux;
@@ -64,7 +64,6 @@ void LuxTask(void *argument) {
 
 	uint16_t luxIdx = 0;
 	uint32_t luxID = 0;
-
 
 	periodicLuxTimer_id = osTimerNew(triggerLuxSample, osTimerPeriodic,
 			NULL, NULL);
