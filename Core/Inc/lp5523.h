@@ -232,7 +232,10 @@ void ledStartupSequence(void);
 void ledAllRed(void);
 void resetColor(union ColorComplex * colorComplex);
 void ledEnterDFUNotification(void);
+
 void BlueGreenTransitionTask(void *argument);
+void BlueGreenMemberTransitionTask(void *argument);
+
 void RedFlashTask(void *argument);
 void resetLED(void);
 void BlueGreenTransitionTaskExit(void *argument);

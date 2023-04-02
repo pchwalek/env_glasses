@@ -368,9 +368,18 @@ void StartDefaultTask(void *argument) {
 
     osThreadFlagsSet(ledDisconnectTaskHandle, DISCONNECT_BLE_BIT);
 
-	startThreads();
+	//startThreads();
 
+	blue_green_transition_t blueGreenTran;
+	blueGreenTran.blue_max_intensity = 255;
+	blueGreenTran.blue_min_intensity = 0;
+	blueGreenTran.enable = 1;
+	blueGreenTran.green_hold_length_seconds = 60;
+	blueGreenTran.green_max_intensity = 255;
+	blueGreenTran.step_duration_ms = 100;
+	blueGreenTran.step_size = 1;
 
+	BlueGreenTransitionTaskExit(&blueGreenTran);
 
 	while(1){
 		osDelay(1);
