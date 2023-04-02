@@ -464,7 +464,7 @@ void APP_BLE_Init( void )
   /**
   * Start to Advertise to be connected by Collector
    */
-   Adv_Request(APP_BLE_FAST_ADV);
+//   Adv_Request(APP_BLE_FAST_ADV);
 
 /* USER CODE BEGIN APP_BLE_Init_2 */
   startInitThread();
