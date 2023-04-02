@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+import "message.proto";
+
+message SubmitPackets {
+    reserved 2;
+
+    repeated SensorPacket sensor_data = 1;
+
+    message Meta {
+        double epoch = 1;
+        optional uint32 phone_uid = 2;
+    }
+
+    Meta meta = 3;
+}

@@ -12,7 +12,7 @@
 #include "pb_encode.h"
 #include "pb_decode.h"
 
-char sysName[] = "AirSpec";
+char sysName[] = "AirSpec_01ad7510";
 // The remote service we wish to connect to.
 static BLEUUID serviceUUID("0000fe80-0000-1000-8000-00805f9b34fb");
 // The characteristic of the remote service we are interested in.
