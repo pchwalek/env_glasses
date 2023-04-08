@@ -25,6 +25,8 @@ extern "C" {
 //#define NETWORK_TEST			1
 //#define NETWORK_TEST_PERIOD		1000
 
+
+
 // uncomment if programming the STM32 USB dongle
 #define SECONDARY_ENV_SENSOR_EXPANSION 1
 
@@ -382,7 +384,7 @@ void ingestSensorConfig(system_state_t *config);
 void BlinkCalTask(void *argument);
 void BlinkCalTaskExit(void *argument);
 void bleRX_Task(void *argument);
-
+void i2c_error_check(I2C_HandleTypeDef *hi2c);
 //typedef struct PacketHeaders{
 //  uint16_t packetType;
 //  uint16_t packetID;

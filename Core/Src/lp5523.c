@@ -110,6 +110,7 @@ void setup_LP5523(uint8_t ADDR) {
 	HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, deviceAddress, LIS3DH_D1_CNTRL_REG, 1,
 			packet_array, 9, I2C_TIMEOUT);
 
+	i2c_error_check(I2C_HANDLE_TYPEDEF);
 	osSemaphoreRelease(messageI2C1_LockHandle);
 #else
 	BSP_LED_Init(LED_BLUE);
@@ -260,6 +261,7 @@ void ThreadFrontLightsComplexTask(void *argument){
 //			}
 //		}
 
+		i2c_error_check(&hi2c1);
 		osSemaphoreRelease(messageI2C1_LockHandle);
 	#endif
 	}
@@ -442,6 +444,7 @@ void ThreadFrontLightsTask(void *argument) {
 				LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9, I2C_TIMEOUT);
 		HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1,
 				LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9, I2C_TIMEOUT);
+		i2c_error_check(&hi2c1);
 		osSemaphoreRelease(messageI2C1_LockHandle);
 
 	}
@@ -806,6 +809,7 @@ void RedFlashTask(void *argument){
 				HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1,
 						LIS3DH_D1_PWM_REG, 1,  &redFlashColor.color[9], 9, 5);
 
+				i2c_error_check(&hi2c1);
 				osSemaphoreRelease(messageI2C1_LockHandle);
 
 
@@ -841,6 +845,7 @@ void RedFlashTask(void *argument){
 
 				HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1,
 						LIS3DH_D1_PWM_REG, 1,  &redFlashColor.color[9], 9, 5);
+				i2c_error_check(&hi2c1);
 				osSemaphoreRelease(messageI2C1_LockHandle);
 
 //				osMessageQueuePut(lightsComplexQueueHandle, &redFlashColor, 0, 0);
@@ -880,6 +885,7 @@ void ledEnterDFUNotification(void){
 
 		HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1,
 				LIS3DH_D1_PWM_REG, 1,  &receivedColor.color[9], 9, 5);
+		i2c_error_check(&hi2c1);
 		osSemaphoreRelease(messageI2C1_LockHandle);
 
 	}

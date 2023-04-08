@@ -101,6 +101,7 @@ void Thermopile_Task(void *argument) {
 	osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 	initThermopiles(&tp_nose_tip,		THERMOPLE_NOSE_TIP_ADDR,	&hi2c1,	THERMOPILE_LOCATION_TIP_OF_NOSE);
 	initThermopiles(&tp_nose_bridge,	THERMOPLE_NOSE_BRIDGE_ADDR,	&hi2c1, THERMOPILE_LOCATION_NOSE_BRIDGE);
+	i2c_error_check(&hi2c1);
 	osSemaphoreRelease(messageI2C1_LockHandle);
 
 	osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
@@ -131,6 +132,7 @@ void Thermopile_Task(void *argument) {
 			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			grabThermopileSamples(&thermopileData[thermIdx++], &tp_nose_tip);
 			grabThermopileSamples(&thermopileData[thermIdx++], &tp_nose_bridge);
+			i2c_error_check(&hi2c1);
 			osSemaphoreRelease(messageI2C1_LockHandle);
 
 			// sample temple

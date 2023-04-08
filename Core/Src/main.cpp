@@ -207,7 +207,7 @@ int main(void) {
 		sysState.control.bme688 = 1;
 		sysState.control.sgp = 1;
 
-		sysState.control.imu = 0;
+		sysState.control.imu = 1;
 		sysState.control.spectrometer = 1;
 		sysState.control.thermopiles = 1;
 		sysState.control.blink = 1;

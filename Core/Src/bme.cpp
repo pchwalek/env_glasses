@@ -60,6 +60,7 @@ void BME_Task(void *argument) {
 
 	osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 	while (!bme.begin(BME68X_DEFAULT_ADDRESS, &hi2c1, false)) {
+		i2c_error_check(&hi2c1);
 		osSemaphoreRelease(messageI2C1_LockHandle);
 		osDelay(100);
 		osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
@@ -68,6 +69,7 @@ void BME_Task(void *argument) {
 
 	recoverBME_StateConfig();
 
+	i2c_error_check(&hi2c1);
 	osSemaphoreRelease(messageI2C1_LockHandle);
 
 	bme.bsecSubscribe();
@@ -84,6 +86,7 @@ void BME_Task(void *argument) {
 
 			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			while(!bme.bsecRun()){
+				i2c_error_check(&hi2c1);
 				osSemaphoreRelease(messageI2C1_LockHandle);
 				timeRemaining = floor((bme.bmeConf.next_call/1000000.0) - HAL_GetTick());
 				if(timeRemaining > BME_WAIT_TOL){
@@ -93,6 +96,7 @@ void BME_Task(void *argument) {
 				}
 				osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			}
+			i2c_error_check(&hi2c1);
 			osSemaphoreRelease(messageI2C1_LockHandle);
 
 			for(int i = 0; i<bme.outputs.nOutputs; i++){

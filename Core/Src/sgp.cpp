@@ -101,6 +101,7 @@ void SgpTask(void *argument) {
 	uint8_t serialNumberSize = 3;
 	error = sgp41.getSerialNumber(serialNumber, serialNumberSize);
 	while (error) {
+		i2c_error_check(&hi2c1);
 		osSemaphoreRelease(messageI2C1_LockHandle);
 		osDelay(10);
 		totalError ++;
@@ -118,6 +119,7 @@ void SgpTask(void *argument) {
 
 		error = sgp41.executeSelfTest(testResult);
 		while(error) {
+			i2c_error_check(&hi2c1);
 			osSemaphoreRelease(messageI2C1_LockHandle);
 			osDelay(10);
 			totalError ++;
@@ -133,7 +135,7 @@ void SgpTask(void *argument) {
 			primarySGP_disable = 1;
 		}
 	}
-
+	i2c_error_check(&hi2c1);
 	osSemaphoreRelease(messageI2C1_LockHandle);
 
 #ifdef SECONDARY_ENV_SENSOR_EXPANSION
@@ -239,6 +241,7 @@ void SgpTask(void *argument) {
 						error = sgp41.measureRawSignals(defaultRh, defaultT, srawVOC, srawNOX);
 					}
 				}
+				i2c_error_check(&hi2c1);
 				osSemaphoreRelease(messageI2C1_LockHandle);
 
 				sgpData[sgpIdx].sraw_voc = srawVOC;

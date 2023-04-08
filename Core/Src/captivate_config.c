@@ -471,6 +471,13 @@ void BlinkCalTaskExit(void *argument){
 	vTaskDelete( NULL );
 }
 
+volatile uint16_t errorFound = 0;
+void i2c_error_check(I2C_HandleTypeDef *hi2c){
+	if(hi2c->ErrorCode == 32){
+		errorFound = 1;
+	}
+}
+
 air_spec_config_packet_t rxConfigPacket;
 blue_green_transition_t blueGreenTranRX;
 blink_calibration_t blinkCalRX;
