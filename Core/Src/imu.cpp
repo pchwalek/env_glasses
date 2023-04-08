@@ -163,6 +163,7 @@ void IMU_Task(void *argument){
 					//				lastTick = HAL_GetTick();
 					start_idx = 0;
 
+
 					while(sampleTracker != 0){
 
 						if(sampleTracker >= MAX_IMU_PKT_SIZE){
