@@ -56,6 +56,7 @@ def sensorPrintHelperFunc(packet, show_payload=False):
     # print(packet.WhichOneof("payload"))
     if(packet.WhichOneof("payload") == "lux_packet"):
         sensorPacketTracker[LUX] += 1
+
         if show_payload:
             print(packet.lux_packet)
     elif(packet.WhichOneof("payload") == "sgp_packet"):
@@ -68,6 +69,7 @@ def sensorPrintHelperFunc(packet, show_payload=False):
             print(packet.bme_packet)
     elif (packet.WhichOneof("payload") == "blink_packet"):
         sensorPacketTracker[BLINK] += 1
+        print(packet.blink_packet)
         if show_payload:
             print(packet.blink_packet)
     elif (packet.WhichOneof("payload") == "sht_packet"):
@@ -80,6 +82,7 @@ def sensorPrintHelperFunc(packet, show_payload=False):
             print(packet.spec_packet)
     elif (packet.WhichOneof("payload") == "therm_packet"):
         sensorPacketTracker[THERMOPILE] += 1
+        # print(packet.therm_packet)
         if show_payload:
             print(packet.therm_packet)
     elif (packet.WhichOneof("payload") == "imu_packet"):
@@ -124,21 +127,24 @@ async def main(queue: asyncio.Queue):
     #         return
     # else:
     device = await BleakScanner.find_device_by_filter(
-        #lambda d, ad: ad.local_name == "AirSpec_008a65fb",
         # lambda d, ad: ad.local_name == "AirSpec_01ad7510",
         # lambda d, ad: ad.local_name == "AirSpec_01ad743c",
         # lambda d, ad: ad.local_name == "AirSpec_01ad6d7d",
-        lambda d, ad: ad.local_name == "AirSpec_01ad6fa1",
+        # lambda d, ad: ad.local_name == "AirSpec_01ad6fa1",
         # lambda d, ad: ad.local_name == "AirSpec_01ad6cff",
         # lambda d, ad: ad.local_name == "AirSpec_01ad72c2",
         # lambda d, ad: ad.local_name == "AirSpec_01ad7855",
-        # lambda d, ad: ad.local_name == "AirSpec_01ad71de",
+        # lambda d, ad: ad.local_name == "AirSpec_01ad7855", # glasses 2
+        # lambda d, ad: ad.local_name == "AirSpec_01ad71de", # glasses 3
+        # lambda d, ad: ad.local_name == "AirSpec_01ad7052", # glasses 4
         # lambda d, ad: ad.local_name == "AirSpec_01ad72c2",
         # lambda d, ad: ad.local_name == "AirSpec_01ad7ae6",
-        # lambda d, ad: ad.local_name == "AirSpec_01ad6e53",
-        # lambda d, ad: ad.local_name == "AirSpec_01ad6ce3",
+        lambda d, ad: ad.local_name == "AirSpec_01ad6ce3", # glasses 9
+        # lambda d, ad: ad.local_name == "AirSpec_01ad6e53", # glasses 10
         # lambda d, ad: ad.local_name == "AirSpec_01ad6d72",
-        # lambda d, ad: ad.local_name == "AirSpec_01ad7677",
+        # lambda d, ad: ad.local_name == "AirSpec_01ad743c", # glasses 11
+        # lambda d, ad: ad.local_name == "AirSpec_01ad7677", # glasses 12
+        # lambda d, ad: ad.local_name == "AirSpec_01ad6e65", # glasses 13
         # lambda d, ad: ad.local_name == "AirSpec_01ad7040",
         # lambda d, ad: ad.local_name == "AirSpec_01ad7052",
         # lambda d, ad: ad.local_name == "AirSpec_01ad71bf",

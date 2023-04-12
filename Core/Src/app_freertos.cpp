@@ -367,6 +367,7 @@ void StartDefaultTask(void *argument) {
 
 
     osThreadFlagsSet(ledDisconnectTaskHandle, DISCONNECT_BLE_BIT);
+	osDelay(10);
 
 	startThreads();
 

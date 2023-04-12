@@ -166,6 +166,18 @@ int main(void) {
 	uint32_t isSystemFresh;
 //	while(1){
 	extMemGetData(START_ADDR, (uint8_t*) &isSystemFresh, 4);
+
+	// blink  pin setting override
+	GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+	HAL_GPIO_WritePin(BLINK_PWM_GPIO_Port, BLINK_PWM_Pin, GPIO_PIN_RESET);
+    GPIO_InitStruct.Pin = BLINK_PWM_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    GPIO_InitStruct.Alternate = 0;
+    HAL_GPIO_Init(BLINK_PWM_GPIO_Port, &GPIO_InitStruct);
+
 //	HAL_Delay(1000);
 //	}
 
@@ -207,7 +219,7 @@ int main(void) {
 		sysState.control.bme688 = 1;
 		sysState.control.sgp = 1;
 
-		sysState.control.imu = 1;
+		sysState.control.imu = 0;
 		sysState.control.spectrometer = 1;
 		sysState.control.thermopiles = 1;
 		sysState.control.blink = 1;
@@ -260,8 +272,8 @@ int main(void) {
 		sysState.config.thermopile.enable_rear_temple = true;
 
 		sysState.config.blink.enable_daylight_compensation = 1;
-		sysState.config.blink.daylight_compensation_upper_thresh = 7;
-		sysState.config.blink.daylight_compensation_lower_thresh = 235;
+		sysState.config.blink.daylight_compensation_upper_thresh = 150; // if signal is consistently above this, turn on diode
+		sysState.config.blink.daylight_compensation_lower_thresh = 20; // if signal is consistently below this, turn off diode
 		sysState.config.blink.sample_frequency = 500;
 		sysState.config.blink.enable_windowing = 1;
 		if(sysState.control.synchronize_windows){

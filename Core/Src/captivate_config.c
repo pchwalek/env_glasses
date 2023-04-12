@@ -293,11 +293,8 @@ void ingestSensorConfig(system_state_t *config){
 		}
 	}else{
 		controlThermopile(config->control.thermopiles);
-//		osDelay(1000);
 		controlSpectrometer(config->control.spectrometer);
-//		osDelay(1000);
 		controlBME(config->control.bme688);
-//		osDelay(1000);
 		controlLux(config->control.lux);
 		controlSHT(config->control.sht);
 		controlSGP(config->control.sgp);

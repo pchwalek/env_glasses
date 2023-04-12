@@ -79,7 +79,7 @@ static uint32_t startTime;
 void BlinkTask(void *argument) {
 
 	uint32_t evt;
-	float rolling_avg = 255;
+	float rolling_avg = 150;
 	uint16_t packetsPerHalfBuffer =  ceil( ( (float) BLINK_HALF_BUFFER_SIZE)/(BLINK_PKT_PAYLOAD_SIZE) );
 	uint16_t payloadLength = 0;
 	uint16_t blinkDataTracker = 0;
@@ -350,22 +350,24 @@ uint8_t externalInfraredDetect(uint8_t* blink_sample, uint32_t size_of_blink_ptr
 //	arm_mean_f32((float *) random_array, 2, &sample_avg);
 
 	// temporary brute force average
-	sample_avg = blink_sample[0] + blink_sample[100] + blink_sample[200] + blink_sample[300] + blink_sample[400]
-               + blink_sample[500] + blink_sample[600] + blink_sample[700] + blink_sample[800] + blink_sample[900];
+	sample_avg = blink_sample[0] + blink_sample[50] + blink_sample[100] + blink_sample[150] + blink_sample[200]
+               + blink_sample[250] + blink_sample[300] + blink_sample[350] + blink_sample[400] + blink_sample[450];
 	sample_avg /= 10;
 
 	*rolling_avg = INFRARED_DETECT_ALPHA * sample_avg + (1.0-INFRARED_DETECT_ALPHA) * (*rolling_avg);
 
 	/* SCHMITT TRIGGER */
-	if(detect_active){
+//	if(detect_active){
 		if( (*rolling_avg) > upperThresh ){
-			detect_active = NO_INFRARED_DETECT;
+			detect_active = NO_INFRARED_DETECT; // turn on diode
 		}
-	}else{
-		if( (*rolling_avg) < lowerThresh ){
-			detect_active = INFRARED_DETECT;
+//	}else{
+		// turn off diode if external light is saturating the signal
+		// note: the signal is saturated if the signal is near zero
+		else if( (*rolling_avg) < lowerThresh ){
+			detect_active = INFRARED_DETECT; // turn off diode
 		}
-	}
+//	}
 
 	return detect_active;
 }
