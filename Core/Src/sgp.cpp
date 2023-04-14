@@ -100,17 +100,21 @@ void SgpTask(void *argument) {
 	uint16_t serialNumber[3];
 	uint8_t serialNumberSize = 3;
 	error = sgp41.getSerialNumber(serialNumber, serialNumberSize);
+	i2c_error_check(&hi2c1);
+	osSemaphoreRelease(messageI2C1_LockHandle);
+
 	while (error) {
-		i2c_error_check(&hi2c1);
-		osSemaphoreRelease(messageI2C1_LockHandle);
 		osDelay(10);
 		totalError ++;
 		if(totalError > 10){
 			primarySGP_disable = 1;
 			break;
 		}
+
 		osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 		error = sgp41.getSerialNumber(serialNumber, serialNumberSize);
+		i2c_error_check(&hi2c1);
+		osSemaphoreRelease(messageI2C1_LockHandle);
 	}
 
 	uint16_t testResult;
@@ -119,8 +123,6 @@ void SgpTask(void *argument) {
 
 		error = sgp41.executeSelfTest(testResult);
 		while(error) {
-			i2c_error_check(&hi2c1);
-			osSemaphoreRelease(messageI2C1_LockHandle);
 			osDelay(10);
 			totalError ++;
 			if(totalError > 10){
@@ -129,14 +131,14 @@ void SgpTask(void *argument) {
 			}
 			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			error = sgp41.executeSelfTest(testResult);
+			i2c_error_check(&hi2c1);
+			osSemaphoreRelease(messageI2C1_LockHandle);
 		}
 
 		if(testResult != 0xD400){
 			primarySGP_disable = 1;
 		}
 	}
-	i2c_error_check(&hi2c1);
-	osSemaphoreRelease(messageI2C1_LockHandle);
 
 #ifdef SECONDARY_ENV_SENSOR_EXPANSION
 	totalError = 0;
@@ -145,8 +147,10 @@ void SgpTask(void *argument) {
 	sgp41_secondary.begin(&hi2c3);
 
 	error = sgp41_secondary.getSerialNumber(serialNumber, serialNumberSize);
+	i2c_error_check(&hi2c3);
+	osSemaphoreRelease(messageI2C3_LockHandle);
+
 	while (error) {
-		osSemaphoreRelease(messageI2C3_LockHandle);
 		osDelay(10);
 		totalError++;
 		if(totalError > 10){
@@ -155,13 +159,15 @@ void SgpTask(void *argument) {
 		}
 		osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
 		error = sgp41_secondary.getSerialNumber(serialNumber, serialNumberSize);
+		i2c_error_check(&hi2c3);
+		osSemaphoreRelease(messageI2C3_LockHandle);
+
 	}
 
 	if(totalError < 10){
 		totalError = 0;
 		error = sgp41_secondary.executeSelfTest(testResult);
 		while(error) {
-			osSemaphoreRelease(messageI2C3_LockHandle);
 			osDelay(10);
 			totalError++;
 			if(totalError > 10){
@@ -170,14 +176,14 @@ void SgpTask(void *argument) {
 			}
 			osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
 			error = sgp41_secondary.executeSelfTest(testResult);
+			i2c_error_check(&hi2c3);
+			osSemaphoreRelease(messageI2C3_LockHandle);
 		}
 
 		if(testResult != 0xD400){
 			secondarySGP_disable = 1;
 		}
 	}
-
-	osSemaphoreRelease(messageI2C3_LockHandle);
 
 #endif
 
@@ -289,6 +295,7 @@ void SgpTask(void *argument) {
 						error = sgp41_secondary.measureRawSignals(defaultRh, defaultT, srawVOC_secondary, srawNOX_secondary);
 					}
 				}
+				i2c_error_check(&hi2c3);
 				osSemaphoreRelease(messageI2C3_LockHandle);
 
 				sgpData_secondary[sgpIdx].sraw_voc = srawVOC_secondary;

@@ -59,6 +59,7 @@ void LuxTask(void *argument) {
 	luxSensor.setAGAIN((tsl2591Gain_t) sensorSettings.gain);
 
 	luxSensor.enableALS(true);
+	i2c_error_check(&hi2c3);
 	osSemaphoreRelease(messageI2C3_LockHandle);
 
 
@@ -79,6 +80,7 @@ void LuxTask(void *argument) {
 			luxData[luxIdx].lux = luxSensor.getLux();
 			luxData[luxIdx].timestamp_unix = getEpoch();
 			luxData[luxIdx].timestamp_ms_from_start = HAL_GetTick();
+			i2c_error_check(&hi2c3);
 			osSemaphoreRelease(messageI2C3_LockHandle);
 
 			luxIdx++;

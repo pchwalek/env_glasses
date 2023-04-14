@@ -108,6 +108,7 @@ void Thermopile_Task(void *argument) {
 	initThermopiles(&tp_temple_front,	THERMOPLE_TEMPLE_FRONT_ADDR,&hi2c3, THERMOPILE_LOCATION_FRONT_TEMPLE);
 	initThermopiles(&tp_temple_mid,		THERMOPLE_TEMPLE_MID_ADDR,	&hi2c3, THERMOPILE_LOCATION_MID_TEMPLE);
 	initThermopiles(&tp_temple_back,	THERMOPLE_TEMPLE_BACK_ADDR,	&hi2c3, THERMOPILE_LOCATION_REAR_TEMPLE);
+	i2c_error_check(&hi2c3);
 	osSemaphoreRelease(messageI2C3_LockHandle);
 
 
@@ -140,6 +141,7 @@ void Thermopile_Task(void *argument) {
 			grabThermopileSamples(&thermopileData[thermIdx++], &tp_temple_front);
 			grabThermopileSamples(&thermopileData[thermIdx++], &tp_temple_mid);
 			grabThermopileSamples(&thermopileData[thermIdx++], &tp_temple_back);
+			i2c_error_check(&hi2c3);
 			osSemaphoreRelease(messageI2C3_LockHandle);
 
 			if(thermIdx >= MAX_THERMOPILE_SAMPLES_PACKET){

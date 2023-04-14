@@ -94,6 +94,7 @@ void ShtTask(void *argument) {
 	errorCnt = 0;
 	osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
 	while (!sht4_secondary.begin(&hi2c3)) {
+		i2c_error_check(&hi2c3);
 		osSemaphoreRelease(messageI2C3_LockHandle);
 		errorCnt++;
 		if(errorCnt > 10){
@@ -107,6 +108,7 @@ void ShtTask(void *argument) {
 	sht4_secondary.setPrecision( (sht4x_precision_t) sensorSettings.precision_level);
 	sht4_secondary.setHeater( (sht4x_heater_t) sensorSettings.heater_settings);
 
+	i2c_error_check(&hi2c3);
 	osSemaphoreRelease(messageI2C3_LockHandle);
 
 #endif
@@ -159,6 +161,7 @@ void ShtTask(void *argument) {
 			if(!secondarySHT_disable){
 				osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
 				if(sht4_secondary.getEvent()){
+					i2c_error_check(&hi2c3);
 					osSemaphoreRelease(messageI2C3_LockHandle);
 
 					//			if(1){
@@ -169,6 +172,7 @@ void ShtTask(void *argument) {
 					shtTemp = shtData_secondary[shtIdx].temperature;
 					shtHum = shtData_secondary[shtIdx].humidity;
 				}else{
+					i2c_error_check(&hi2c3);
 					osSemaphoreRelease(messageI2C3_LockHandle);
 					skipSecondaryPacket = 1;
 				}

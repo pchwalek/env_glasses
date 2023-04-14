@@ -468,10 +468,45 @@ void BlinkCalTaskExit(void *argument){
 	vTaskDelete( NULL );
 }
 
-volatile uint16_t errorFound = 0;
+volatile uint16_t errorsFound_i2c1 = 0;
+volatile uint16_t errorsFound_i2c3 = 0;
+
 void i2c_error_check(I2C_HandleTypeDef *hi2c){
-	if(hi2c->ErrorCode == 32){
-		errorFound = 1;
+
+	if(hi2c == &hi2c3){
+		if(hi2c->ErrorCode == 32){
+			errorsFound_i2c3 += 1;
+		}else{
+			errorsFound_i2c3 = 0;
+		}
+
+		if(errorsFound_i2c3 == 10){
+			// attempt to send a null address message if problem is because of thermopiles
+			uint8_t data = 0;
+			HAL_I2C_Mem_Write(hi2c, 0, 0x04, 1, &data, 1, 10);
+		}else if (errorsFound_i2c3 > 50){
+			// attempt to reset system
+			__disable_irq();
+			NVIC_SystemReset();
+		}
+	}
+
+	if(hi2c == &hi2c1){
+		if(hi2c->ErrorCode == 32){
+			errorsFound_i2c1 += 1;
+		}else{
+			errorsFound_i2c1 = 0;
+		}
+
+		if(errorsFound_i2c1 == 10){
+			// attempt to send a null address message if problem is because of thermopiles
+			uint8_t data = 0;
+			HAL_I2C_Mem_Write(hi2c, 0, 0x04, 1, &data, 1, 10);
+		}else if (errorsFound_i2c1 > 50){
+			// attempt to reset system
+			__disable_irq();
+			NVIC_SystemReset();
+		}
 	}
 }
 
