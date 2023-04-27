@@ -70,7 +70,7 @@ const osMessageQueueAttr_t lightsComplexQueue_attributes = { .name =
 osThreadId_t ledDisconnectTaskHandle;
 const osThreadAttr_t ledDisconnectTask_attributes = { .name = "ledDisconnectTask", .attr_bits =
 		osThreadDetached, .cb_mem = NULL, .cb_size = 0, .stack_mem = NULL,
-		.stack_size = 512 * 2, .priority = (osPriority_t) osPriorityNormal,
+		.stack_size = 512 * 2, .priority = (osPriority_t) osPriorityAboveNormal,
 		.tz_module = 0, .reserved = 0 };
 
 osThreadId_t blueGreenTranTaskHandle;
@@ -164,7 +164,7 @@ osThreadId_t frontLightsThreHandle;
 const osThreadAttr_t frontLightsThre_attributes = { .name = "frontLightsTask",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
 		.stack_mem = NULL, .stack_size = 512 * 2, .priority =
-				(osPriority_t) osPriorityBelowNormal, .tz_module = 0,
+				(osPriority_t) osPriorityAboveNormal, .tz_module = 0,
 		.reserved = 0 };
 /* Definitions for thermopileTask */
 osThreadId_t thermopileTaskHandle;
