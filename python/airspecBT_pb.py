@@ -10,6 +10,7 @@ import argparse
 import asyncio
 import logging
 
+
 import binascii
 from struct import *
 from sensorClass import *
@@ -50,6 +51,10 @@ BLINK = 13
 MIC_LVL = 14
 
 sensorPacketTracker = np.zeros(14)
+
+
+
+
 def sensorPrintHelperFunc(packet, show_payload=False):
     # sensorPacketTracker[pktIdxRx] += 1
 
@@ -69,7 +74,7 @@ def sensorPrintHelperFunc(packet, show_payload=False):
             print(packet.bme_packet)
     elif (packet.WhichOneof("payload") == "blink_packet"):
         sensorPacketTracker[BLINK] += 1
-        print(packet.blink_packet)
+        # print(packet.blink_packet)
         if show_payload:
             print(packet.blink_packet)
     elif (packet.WhichOneof("payload") == "sht_packet"):
@@ -82,7 +87,7 @@ def sensorPrintHelperFunc(packet, show_payload=False):
             print(packet.spec_packet)
     elif (packet.WhichOneof("payload") == "therm_packet"):
         sensorPacketTracker[THERMOPILE] += 1
-        print(packet.therm_packet)
+        # print(packet.therm_packet)
         if show_payload:
             print(packet.therm_packet)
     elif (packet.WhichOneof("payload") == "imu_packet"):
@@ -194,6 +199,8 @@ async def main(queue: asyncio.Queue):
             # print(data)
             # header.ParseFromString(bytes(data[6:]))
         # print(bytes('\n', 'utf-8'))
+
+        # response = requests.post(url, headers=http_headers, data=data)
 
         sensorPacket.ParseFromString(bytes(data))
         # print(sensorPacket.WhichOneof("payload"))
