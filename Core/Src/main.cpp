@@ -256,7 +256,7 @@ int main(void) {
 		sysState.config.imu.accel_settings.cutoff = IMU_ACCEL_CUTOFF_ICM20_X_ACCEL_FREQ_246_0_HZ;
 		sysState.config.imu.accel_settings.range = IMU_ACCEL_RANGE_RANGE_8_G;
 		sysState.config.imu.accel_settings.sample_rate_divisor = 4;
-		sysState.config.imu.enable_windowing = 1;
+		sysState.config.imu.enable_windowing = 0;
 		sysState.config.imu.window_size_ms = 10000;
 		sysState.config.imu.window_period_ms = 30000;
 		if(sysState.control.synchronize_windows){
@@ -292,8 +292,8 @@ int main(void) {
 			sysState.config.blink.window_period_ms = sysState.control.window_period_ms;
 		}else{
 			sysState.config.blink.enable_windowing_sync = 0;
-			sysState.config.blink.window_size_ms = 3000;
-			sysState.config.blink.window_period_ms = 10000;
+			sysState.config.blink.window_size_ms = ONE_SECOND_MS * 60;
+			sysState.config.blink.window_period_ms = ONE_SECOND_MS * 120;
 		}
 
 		sysState.config.mic.mic_sample_freq = SAI_AUDIO_FREQUENCY_48K;
