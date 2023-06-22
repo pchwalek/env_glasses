@@ -312,7 +312,7 @@ void turnOffDiode(){
 
 
 	HAL_GPIO_WritePin(BLINK_PWM_GPIO_Port, BLINK_PWM_Pin,
-			GPIO_PIN_RESET);
+			GPIO_PIN_SET);
 	diodeState = 0;
 
 //	if(HAL_TIM_PWM_Stop(&htim16, TIM_CHANNEL_1) == HAL_OK){
@@ -330,7 +330,7 @@ void turnOnDiode(){
 //	diodeState = 1;
 
 	HAL_GPIO_WritePin(BLINK_PWM_GPIO_Port, BLINK_PWM_Pin,
-			GPIO_PIN_SET);
+			GPIO_PIN_RESET);
 	diodeState = 1;
 
 //	HAL_TIM_Base_Start(&htim16); // modulation frequency is at 1kHz

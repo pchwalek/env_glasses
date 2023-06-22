@@ -28,13 +28,15 @@ static air_spec_config_packet_t airspecMessage;
 
 static uint8_t buffer[150];
 
-void sendAirSpecRedFlash(uint32_t duration_ms, uint32_t frequency, uint8_t enable_speaker){
+void sendAirSpecRedFlash(uint32_t duration_ms, uint32_t frequency, uint8_t enable_speaker, uint8_t enable_light){
     Serial.print("Duration (ms): ");
     Serial.println(duration_ms);
     Serial.print("Frequency (Hz): ");
     Serial.println(frequency);
-    Serial.print("Speaker Enabled (ms): ");
+    Serial.print("Speaker Enabled: ");
     Serial.println(enable_speaker);
+    Serial.print("Light Enabled: ");
+    Serial.println(enable_light);
 
     airspecMessage.has_header = false;
     airspecMessage.which_payload = AIR_SPEC_CONFIG_PACKET_RED_FLASH_TASK_TAG;
@@ -44,6 +46,7 @@ void sendAirSpecRedFlash(uint32_t duration_ms, uint32_t frequency, uint8_t enabl
     airspecMessage.payload.red_flash_task.frequency = frequency;
     airspecMessage.payload.red_flash_task.duration_ms = duration_ms;
     airspecMessage.payload.red_flash_task.enable_speaker = enable_speaker;
+    airspecMessage.payload.red_flash_task.enable_light = enable_light;
 
     pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
     pb_encode(&stream, AIR_SPEC_CONFIG_PACKET_FIELDS, &airspecMessage);
@@ -181,12 +184,13 @@ void loop() {
     String token1 = strtok(inputStringBuff, s);
     String token2 = strtok(NULL, s);
     String token3 = strtok(NULL, s);
+    String token4 = strtok(NULL, s);
     /* walk through other tokens */
     // while( token != NULL ) {
     //     token = strtok(NULL, s);
     // 
 
-    sendAirSpecRedFlash(token1.toInt(),token2.toInt(),token3.toInt());
+    sendAirSpecRedFlash(token1.toInt(),token2.toInt(),token3.toInt(),token4.toInt());
   }
 
   // If the flag "doConnect" is true then we have scanned for and found the desired

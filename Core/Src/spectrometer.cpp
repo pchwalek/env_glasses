@@ -198,7 +198,9 @@ void Spec_Task(void *argument) {
 		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
 			osTimerDelete(periodicSpecTimer_id);
 
+			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			specSensor.powerEnable(false);
+			osSemaphoreRelease(messageI2C1_LockHandle);
 
 			osThreadExit();
 			break;

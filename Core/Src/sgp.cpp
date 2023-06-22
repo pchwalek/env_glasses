@@ -120,8 +120,10 @@ void SgpTask(void *argument) {
 	uint16_t testResult;
 	if(totalError < 10){
 		totalError = 0;
-
+		osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 		error = sgp41.executeSelfTest(testResult);
+		osSemaphoreRelease(messageI2C1_LockHandle);
+
 		while(error) {
 			osDelay(10);
 			totalError ++;
@@ -166,7 +168,10 @@ void SgpTask(void *argument) {
 
 	if(totalError < 10){
 		totalError = 0;
+		osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
 		error = sgp41_secondary.executeSelfTest(testResult);
+		osSemaphoreRelease(messageI2C3_LockHandle);
+
 		while(error) {
 			osDelay(10);
 			totalError++;
@@ -376,7 +381,15 @@ void SgpTask(void *argument) {
 
 		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
 			osTimerDelete(periodicSgpTimer_id);
+
+			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			sgp41.turnHeaterOff(); // puts sgp41 in idle mode
+			osSemaphoreRelease(messageI2C1_LockHandle);
+
+			osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
+			sgp41_secondary.turnHeaterOff(); // puts sgp41 in idle mode
+			osSemaphoreRelease(messageI2C3_LockHandle);
+
 			osThreadExit();
 			break;
 		}

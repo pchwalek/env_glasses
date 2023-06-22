@@ -84,11 +84,13 @@ void ShtTask(void *argument) {
 		osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 	}
 
-	sht4.setPrecision( (sht4x_precision_t) sensorSettings.precision_level);
-	sht4.setHeater( (sht4x_heater_t) sensorSettings.heater_settings);
+	if(primarySHT_disable == 0){
+		sht4.setPrecision( (sht4x_precision_t) sensorSettings.precision_level);
+		sht4.setHeater( (sht4x_heater_t) sensorSettings.heater_settings);
 
-	i2c_error_check(&hi2c1);
-	osSemaphoreRelease(messageI2C1_LockHandle);
+		i2c_error_check(&hi2c1);
+		osSemaphoreRelease(messageI2C1_LockHandle);
+	}
 
 #ifdef SECONDARY_ENV_SENSOR_EXPANSION
 	errorCnt = 0;
@@ -105,12 +107,13 @@ void ShtTask(void *argument) {
 		osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
 	}
 
-	sht4_secondary.setPrecision( (sht4x_precision_t) sensorSettings.precision_level);
-	sht4_secondary.setHeater( (sht4x_heater_t) sensorSettings.heater_settings);
+	if(secondarySHT_disable == 0){
+		sht4_secondary.setPrecision( (sht4x_precision_t) sensorSettings.precision_level);
+		sht4_secondary.setHeater( (sht4x_heater_t) sensorSettings.heater_settings);
 
-	i2c_error_check(&hi2c3);
-	osSemaphoreRelease(messageI2C3_LockHandle);
-
+		i2c_error_check(&hi2c3);
+		osSemaphoreRelease(messageI2C3_LockHandle);
+	}
 #endif
 
 	// if both sensors failed to initialize
@@ -241,9 +244,15 @@ void ShtTask(void *argument) {
 
 		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
 			osTimerDelete(periodicShtTimer_id);
+			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			sht4.reset();
+			osSemaphoreRelease(messageI2C1_LockHandle);
+
 #ifdef SECONDARY_ENV_SENSOR_EXPANSION
+			osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
 			sht4_secondary.reset();
+			osSemaphoreRelease(messageI2C3_LockHandle);
+
 #endif
 			osThreadExit();
 			break;

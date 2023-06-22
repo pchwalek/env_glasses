@@ -144,7 +144,7 @@ const osThreadAttr_t imuTask_attributes = { .name = "imuTask", .attr_bits =
 osThreadId_t blinkTaskHandle;
 const osThreadAttr_t blinkTask_attributes = { .name = "blinkTask", .attr_bits =
 		osThreadDetached, .cb_mem = NULL, .cb_size = 0, .stack_mem = NULL,
-		.stack_size = 512 * 2, .priority = (osPriority_t) osPriorityNormal,
+		.stack_size = 512 * 2, .priority = (osPriority_t) osPriorityBelowNormal,
 		.tz_module = 0, .reserved = 0 };
 
 osThreadId_t micTaskHandle;
@@ -177,7 +177,7 @@ osThreadId_t senderTaskHandle;
 const osThreadAttr_t senderTask_attributes = { .name = "senderTask",
 		.attr_bits = osThreadDetached, .cb_mem = NULL, .cb_size = 0,
 		.stack_mem = NULL, .stack_size = 512 * 4, .priority =
-				(osPriority_t) osPriorityAboveNormal, .tz_module = 0, .reserved = 0 };
+				(osPriority_t) osPriorityBelowNormal1, .tz_module = 0, .reserved = 0 };
 
 /* Definitions for messageI2C_Lock */
 osMutexId_t messageI2C1_LockHandle;

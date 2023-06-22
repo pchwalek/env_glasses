@@ -498,6 +498,7 @@ message RedFlashTask{
     uint32 frequency = 4;
     uint32 duration_ms = 5;
     uint32 enable_speaker = 6;
+    uint32 enable_light = 7;
 }
 
 message AirSpecConfigHeader{

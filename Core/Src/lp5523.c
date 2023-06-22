@@ -778,7 +778,9 @@ void RedFlashTask(void *argument){
 
 	/* start sequence */
 
+//	if(redFlash.enable_light){
 	resetColor(&redFlashColor);
+//	}
 
 	if(redFlash.enable_speaker){
 		HAL_TIM_Base_Start(&htim2);
@@ -802,16 +804,17 @@ void RedFlashTask(void *argument){
 						}
 				}
 
-				osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
-				HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1,
-								LIS3DH_D1_PWM_REG, 1, &redFlashColor.color[0], 9, 5);
+				if(redFlash.enable_light){
+					osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
+					HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1,
+									LIS3DH_D1_PWM_REG, 1, &redFlashColor.color[0], 9, 5);
 
-				HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1,
-						LIS3DH_D1_PWM_REG, 1,  &redFlashColor.color[9], 9, 5);
+					HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1,
+							LIS3DH_D1_PWM_REG, 1,  &redFlashColor.color[9], 9, 5);
 
-				i2c_error_check(&hi2c1);
-				osSemaphoreRelease(messageI2C1_LockHandle);
-
+					i2c_error_check(&hi2c1);
+					osSemaphoreRelease(messageI2C1_LockHandle);
+				}
 
 //				osMessageQueuePut(lightsComplexQueueHandle, &redFlashColor, 0, 0);
 				timeTracker = HAL_GetTick() - timeTracker;
@@ -838,15 +841,17 @@ void RedFlashTask(void *argument){
 						}
 				}
 
-				osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
+				if(redFlash.enable_light){
+					osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 
-				HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1,
-								LIS3DH_D1_PWM_REG, 1, &redFlashColor.color[0], 9, 5);
+					HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1,
+									LIS3DH_D1_PWM_REG, 1, &redFlashColor.color[0], 9, 5);
 
-				HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1,
-						LIS3DH_D1_PWM_REG, 1,  &redFlashColor.color[9], 9, 5);
-				i2c_error_check(&hi2c1);
-				osSemaphoreRelease(messageI2C1_LockHandle);
+					HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1,
+							LIS3DH_D1_PWM_REG, 1,  &redFlashColor.color[9], 9, 5);
+					i2c_error_check(&hi2c1);
+					osSemaphoreRelease(messageI2C1_LockHandle);
+				}
 
 //				osMessageQueuePut(lightsComplexQueueHandle, &redFlashColor, 0, 0);
 				timeTracker = HAL_GetTick() - timeTracker;

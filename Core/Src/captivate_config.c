@@ -475,63 +475,65 @@ volatile uint16_t errorsFound_i2c3 = 0;
 
 void i2c_error_check(I2C_HandleTypeDef *hi2c){
 
-	if(hi2c == &hi2c3){
-		if( ((hi2c->ErrorCode & 0x20) == 0x20 ) ||
-				((hi2c->ErrorCode & 0x04) == 0x04) ){
-			errorsFound_i2c3 += 1;
-		}else{
-			errorsFound_i2c3 = 0;
-		}
-
-		if(errorsFound_i2c3 == 10){
-			// attempt to send a null address message if problem is because of thermopiles
-			HAL_I2C_MspDeInit(hi2c);
-			MX_I2C3_Init();
-
-			uint8_t data = 0;
-			HAL_I2C_Mem_Write(hi2c, 0, 0x04, 1, &data, 1, 10);
-
-			errorsFound_i2c3 = 0;
-			HAL_Delay(5);
-		}
-//		else if (errorsFound_i2c3 == 50){
-//			uint8_t data = 0;
-//			HAL_I2C_Mem_Write(hi2c, 0, 0x04, 1, &data, 1, 10);
+//	if(hi2c == &hi2c3){
+//		if( ((hi2c->ErrorCode & 0x20) == 0x20 ) ||
+//				((hi2c->ErrorCode & 0x04) == 0x04) ){
+//			errorsFound_i2c3 += 1;
+//		}else{
+//			errorsFound_i2c3 = 0;
 //		}
-		else if (errorsFound_i2c3 > 30){
-			// attempt to reset system
-			__disable_irq();
-			NVIC_SystemReset();
-		}
-	}
-
-	else if(hi2c == &hi2c1){
-		if( ((hi2c->ErrorCode & 0x20) == 0x20 ) ||
-				((hi2c->ErrorCode & 0x04) == 0x04) ){
-			errorsFound_i2c1 += 1;
-		}else{
-			errorsFound_i2c1 = 0;
-		}
-
-		if(errorsFound_i2c1 == 10){
-			// attempt to send a null address message if problem is because of thermopiles
-			HAL_I2C_MspDeInit(hi2c);
-			MX_I2C1_Init();
-
-			uint8_t data = 0;
-			HAL_I2C_Mem_Write(hi2c, 0, 0x04, 1, &data, 1, 10);
-
-			errorsFound_i2c1 = 0;
-			HAL_Delay(5);
-//		}else if (errorsFound_i2c3 == 50){
+//
+//		if(errorsFound_i2c3 == 10){
+//			// attempt to send a null address message if problem is because of thermopiles
+//			HAL_I2C_MspDeInit(hi2c);
+//			MX_I2C3_Init();
+//
 //			uint8_t data = 0;
 //			HAL_I2C_Mem_Write(hi2c, 0, 0x04, 1, &data, 1, 10);
-		}else if (errorsFound_i2c1 > 30){
-			// attempt to reset system
-			__disable_irq();
-			NVIC_SystemReset();
-		}
-	}
+//
+//			errorsFound_i2c3 = 0;
+//			HAL_Delay(5);
+//		}
+////		else if (errorsFound_i2c3 == 50){
+////			uint8_t data = 0;
+////			HAL_I2C_Mem_Write(hi2c, 0, 0x04, 1, &data, 1, 10);
+////		}
+//		else if (errorsFound_i2c3 > 30){
+//			// attempt to reset system
+//			__disable_irq();
+//			NVIC_SystemReset();
+//		}
+//	}
+//
+//	else if(hi2c == &hi2c1){
+//		if( ((hi2c->ErrorCode & 0x20) == 0x20 ) ||
+//				((hi2c->ErrorCode & 0x04) == 0x04) ){
+//			errorsFound_i2c1 += 1;
+//		}else{
+//			errorsFound_i2c1 = 0;
+//		}
+//
+//		if(errorsFound_i2c1 == 10){
+//			// attempt to send a null address message if problem is because of thermopiles
+//			HAL_I2C_MspDeInit(hi2c);
+//			MX_I2C1_Init();
+//
+//			uint8_t data = 0;
+//			HAL_I2C_Mem_Write(hi2c, 0, 0x04, 1, &data, 1, 10);
+//
+//			errorsFound_i2c1 = 0;
+//			HAL_Delay(5);
+////		}else if (errorsFound_i2c3 == 50){
+////			uint8_t data = 0;
+////			HAL_I2C_Mem_Write(hi2c, 0, 0x04, 1, &data, 1, 10);
+//		}else if (errorsFound_i2c1 > 30){
+//			// attempt to reset system
+//			__disable_irq();
+//			NVIC_SystemReset();
+//		}
+//	}
+
+	return;
 }
 
 air_spec_config_packet_t rxConfigPacket;
@@ -596,6 +598,16 @@ void bleRX_Task(void *argument){
 				sysState.config.imu.enable_windowing_sync = 0;
 				sysState.config.blink.enable_windowing_sync = 0;
 			}
+
+			extMemWriteData(START_ADDR + 4, (uint8_t*) &sysState,
+							sizeof(system_state_t));
+			updateSystemConfig_BLE(&sysState);
+
+			// turn off all sensors
+			controlAllSensors(false);
+
+			// restart sensors with new config
+			ingestSensorConfig(&sysState);
 			break; /* optional */
 
 		case AIR_SPEC_CONFIG_PACKET_SENSOR_CONFIG_TAG  :
@@ -615,6 +627,16 @@ void bleRX_Task(void *argument){
 
 				sysState.config.blink.enable_windowing_sync = 0;
 			}
+
+			extMemWriteData(START_ADDR + 4, (uint8_t*) &sysState,
+							sizeof(system_state_t));
+			updateSystemConfig_BLE(&sysState);
+
+			// turn off all sensors
+			controlAllSensors(false);
+
+			// restart sensors with new config
+			ingestSensorConfig(&sysState);
 			break; /* optional */
 
 		case AIR_SPEC_CONFIG_PACKET_DFU_MODE_TAG  :

@@ -147,6 +147,16 @@ int main(void) {
 	MX_GPIO_Init();
 	MX_DMA_Init();
 
+//	  GPIO_InitTypeDef GPIO_InitStruct1 = {0};
+//	  GPIO_InitStruct1.Pin = GPIO_PIN_14;
+//	  GPIO_InitStruct1.Mode = GPIO_MODE_OUTPUT_PP;
+//	  GPIO_InitStruct1.Pull = GPIO_PULLUP;
+//	  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct1);
+//
+//	  while(1){
+//		  HAL_Delay(1000);
+//		  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_14);
+//	  }
 	MX_RF_Init();
 	MX_RTC_Init();
 	MX_SAI1_Init();
@@ -215,16 +225,16 @@ int main(void) {
 //		sensorConfig.uuid = LL_FLASH_GetUDN();
 		sysState.firmware_version = 1;
 
-		sysState.control.lux = 1;
-		sysState.control.bme688 = 1;
-		sysState.control.sgp = 1;
+		sysState.control.lux = 0;
+		sysState.control.bme688 = 0;
+		sysState.control.sgp = 0;
 
-		sysState.control.imu = 1;
-		sysState.control.spectrometer = 1;
-		sysState.control.thermopiles = 1;
-		sysState.control.blink = 1;
-		sysState.control.mic = 1;
-		sysState.control.sht = 1;
+		sysState.control.imu = 0;
+		sysState.control.spectrometer = 0;
+		sysState.control.thermopiles = 0;
+		sysState.control.blink = 0;
+		sysState.control.mic = 0;
+		sysState.control.sht = 0;
 		sysState.control.synchronize_windows = 1;
 		sysState.control.window_size_ms = ONE_SECOND_MS * 60;
 		sysState.control.window_period_ms = ONE_SECOND_MS * 120;

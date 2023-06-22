@@ -74,6 +74,7 @@ def sensorPrintHelperFunc(packet, show_payload=False):
             print(packet.blink_packet)
     elif (packet.WhichOneof("payload") == "sht_packet"):
         sensorPacketTracker[SHT] += 1
+        print(packet.sht_packet)
         if show_payload:
             print(packet.sht_packet)
     elif (packet.WhichOneof("payload") == "spec_packet"):
@@ -128,29 +129,24 @@ async def main(queue: asyncio.Queue):
     # else:
     device = await BleakScanner.find_device_by_filter(
         # lambda d, ad: ad.local_name == "AirSpec_01ad7510",
-        # lambda d, ad: ad.local_name == "AirSpec_01ad743c",
-        # lambda d, ad: ad.local_name == "AirSpec_01ad6d7d",
-        # lambda d, ad: ad.local_name == "AirSpec_01ad6fa1",
         # lambda d, ad: ad.local_name == "AirSpec_01ad6cff",
-        # lambda d, ad: ad.local_name == "AirSpec_01ad72c2",
-        # lambda d, ad: ad.local_name == "AirSpec_01ad7855",
+        # lambda d, ad: ad.local_name == "AirSpec_01ad6f6b", # glasses 1
         # lambda d, ad: ad.local_name == "AirSpec_01ad7855", # glasses 2
         # lambda d, ad: ad.local_name == "AirSpec_01ad71de", # glasses 3
         # lambda d, ad: ad.local_name == "AirSpec_01ad7052", # glasses 4
-        # lambda d, ad: ad.local_name == "AirSpec_01ad72c2",
-        # lambda d, ad: ad.local_name == "AirSpec_01ad7ae6",
+        # lambda d, ad: ad.local_name == "AirSpec_01ad72c2", # glasses 5
+        # lambda d, ad: ad.local_name == "AirSpec_01ad7040", # glasses 6
+        # lambda d, ad: ad.local_name == "AirSpec_01ad6d72", # glasses 7
         # lambda d, ad: ad.local_name == "AirSpec_01ad6ce3", # glasses 9
         lambda d, ad: ad.local_name == "AirSpec_01ad6e53", # glasses 10
-        # lambda d, ad: ad.local_name == "AirSpec_01ad6d72",
         # lambda d, ad: ad.local_name == "AirSpec_01ad743c", # glasses 11
         # lambda d, ad: ad.local_name == "AirSpec_01ad7677", # glasses 12
         # lambda d, ad: ad.local_name == "AirSpec_01ad6e65", # glasses 13
-        # lambda d, ad: ad.local_name == "AirSpec_01ad7040",
-        # lambda d, ad: ad.local_name == "AirSpec_01ad7052",
-        # lambda d, ad: ad.local_name == "AirSpec_01ad71bf",
-        # lambda d, ad: ad.local_name == "AirSpec_01ad6f6b",
         # lambda d, ad: ad.local_name == "AirSpec_01ad7ae6", # glasses 14
         # lambda d, ad: ad.local_name == "AirSpec_01ad6fa1", # glasses 15
+        # lambda d, ad: ad.local_name == "AirSpec_01ad7ae6",  # glasses 16
+        # lambda d, ad: ad.local_name == "AirSpec_01ad71bf", # glasses 17
+        # lambda d, ad: ad.local_name == "AirSpec_01ad7859", # glasses 18
 
         timeout=60
     )

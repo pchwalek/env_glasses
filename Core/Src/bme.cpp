@@ -145,7 +145,9 @@ void BME_Task(void *argument) {
 		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
 			osTimerDelete (periodicBMETimer_id);
 			saveBME_StateConfig();
+			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
 			bme.soft_reset();
+			osSemaphoreRelease(messageI2C1_LockHandle);
 
 			vTaskDelete( NULL );
 			break;
