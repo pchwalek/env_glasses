@@ -599,6 +599,9 @@ void bleRX_Task(void *argument){
 				sysState.config.blink.enable_windowing_sync = 0;
 			}
 
+			sysState.has_config = true;
+			sysState.has_control = true;
+
 			extMemWriteData(START_ADDR + 4, (uint8_t*) &sysState,
 							sizeof(system_state_t));
 			updateSystemConfig_BLE(&sysState);
@@ -627,6 +630,9 @@ void bleRX_Task(void *argument){
 
 				sysState.config.blink.enable_windowing_sync = 0;
 			}
+
+			sysState.has_config = true;
+			sysState.has_control = true;
 
 			extMemWriteData(START_ADDR + 4, (uint8_t*) &sysState,
 							sizeof(system_state_t));
