@@ -225,16 +225,16 @@ int main(void) {
 //		sensorConfig.uuid = LL_FLASH_GetUDN();
 		sysState.firmware_version = 1;
 
-		sysState.control.lux = 0;
-		sysState.control.bme688 = 0;
-		sysState.control.sgp = 0;
+		sysState.control.lux = 1;
+		sysState.control.bme688 = 1;
+		sysState.control.sgp = 1;
 
 		sysState.control.imu = 0;
-		sysState.control.spectrometer = 0;
-		sysState.control.thermopiles = 0;
+		sysState.control.spectrometer = 1;
+		sysState.control.thermopiles = 1;
 		sysState.control.blink = 0;
-		sysState.control.mic = 0;
-		sysState.control.sht = 0;
+		sysState.control.mic = 1;
+		sysState.control.sht = 1;
 		sysState.control.synchronize_windows = 1;
 		sysState.control.window_size_ms = ONE_SECOND_MS * 60;
 		sysState.control.window_period_ms = ONE_SECOND_MS * 120;
@@ -303,6 +303,8 @@ int main(void) {
 		sysState.config.humidity.heater_settings = SHT45_HEATER_SHT4_X_NO_HEATER;
 		sysState.config.humidity.sample_period_ms = 5000;
 
+		sysState.has_config = true;
+		sysState.has_control = true;
 
 		extMemWriteData(START_ADDR + 4, (uint8_t*) &sysState,
 				sizeof(system_state_t));
