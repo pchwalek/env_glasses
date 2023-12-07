@@ -85,8 +85,8 @@ volatile unsigned long ulHighFrequencyTimerTicks;
 volatile uint8_t sensorThreadsRunning = 0;
 void epoch_to_date_time(unsigned int epoch);
 void reset_DFU_trigger(void);
-void RTC_FromEpoch(time_t epoch, RTC_TimeTypeDef *time,
-		RTC_DateTypeDef *date);
+//void RTC_FromEpoch(time_t epoch, RTC_TimeTypeDef *time,
+//		RTC_DateTypeDef *date);
 //__attribute__((section(".noinit"))) volatile int my_non_initialized_integer;
 system_state_t sysState;
 /* USER CODE END 0 */

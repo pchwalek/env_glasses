@@ -359,6 +359,10 @@ void StartDefaultTask(void *argument) {
 //	osDelay(2000);
 //	MX_FREERTOS_Init();
 
+//	osThreadNew(colorTransitionDemo, NULL, &defaultTask_attributes);
+
+
+//	 below lines have been commented out for lights demo
 	uint32_t timeDelta = HAL_GetTick();
 
 	while(sensorThreadsRunning != 1){
@@ -370,7 +374,6 @@ void StartDefaultTask(void *argument) {
 	osDelay(10);
 
 	startThreads();
-
 
 
 	while(1){

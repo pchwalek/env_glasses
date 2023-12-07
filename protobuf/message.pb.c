@@ -153,6 +153,9 @@ PB_BIND(APP_SURVEY_DATA_PACKET, app_survey_data_packet_t, AUTO)
 PB_BIND(APP_META_DATA_PACKET, app_meta_data_packet_t, AUTO)
 
 
+PB_BIND(RTC_PACKET, rtc_packet_t, AUTO)
+
+
 PB_BIND(SENSOR_PACKET, sensor_packet_t, 2)
 
 

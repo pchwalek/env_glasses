@@ -238,6 +238,8 @@ void resetLED(void);
 void BlueGreenTransitionTaskExit(void *argument);
 
 void ledCheck(void *argument);
+void colorTransitionDemo(void *argument);
+void shiftLED(union ColorComplex * colorComplex, uint8_t val);
 //class LP5523
 //{
 //public:

@@ -545,6 +545,10 @@ message appMetaDataPacket {
     uint64 timestamp_unix = 3;
 }
 
+message rtcPacket {
+    bool set = 1;
+}
+
 
 message SensorPacket {
     SensorPacketHeader header = 1;
@@ -562,7 +566,7 @@ message SensorPacket {
 	    MicLevelPacket mic_level_packet = 11;
         appSurveyDataPacket survey_packet = 12;
         appMetaDataPacket meta_data_packet = 13;
-	
+        rtcPacket rtc_packet = 14;
     }
 
 }

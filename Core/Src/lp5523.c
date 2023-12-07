@@ -23,6 +23,7 @@ extern "C" {
 #include "string.h"
 #include "captivate_config.h"
 #include "tim.h"
+#include <stdlib.h>
 //#include "config.h"
 //#include "master_thread.h"
 
@@ -53,7 +54,7 @@ osTimerId_t resetTimer;
  *
  *************************************************************/
 
-#define MAX_BRIGHTNESS 150 //up to 255
+#define MAX_BRIGHTNESS 255 //up to 255
 
 uint8_t led_left_PWM[9] = { 0 };
 uint8_t led_right_PWM[9] = { 0 };
@@ -551,57 +552,9 @@ union ColorComplex blueGreenTranColor;
 blue_green_transition_t blueGreenTran;
 
 void BlueGreenTransitionTask(void *argument){
-//	union BlueGreenTransition blueGreenTran;
-
 	blue_green_transition_t blueGreenTran;
 
-
-//	uint32_t timeTracker = 0;
-
 	memcpy(&blueGreenTran,argument,sizeof(blue_green_transition_t));
-
-
-//	uint8_t step_duration_seconds;
-//		uint8_t green_hold_length_seconds;
-//		uint8_t transition_delay_seconds;
-
-	/* start sensor subsystems */
-//	// disable threads
-//	if(blinkTaskHandle != 0){
-//		osThreadFlagsSet(blinkTaskHandle, TERMINATE_THREAD_BIT);
-//	}
-//	if(imuTaskHandle != 0){
-//		osThreadFlagsSet(imuTaskHandle, TERMINATE_THREAD_BIT);
-//	}
-//	osDelay(100); // give time for threads to exit
-//
-//	volatile osThreadState_t threadStateBlink = osThreadGetState(blinkTaskHandle);
-//	volatile osThreadState_t threadStateIMU = osThreadGetState(imuTaskHandle);
-//
-//	uint16_t iter;
-//	while( (threadStateBlink != osThreadTerminated) && (threadStateBlink != osThreadError) ){
-//		osDelay(50);
-//		iter++;
-//		if(iter > 40){
-////			vTaskDelete( NULL );
-//			break; // shouldnt get here
-//		}
-//		threadStateBlink = osThreadGetState(blinkTaskHandle);
-//	}
-//
-//	while( (threadStateIMU != osThreadTerminated) && (threadStateIMU != osThreadError) ){
-//		osDelay(50);
-//		iter++;
-//		if(iter > 40){
-////			vTaskDelete( NULL );
-//			break; // shouldnt get here
-//		}
-//		threadStateIMU = osThreadGetState(imuTaskHandle);
-//	}
-//
-//	controlBlinkNoWindow(sysState.control.blink);
-//	controlIMUNoWindow(sysState.control.imu);
-
 
 	/* delay sequence */
 	osDelay(blueGreenTran.transition_delay_seconds*1000);
@@ -896,6 +849,43 @@ void ledEnterDFUNotification(void){
 	}
 }
 
+#define DEMO_DELAY	400
+union ColorComplex colorTransDemo;
+void colorTransitionDemo(void *argument){
+	resetColor(&colorTransDemo);
+	osMessageQueuePut(lightsComplexQueueHandle, &colorTransDemo, 0, 0);
+
+	uint16_t random_number;
+
+	while(1){
+		for(int i=0;i<255;i+=5){
+			shiftLED(&colorTransDemo, i);
+			osMessageQueuePut(lightsComplexQueueHandle, &colorTransDemo, 0, 0);
+			osDelay(DEMO_DELAY);
+			random_number = rand() % 255;
+			shiftLED(&colorTransDemo, random_number);
+			osMessageQueuePut(lightsComplexQueueHandle, &colorTransDemo, 0, 0);
+			osDelay(DEMO_DELAY);
+		}
+
+		for(int i=250;i>=0;i-=5){
+			shiftLED(&colorTransDemo, i);
+			osMessageQueuePut(lightsComplexQueueHandle, &colorTransDemo, 0, 0);
+			osDelay(DEMO_DELAY);
+			random_number = rand() % 255;
+			shiftLED(&colorTransDemo, random_number);
+			osMessageQueuePut(lightsComplexQueueHandle, &colorTransDemo, 0, 0);
+			osDelay(DEMO_DELAY);
+		}
+
+		for(int i=0;i<18;i+=1){
+			shiftLED(&colorTransDemo, 0);
+			osMessageQueuePut(lightsComplexQueueHandle, &colorTransDemo, 0, 0);
+			osDelay(DEMO_DELAY);
+		}
+	}
+}
+
 
 void ledDisconnectNotification(void *argument){
 
@@ -948,6 +938,27 @@ void ledDisconnectNotification(void *argument){
 
 	vTaskDelete( NULL );
 
+}
+
+void shiftLED(union ColorComplex * colorComplex, uint8_t val){
+	colorComplex->colors_indiv.right_front_r = colorComplex->colors_indiv.right_front_g;
+	colorComplex->colors_indiv.right_front_g = colorComplex->colors_indiv.right_front_b;
+	colorComplex->colors_indiv.right_front_b = colorComplex->colors_indiv.right_side_r;
+	colorComplex->colors_indiv.right_side_r = colorComplex->colors_indiv.right_side_g;
+	colorComplex->colors_indiv.right_side_g = colorComplex->colors_indiv.right_side_b;
+	colorComplex->colors_indiv.right_side_b = colorComplex->colors_indiv.right_top_r;
+	colorComplex->colors_indiv.right_top_r = colorComplex->colors_indiv.right_top_g;
+	colorComplex->colors_indiv.right_top_g = colorComplex->colors_indiv.right_top_b;
+	colorComplex->colors_indiv.right_top_b = colorComplex->colors_indiv.left_top_r;
+	colorComplex->colors_indiv.left_top_r = colorComplex->colors_indiv.left_top_g;
+	colorComplex->colors_indiv.left_top_g = colorComplex->colors_indiv.left_top_b;
+	colorComplex->colors_indiv.left_top_b = colorComplex->colors_indiv.left_side_r;
+	colorComplex->colors_indiv.left_side_r = colorComplex->colors_indiv.left_side_g;
+	colorComplex->colors_indiv.left_side_g = colorComplex->colors_indiv.left_side_b;
+	colorComplex->colors_indiv.left_side_b = colorComplex->colors_indiv.left_front_r;
+	colorComplex->colors_indiv.left_front_r = colorComplex->colors_indiv.left_front_g;
+	colorComplex->colors_indiv.left_front_g = colorComplex->colors_indiv.left_front_b;
+	colorComplex->colors_indiv.left_front_b = val;
 }
 
 void ledCheck(void *argument){

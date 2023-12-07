@@ -1989,6 +1989,8 @@ public struct RedFlashTask {
 
   public var enableSpeaker: UInt32 = 0
 
+  public var enableLight: UInt32 = 0
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -2213,6 +2215,18 @@ public struct appMetaDataPacket {
   public init() {}
 }
 
+public struct rtcPacket {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var set: Bool = false
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
 public struct SensorPacket {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -2325,6 +2339,14 @@ public struct SensorPacket {
     set {payload = .metaDataPacket(newValue)}
   }
 
+  public var rtcPacket: rtcPacket {
+    get {
+      if case .rtcPacket(let v)? = payload {return v}
+      return rtcPacket()
+    }
+    set {payload = .rtcPacket(newValue)}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public enum OneOf_Payload: Equatable {
@@ -2340,6 +2362,7 @@ public struct SensorPacket {
     case micLevelPacket(MicLevelPacket)
     case surveyPacket(appSurveyDataPacket)
     case metaDataPacket(appMetaDataPacket)
+    case rtcPacket(rtcPacket)
 
   #if !swift(>=4.1)
     public static func ==(lhs: SensorPacket.OneOf_Payload, rhs: SensorPacket.OneOf_Payload) -> Bool {
@@ -2393,6 +2416,10 @@ public struct SensorPacket {
       }()
       case (.metaDataPacket, .metaDataPacket): return {
         guard case .metaDataPacket(let l) = lhs, case .metaDataPacket(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.rtcPacket, .rtcPacket): return {
+        guard case .rtcPacket(let l) = lhs, case .rtcPacket(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       default: return false
@@ -2473,6 +2500,7 @@ extension systemState: @unchecked Sendable {}
 extension appSurveyDataPayload: @unchecked Sendable {}
 extension appSurveyDataPacket: @unchecked Sendable {}
 extension appMetaDataPacket: @unchecked Sendable {}
+extension rtcPacket: @unchecked Sendable {}
 extension SensorPacket: @unchecked Sendable {}
 extension SensorPacket.OneOf_Payload: @unchecked Sendable {}
 #endif  // swift(>=5.5) && canImport(_Concurrency)
@@ -5095,6 +5123,7 @@ extension RedFlashTask: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
     4: .same(proto: "frequency"),
     5: .standard(proto: "duration_ms"),
     6: .standard(proto: "enable_speaker"),
+    7: .standard(proto: "enable_light"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -5109,6 +5138,7 @@ extension RedFlashTask: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
       case 4: try { try decoder.decodeSingularUInt32Field(value: &self.frequency) }()
       case 5: try { try decoder.decodeSingularUInt32Field(value: &self.durationMs) }()
       case 6: try { try decoder.decodeSingularUInt32Field(value: &self.enableSpeaker) }()
+      case 7: try { try decoder.decodeSingularUInt32Field(value: &self.enableLight) }()
       default: break
       }
     }
@@ -5133,6 +5163,9 @@ extension RedFlashTask: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
     if self.enableSpeaker != 0 {
       try visitor.visitSingularUInt32Field(value: self.enableSpeaker, fieldNumber: 6)
     }
+    if self.enableLight != 0 {
+      try visitor.visitSingularUInt32Field(value: self.enableLight, fieldNumber: 7)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -5143,6 +5176,7 @@ extension RedFlashTask: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
     if lhs.frequency != rhs.frequency {return false}
     if lhs.durationMs != rhs.durationMs {return false}
     if lhs.enableSpeaker != rhs.enableSpeaker {return false}
+    if lhs.enableLight != rhs.enableLight {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -5520,6 +5554,38 @@ extension appMetaDataPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
   }
 }
 
+extension rtcPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = "rtcPacket"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "set"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBoolField(value: &self.set) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.set != false {
+      try visitor.visitSingularBoolField(value: self.set, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: rtcPacket, rhs: rtcPacket) -> Bool {
+    if lhs.set != rhs.set {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
 extension SensorPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = "SensorPacket"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
@@ -5536,6 +5602,7 @@ extension SensorPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
     11: .standard(proto: "mic_level_packet"),
     12: .standard(proto: "survey_packet"),
     13: .standard(proto: "meta_data_packet"),
+    14: .standard(proto: "rtc_packet"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -5701,6 +5768,19 @@ extension SensorPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
           self.payload = .metaDataPacket(v)
         }
       }()
+      case 14: try {
+        var v: rtcPacket?
+        var hadOneofValue = false
+        if let current = self.payload {
+          hadOneofValue = true
+          if case .rtcPacket(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .rtcPacket(v)
+        }
+      }()
       default: break
       }
     }
@@ -5762,6 +5842,10 @@ extension SensorPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
     case .metaDataPacket?: try {
       guard case .metaDataPacket(let v)? = self.payload else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 13)
+    }()
+    case .rtcPacket?: try {
+      guard case .rtcPacket(let v)? = self.payload else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 14)
     }()
     case nil: break
     }

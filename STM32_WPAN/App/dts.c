@@ -606,6 +606,7 @@ void DTS_STM_Init(void) {
  * 
  */
 tBleStatus DTS_STM_UpdateChar(uint16_t UUID, uint8_t *pPayload) {
+
 	tBleStatus result = BLE_STATUS_INVALID_PARAMS;
 	switch (UUID) {
 	case DATA_TRANSFER_TX_CHAR_UUID:

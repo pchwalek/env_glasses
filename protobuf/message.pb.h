@@ -680,6 +680,12 @@ typedef struct app_meta_data_packet {
 PB_PACKED_STRUCT_END
 
 PB_PACKED_STRUCT_START
+typedef struct rtc_packet {
+    bool set;
+} pb_packed rtc_packet_t;
+PB_PACKED_STRUCT_END
+
+PB_PACKED_STRUCT_START
 typedef struct sensor_packet {
     bool has_header;
     sensor_packet_header_t header;
@@ -697,6 +703,7 @@ typedef struct sensor_packet {
         mic_level_packet_t mic_level_packet;
         app_survey_data_packet_t survey_packet;
         app_meta_data_packet_t meta_data_packet;
+        rtc_packet_t rtc_packet;
     } payload;
 } pb_packed sensor_packet_t;
 PB_PACKED_STRUCT_END
@@ -836,6 +843,7 @@ extern "C" {
 
 
 
+
 /* Initializer values for message structs */
 #define SENSOR_PACKET_HEADER_INIT_DEFAULT        {0, 0, 0}
 #define LUX_PACKET_INIT_DEFAULT                  {0, 0, _TSL2591_GAIN_MIN, _TSL2591_INTEGRATION_TIME_MIN, 0, 0, {LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT, LUX_PACKET_PAYLOAD_INIT_DEFAULT}}
@@ -886,6 +894,7 @@ extern "C" {
 #define APP_SURVEY_DATA_PAYLOAD_INIT_DEFAULT     {0, {{NULL}, NULL}, 0, 0}
 #define APP_SURVEY_DATA_PACKET_INIT_DEFAULT      {{{NULL}, NULL}}
 #define APP_META_DATA_PACKET_INIT_DEFAULT        {{{NULL}, NULL}, 0, 0}
+#define RTC_PACKET_INIT_DEFAULT                  {0}
 #define SENSOR_PACKET_INIT_DEFAULT               {false, SENSOR_PACKET_HEADER_INIT_DEFAULT, 0, {LUX_PACKET_INIT_DEFAULT}}
 #define SENSOR_PACKET_HEADER_INIT_ZERO           {0, 0, 0}
 #define LUX_PACKET_INIT_ZERO                     {0, 0, _TSL2591_GAIN_MIN, _TSL2591_INTEGRATION_TIME_MIN, 0, 0, {LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO}}
@@ -936,6 +945,7 @@ extern "C" {
 #define APP_SURVEY_DATA_PAYLOAD_INIT_ZERO        {0, {{NULL}, NULL}, 0, 0}
 #define APP_SURVEY_DATA_PACKET_INIT_ZERO         {{{NULL}, NULL}}
 #define APP_META_DATA_PACKET_INIT_ZERO           {{{NULL}, NULL}, 0, 0}
+#define RTC_PACKET_INIT_ZERO                     {0}
 #define SENSOR_PACKET_INIT_ZERO                  {false, SENSOR_PACKET_HEADER_INIT_ZERO, 0, {LUX_PACKET_INIT_ZERO}}
 
 /* Field tags (for use in manual encoding/decoding) */
@@ -1165,6 +1175,7 @@ extern "C" {
 #define APP_META_DATA_PACKET_PAYLOAD_TAG         1
 #define APP_META_DATA_PACKET_TYPE_TAG            2
 #define APP_META_DATA_PACKET_TIMESTAMP_UNIX_TAG  3
+#define RTC_PACKET_SET_TAG                       1
 #define SENSOR_PACKET_HEADER_TAG                 1
 #define SENSOR_PACKET_LUX_PACKET_TAG             2
 #define SENSOR_PACKET_SGP_PACKET_TAG             3
@@ -1178,6 +1189,7 @@ extern "C" {
 #define SENSOR_PACKET_MIC_LEVEL_PACKET_TAG       11
 #define SENSOR_PACKET_SURVEY_PACKET_TAG          12
 #define SENSOR_PACKET_META_DATA_PACKET_TAG       13
+#define SENSOR_PACKET_RTC_PACKET_TAG             14
 
 /* Struct field encoding specification for nanopb */
 #define SENSOR_PACKET_HEADER_FIELDLIST(X, a) \
@@ -1643,6 +1655,11 @@ X(a, STATIC,   SINGULAR, UINT64,   timestamp_unix,    3)
 #define APP_META_DATA_PACKET_CALLBACK pb_default_field_callback
 #define APP_META_DATA_PACKET_DEFAULT NULL
 
+#define RTC_PACKET_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, BOOL,     set,               1)
+#define RTC_PACKET_CALLBACK NULL
+#define RTC_PACKET_DEFAULT NULL
+
 #define SENSOR_PACKET_FIELDLIST(X, a) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  header,            1) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload,lux_packet,payload.lux_packet),   2) \
@@ -1656,7 +1673,8 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (payload,imu_packet,payload.imu_packet),   9)
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload,mic_packet,payload.mic_packet),  10) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload,mic_level_packet,payload.mic_level_packet),  11) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload,survey_packet,payload.survey_packet),  12) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (payload,meta_data_packet,payload.meta_data_packet),  13)
+X(a, STATIC,   ONEOF,    MESSAGE,  (payload,meta_data_packet,payload.meta_data_packet),  13) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (payload,rtc_packet,payload.rtc_packet),  14)
 #define SENSOR_PACKET_CALLBACK NULL
 #define SENSOR_PACKET_DEFAULT NULL
 #define sensor_packet_t_header_MSGTYPE sensor_packet_header_t
@@ -1672,6 +1690,7 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (payload,meta_data_packet,payload.meta_data_p
 #define sensor_packet_t_payload_mic_level_packet_MSGTYPE mic_level_packet_t
 #define sensor_packet_t_payload_survey_packet_MSGTYPE app_survey_data_packet_t
 #define sensor_packet_t_payload_meta_data_packet_MSGTYPE app_meta_data_packet_t
+#define sensor_packet_t_payload_rtc_packet_MSGTYPE rtc_packet_t
 
 extern const pb_msgdesc_t sensor_packet_header_t_msg;
 extern const pb_msgdesc_t lux_packet_t_msg;
@@ -1722,6 +1741,7 @@ extern const pb_msgdesc_t system_state_t_msg;
 extern const pb_msgdesc_t app_survey_data_payload_t_msg;
 extern const pb_msgdesc_t app_survey_data_packet_t_msg;
 extern const pb_msgdesc_t app_meta_data_packet_t_msg;
+extern const pb_msgdesc_t rtc_packet_t_msg;
 extern const pb_msgdesc_t sensor_packet_t_msg;
 
 /* Defines for backwards compatibility with code written before nanopb-0.4.0 */
@@ -1774,6 +1794,7 @@ extern const pb_msgdesc_t sensor_packet_t_msg;
 #define APP_SURVEY_DATA_PAYLOAD_FIELDS &app_survey_data_payload_t_msg
 #define APP_SURVEY_DATA_PACKET_FIELDS &app_survey_data_packet_t_msg
 #define APP_META_DATA_PACKET_FIELDS &app_meta_data_packet_t_msg
+#define RTC_PACKET_FIELDS &rtc_packet_t_msg
 #define SENSOR_PACKET_FIELDS &sensor_packet_t_msg
 
 /* Maximum encoded size of messages (where known) */
@@ -1813,6 +1834,7 @@ extern const pb_msgdesc_t sensor_packet_t_msg;
 #define MIC_PACKET_SIZE                          716
 #define MIC_SENSOR_CONFIG_SIZE                   12
 #define RED_FLASH_TASK_SIZE                      38
+#define RTC_PACKET_SIZE                          2
 #define SENSOR_CONFIG_SIZE                       191
 #define SENSOR_CONTROL_SIZE                      34
 #define SENSOR_PACKET_HEADER_SIZE                23
