@@ -165,23 +165,18 @@ typedef enum mic_weighting {
 } mic_weighting_t;
 
 /* Struct definitions */
-PB_PACKED_STRUCT_START
 typedef struct sensor_packet_header {
     uint32_t system_uid;
     uint32_t ms_from_start;
     uint64_t epoch;
-} pb_packed sensor_packet_header_t;
-PB_PACKED_STRUCT_END
+} sensor_packet_header_t;
 
-PB_PACKED_STRUCT_START
 typedef struct lux_packet_payload {
     uint32_t lux;
     uint64_t timestamp_unix;
     uint32_t timestamp_ms_from_start;
-} pb_packed lux_packet_payload_t;
-PB_PACKED_STRUCT_END
+} lux_packet_payload_t;
 
-PB_PACKED_STRUCT_START
 typedef struct lux_packet {
     uint32_t packet_index;
     uint32_t sample_period;
@@ -190,19 +185,15 @@ typedef struct lux_packet {
     uint32_t sensor_id;
     pb_size_t payload_count;
     lux_packet_payload_t payload[30];
-} pb_packed lux_packet_t;
-PB_PACKED_STRUCT_END
+} lux_packet_t;
 
-PB_PACKED_STRUCT_START
 typedef struct mic_level_packet_payload {
     float sound_spl_db;
     float sound_rms;
     uint64_t timestamp_unix;
     uint32_t timestamp_ms_from_start;
-} pb_packed mic_level_packet_payload_t;
-PB_PACKED_STRUCT_END
+} mic_level_packet_payload_t;
 
-PB_PACKED_STRUCT_START
 typedef struct mic_level_packet {
     uint32_t packet_index;
     uint32_t sample_period;
@@ -212,10 +203,8 @@ typedef struct mic_level_packet {
     mic_weighting_t weighting; /* e.g., A-weighting */
     pb_size_t payload_count;
     mic_level_packet_payload_t payload[50];
-} pb_packed mic_level_packet_t;
-PB_PACKED_STRUCT_END
+} mic_level_packet_t;
 
-PB_PACKED_STRUCT_START
 typedef struct sgp_packet_payload {
     uint64_t timestamp_unix;
     uint32_t timestamp_ms_from_start;
@@ -223,20 +212,16 @@ typedef struct sgp_packet_payload {
     uint32_t sraw_nox;
     int32_t voc_index_value;
     int32_t nox_index_value;
-} pb_packed sgp_packet_payload_t;
-PB_PACKED_STRUCT_END
+} sgp_packet_payload_t;
 
-PB_PACKED_STRUCT_START
 typedef struct sgp_packet {
     uint32_t packet_index;
     uint32_t sample_period;
     uint32_t sensor_id;
     pb_size_t payload_count;
     sgp_packet_payload_t payload[20];
-} pb_packed sgp_packet_t;
-PB_PACKED_STRUCT_END
+} sgp_packet_t;
 
-PB_PACKED_STRUCT_START
 typedef struct bme_packet_payload {
     uint64_t timestamp_sensor;
     uint64_t timestamp_unix;
@@ -245,42 +230,32 @@ typedef struct bme_packet_payload {
     uint32_t signal_dimensions;
     bme680_signal_id_t sensor_id;
     bme680_accuracy_t accuracy;
-} pb_packed bme_packet_payload_t;
-PB_PACKED_STRUCT_END
+} bme_packet_payload_t;
 
-PB_PACKED_STRUCT_START
 typedef struct bme_packet {
     uint32_t packet_index;
     uint32_t sample_period;
     uint32_t sensor_id;
     pb_size_t payload_count;
     bme_packet_payload_t payload[12];
-} pb_packed bme_packet_t;
-PB_PACKED_STRUCT_END
+} bme_packet_t;
 
-PB_PACKED_STRUCT_START
 typedef struct blink_saturation_settings {
     bool diode_turned_off;
     uint32_t diode_saturation_lower_thresh;
     uint32_t diode_saturation_upper_thresh;
-} pb_packed blink_saturation_settings_t;
-PB_PACKED_STRUCT_END
+} blink_saturation_settings_t;
 
 typedef PB_BYTES_ARRAY_T(450) blink_byte_payload_sample_t;
-PB_PACKED_STRUCT_START
 typedef struct blink_byte_payload {
     blink_byte_payload_sample_t sample;
-} pb_packed blink_byte_payload_t;
-PB_PACKED_STRUCT_END
+} blink_byte_payload_t;
 
 typedef PB_BYTES_ARRAY_T(350) blink_high_res_payload_sample_t;
-PB_PACKED_STRUCT_START
 typedef struct blink_high_res_payload {
     blink_high_res_payload_sample_t sample;
-} pb_packed blink_high_res_payload_t;
-PB_PACKED_STRUCT_END
+} blink_high_res_payload_t;
 
-PB_PACKED_STRUCT_START
 typedef struct blink_packet {
     uint32_t packet_index;
     uint64_t timestamp_unix;
@@ -293,19 +268,15 @@ typedef struct blink_packet {
         blink_byte_payload_t payload_byte;
         blink_high_res_payload_t payload_high_res;
     } payload;
-} pb_packed blink_packet_t;
-PB_PACKED_STRUCT_END
+} blink_packet_t;
 
-PB_PACKED_STRUCT_START
 typedef struct sht_packet_payload {
     uint64_t timestamp_unix;
     uint32_t timestamp_ms_from_start;
     float temperature;
     float humidity;
-} pb_packed sht_packet_payload_t;
-PB_PACKED_STRUCT_END
+} sht_packet_payload_t;
 
-PB_PACKED_STRUCT_START
 typedef struct sht_packet {
     uint32_t packet_index;
     uint32_t sample_period;
@@ -314,10 +285,8 @@ typedef struct sht_packet {
     uint32_t sensor_id;
     pb_size_t payload_count;
     sht_packet_payload_t payload[200];
-} pb_packed sht_packet_t;
-PB_PACKED_STRUCT_END
+} sht_packet_t;
 
-PB_PACKED_STRUCT_START
 typedef struct spec_packet_payload {
     uint32_t band_415;
     uint32_t band_445;
@@ -334,10 +303,8 @@ typedef struct spec_packet_payload {
     uint32_t flicker;
     uint64_t timestamp_unix;
     uint32_t timestamp_ms_from_start;
-} pb_packed spec_packet_payload_t;
-PB_PACKED_STRUCT_END
+} spec_packet_payload_t;
 
-PB_PACKED_STRUCT_START
 typedef struct spec_packet {
     uint32_t packet_index;
     uint32_t sample_period;
@@ -347,10 +314,8 @@ typedef struct spec_packet {
     uint32_t sensor_id;
     pb_size_t payload_count;
     spec_packet_payload_t payload[30];
-} pb_packed spec_packet_t;
-PB_PACKED_STRUCT_END
+} spec_packet_t;
 
-PB_PACKED_STRUCT_START
 typedef struct therm_packet_payload {
     thermopile_location_t descriptor;
     uint64_t timestamp_unix;
@@ -359,44 +324,34 @@ typedef struct therm_packet_payload {
     uint32_t object_raw;
     float ambient_temp;
     float object_temp;
-} pb_packed therm_packet_payload_t;
-PB_PACKED_STRUCT_END
+} therm_packet_payload_t;
 
-PB_PACKED_STRUCT_START
 typedef struct therm_packet {
     uint32_t packet_index;
     uint32_t sample_period;
     pb_size_t payload_count;
     therm_packet_payload_t payload[50];
-} pb_packed therm_packet_t;
-PB_PACKED_STRUCT_END
+} therm_packet_t;
 
-PB_PACKED_STRUCT_START
 typedef struct imu_accel_settings {
     bool has_cutoff;
     imu_accel_cutoff_t cutoff;
     imu_accel_range_t range;
     uint32_t sample_rate_divisor;
-} pb_packed imu_accel_settings_t;
-PB_PACKED_STRUCT_END
+} imu_accel_settings_t;
 
-PB_PACKED_STRUCT_START
 typedef struct imu_gyro_settings {
     bool has_cutoff;
     imu_gyro_cutoff_t cutoff;
     imu_gyro_range_t range;
     uint32_t sample_rate_divisor;
-} pb_packed imu_gyro_settings_t;
-PB_PACKED_STRUCT_END
+} imu_gyro_settings_t;
 
 typedef PB_BYTES_ARRAY_T(440) imu_packet_payload_sample_t;
-PB_PACKED_STRUCT_START
 typedef struct imu_packet_payload {
     imu_packet_payload_sample_t sample;
-} pb_packed imu_packet_payload_t;
-PB_PACKED_STRUCT_END
+} imu_packet_payload_t;
 
-PB_PACKED_STRUCT_START
 typedef struct imu_packet {
     uint32_t packet_index;
     uint64_t timestamp_unix;
@@ -408,17 +363,13 @@ typedef struct imu_packet {
     imu_gyro_settings_t gyro_settings;
     bool has_payload;
     imu_packet_payload_t payload;
-} pb_packed imu_packet_t;
-PB_PACKED_STRUCT_END
+} imu_packet_t;
 
-PB_PACKED_STRUCT_START
 typedef struct mic_packet_payload {
     pb_size_t sample_count;
     float sample[130];
-} pb_packed mic_packet_payload_t;
-PB_PACKED_STRUCT_END
+} mic_packet_payload_t;
 
-PB_PACKED_STRUCT_START
 typedef struct mic_packet {
     uint32_t packet_index;
     uint32_t fft_index;
@@ -432,18 +383,14 @@ typedef struct mic_packet {
     float frequency_spacing;
     bool has_payload;
     mic_packet_payload_t payload;
-} pb_packed mic_packet_t;
-PB_PACKED_STRUCT_END
+} mic_packet_t;
 
-PB_PACKED_STRUCT_START
 typedef struct air_spec_colors {
     uint32_t red;
     uint32_t green;
     uint32_t blue;
-} pb_packed air_spec_colors_t;
-PB_PACKED_STRUCT_END
+} air_spec_colors_t;
 
-PB_PACKED_STRUCT_START
 typedef struct air_spec_color_position {
     bool has_forward;
     air_spec_colors_t forward;
@@ -451,19 +398,15 @@ typedef struct air_spec_color_position {
     air_spec_colors_t eye;
     bool has_top;
     air_spec_colors_t top;
-} pb_packed air_spec_color_position_t;
-PB_PACKED_STRUCT_END
+} air_spec_color_position_t;
 
-PB_PACKED_STRUCT_START
 typedef struct light_control_packet {
     bool has_left;
     air_spec_color_position_t left;
     bool has_right;
     air_spec_color_position_t right;
-} pb_packed light_control_packet_t;
-PB_PACKED_STRUCT_END
+} light_control_packet_t;
 
-PB_PACKED_STRUCT_START
 typedef struct sensor_control {
     bool enable_all;
     bool spectrometer;
@@ -478,39 +421,29 @@ typedef struct sensor_control {
     bool synchronize_windows;
     uint32_t window_size_ms;
     uint32_t window_period_ms;
-} pb_packed sensor_control_t;
-PB_PACKED_STRUCT_END
+} sensor_control_t;
 
-PB_PACKED_STRUCT_START
 typedef struct lux_sensor_config {
     uint32_t sample_period_ms;
     tsl2591_gain_t gain;
     tsl2591_integration_time_t integration_time;
-} pb_packed lux_sensor_config_t;
-PB_PACKED_STRUCT_END
+} lux_sensor_config_t;
 
-PB_PACKED_STRUCT_START
 typedef struct sgp_sensor_config {
     uint32_t sample_period_ms;
-} pb_packed sgp_sensor_config_t;
-PB_PACKED_STRUCT_END
+} sgp_sensor_config_t;
 
-PB_PACKED_STRUCT_START
 typedef struct bme_sensor_config {
     uint32_t sample_period_ms;
-} pb_packed bme_sensor_config_t;
-PB_PACKED_STRUCT_END
+} bme_sensor_config_t;
 
-PB_PACKED_STRUCT_START
 typedef struct color_sensor_config {
     uint32_t sample_period_ms;
     uint32_t integration_time;
     uint32_t integration_step;
     spec_gain_t gain;
-} pb_packed color_sensor_config_t;
-PB_PACKED_STRUCT_END
+} color_sensor_config_t;
 
-PB_PACKED_STRUCT_START
 typedef struct thermopile_sensor_config {
     uint32_t sample_period_ms;
     bool enable_top_of_nose;
@@ -518,10 +451,8 @@ typedef struct thermopile_sensor_config {
     bool enable_front_temple;
     bool enable_mid_temple;
     bool enable_rear_temple;
-} pb_packed thermopile_sensor_config_t;
-PB_PACKED_STRUCT_END
+} thermopile_sensor_config_t;
 
-PB_PACKED_STRUCT_START
 typedef struct blink_sensor_config {
     uint32_t sample_frequency;
     bool enable_daylight_compensation;
@@ -531,25 +462,19 @@ typedef struct blink_sensor_config {
     uint32_t enable_windowing_sync;
     uint32_t window_size_ms;
     uint32_t window_period_ms;
-} pb_packed blink_sensor_config_t;
-PB_PACKED_STRUCT_END
+} blink_sensor_config_t;
 
-PB_PACKED_STRUCT_START
 typedef struct mic_sensor_config {
     uint32_t sample_period_ms;
     uint32_t mic_sample_freq;
-} pb_packed mic_sensor_config_t;
-PB_PACKED_STRUCT_END
+} mic_sensor_config_t;
 
-PB_PACKED_STRUCT_START
 typedef struct humidity_sensor_config {
     uint32_t sample_period_ms;
     sht45_precision_t precision_level;
     sht45_heater_t heater_settings;
-} pb_packed humidity_sensor_config_t;
-PB_PACKED_STRUCT_END
+} humidity_sensor_config_t;
 
-PB_PACKED_STRUCT_START
 typedef struct imu_sensor_config {
     bool has_accel_settings;
     imu_accel_settings_t accel_settings;
@@ -559,10 +484,8 @@ typedef struct imu_sensor_config {
     uint32_t enable_windowing_sync;
     uint32_t window_size_ms;
     uint32_t window_period_ms;
-} pb_packed imu_sensor_config_t;
-PB_PACKED_STRUCT_END
+} imu_sensor_config_t;
 
-PB_PACKED_STRUCT_START
 typedef struct sensor_config {
     bool has_lux;
     lux_sensor_config_t lux;
@@ -582,16 +505,12 @@ typedef struct sensor_config {
     humidity_sensor_config_t humidity;
     bool has_imu;
     imu_sensor_config_t imu;
-} pb_packed sensor_config_t;
-PB_PACKED_STRUCT_END
+} sensor_config_t;
 
-PB_PACKED_STRUCT_START
 typedef struct dfu_mode {
     bool enable;
-} pb_packed dfu_mode_t;
-PB_PACKED_STRUCT_END
+} dfu_mode_t;
 
-PB_PACKED_STRUCT_START
 typedef struct blue_green_transition {
     bool enable;
     uint32_t blue_min_intensity;
@@ -601,17 +520,13 @@ typedef struct blue_green_transition {
     uint32_t step_duration_ms;
     uint32_t green_hold_length_seconds;
     uint32_t transition_delay_seconds;
-} pb_packed blue_green_transition_t;
-PB_PACKED_STRUCT_END
+} blue_green_transition_t;
 
-PB_PACKED_STRUCT_START
 typedef struct blink_calibration {
     bool enable;
     uint32_t duration_ms;
-} pb_packed blink_calibration_t;
-PB_PACKED_STRUCT_END
+} blink_calibration_t;
 
-PB_PACKED_STRUCT_START
 typedef struct red_flash_task {
     bool enable;
     uint32_t red_max_intensity;
@@ -620,16 +535,16 @@ typedef struct red_flash_task {
     uint32_t duration_ms;
     uint32_t enable_speaker;
     uint32_t enable_light;
-} pb_packed red_flash_task_t;
-PB_PACKED_STRUCT_END
+} red_flash_task_t;
 
-PB_PACKED_STRUCT_START
 typedef struct air_spec_config_header {
     uint64_t timestamp_unix;
-} pb_packed air_spec_config_header_t;
-PB_PACKED_STRUCT_END
+} air_spec_config_header_t;
 
-PB_PACKED_STRUCT_START
+typedef struct rtc_packet {
+    bool set;
+} rtc_packet_t;
+
 typedef struct air_spec_config_packet {
     bool has_header;
     air_spec_config_header_t header;
@@ -642,50 +557,35 @@ typedef struct air_spec_config_packet {
         blue_green_transition_t blue_green_transition;
         red_flash_task_t red_flash_task;
         blink_calibration_t blink_calibration;
+        rtc_packet_t rtc_packet;
     } payload;
-} pb_packed air_spec_config_packet_t;
-PB_PACKED_STRUCT_END
+} air_spec_config_packet_t;
 
-PB_PACKED_STRUCT_START
 typedef struct system_state {
     uint32_t firmware_version;
     bool has_control;
     sensor_control_t control;
     bool has_config;
     sensor_config_t config;
-} pb_packed system_state_t;
-PB_PACKED_STRUCT_END
+} system_state_t;
 
-PB_PACKED_STRUCT_START
 typedef struct app_survey_data_payload {
     int32_t q_index;
     pb_callback_t q_choice;
     uint32_t q_group_index;
     uint64_t timestamp_unix;
-} pb_packed app_survey_data_payload_t;
-PB_PACKED_STRUCT_END
+} app_survey_data_payload_t;
 
-PB_PACKED_STRUCT_START
 typedef struct app_survey_data_packet {
     pb_callback_t payload;
-} pb_packed app_survey_data_packet_t;
-PB_PACKED_STRUCT_END
+} app_survey_data_packet_t;
 
-PB_PACKED_STRUCT_START
 typedef struct app_meta_data_packet {
     pb_callback_t payload;
     uint32_t type;
     uint64_t timestamp_unix;
-} pb_packed app_meta_data_packet_t;
-PB_PACKED_STRUCT_END
+} app_meta_data_packet_t;
 
-PB_PACKED_STRUCT_START
-typedef struct rtc_packet {
-    bool set;
-} pb_packed rtc_packet_t;
-PB_PACKED_STRUCT_END
-
-PB_PACKED_STRUCT_START
 typedef struct sensor_packet {
     bool has_header;
     sensor_packet_header_t header;
@@ -703,10 +603,8 @@ typedef struct sensor_packet {
         mic_level_packet_t mic_level_packet;
         app_survey_data_packet_t survey_packet;
         app_meta_data_packet_t meta_data_packet;
-        rtc_packet_t rtc_packet;
     } payload;
-} pb_packed sensor_packet_t;
-PB_PACKED_STRUCT_END
+} sensor_packet_t;
 
 
 #ifdef __cplusplus
@@ -889,12 +787,12 @@ extern "C" {
 #define BLINK_CALIBRATION_INIT_DEFAULT           {0, 0}
 #define RED_FLASH_TASK_INIT_DEFAULT              {0, 0, 0, 0, 0, 0, 0}
 #define AIR_SPEC_CONFIG_HEADER_INIT_DEFAULT      {0}
+#define RTC_PACKET_INIT_DEFAULT                  {0}
 #define AIR_SPEC_CONFIG_PACKET_INIT_DEFAULT      {false, AIR_SPEC_CONFIG_HEADER_INIT_DEFAULT, 0, {LIGHT_CONTROL_PACKET_INIT_DEFAULT}}
 #define SYSTEM_STATE_INIT_DEFAULT                {0, false, SENSOR_CONTROL_INIT_DEFAULT, false, SENSOR_CONFIG_INIT_DEFAULT}
 #define APP_SURVEY_DATA_PAYLOAD_INIT_DEFAULT     {0, {{NULL}, NULL}, 0, 0}
 #define APP_SURVEY_DATA_PACKET_INIT_DEFAULT      {{{NULL}, NULL}}
 #define APP_META_DATA_PACKET_INIT_DEFAULT        {{{NULL}, NULL}, 0, 0}
-#define RTC_PACKET_INIT_DEFAULT                  {0}
 #define SENSOR_PACKET_INIT_DEFAULT               {false, SENSOR_PACKET_HEADER_INIT_DEFAULT, 0, {LUX_PACKET_INIT_DEFAULT}}
 #define SENSOR_PACKET_HEADER_INIT_ZERO           {0, 0, 0}
 #define LUX_PACKET_INIT_ZERO                     {0, 0, _TSL2591_GAIN_MIN, _TSL2591_INTEGRATION_TIME_MIN, 0, 0, {LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO, LUX_PACKET_PAYLOAD_INIT_ZERO}}
@@ -940,12 +838,12 @@ extern "C" {
 #define BLINK_CALIBRATION_INIT_ZERO              {0, 0}
 #define RED_FLASH_TASK_INIT_ZERO                 {0, 0, 0, 0, 0, 0, 0}
 #define AIR_SPEC_CONFIG_HEADER_INIT_ZERO         {0}
+#define RTC_PACKET_INIT_ZERO                     {0}
 #define AIR_SPEC_CONFIG_PACKET_INIT_ZERO         {false, AIR_SPEC_CONFIG_HEADER_INIT_ZERO, 0, {LIGHT_CONTROL_PACKET_INIT_ZERO}}
 #define SYSTEM_STATE_INIT_ZERO                   {0, false, SENSOR_CONTROL_INIT_ZERO, false, SENSOR_CONFIG_INIT_ZERO}
 #define APP_SURVEY_DATA_PAYLOAD_INIT_ZERO        {0, {{NULL}, NULL}, 0, 0}
 #define APP_SURVEY_DATA_PACKET_INIT_ZERO         {{{NULL}, NULL}}
 #define APP_META_DATA_PACKET_INIT_ZERO           {{{NULL}, NULL}, 0, 0}
-#define RTC_PACKET_INIT_ZERO                     {0}
 #define SENSOR_PACKET_INIT_ZERO                  {false, SENSOR_PACKET_HEADER_INIT_ZERO, 0, {LUX_PACKET_INIT_ZERO}}
 
 /* Field tags (for use in manual encoding/decoding) */
@@ -1156,6 +1054,7 @@ extern "C" {
 #define RED_FLASH_TASK_ENABLE_SPEAKER_TAG        6
 #define RED_FLASH_TASK_ENABLE_LIGHT_TAG          7
 #define AIR_SPEC_CONFIG_HEADER_TIMESTAMP_UNIX_TAG 1
+#define RTC_PACKET_SET_TAG                       1
 #define AIR_SPEC_CONFIG_PACKET_HEADER_TAG        1
 #define AIR_SPEC_CONFIG_PACKET_CTRL_INDIV_LED_TAG 2
 #define AIR_SPEC_CONFIG_PACKET_SENSOR_CONTROL_TAG 3
@@ -1164,6 +1063,7 @@ extern "C" {
 #define AIR_SPEC_CONFIG_PACKET_BLUE_GREEN_TRANSITION_TAG 6
 #define AIR_SPEC_CONFIG_PACKET_RED_FLASH_TASK_TAG 7
 #define AIR_SPEC_CONFIG_PACKET_BLINK_CALIBRATION_TAG 8
+#define AIR_SPEC_CONFIG_PACKET_RTC_PACKET_TAG    9
 #define SYSTEM_STATE_FIRMWARE_VERSION_TAG        1
 #define SYSTEM_STATE_CONTROL_TAG                 2
 #define SYSTEM_STATE_CONFIG_TAG                  3
@@ -1175,7 +1075,6 @@ extern "C" {
 #define APP_META_DATA_PACKET_PAYLOAD_TAG         1
 #define APP_META_DATA_PACKET_TYPE_TAG            2
 #define APP_META_DATA_PACKET_TIMESTAMP_UNIX_TAG  3
-#define RTC_PACKET_SET_TAG                       1
 #define SENSOR_PACKET_HEADER_TAG                 1
 #define SENSOR_PACKET_LUX_PACKET_TAG             2
 #define SENSOR_PACKET_SGP_PACKET_TAG             3
@@ -1189,7 +1088,6 @@ extern "C" {
 #define SENSOR_PACKET_MIC_LEVEL_PACKET_TAG       11
 #define SENSOR_PACKET_SURVEY_PACKET_TAG          12
 #define SENSOR_PACKET_META_DATA_PACKET_TAG       13
-#define SENSOR_PACKET_RTC_PACKET_TAG             14
 
 /* Struct field encoding specification for nanopb */
 #define SENSOR_PACKET_HEADER_FIELDLIST(X, a) \
@@ -1605,6 +1503,11 @@ X(a, STATIC,   SINGULAR, UINT64,   timestamp_unix,    1)
 #define AIR_SPEC_CONFIG_HEADER_CALLBACK NULL
 #define AIR_SPEC_CONFIG_HEADER_DEFAULT NULL
 
+#define RTC_PACKET_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, BOOL,     set,               1)
+#define RTC_PACKET_CALLBACK NULL
+#define RTC_PACKET_DEFAULT NULL
+
 #define AIR_SPEC_CONFIG_PACKET_FIELDLIST(X, a) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  header,            1) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload,ctrl_indiv_led,payload.ctrl_indiv_led),   2) \
@@ -1613,7 +1516,8 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (payload,sensor_config,payload.sensor_config)
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload,dfu_mode,payload.dfu_mode),   5) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload,blue_green_transition,payload.blue_green_transition),   6) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload,red_flash_task,payload.red_flash_task),   7) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (payload,blink_calibration,payload.blink_calibration),   8)
+X(a, STATIC,   ONEOF,    MESSAGE,  (payload,blink_calibration,payload.blink_calibration),   8) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (payload,rtc_packet,payload.rtc_packet),   9)
 #define AIR_SPEC_CONFIG_PACKET_CALLBACK NULL
 #define AIR_SPEC_CONFIG_PACKET_DEFAULT NULL
 #define air_spec_config_packet_t_header_MSGTYPE air_spec_config_header_t
@@ -1624,6 +1528,7 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (payload,blink_calibration,payload.blink_cali
 #define air_spec_config_packet_t_payload_blue_green_transition_MSGTYPE blue_green_transition_t
 #define air_spec_config_packet_t_payload_red_flash_task_MSGTYPE red_flash_task_t
 #define air_spec_config_packet_t_payload_blink_calibration_MSGTYPE blink_calibration_t
+#define air_spec_config_packet_t_payload_rtc_packet_MSGTYPE rtc_packet_t
 
 #define SYSTEM_STATE_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   firmware_version,   1) \
@@ -1655,11 +1560,6 @@ X(a, STATIC,   SINGULAR, UINT64,   timestamp_unix,    3)
 #define APP_META_DATA_PACKET_CALLBACK pb_default_field_callback
 #define APP_META_DATA_PACKET_DEFAULT NULL
 
-#define RTC_PACKET_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, BOOL,     set,               1)
-#define RTC_PACKET_CALLBACK NULL
-#define RTC_PACKET_DEFAULT NULL
-
 #define SENSOR_PACKET_FIELDLIST(X, a) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  header,            1) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload,lux_packet,payload.lux_packet),   2) \
@@ -1673,8 +1573,7 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (payload,imu_packet,payload.imu_packet),   9)
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload,mic_packet,payload.mic_packet),  10) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload,mic_level_packet,payload.mic_level_packet),  11) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload,survey_packet,payload.survey_packet),  12) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (payload,meta_data_packet,payload.meta_data_packet),  13) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (payload,rtc_packet,payload.rtc_packet),  14)
+X(a, STATIC,   ONEOF,    MESSAGE,  (payload,meta_data_packet,payload.meta_data_packet),  13)
 #define SENSOR_PACKET_CALLBACK NULL
 #define SENSOR_PACKET_DEFAULT NULL
 #define sensor_packet_t_header_MSGTYPE sensor_packet_header_t
@@ -1690,7 +1589,6 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (payload,rtc_packet,payload.rtc_packet),  14)
 #define sensor_packet_t_payload_mic_level_packet_MSGTYPE mic_level_packet_t
 #define sensor_packet_t_payload_survey_packet_MSGTYPE app_survey_data_packet_t
 #define sensor_packet_t_payload_meta_data_packet_MSGTYPE app_meta_data_packet_t
-#define sensor_packet_t_payload_rtc_packet_MSGTYPE rtc_packet_t
 
 extern const pb_msgdesc_t sensor_packet_header_t_msg;
 extern const pb_msgdesc_t lux_packet_t_msg;
@@ -1736,12 +1634,12 @@ extern const pb_msgdesc_t blue_green_transition_t_msg;
 extern const pb_msgdesc_t blink_calibration_t_msg;
 extern const pb_msgdesc_t red_flash_task_t_msg;
 extern const pb_msgdesc_t air_spec_config_header_t_msg;
+extern const pb_msgdesc_t rtc_packet_t_msg;
 extern const pb_msgdesc_t air_spec_config_packet_t_msg;
 extern const pb_msgdesc_t system_state_t_msg;
 extern const pb_msgdesc_t app_survey_data_payload_t_msg;
 extern const pb_msgdesc_t app_survey_data_packet_t_msg;
 extern const pb_msgdesc_t app_meta_data_packet_t_msg;
-extern const pb_msgdesc_t rtc_packet_t_msg;
 extern const pb_msgdesc_t sensor_packet_t_msg;
 
 /* Defines for backwards compatibility with code written before nanopb-0.4.0 */
@@ -1789,12 +1687,12 @@ extern const pb_msgdesc_t sensor_packet_t_msg;
 #define BLINK_CALIBRATION_FIELDS &blink_calibration_t_msg
 #define RED_FLASH_TASK_FIELDS &red_flash_task_t_msg
 #define AIR_SPEC_CONFIG_HEADER_FIELDS &air_spec_config_header_t_msg
+#define RTC_PACKET_FIELDS &rtc_packet_t_msg
 #define AIR_SPEC_CONFIG_PACKET_FIELDS &air_spec_config_packet_t_msg
 #define SYSTEM_STATE_FIELDS &system_state_t_msg
 #define APP_SURVEY_DATA_PAYLOAD_FIELDS &app_survey_data_payload_t_msg
 #define APP_SURVEY_DATA_PACKET_FIELDS &app_survey_data_packet_t_msg
 #define APP_META_DATA_PACKET_FIELDS &app_meta_data_packet_t_msg
-#define RTC_PACKET_FIELDS &rtc_packet_t_msg
 #define SENSOR_PACKET_FIELDS &sensor_packet_t_msg
 
 /* Maximum encoded size of messages (where known) */

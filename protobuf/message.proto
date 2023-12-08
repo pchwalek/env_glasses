@@ -505,6 +505,10 @@ message AirSpecConfigHeader{
     uint64 timestamp_unix = 1;
 }
 
+message rtcPacket {
+    bool set = 1;
+}
+
 message AirSpecConfigPacket {
     AirSpecConfigHeader header = 1;
 
@@ -515,7 +519,8 @@ message AirSpecConfigPacket {
         DFU_Mode    dfu_mode = 5;
         BlueGreenTransition blueGreenTransition = 6;
         RedFlashTask redFlashTask = 7;
-	BlinkCalibration blinkCalibration = 8;
+	    BlinkCalibration blinkCalibration = 8;
+        rtcPacket rtc_packet = 9;
     }
 }
 
@@ -545,11 +550,6 @@ message appMetaDataPacket {
     uint64 timestamp_unix = 3;
 }
 
-message rtcPacket {
-    bool set = 1;
-}
-
-
 message SensorPacket {
     SensorPacketHeader header = 1;
 
@@ -566,7 +566,6 @@ message SensorPacket {
 	    MicLevelPacket mic_level_packet = 11;
         appSurveyDataPacket survey_packet = 12;
         appMetaDataPacket meta_data_packet = 13;
-        rtcPacket rtc_packet = 14;
     }
 
 }
