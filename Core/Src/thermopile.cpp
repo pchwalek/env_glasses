@@ -87,32 +87,35 @@ void Thermopile_Task(void *argument) {
 	}else{
 		sensorSettings.sample_period_ms = 500;
 		sensorSettings.enable_top_of_nose = true;
-		sensorSettings.enable_nose_bridge = 500;
-		sensorSettings.enable_front_temple = 500;
-		sensorSettings.enable_mid_temple = 500;
-		sensorSettings.enable_rear_temple = 500;
+		sensorSettings.enable_nose_bridge = true;
+		sensorSettings.enable_front_temple = true;
+		sensorSettings.enable_mid_temple = true;
+		sensorSettings.enable_rear_temple = true;
 	}
 
-//	tp_nose_bridge.setup((uint8_t) THERMOPLE_NOSE_BRIDGE_ADDR, &hi2c1, THERMOPLE_NOSE_BRIDGE_ID);
-//	tp_nose_bridge.wake(); 		// wakeup thermopile sensors on i2c1 bus
-//	tp_temple_front.setup((uint8_t) THERMOPLE_TEMPLE_FRONT_ADDR, &hi2c3, THERMOPLE_TEMPLE_FRONT_ADDR_ID);
-//	tp_temple_front.wake(); 	// wakeup thermopile sensors on i2c3 bus
+	uin8_t thermopile_samples_per_packet = 2 * (
+										((int) (sensorSettings.enable_front_temple)) +
+										((int) (sensorSettings.enable_mid_temple)) +
+										((int) (sensorSettings.enable_rear_temple)) +
+										((int) (sensorSettings.enable_nose_bridge)) +
+										((int) (sensorSettings.enable_top_of_nose)));
 
-	osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
-	initThermopiles(&tp_nose_tip,		THERMOPLE_NOSE_TIP_ADDR,	&hi2c1,	THERMOPILE_LOCATION_TIP_OF_NOSE);
-	initThermopiles(&tp_nose_bridge,	THERMOPLE_NOSE_BRIDGE_ADDR,	&hi2c1, THERMOPILE_LOCATION_NOSE_BRIDGE);
-	i2c_error_check(&hi2c1);
-	osSemaphoreRelease(messageI2C1_LockHandle);
+	if(sensorSettings.enable_top_of_nose || sensorSettings.enable_nose_bridge){
+		osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
+		if(sensorSettings.enable_top_of_nose) initThermopiles(&tp_nose_tip,		THERMOPLE_NOSE_TIP_ADDR,	&hi2c1,	THERMOPILE_LOCATION_TIP_OF_NOSE);
+		if(sensorSettings.enable_nose_bridge) initThermopiles(&tp_nose_bridge,	THERMOPLE_NOSE_BRIDGE_ADDR,	&hi2c1, THERMOPILE_LOCATION_NOSE_BRIDGE);
+		i2c_error_check(&hi2c1);
+		osSemaphoreRelease(messageI2C1_LockHandle);
+	}
 
-	osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
-	initThermopiles(&tp_temple_front,	THERMOPLE_TEMPLE_FRONT_ADDR,&hi2c3, THERMOPILE_LOCATION_FRONT_TEMPLE);
-	initThermopiles(&tp_temple_mid,		THERMOPLE_TEMPLE_MID_ADDR,	&hi2c3, THERMOPILE_LOCATION_MID_TEMPLE);
-	initThermopiles(&tp_temple_back,	THERMOPLE_TEMPLE_BACK_ADDR,	&hi2c3, THERMOPILE_LOCATION_REAR_TEMPLE);
-	i2c_error_check(&hi2c3);
-	osSemaphoreRelease(messageI2C3_LockHandle);
-
-
-//	message.header.reserved[1] = THERMOPILE_CNT;
+	if(sensorSettings.enable_front_temple || sensorSettings.enable_mid_temple || sensorSettings.enable_rear_temple){
+		osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
+		if(sensorSettings.enable_front_temple) initThermopiles(&tp_temple_front,	THERMOPLE_TEMPLE_FRONT_ADDR,&hi2c3, THERMOPILE_LOCATION_FRONT_TEMPLE);
+		if(sensorSettings.enable_mid_temple) initThermopiles(&tp_temple_mid,		THERMOPLE_TEMPLE_MID_ADDR,	&hi2c3, THERMOPILE_LOCATION_MID_TEMPLE);
+		if(sensorSettings.enable_rear_temple) initThermopiles(&tp_temple_back,	THERMOPLE_TEMPLE_BACK_ADDR,	&hi2c3, THERMOPILE_LOCATION_REAR_TEMPLE);
+		i2c_error_check(&hi2c3);
+		osSemaphoreRelease(messageI2C3_LockHandle);
+	}
 
 	thermIdx = 0;
 	thermID = 0;
@@ -130,21 +133,25 @@ void Thermopile_Task(void *argument) {
 
 
 			// sample nose
-			osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
-			grabThermopileSamples(&thermopileData[thermIdx++], &tp_nose_tip);
-			grabThermopileSamples(&thermopileData[thermIdx++], &tp_nose_bridge);
-			i2c_error_check(&hi2c1);
-			osSemaphoreRelease(messageI2C1_LockHandle);
+			if(sensorSettings.enable_top_of_nose || sensorSettings.enable_nose_bridge){
+				osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);
+				if(sensorSettings.enable_top_of_nose) grabThermopileSamples(&thermopileData[thermIdx++], &tp_nose_tip);
+				if(sensorSettings.enable_nose_bridge) grabThermopileSamples(&thermopileData[thermIdx++], &tp_nose_bridge);
+				i2c_error_check(&hi2c1);
+				osSemaphoreRelease(messageI2C1_LockHandle);
+			}
 
 			// sample temple
-			osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
-			grabThermopileSamples(&thermopileData[thermIdx++], &tp_temple_front);
-			grabThermopileSamples(&thermopileData[thermIdx++], &tp_temple_mid);
-			grabThermopileSamples(&thermopileData[thermIdx++], &tp_temple_back);
-			i2c_error_check(&hi2c3);
-			osSemaphoreRelease(messageI2C3_LockHandle);
+			if(sensorSettings.enable_front_temple || sensorSettings.enable_mid_temple || sensorSettings.enable_rear_temple){
+				osSemaphoreAcquire(messageI2C3_LockHandle, osWaitForever);
+				if(sensorSettings.enable_front_temple) grabThermopileSamples(&thermopileData[thermIdx++], &tp_temple_front);
+				if(sensorSettings.enable_mid_temple) grabThermopileSamples(&thermopileData[thermIdx++], &tp_temple_mid);
+				if(sensorSettings.enable_rear_temple) grabThermopileSamples(&thermopileData[thermIdx++], &tp_temple_back);
+				i2c_error_check(&hi2c3);
+				osSemaphoreRelease(messageI2C3_LockHandle);
+			}
 
-			if(thermIdx >= MAX_THERMOPILE_SAMPLES_PACKET){
+			if(thermIdx >= thermopile_samples_per_packet){
 				queueThermopilePkt(&thermopileData[0], thermIdx);
 				thermID++;
 				thermIdx = 0;

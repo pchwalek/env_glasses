@@ -325,8 +325,10 @@ uint8_t sendProtobufPacket_BLE(uint8_t *packet, uint16_t size) {
 uint8_t buffer[500];
 uint8_t updateSystemConfig_BLE(system_state_t *packet) {
 
-		tBleStatus status = BLE_STATUS_INVALID_PARAMS;
+		volatile tBleStatus status = BLE_STATUS_INVALID_PARAMS;
 
+		packet->has_config = true;
+		packet->has_control = true;
 
         /* Create a stream that will write to our buffer. */
         pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(buffer));

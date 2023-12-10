@@ -239,19 +239,24 @@ int main(void) {
 		sysState.control.window_size_ms = ONE_SECOND_MS * 60;
 		sysState.control.window_period_ms = ONE_SECOND_MS * 120;
 
-
+		sysState.config.has_lux = true;
 		sysState.config.lux.gain = TSL2591_GAIN_TSL2722_GAIN_8_X;
 		sysState.config.lux.integration_time = TSL2591_INTEGRATION_TIME_TSL2722_INTEGRATIONTIME_101_MS;
 		sysState.config.lux.sample_period_ms = 1000;
 
+		sysState.config.has_bme = true;
 		sysState.config.bme.sample_period_ms = 5000;
 
+		sysState.config.has_sgp = true;
 		sysState.config.sgp.sample_period_ms = 5000;
 
+		sysState.config.has_imu = true;
+		sysState.config.imu.has_gyro_settings = true;
 		sysState.config.imu.gyro_settings.has_cutoff = true;
 		sysState.config.imu.gyro_settings.cutoff = IMU_GYRO_CUTOFF_ICM20_X_GYRO_FREQ_196_6_HZ;
 		sysState.config.imu.gyro_settings.range = IMU_GYRO_RANGE_RANGE_2000_DPS;
 		sysState.config.imu.gyro_settings.sample_rate_divisor = 3;
+		sysState.config.imu.has_accel_settings = true;
 		sysState.config.imu.accel_settings.has_cutoff = true;
 		sysState.config.imu.accel_settings.cutoff = IMU_ACCEL_CUTOFF_ICM20_X_ACCEL_FREQ_246_0_HZ;
 		sysState.config.imu.accel_settings.range = IMU_ACCEL_RANGE_RANGE_8_G;
@@ -269,11 +274,13 @@ int main(void) {
 			sysState.config.imu.window_period_ms = 10000;
 		}
 
+		sysState.config.has_color = true;
 		sysState.config.color.integration_time = 100;
 		sysState.config.color.integration_step = 999;
 		sysState.config.color.gain = SPEC_GAIN_GAIN_256_X;
 		sysState.config.color.sample_period_ms = 5000;
 
+		sysState.config.has_thermopile = true;
 		sysState.config.thermopile.sample_period_ms = 1000; // thermopile
 		sysState.config.thermopile.enable_top_of_nose = true;
 		sysState.config.thermopile.enable_nose_bridge = true;
@@ -281,6 +288,7 @@ int main(void) {
 		sysState.config.thermopile.enable_mid_temple = true;
 		sysState.config.thermopile.enable_rear_temple = true;
 
+		sysState.config.has_blink = true;
 		sysState.config.blink.enable_daylight_compensation = 1;
 		sysState.config.blink.daylight_compensation_upper_thresh = 150; // if signal is consistently above this, turn on diode
 		sysState.config.blink.daylight_compensation_lower_thresh = 20; // if signal is consistently below this, turn off diode
@@ -296,9 +304,11 @@ int main(void) {
 			sysState.config.blink.window_period_ms = ONE_SECOND_MS * 120;
 		}
 
+		sysState.config.has_mic = true;
 		sysState.config.mic.mic_sample_freq = SAI_AUDIO_FREQUENCY_48K;
 		sysState.config.mic.sample_period_ms = 60000; // 60 seconds
 
+		sysState.config.has_humidity = true;
 		sysState.config.humidity.precision_level = SHT45_PRECISION_SHT4_X_HIGH_PRECISION;
 		sysState.config.humidity.heater_settings = SHT45_HEATER_SHT4_X_NO_HEATER;
 		sysState.config.humidity.sample_period_ms = 5000;

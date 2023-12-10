@@ -141,6 +141,7 @@ void BME_Task(void *argument) {
 			}
 
 		}
+		flags = osThreadFlagsWait(TERMINATE_THREAD_BIT, osFlagsWaitAny, 0);
 
 		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
 			osTimerDelete (periodicBMETimer_id);
