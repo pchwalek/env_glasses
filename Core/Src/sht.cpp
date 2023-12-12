@@ -47,6 +47,7 @@ void ShtTask(void *argument) {
 	sensor_packet_t *packet = NULL;
 	uint32_t flags;
 //	uint32_t timeLeftForSample = 0;
+	osThreadFlagsClear(GRAB_SAMPLE_BIT | TERMINATE_THREAD_BIT);
 
 //	bool status;
 

@@ -18,6 +18,7 @@
 #include "arm_math.h"
 #include "math.h"
 
+
 // pretty OK tutorial: https://stm32f4-discovery.net/2014/10/stm32f4-fft-example/
 
 //#define MIC_DATA_SIZE		4096 // make multiple of 2 for simplicity
@@ -121,6 +122,8 @@ void Mic_Task(void *argument){
 
 	hsai_BlockA1.Init.AudioFrequency = sensorSettings.mic_sample_freq;
 
+	MX_SAI1_Init();
+
 	HAL_SAI_InitProtocol(&hsai_BlockA1, SAI_I2S_STANDARD, SAI_PROTOCOL_DATASIZE_24BIT, 2);
 
 	/* prime the SAI channel
@@ -138,7 +141,9 @@ void Mic_Task(void *argument){
 
 	periodicMicTimer_id = osTimerNew(triggerMicSample, osTimerPeriodic,
 				NULL, NULL);
-	osTimerStart(periodicMicTimer_id, sensorSettings.sample_period_ms / MIC_LEVEL_SUB_SAMPLE_CNT);
+
+	volatile osStatus_t timerStatus;
+	timerStatus = osTimerStart(periodicMicTimer_id, sensorSettings.sample_period_ms / MIC_LEVEL_SUB_SAMPLE_CNT);
 //	start_logging = 1;
 
 	while(1){
@@ -294,6 +299,8 @@ void Mic_Task(void *argument){
 
 		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
 			osTimerDelete(periodicMicTimer_id);
+			HAL_SAI_Abort(&hsai_BlockA1);
+			HAL_SAI_DeInit(&hsai_BlockA1);
 			HAL_SAI_MspDeInit(&hsai_BlockA1);
 			osThreadExit();
 //			start_logging = 0;
@@ -454,7 +461,9 @@ void calculateSoundLevel(float *data, uint32_t size, double *dB, double *RMS){
 }
 
 void triggerMicSample(void *argument){
+	portENTER_CRITICAL();
 	HAL_SAI_Receive_IT(&hsai_BlockA1, (uint8_t *) micData.uint_val, MIC_DATA_SIZE);
+	portEXIT_CRITICAL();
 }
 
 void HAL_SAI_RxCpltCallback(SAI_HandleTypeDef *hsai){

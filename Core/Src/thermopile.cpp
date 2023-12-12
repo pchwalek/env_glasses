@@ -78,12 +78,12 @@ thermopile_sensor_config_t sensorSettings;
 void Thermopile_Task(void *argument) {
 //	sensor_packet_t *packet = NULL;
 	uint32_t flags;
-
+	osThreadFlagsClear(GRAB_SAMPLE_BIT | TERMINATE_THREAD_BIT);
 //	bool status;
 
 
 	if(argument != NULL){
-		memcpy(&sensorSettings,argument,sizeof(struct ThermopileSensor));
+		memcpy(&sensorSettings,argument,sizeof(thermopile_sensor_config_t));
 	}else{
 		sensorSettings.sample_period_ms = 500;
 		sensorSettings.enable_top_of_nose = true;
@@ -93,12 +93,16 @@ void Thermopile_Task(void *argument) {
 		sensorSettings.enable_rear_temple = true;
 	}
 
-	uin8_t thermopile_samples_per_packet = 2 * (
+	uint8_t thermopile_samples_per_packet = 2 * (
 										((int) (sensorSettings.enable_front_temple)) +
 										((int) (sensorSettings.enable_mid_temple)) +
 										((int) (sensorSettings.enable_rear_temple)) +
 										((int) (sensorSettings.enable_nose_bridge)) +
 										((int) (sensorSettings.enable_top_of_nose)));
+
+	if(thermopile_samples_per_packet == 0){
+		osThreadExit();
+	}
 
 	if(sensorSettings.enable_top_of_nose || sensorSettings.enable_nose_bridge){
 		osSemaphoreAcquire(messageI2C1_LockHandle, osWaitForever);

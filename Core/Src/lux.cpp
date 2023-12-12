@@ -40,6 +40,7 @@ static lux_sensor_config_t sensorSettings;
 void LuxTask(void *argument) {
 	sensor_packet_t *packet = NULL;
 	uint32_t flags;
+	osThreadFlagsClear(GRAB_SAMPLE_BIT | TERMINATE_THREAD_BIT);
 
 	if(argument != NULL){
 		memcpy(&sensorSettings,argument,sizeof(lux_sensor_config_t));

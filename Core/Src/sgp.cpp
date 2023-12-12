@@ -55,6 +55,7 @@ void SgpTask(void *argument) {
 	uint32_t flags;
 //	uint32_t timeLeftForSample = 0;
 	uint16_t error;
+	osThreadFlagsClear(GRAB_SAMPLE_BIT | TERMINATE_THREAD_BIT);
 
 	uint8_t primarySGP_disable = 0;
 	uint8_t secondarySGP_disable = 0;

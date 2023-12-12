@@ -40,35 +40,35 @@ static void syncTimerTask(void);
 void controlSpectrometer(bool state){
 	if(state){
 		osThreadState_t threadState = osThreadGetState(specTaskHandle);
-		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
+		if( (threadState == osThreadTerminated) || (threadState == osThreadError) || (threadState == osThreadReady)){
 			specTaskHandle = osThreadNew(Spec_Task, &sysState.config.color, &specTask_attributes);
 		}
 	}else{
 		osThreadFlagsSet(specTaskHandle, TERMINATE_THREAD_BIT);
 	}
-	osDelay(CONTROL_DELAY);
+//	osDelay(CONTROL_DELAY);
 }
 void controlBME(bool state){
 	if(state){
 		osThreadState_t threadState = osThreadGetState(bmeTaskHandle);
-		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
+		if( (threadState == osThreadTerminated) || (threadState == osThreadError) || (threadState == osThreadReady)){
 			bmeTaskHandle = osThreadNew(BME_Task, &sysState.config.bme, &bmeTask_attributes);
 		}
 	}else{
 		osThreadFlagsSet(bmeTaskHandle, TERMINATE_THREAD_BIT);
 	}
-	osDelay(CONTROL_DELAY);
+//	osDelay(CONTROL_DELAY);
 }
 void controlIMU(bool state){
 	if(state){
 		osThreadState_t threadState = osThreadGetState(imuTaskHandle);
-		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
+		if( (threadState == osThreadTerminated) || (threadState == osThreadError) || (threadState == osThreadReady)){
 			imuTaskHandle = osThreadNew(IMU_Task,&sysState.config.imu, &imuTask_attributes);
 		}
 	}else{
 		osThreadFlagsSet(imuTaskHandle, TERMINATE_THREAD_BIT);
 	}
-	osDelay(CONTROL_DELAY);
+//	osDelay(CONTROL_DELAY);
 }
 
 imu_sensor_config_t imuConfigNoWindow;
@@ -77,8 +77,6 @@ void controlIMUNoWindow(bool state){
 	//
 	//	osDelay(100);
 
-
-
 	if(state){
 		memcpy(&imuConfigNoWindow,&sysState.config.imu,sizeof(imu_sensor_config_t));
 		imuConfigNoWindow.enable_windowing = 0;
@@ -86,7 +84,7 @@ void controlIMUNoWindow(bool state){
 
 		volatile osThreadState_t threadState = osThreadGetState(imuTaskHandle);
 
-		while( (threadState != osThreadTerminated) && (threadState != osThreadError)){
+		while( (threadState != osThreadTerminated) && (threadState != osThreadError) && (threadState != osThreadReady)){
 			osDelay(100);
 			osThreadFlagsSet(imuTaskHandle, TERMINATE_THREAD_BIT);
 			threadState = osThreadGetState(imuTaskHandle);
@@ -98,69 +96,101 @@ void controlIMUNoWindow(bool state){
 void controlThermopile(bool state){
 	if(state){
 		osThreadState_t threadState = osThreadGetState(thermopileTaskHandle);
-		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
+		if( (threadState == osThreadTerminated) || (threadState == osThreadError) || (threadState == osThreadReady)){
 			thermopileTaskHandle = osThreadNew(Thermopile_Task, &sysState.config.thermopile, &thermopileTask_attributes);
 		}
 	}else{
 		osThreadFlagsSet(thermopileTaskHandle, TERMINATE_THREAD_BIT);
 	}
-	osDelay(CONTROL_DELAY);
+//	osDelay(CONTROL_DELAY);
 }
 void controlLux(bool state){
 	if(state){
 		osThreadState_t threadState = osThreadGetState(luxTaskHandle);
-		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
+		if( (threadState == osThreadTerminated) || (threadState == osThreadError) || (threadState == osThreadReady)){
 			luxTaskHandle = osThreadNew(LuxTask, &sysState.config.lux, &luxTask_attributes);
 		}
 	}else{
 		osThreadFlagsSet(luxTaskHandle, TERMINATE_THREAD_BIT);
 	}
-	osDelay(CONTROL_DELAY);
+//	osDelay(CONTROL_DELAY);
 }
 void controlMic(bool state){
 	if(state){
 		osThreadState_t threadState = osThreadGetState(micTaskHandle);
-		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
+		if( (threadState == osThreadTerminated) || (threadState == osThreadError) || (threadState == osThreadReady)){
 			micTaskHandle = osThreadNew(Mic_Task, &sysState.config.mic, &micTask_attributes);
 		}
 	}else{
 		osThreadFlagsSet(micTaskHandle, TERMINATE_THREAD_BIT);
 	}
-	osDelay(CONTROL_DELAY);
+//	osDelay(CONTROL_DELAY);
 }
 void controlSHT(bool state){
 	if(state){
 		osThreadState_t threadState = osThreadGetState(shtTaskHandle);
-		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
+		if( (threadState == osThreadTerminated) || (threadState == osThreadError) || (threadState == osThreadReady)){
 			shtTaskHandle = osThreadNew(ShtTask, &sysState.config.humidity, &shtTask_attributes);
 		}
 	}else{
 		osThreadFlagsSet(shtTaskHandle, TERMINATE_THREAD_BIT);
 	}
-	osDelay(CONTROL_DELAY);
+//	osDelay(CONTROL_DELAY);
 }
 void controlSGP(bool state){
 	if(state){
 		osThreadState_t threadState = osThreadGetState(sgpTaskHandle);
-		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
+		if( (threadState == osThreadTerminated) || (threadState == osThreadError) || (threadState == osThreadReady)){
 			sgpTaskHandle = osThreadNew(SgpTask, &sysState.config.sgp, &sgpTask_attributes);
 		}
 	}else{
 		osThreadFlagsSet(sgpTaskHandle, TERMINATE_THREAD_BIT);
 	}
-	osDelay(CONTROL_DELAY);
+//	osDelay(CONTROL_DELAY);
 }
 
 void controlBlink(bool state){
 	if(state){
 		osThreadState_t threadState = osThreadGetState(blinkTaskHandle);
-		if( (threadState == osThreadTerminated) || (threadState == osThreadError)){
+		if( (threadState == osThreadTerminated) || (threadState == osThreadError) || (threadState == osThreadReady)){
 			blinkTaskHandle = osThreadNew(BlinkTask, &sysState.config.blink, &blinkTask_attributes);
 		}
 	}else{
 		osThreadFlagsSet(blinkTaskHandle, TERMINATE_THREAD_BIT);
 	}
-	osDelay(CONTROL_DELAY);
+//	osDelay(CONTROL_DELAY);
+}
+
+void waitUntilSensorsAreTerminated(){
+	osThreadState_t threadState;
+	while( (threadState != osThreadTerminated) && (threadState != osThreadError) && (threadState != osThreadReady)){
+		threadState = osThreadGetState(thermopileTaskHandle);
+		osDelay(10);
+	}
+	while( (threadState != osThreadTerminated) && (threadState != osThreadError) && (threadState != osThreadReady)){
+		threadState = osThreadGetState(blinkTaskHandle);
+		osDelay(10);
+	}
+	while( (threadState != osThreadTerminated) && (threadState != osThreadError) && (threadState != osThreadReady)){
+		threadState = osThreadGetState(sgpTaskHandle);
+		osDelay(10);
+	}
+	while( (threadState != osThreadTerminated) && (threadState != osThreadError) && (threadState != osThreadReady)){
+		threadState = osThreadGetState(shtTaskHandle);
+		osDelay(10);
+	}
+	while( (threadState != osThreadTerminated) && (threadState != osThreadError) && (threadState != osThreadReady)){
+		threadState = osThreadGetState(luxTaskHandle);
+		osDelay(10);
+	}
+	while( (threadState != osThreadTerminated) && (threadState != osThreadError) && (threadState != osThreadReady)){
+		threadState = osThreadGetState(micTaskHandle);
+		osDelay(10);
+	}
+	while( (threadState != osThreadTerminated) && (threadState != osThreadError) && (threadState != osThreadReady)){
+		threadState = osThreadGetState(imuTaskHandle);
+		osDelay(10);
+	}
 }
 
 blink_sensor_config_t blinkConfigNoWindow;
@@ -179,7 +209,7 @@ void controlBlinkNoWindow(bool state){
 
 		volatile osThreadState_t threadState = osThreadGetState(blinkTaskHandle);
 
-		while( (threadState != osThreadTerminated) && (threadState != osThreadError)){
+		while( (threadState != osThreadTerminated) && (threadState != osThreadError) && (threadState != osThreadReady)){
 			osDelay(100);
 			osThreadFlagsSet(blinkTaskHandle, TERMINATE_THREAD_BIT);
 			threadState = osThreadGetState(blinkTaskHandle);
@@ -440,7 +470,7 @@ void BlinkCalTaskExit(void *argument){
 
 	volatile osThreadState_t threadStateBlink = osThreadGetState(blinkTaskHandle);
 	volatile osThreadState_t threadStateIMU = osThreadGetState(imuTaskHandle);
-	while( (threadStateBlink != osThreadTerminated) && (threadStateBlink != osThreadError) ){
+	while( (threadStateBlink != osThreadTerminated) && (threadStateBlink != osThreadError) && (threadStateBlink != osThreadReady)){
 		osDelay(50);
 		iter++;
 		if(iter > 40){
@@ -449,7 +479,7 @@ void BlinkCalTaskExit(void *argument){
 		}
 		threadStateBlink = osThreadGetState(blinkTaskHandle);
 	}
-	while( (threadStateIMU != osThreadTerminated) && (threadStateIMU != osThreadError) ){
+	while( (threadStateIMU != osThreadTerminated) && (threadStateIMU != osThreadError) && (threadStateIMU != osThreadReady)){
 		osDelay(50);
 		iter++;
 		if(iter > 40){
@@ -608,6 +638,7 @@ void bleRX_Task(void *argument){
 
 			// turn off all sensors
 			controlAllSensors(false);
+			waitUntilSensorsAreTerminated();
 
 			// restart sensors with new config
 			ingestSensorConfig(&sysState);
@@ -640,6 +671,7 @@ void bleRX_Task(void *argument){
 
 			// turn off all sensors
 			controlAllSensors(false);
+			waitUntilSensorsAreTerminated();
 
 			// restart sensors with new config
 			ingestSensorConfig(&sysState);

@@ -48,7 +48,7 @@ void IMU_Task(void *argument){
 	sensor_packet_t *packet = NULL;
 	uint32_t flags = 0;
 	uint32_t flag_rdy = 0;
-
+	osThreadFlagsClear(GRAB_SAMPLE_BIT | TERMINATE_THREAD_BIT);
 	//	bool status;
 
 	osDelay(1000);

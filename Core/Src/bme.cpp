@@ -42,8 +42,9 @@ static uint8_t bmeState[BSEC_MAX_STATE_BLOB_SIZE];
 
 void BME_Task(void *argument) {
 	sensor_packet_t *packet = NULL;
-	uint32_t flags = 0;
+	volatile uint32_t flags = 0;
 
+	osThreadFlagsClear(TERMINATE_THREAD_BIT);
 //	bool status;
 
 	bme_sensor_config_t sensorSettings;
@@ -141,7 +142,7 @@ void BME_Task(void *argument) {
 			}
 
 		}
-		flags = osThreadFlagsWait(TERMINATE_THREAD_BIT, osFlagsWaitAny, 0);
+		flags = osThreadFlagsGet();
 
 		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
 			osTimerDelete (periodicBMETimer_id);

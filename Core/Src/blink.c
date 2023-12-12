@@ -84,6 +84,7 @@ void BlinkTask(void *argument) {
 	uint16_t payloadLength = 0;
 	uint16_t blinkDataTracker = 0;
 	uint32_t payload_ID = 0;
+	osThreadFlagsClear(GRAB_SAMPLE_BIT | TERMINATE_THREAD_BIT);
 //	uint32_t tickCnt;
 //	uint32_t blinkSampleHalfBuffer_ms = BLINK_HALF_BUFFER_SIZE * (1.0/BLINK_SAMPLE_RATE) * 1000.0;
 //	uint32_t packetRemainder = BLINK_SAMPLE_RATE % BLINK_PKT_PAYLOAD_SIZE;
