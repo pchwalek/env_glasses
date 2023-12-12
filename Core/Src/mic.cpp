@@ -18,6 +18,8 @@
 #include "arm_math.h"
 #include "math.h"
 
+#include "dma.h"
+
 
 // pretty OK tutorial: https://stm32f4-discovery.net/2014/10/stm32f4-fft-example/
 
@@ -122,7 +124,8 @@ void Mic_Task(void *argument){
 
 	hsai_BlockA1.Init.AudioFrequency = sensorSettings.mic_sample_freq;
 
-	MX_SAI1_Init();
+//	MX_DMA_Init();
+//	MX_SAI1_Init();
 
 	HAL_SAI_InitProtocol(&hsai_BlockA1, SAI_I2S_STANDARD, SAI_PROTOCOL_DATASIZE_24BIT, 2);
 
@@ -299,9 +302,10 @@ void Mic_Task(void *argument){
 
 		if ((flags & TERMINATE_THREAD_BIT) == TERMINATE_THREAD_BIT) {
 			osTimerDelete(periodicMicTimer_id);
+			HAL_SAI_DMAStop(&hsai_BlockA1);
 			HAL_SAI_Abort(&hsai_BlockA1);
-			HAL_SAI_DeInit(&hsai_BlockA1);
-			HAL_SAI_MspDeInit(&hsai_BlockA1);
+//			HAL_SAI_DeInit(&hsai_BlockA1);
+//			HAL_SAI_MspDeInit(&hsai_BlockA1);
 			osThreadExit();
 //			start_logging = 0;
 			break;

@@ -132,7 +132,7 @@ const osThreadAttr_t bmeTask_attributes = { .name = "bmeTask", .attr_bits =
 osThreadId_t sgpTaskHandle;
 const osThreadAttr_t sgpTask_attributes = { .name = "sgpTask", .attr_bits =
 		osThreadDetached, .cb_mem = NULL, .cb_size = 0, .stack_mem = NULL,
-		.stack_size = 512*2, .priority = (osPriority_t) osPriorityNormal,
+		.stack_size = 512*3, .priority = (osPriority_t) osPriorityNormal,
 		.tz_module = 0, .reserved = 0 };
 
 osThreadId_t imuTaskHandle;
