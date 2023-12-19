@@ -163,38 +163,38 @@ void controlBlink(bool state){
 
 void waitUntilSensorsAreTerminated(){
 	osThreadState_t threadState;
-	while( (threadState != osThreadTerminated) && (threadState != osThreadError) && (threadState != osThreadReady)){
+	do{
 		threadState = osThreadGetState(thermopileTaskHandle);
 		osDelay(10);
-	}
-	while( (threadState != osThreadTerminated) && (threadState != osThreadError) && (threadState != osThreadReady)){
+	}while( (threadState != osThreadTerminated) && (threadState != osThreadError) && (threadState != osThreadReady));
+	do{
 		threadState = osThreadGetState(blinkTaskHandle);
 		osDelay(10);
-	}
-	while( (threadState != osThreadTerminated) && (threadState != osThreadError) && (threadState != osThreadReady)){
+	}while( (threadState != osThreadTerminated) && (threadState != osThreadError) && (threadState != osThreadReady));
+	do{
 		threadState = osThreadGetState(sgpTaskHandle);
 		osDelay(10);
-	}
-	while( (threadState != osThreadTerminated) && (threadState != osThreadError) && (threadState != osThreadReady)){
+	}while( (threadState != osThreadTerminated) && (threadState != osThreadError) && (threadState != osThreadReady));
+	do{
 		threadState = osThreadGetState(shtTaskHandle);
 		osDelay(10);
-	}
-	while( (threadState != osThreadTerminated) && (threadState != osThreadError) && (threadState != osThreadReady)){
+	}while( (threadState != osThreadTerminated) && (threadState != osThreadError) && (threadState != osThreadReady));
+	do{
 		threadState = osThreadGetState(luxTaskHandle);
 		osDelay(10);
-	}
-	while( (threadState != osThreadTerminated) && (threadState != osThreadError) && (threadState != osThreadReady)){
+	}while( (threadState != osThreadTerminated) && (threadState != osThreadError) && (threadState != osThreadReady));
+	do{
 		threadState = osThreadGetState(micTaskHandle);
 		osDelay(10);
-	}
-	while( (threadState != osThreadTerminated) && (threadState != osThreadError) && (threadState != osThreadReady)){
+	}while( (threadState != osThreadTerminated) && (threadState != osThreadError) && (threadState != osThreadReady));
+	do{
 		threadState = osThreadGetState(imuTaskHandle);
 		osDelay(10);
-	}
-	while( (threadState != osThreadTerminated) && (threadState != osThreadError) && (threadState != osThreadReady)){
+	}while( (threadState != osThreadTerminated) && (threadState != osThreadError) && (threadState != osThreadReady));
+	do{
 		threadState = osThreadGetState(bmeTaskHandle);
 		osDelay(10);
-	}
+	}while( (threadState != osThreadTerminated) && (threadState != osThreadError) && (threadState != osThreadReady));
 }
 
 blink_sensor_config_t blinkConfigNoWindow;
