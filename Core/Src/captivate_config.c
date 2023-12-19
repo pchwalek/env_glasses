@@ -191,6 +191,10 @@ void waitUntilSensorsAreTerminated(){
 		threadState = osThreadGetState(imuTaskHandle);
 		osDelay(10);
 	}
+	while( (threadState != osThreadTerminated) && (threadState != osThreadError) && (threadState != osThreadReady)){
+		threadState = osThreadGetState(bmeTaskHandle);
+		osDelay(10);
+	}
 }
 
 blink_sensor_config_t blinkConfigNoWindow;
