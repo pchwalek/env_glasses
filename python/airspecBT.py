@@ -41,7 +41,7 @@ async def main(queue: asyncio.Queue):
     #         return
     # else:
     device = await BleakScanner.find_device_by_filter(
-        lambda d, ad: ad.local_name == "AirSpec_008a65fb",
+        lambda d, ad: ad.local_name == "AirSpec_01ad71bf",
         timeout=60
     )
 

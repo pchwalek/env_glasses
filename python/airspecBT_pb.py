@@ -10,7 +10,6 @@ import argparse
 import asyncio
 import logging
 
-
 import binascii
 from struct import *
 from sensorClass import *
@@ -24,6 +23,26 @@ import message_pb2 as MessagePb
 sensorPacket = MessagePb.SensorPacket()
 
 logger = logging.getLogger(__name__)
+
+# AIRSPEC_UID = "AirSpec_01ad7510",
+# AIRSPEC_UID = "AirSpec_01ad6cff",
+# AIRSPEC_UID = "AirSpec_01ad6f6b", # glasses 1
+# AIRSPEC_UID = "AirSpec_01ad7855", # glasses 2
+# AIRSPEC_UID = "AirSpec_01ad71de", # glasses 3
+AIRSPEC_UID = "AirSpec_01ad7052",  # glasses 4
+# AIRSPEC_UID = "AirSpec_01ad72c2", # glasses 5
+# AIRSPEC_UID = "AirSpec_01ad7040", # glasses 6
+# AIRSPEC_UID = "AirSpec_01ad6d72", # glasses 7
+# AIRSPEC_UID = "AirSpec_01ad6ce3", # glasses 9
+# AIRSPEC_UID = "AirSpec_01ad6e53", # glasses 10
+# AIRSPEC_UID = "AirSpec_01ad743c", # glasses 11
+# AIRSPEC_UID = "AirSpec_01ad7677", # glasses 12
+# AIRSPEC_UID = "AirSpec_01ad6e65", # glasses 13
+# AIRSPEC_UID = "AirSpec_01ad7ae6", # glasses 14
+# AIRSPEC_UID = "AirSpec_01ad6fa1", # glasses 15
+# AIRSPEC_UID = "AirSpec_01ad7ae6",  # glasses 16
+# AIRSPEC_UID = "AirSpec_01ad71bf", # glasses 17
+# AIRSPEC_UID = "AirSpec_01ad7859", # glasses 18
 
 SERVICE_UUID = "0000fe80-0000-1000-8000-00805f9b34fb"
 CHARACTERISTIC_UUID = "0000fe81-0000-1000-8000-00805f9b34fb"
@@ -52,22 +71,18 @@ MIC_LVL = 14
 
 sensorPacketTracker = np.zeros(14)
 
-
-
-
 def sensorPrintHelperFunc(packet, show_payload=False):
     # sensorPacketTracker[pktIdxRx] += 1
 
     # print(packet.WhichOneof("payload"))
     if(packet.WhichOneof("payload") == "lux_packet"):
         sensorPacketTracker[LUX] += 1
-
         if show_payload:
             print(packet.lux_packet)
     elif(packet.WhichOneof("payload") == "sgp_packet"):
         sensorPacketTracker[SGP] += 1
-        if show_payload:
-            print(packet.sgp_packet)
+        # if show_payload:
+        print(packet.sgp_packet)
     elif (packet.WhichOneof("payload") == "bme_packet"):
         sensorPacketTracker[BME] += 1
         if show_payload:
@@ -89,8 +104,8 @@ def sensorPrintHelperFunc(packet, show_payload=False):
     elif (packet.WhichOneof("payload") == "therm_packet"):
         sensorPacketTracker[THERMOPILE] += 1
         # print(packet.therm_packet)
-        if show_payload:
-            print(packet.therm_packet)
+        # if show_payload:
+        print(packet.therm_packet)
     elif (packet.WhichOneof("payload") == "imu_packet"):
         sensorPacketTracker[IMU] += 1
         if show_payload:
@@ -124,35 +139,9 @@ async def main(queue: asyncio.Queue):
 
     logger.info("starting scan...")
     print("starting main")
-    # if args.address:
-    #     device = await BleakScanner.find_device_by_address(
-    #         args.address, cb=dict(use_bdaddr=args.macos_use_bdaddr)
-    #     )
-    #     if device is None:
-    #         logger.error("could not find device with address '%s'", args.address)
-    #         return
-    # else:
-    device = await BleakScanner.find_device_by_filter(
-        # lambda d, ad: ad.local_name == "AirSpec_01ad7510",
-        # lambda d, ad: ad.local_name == "AirSpec_01ad6cff",
-        # lambda d, ad: ad.local_name == "AirSpec_01ad6f6b", # glasses 1
-        # lambda d, ad: ad.local_name == "AirSpec_01ad7855", # glasses 2
-        # lambda d, ad: ad.local_name == "AirSpec_01ad71de", # glasses 3
-        # lambda d, ad: ad.local_name == "AirSpec_01ad7052", # glasses 4
-        # lambda d, ad: ad.local_name == "AirSpec_01ad72c2", # glasses 5
-        # lambda d, ad: ad.local_name == "AirSpec_01ad7040", # glasses 6
-        # lambda d, ad: ad.local_name == "AirSpec_01ad6d72", # glasses 7
-        # lambda d, ad: ad.local_name == "AirSpec_01ad6ce3", # glasses 9
-        lambda d, ad: ad.local_name == "AirSpec_01ad6e53", # glasses 10
-        # lambda d, ad: ad.local_name == "AirSpec_01ad743c", # glasses 11
-        # lambda d, ad: ad.local_name == "AirSpec_01ad7677", # glasses 12
-        # lambda d, ad: ad.local_name == "AirSpec_01ad6e65", # glasses 13
-        # lambda d, ad: ad.local_name == "AirSpec_01ad7ae6", # glasses 14
-        # lambda d, ad: ad.local_name == "AirSpec_01ad6fa1", # glasses 15
-        # lambda d, ad: ad.local_name == "AirSpec_01ad7ae6",  # glasses 16
-        # lambda d, ad: ad.local_name == "AirSpec_01ad71bf", # glasses 17
-        # lambda d, ad: ad.local_name == "AirSpec_01ad7859", # glasses 18
 
+    device = await BleakScanner.find_device_by_filter(
+        lambda d, ad: ad.local_name == AIRSPEC_UID,  # glasses 4
         timeout=60
     )
 
@@ -173,49 +162,10 @@ async def main(queue: asyncio.Queue):
         disconnected_event.set()
 
     async def notification_handler(characteristic: BleakGATTCharacteristic, data: bytearray):
-        # global s_in
-
-        """Simple notification handler which prints the data received."""
-        # logger.info("%s: %r", characteristic.description, data)
-
-        # print(str(data,"utf-16"))
-        # print(isinstance(data, (bytes, bytearray)))
-        # systemID, pktType, pktID, msFromStart, epoch, payloadLen, r0, r1, r2, r3, r4 = \
-        #     unpack(headerStructType, data[0:headerStructSize])
-
-        # try:
-        # print(bytes(data))
-        # print(bytes(data))
-        # header.ParseFromString(bytes(data))
-        # print(header.packetType)
-        # if(bytes(data)[0] == 10): #newline
-        #     header.ParseFromString(bytes(data[2:]))
-        #     print(data)
-        # else:
-            # print(data)
-            # header.ParseFromString(bytes(data[6:]))
-        # print(bytes('\n', 'utf-8'))
-
-        # response = requests.post(url, headers=http_headers, data=data)
 
         sensorPacket.ParseFromString(bytes(data))
-        # print(sensorPacket.WhichOneof("payload"))
+
         sensorPrintHelperFunc(sensorPacket, False)
-
-        # if(sensorPacket.header.packet_type == MIC):
-        #     print("MIC")
-        #     print(sensorPacket.mic_packet.payload.sample)
-        # print()
-        #
-        #
-        # IMU_PACKET.ParseFromString(bytes(data))
-        # print(IMU_PACKET)
-            # await queue.put(data)
-            # s_in.sendall("test")
-        # except ConnectionResetError:
-        #     client.disconnect()
-
-        # print(systemID)
 
     while True:
         async with BleakClient(device,disconnected_callback=disconnection_handler) as client:
@@ -223,16 +173,10 @@ async def main(queue: asyncio.Queue):
             logger.info(f"Connected: {client.is_connected}")
             disconnected_event.clear()
 
-            # svcs = await client.get_services()
-            # print("Services:")
-            # for service in svcs:
-            #     print(service)
-            # await client.start_notify(SERVICE_UUID, notification_handler)
             await client.start_notify(CHARACTERISTIC_UUID, notification_handler)
 
             try:
                 while True:
-                    # await asyncio.sleep(5.0)
                     await disconnected_event.wait()
                     if(not client.is_connected):
                         print(" Bluetooth: connection lost. Attempting to reconnect.")
@@ -252,8 +196,6 @@ async def run_queue_consumer(queue: asyncio.Queue):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s_in:
             while True:
                 try:
-                    # print("Connecting to server at: " + self.host)
-                    # print(gethostbyname(self.host))
                     s_in.connect((SERVER_HOST, SERVER_PORT))
                 except OSError:
                     print("Can't connect to server! Generated OSError. Retrying in: ", end=" ")
@@ -287,34 +229,12 @@ async def run_queue_consumer(queue: asyncio.Queue):
                     print("conn aborted")
                     break
 
-
-        # if data is None:
-        #     logger.info(
-        #         "Got message from client about disconnection. Exiting consumer loop..."
-        #     )
-        #     break
-        # else:
-        #     logger.info("Received callback data via async queue at %s: %r", epoch, data)
-
-async def run_tests():
+async def run_experiments():
     queue = asyncio.Queue()
 
     main_task = main(queue)
-    #consumer_task = run_queue_consumer(queue)
 
     await asyncio.gather(main_task)
 
 if __name__ == "__main__":
-    # with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    #     s.bind((self.host, self.port))
-    #     s.listen()
-    #     while True:
-    #         conn, addr = s.accept()
-    #         print("Connection from: " + str(addr))
-
-    # await asyncio.gather(client_task, consumer_task)
-
-
-
-    asyncio.run(run_tests())
-    # asyncio.run(main(queue))
+    asyncio.run(run_experiments())

@@ -218,8 +218,8 @@ int main(void) {
 //
 //	while(1);
 
-//	if (isSystemFresh != 0xDEADBEAF) {
-	if(1){
+	if (isSystemFresh != 0xDEADBEAF) {
+//	if(1){
 		//initialize fresh system
 //		sensorConfig.systemRunState = 1;
 //		sensorConfig.uuid = LL_FLASH_GetUDN();
@@ -323,6 +323,8 @@ int main(void) {
 		isSystemFresh = 0xDEADBEAF;
 		extMemWriteData(START_ADDR, (uint8_t*) &isSystemFresh, 4);
 	} else {
+		sysState.control.imu = 0; // for now, always disable IMU at start
+
 		extMemGetData(START_ADDR + 4, (uint8_t*) &sysState,
 				sizeof(system_state_t));
 		updateSystemConfig_BLE(&sysState);
