@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 # AIRSPEC_UID = "AirSpec_01ad6f6b", # glasses 1
 # AIRSPEC_UID = "AirSpec_01ad7855", # glasses 2
 # AIRSPEC_UID = "AirSpec_01ad71de", # glasses 3
-AIRSPEC_UID = "AirSpec_01ad7052",  # glasses 4
+# AIRSPEC_UID = "AirSpec_01ad7052",  # glasses 4
 # AIRSPEC_UID = "AirSpec_01ad72c2", # glasses 5
 # AIRSPEC_UID = "AirSpec_01ad7040", # glasses 6
 # AIRSPEC_UID = "AirSpec_01ad6d72", # glasses 7
@@ -39,7 +39,7 @@ AIRSPEC_UID = "AirSpec_01ad7052",  # glasses 4
 # AIRSPEC_UID = "AirSpec_01ad7677", # glasses 12
 # AIRSPEC_UID = "AirSpec_01ad6e65", # glasses 13
 # AIRSPEC_UID = "AirSpec_01ad7ae6", # glasses 14
-# AIRSPEC_UID = "AirSpec_01ad6fa1", # glasses 15
+AIRSPEC_UID = "AirSpec_01ad6fa1" # glasses 15
 # AIRSPEC_UID = "AirSpec_01ad7ae6",  # glasses 16
 # AIRSPEC_UID = "AirSpec_01ad71bf", # glasses 17
 # AIRSPEC_UID = "AirSpec_01ad7859", # glasses 18
@@ -50,7 +50,7 @@ CHARACTERISTIC_UUID = "0000fe81-0000-1000-8000-00805f9b34fb"
 # SERVER_HOST = "airspecs.media.mit.edu"
 SERVER_HOST = "localhost"
 SERVER_PORT = 65434  # Port to listen on (non-privileged ports are > 1023)
-SEND_TO_SERVER = True
+SEND_TO_SERVER = False
 
 UNKNOWN_PACKET_TYPE = 0
 # PPG_RED = 1
@@ -141,6 +141,7 @@ async def main(queue: asyncio.Queue):
 
     device = await BleakScanner.find_device_by_filter(
         lambda d, ad: ad.local_name == AIRSPEC_UID,  # glasses 4
+        # lambda d, ad: ad.local_name == "AirSpec_01ad6fa1",
         timeout=60
     )
 
