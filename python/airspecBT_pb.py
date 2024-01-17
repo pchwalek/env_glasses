@@ -50,12 +50,11 @@ CHARACTERISTIC_UUID = "0000fe81-0000-1000-8000-00805f9b34fb"
 # SERVER_HOST = "airspecs.media.mit.edu"
 SERVER_HOST = "localhost"
 SERVER_PORT = 65434  # Port to listen on (non-privileged ports are > 1023)
+SEND_TO_SERVER = True
 
-# checkName(a, ad):
-#     lambda d, ad: d.name and d.name.lower() == "AirSpec_008a65fb"
 UNKNOWN_PACKET_TYPE = 0
-PPG_RED = 1
-PPG_IR = 2
+# PPG_RED = 1
+# PPG_IR = 2
 SPECTROMETER = 3
 BME = 4
 CO2 = 5
@@ -165,6 +164,9 @@ async def main(queue: asyncio.Queue):
 
         sensorPacket.ParseFromString(bytes(data))
 
+        if(SEND_TO_SERVER):
+            await queue.put(data)
+
         sensorPrintHelperFunc(sensorPacket, False)
 
     while True:
@@ -233,8 +235,13 @@ async def run_experiments():
     queue = asyncio.Queue()
 
     main_task = main(queue)
+    if(SEND_TO_SERVER):
+        consumer_task = run_queue_consumer(queue)
 
-    await asyncio.gather(main_task)
+    if(SEND_TO_SERVER):
+        await asyncio.gather(main_task, consumer_task)
+    else:
+        await asyncio.gather(main_task)
 
 if __name__ == "__main__":
     asyncio.run(run_experiments())
