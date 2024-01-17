@@ -24,25 +24,25 @@ sensorPacket = MessagePb.SensorPacket()
 
 logger = logging.getLogger(__name__)
 
-# AIRSPEC_UID = "AirSpec_01ad7510",
-# AIRSPEC_UID = "AirSpec_01ad6cff",
-# AIRSPEC_UID = "AirSpec_01ad6f6b", # glasses 1
-# AIRSPEC_UID = "AirSpec_01ad7855", # glasses 2
-# AIRSPEC_UID = "AirSpec_01ad71de", # glasses 3
-# AIRSPEC_UID = "AirSpec_01ad7052",  # glasses 4
-# AIRSPEC_UID = "AirSpec_01ad72c2", # glasses 5
-# AIRSPEC_UID = "AirSpec_01ad7040", # glasses 6
-# AIRSPEC_UID = "AirSpec_01ad6d72", # glasses 7
-# AIRSPEC_UID = "AirSpec_01ad6ce3", # glasses 9
-# AIRSPEC_UID = "AirSpec_01ad6e53", # glasses 10
-# AIRSPEC_UID = "AirSpec_01ad743c", # glasses 11
-# AIRSPEC_UID = "AirSpec_01ad7677", # glasses 12
-# AIRSPEC_UID = "AirSpec_01ad6e65", # glasses 13
-# AIRSPEC_UID = "AirSpec_01ad7ae6", # glasses 14
+# AIRSPEC_UID = "AirSpec_01ad7510"
+# AIRSPEC_UID = "AirSpec_01ad6cff"
+# AIRSPEC_UID = "AirSpec_01ad6f6b" # glasses 1
+# AIRSPEC_UID = "AirSpec_01ad7855" # glasses 2
+# AIRSPEC_UID = "AirSpec_01ad71de" # glasses 3
+# AIRSPEC_UID = "AirSpec_01ad7052"  # glasses 4
+# AIRSPEC_UID = "AirSpec_01ad72c2" # glasses 5
+# AIRSPEC_UID = "AirSpec_01ad7040" # glasses 6
+# AIRSPEC_UID = "AirSpec_01ad6d72" # glasses 7
+# AIRSPEC_UID = "AirSpec_01ad6ce3" # glasses 9
+# AIRSPEC_UID = "AirSpec_01ad6e53" # glasses 10
+# AIRSPEC_UID = "AirSpec_01ad743c" # glasses 11
+# AIRSPEC_UID = "AirSpec_01ad7677" # glasses 12
+# AIRSPEC_UID = "AirSpec_01ad6e65" # glasses 13
+# AIRSPEC_UID = "AirSpec_01ad7ae6" # glasses 14
 AIRSPEC_UID = "AirSpec_01ad6fa1" # glasses 15
-# AIRSPEC_UID = "AirSpec_01ad7ae6",  # glasses 16
-# AIRSPEC_UID = "AirSpec_01ad71bf", # glasses 17
-# AIRSPEC_UID = "AirSpec_01ad7859", # glasses 18
+# AIRSPEC_UID = "AirSpec_01ad7ae6"  # glasses 16
+# AIRSPEC_UID = "AirSpec_01ad71bf" # glasses 17
+# AIRSPEC_UID = "AirSpec_01ad7859" # glasses 18
 
 SERVICE_UUID = "0000fe80-0000-1000-8000-00805f9b34fb"
 CHARACTERISTIC_UUID = "0000fe81-0000-1000-8000-00805f9b34fb"
@@ -80,20 +80,18 @@ def sensorPrintHelperFunc(packet, show_payload=False):
             print(packet.lux_packet)
     elif(packet.WhichOneof("payload") == "sgp_packet"):
         sensorPacketTracker[SGP] += 1
-        # if show_payload:
-        print(packet.sgp_packet)
+        if show_payload:
+            print(packet.sgp_packet)
     elif (packet.WhichOneof("payload") == "bme_packet"):
         sensorPacketTracker[BME] += 1
         if show_payload:
             print(packet.bme_packet)
     elif (packet.WhichOneof("payload") == "blink_packet"):
         sensorPacketTracker[BLINK] += 1
-        # print(packet.blink_packet)
         if show_payload:
             print(packet.blink_packet)
     elif (packet.WhichOneof("payload") == "sht_packet"):
         sensorPacketTracker[SHT] += 1
-        print(packet.sht_packet)
         if show_payload:
             print(packet.sht_packet)
     elif (packet.WhichOneof("payload") == "spec_packet"):
@@ -103,8 +101,8 @@ def sensorPrintHelperFunc(packet, show_payload=False):
     elif (packet.WhichOneof("payload") == "therm_packet"):
         sensorPacketTracker[THERMOPILE] += 1
         # print(packet.therm_packet)
-        # if show_payload:
-        print(packet.therm_packet)
+        if show_payload:
+            print(packet.therm_packet)
     elif (packet.WhichOneof("payload") == "imu_packet"):
         sensorPacketTracker[IMU] += 1
         if show_payload:
