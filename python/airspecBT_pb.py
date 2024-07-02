@@ -37,9 +37,9 @@ logger = logging.getLogger(__name__)
 # AIRSPEC_UID = "AirSpec_01ad6e53" # glasses 10
 # AIRSPEC_UID = "AirSpec_01ad743c" # glasses 11
 # AIRSPEC_UID = "AirSpec_01ad7677" # glasses 12
-# AIRSPEC_UID = "AirSpec_01ad6e65" # glasses 13
+AIRSPEC_UID = "AirSpec_01ad6e65" # glasses 13
 # AIRSPEC_UID = "AirSpec_01ad7ae6" # glasses 14
-AIRSPEC_UID = "AirSpec_01ad6fa1" # glasses 15
+# AIRSPEC_UID = "AirSpec_01ad6fa1" # glasses 15
 # AIRSPEC_UID = "AirSpec_01ad7ae6"  # glasses 16
 # AIRSPEC_UID = "AirSpec_01ad71bf" # glasses 17
 # AIRSPEC_UID = "AirSpec_01ad7859" # glasses 18
@@ -166,7 +166,7 @@ async def main(queue: asyncio.Queue):
         if(SEND_TO_SERVER):
             await queue.put(data)
 
-        sensorPrintHelperFunc(sensorPacket, False)
+        sensorPrintHelperFunc(sensorPacket, True)
 
     while True:
         async with BleakClient(device,disconnected_callback=disconnection_handler) as client:
