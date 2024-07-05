@@ -20,6 +20,8 @@ from bleak.backends.characteristic import BleakGATTCharacteristic
 import numpy as np
 import message_pb2 as MessagePb
 
+import csv
+
 sensorPacket = MessagePb.SensorPacket()
 
 logger = logging.getLogger(__name__)
@@ -70,8 +72,23 @@ MIC_LVL = 14
 
 sensorPacketTracker = np.zeros(14)
 
+save_csv = False
+
+sgp_csv_file_name = "output/sgp.csv"
+sgp_fields = ['timestamp_unix', 'timestamp_ms_from_start', 'sraw_voc', 'sraw_nox', 'voc_index_value', 'nox_index_value']
+
+bme_csv_file_name = "output/bme.csv"
+bme_fields = ['timestamp_unix', 'timestamp_ms_from_start', 'timestamp_sensor', 'signal', 'signal_dimensions', 'sensor_id']
+
+sht_csv_file_name = "output/sht.csv"
+sht_fields = ['timestamp_unix', 'timestamp_ms_from_start', 'temperature', 'humidity']
+
+therm_csv_file_name = "output/therm.csv"
+therm_fields = ['timestamp_unix', 'timestamp_ms_from_start', 'descriptor', 'ambient_raw', 'object_raw', 'ambient_temp', 'object_temp']
+
 def sensorPrintHelperFunc(packet, show_payload=False):
     # sensorPacketTracker[pktIdxRx] += 1
+    rows = []
 
     # print(packet.WhichOneof("payload"))
     if(packet.WhichOneof("payload") == "lux_packet"):
@@ -82,10 +99,34 @@ def sensorPrintHelperFunc(packet, show_payload=False):
         sensorPacketTracker[SGP] += 1
         if show_payload:
             print(packet.sgp_packet)
+        if save_csv:
+            for signal in packet.sgp_packet.payload:
+                row = []
+                row.append(signal.timestamp_unix)
+                row.append(signal.timestamp_ms_from_start)
+                row.append(signal.sraw_voc)
+                row.append(signal.sraw_nox)
+                row.append(signal.voc_index_value)
+                row.append(signal.nox_index_value)
+                with open(sgp_csv_file_name, 'a') as csv_file:
+                    csv_writer = csv.writer(csv_file)
+                    csv_writer.writerow(row)
     elif (packet.WhichOneof("payload") == "bme_packet"):
         sensorPacketTracker[BME] += 1
         if show_payload:
             print(packet.bme_packet)
+        if save_csv:
+            for signal in packet.bme_packet.payload:
+                row = []
+                row.append(signal.timestamp_unix)
+                row.append(signal.timestamp_ms_from_start)
+                row.append(signal.timestamp_sensor)
+                row.append(signal.signal)
+                row.append(signal.signal_dimensions)
+                row.append(signal.sensor_id)
+                with open(bme_csv_file_name, 'a') as csv_file:
+                    csv_writer = csv.writer(csv_file)
+                    csv_writer.writerow(row)
     elif (packet.WhichOneof("payload") == "blink_packet"):
         sensorPacketTracker[BLINK] += 1
         if show_payload:
@@ -94,6 +135,16 @@ def sensorPrintHelperFunc(packet, show_payload=False):
         sensorPacketTracker[SHT] += 1
         if show_payload:
             print(packet.sht_packet)
+        if save_csv:
+            for signal in packet.sht_packet.payload:
+                row = []
+                row.append(signal.timestamp_unix)
+                row.append(signal.timestamp_ms_from_start)
+                row.append(signal.temperature)
+                row.append(signal.humidity)
+                with open(sht_csv_file_name, 'a') as csv_file:
+                    csv_writer = csv.writer(csv_file)
+                    csv_writer.writerow(row)
     elif (packet.WhichOneof("payload") == "spec_packet"):
         sensorPacketTracker[SPECTROMETER] += 1
         if show_payload:
@@ -103,6 +154,19 @@ def sensorPrintHelperFunc(packet, show_payload=False):
         # print(packet.therm_packet)
         if show_payload:
             print(packet.therm_packet)
+        if save_csv:
+            for signal in packet.therm_packet.payload:
+                row = []
+                row.append(signal.timestamp_unix)
+                row.append(signal.timestamp_ms_from_start)
+                row.append(signal.descriptor)
+                row.append(signal.ambient_raw)
+                row.append(signal.object_raw)
+                row.append(signal.ambient_temp)
+                row.append(signal.object_temp)
+                with open(therm_csv_file_name, 'a') as csv_file:
+                    csv_writer = csv.writer(csv_file)
+                    csv_writer.writerow(row)
     elif (packet.WhichOneof("payload") == "imu_packet"):
         sensorPacketTracker[IMU] += 1
         if show_payload:
@@ -143,6 +207,23 @@ async def main(queue: asyncio.Queue):
         timeout=60
     )
 
+    if save_csv:
+        with open(bme_csv_file_name, 'w') as csv_file:
+            csv_writer = csv.writer(csv_file)
+            csv_writer.writerow(bme_fields)
+
+        with open(bme_csv_file_name, 'w') as csv_file:
+            csv_writer = csv.writer(csv_file)
+            csv_writer.writerow(bme_fields)
+
+        with open(sht_csv_file_name, 'w') as csv_file:
+            csv_writer = csv.writer(csv_file)
+            csv_writer.writerow(sht_fields)
+
+        with open(therm_csv_file_name, 'w') as csv_file:
+            csv_writer = csv.writer(csv_file)
+            csv_writer.writerow(therm_fields)
+
     while( device is None):
         # logger.error("could not find device with name '%s'", "AirSpec_008a65fb")
         print(" Bluetooth: could not find device with name '%s'", "AirSpec_008a65fb")
@@ -166,7 +247,7 @@ async def main(queue: asyncio.Queue):
         if(SEND_TO_SERVER):
             await queue.put(data)
 
-        sensorPrintHelperFunc(sensorPacket, True)
+        sensorPrintHelperFunc(sensorPacket, True, True)
 
     while True:
         async with BleakClient(device,disconnected_callback=disconnection_handler) as client:
